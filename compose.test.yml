@@ -13,6 +13,7 @@ services:
         condition: service_healthy
     environment:
       APP_ENV: test
+      KERNEL_CLASS: "App\Shared\Infrastructure\Kernel"
       DB_HOST: pgsql-test
       POSTGRES_DB: merashop_db
       POSTGRES_USER: merashop_u
