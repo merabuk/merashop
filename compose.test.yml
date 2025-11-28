@@ -1,0 +1,44 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/app/Dockerfile
+      target: testing
+      cache_from:
+        - type=local,src=/var/cache/phpunit-cache/app-php
+      cache_to:
+        - type=local,dest=/var/cache/phpunit-cache/app-php,mode=max,compression=zstd
+    depends_on:
+      pgsql-test:
+        condition: service_healthy
+    environment:
+      APP_ENV: test
+      DB_HOST: pgsql-test
+      POSTGRES_DB: merashop_db
+      POSTGRES_USER: merashop_u
+      POSTGRES_PASSWORD: merashop_p
+      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST}:5432/app?serverVersion=18&charset=utf8"
+    networks:
+      - test-network
+    working_dir: /var/www
+    command: tail -f /dev/null
+
+  pgsql-test:
+    image: postgres:18-alpine3.21
+    environment:
+      POSTGRES_DB: merashop_db
+      POSTGRES_USER: merashop_u
+      POSTGRES_PASSWORD: merashop_p
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "merashop_u", "-d", "merashop_db"]
+      retries: 3
+      timeout: 5s
+      interval: 5s
+    networks:
+      - test-network
+    tmpfs:
+      - /var/lib/postgresql/data
+
+networks:
+  test-network:
+    driver: bridge
