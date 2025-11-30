@@ -1,0 +1,9 @@
+services:
+  _defaults:
+    autowire: true
+
+  App\Shared\Infrastructure\Bus\CommandBus:
+    public: true
+
+  App\Shared\Infrastructure\Bus\QueryBus:
+    public: true

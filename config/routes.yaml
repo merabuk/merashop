@@ -1,8 +1,8 @@
-controllers:
-    resource:
-        path: ../src/Shared/Infrastructure/Controller/
-        namespace: App\Shared\Infrastructure\Controller
-    type: attribute
+app_shared_api_v1:
+  resource:
+    path: ../src/Shared/Infrastructure/Presentation/ApiVersion1/Controller/
+    namespace: App\Shared\Infrastructure\Presentation\ApiVersion1\Controller
+  type: attribute
 
 kernel:
   resource:

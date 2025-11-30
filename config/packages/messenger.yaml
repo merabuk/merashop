@@ -15,9 +15,13 @@ framework:
             failed: 'doctrine://default?queue_name=failed'
             # sync: 'sync://'
 
-        default_bus: messenger.bus.default
+        default_bus: command.bus
 
         buses:
+            command.bus:
+                middleware:
+                  - doctrine_transaction
+            query.bus:
             messenger.bus.default: []
 
         routing:

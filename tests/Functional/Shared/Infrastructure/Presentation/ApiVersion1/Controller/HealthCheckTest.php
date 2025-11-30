@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Tests\Functional\Shared\Infrastructure\Controller;
+declare(strict_types=1);
+
+namespace App\Tests\Functional\Shared\Infrastructure\Presentation\ApiVersion1\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,7 +13,7 @@ class HealthCheckTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $client->request(method: Request::METHOD_GET, uri: '/health-check');
+        $client->request(method: Request::METHOD_GET, uri: '/api/v1/health-check');
 
         $this->assertResponseIsSuccessful();
 
