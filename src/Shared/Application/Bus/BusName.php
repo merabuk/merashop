@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Shared\Infrastructure\Bus;
+namespace App\Shared\Application\Bus;
 
 enum BusName: string
 {

@@ -33,12 +33,12 @@ trait DoctrineRepositoryTrait
     {
         $doctrineObject = $this->mapper->toDoctrine($domainObject);
 
-        if (is_null($doctrineObject->getId()) === false) {
+        if (false === is_null($doctrineObject->getId())) {
             $doctrineReference = $this->entityManager->getReference(
-                entityName:  static::ORM_ENTITY_CLASS_NAME,
+                entityName: static::ORM_ENTITY_CLASS_NAME,
                 id: $doctrineObject->getId()
             );
-            if ($this->entityManager->contains($doctrineReference) === false) {
+            if (false === $this->entityManager->contains($doctrineReference)) {
                 $this->entityManager->persist($doctrineReference);
             }
         } else {

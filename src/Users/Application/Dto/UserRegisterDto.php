@@ -11,7 +11,7 @@ readonly class UserRegisterDto
         public string $lastName,
         public string $email,
         public string $password,
-        public ?string $phoneNumber
+        public ?string $phoneNumber,
     ) {
     }
 }

@@ -15,7 +15,11 @@ class User
 
     public function getId(): ?int
     {
-        return $this->id;
+        if (isset($this->id)) {
+            return $this->id;
+        }
+
+        return null;
     }
 
     public function setId(?int $id): void

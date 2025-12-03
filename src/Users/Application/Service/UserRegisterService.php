@@ -14,7 +14,7 @@ readonly class UserRegisterService
 {
     public function __construct(
         private PasswordHasherInterface $passwordHasher,
-        private UserRepositoryInterface $userRepository
+        private UserRepositoryInterface $userRepository,
     ) {
     }
 

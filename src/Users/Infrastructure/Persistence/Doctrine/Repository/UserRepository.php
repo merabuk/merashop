@@ -10,17 +10,21 @@ use App\Users\Domain\Repository\UserRepositoryInterface;
 use App\Users\Infrastructure\Persistence\Doctrine\Entity\OrmUser;
 use App\Users\Infrastructure\Persistence\Doctrine\Mapper\UserMapper;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Exception\ORMException;
 
-class UserRepository implements UserRepositoryInterface
+
+/**
+ * @extends EntityRepository<OrmUser>
+ */class UserRepository extends EntityRepository implements UserRepositoryInterface
 {
     use DoctrineRepositoryTrait;
 
-    const ORM_ENTITY_CLASS_NAME = OrmUser::class;
+    public const ORM_ENTITY_CLASS_NAME = OrmUser::class;
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly UserMapper $mapper
+        private readonly UserMapper $mapper,
     ) {
     }
 

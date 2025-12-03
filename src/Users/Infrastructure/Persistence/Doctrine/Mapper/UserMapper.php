@@ -9,8 +9,8 @@ use App\Users\Infrastructure\Persistence\Doctrine\Entity\OrmUser;
 
 class UserMapper
 {
-    const DOMAIN_CLASS_NAME = User::class;
-    const DOCTRINE_CLASS_NAME = OrmUser::class;
+    public const DOMAIN_CLASS_NAME = User::class;
+    public const DOCTRINE_CLASS_NAME = OrmUser::class;
 
     public function toDoctrine(User $user): OrmUser
     {
@@ -22,9 +22,6 @@ class UserMapper
         $ormUser->setEmail($user->getEmail());
         $ormUser->setPhoneNumber($user->getPhoneNumber());
         $ormUser->setPassword($user->getPassword());
-        $ormUser->setCreatedAt();
-        $ormUser->setUpdatedAt();
-        $ormUser->setDeletedAt();
 
         return $ormUser;
     }

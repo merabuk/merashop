@@ -9,7 +9,7 @@ use App\Users\Domain\Entity\User;
 readonly class UserRegisteredEvent
 {
     public function __construct(
-        private User $user
+        private User $user,
     ) {
     }
 

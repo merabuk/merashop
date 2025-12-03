@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route(path: 'api/v1/users/register', name: 'users.api.v1.register', methods: [ Request::METHOD_POST ])]
+#[Route(path: 'api/v1/users/register', name: 'users.api.v1.register', methods: [Request::METHOD_POST])]
 class UserRegisterController
 {
     public function __invoke(Request $request, UserRegisterService $service): Response

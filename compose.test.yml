@@ -18,7 +18,8 @@ services:
       POSTGRES_DB: merashop_db
       POSTGRES_USER: merashop_u
       POSTGRES_PASSWORD: merashop_p
-      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST}:5432/app?serverVersion=18&charset=utf8"
+      POSTGRES_VERSION: 18
+      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST}:5432/app?serverVersion=${POSTGRES_VERSION}&charset=utf8"
     networks:
       - test-network
     working_dir: /var/www

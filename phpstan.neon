@@ -1,0 +1,19 @@
+includes:
+  - ./vendor/phpstan/phpstan/conf/bleedingEdge.neon
+  - phpstan-baseline.neon
+
+parameters:
+  paths:
+    - src
+    - config
+  excludePaths:
+    - docker/*
+    - tests/*
+  level: 6 # (0-8)
+  parallel:
+  		maximumNumberOfProcesses: 4
+  ignoreErrors:
+    -
+        identifier: missingType.iterableValue
+    -
+        identifier: missingType.generics
