@@ -43,7 +43,7 @@ class CreateUserCommandHandlerTest extends WebTestCase
         $command = new CreateUserCommand($data);
         $userId = $this->commandBus->execute($command);
 
-        $user = $this->userRepository->getById($userId);
+        $user = $this->userRepository->findById($userId);
 
         $this->assertNotEmpty($user);
     }

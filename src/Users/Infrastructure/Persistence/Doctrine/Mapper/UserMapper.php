@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Users\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\Users\Domain\Entity\User;
+use App\Users\Domain\ValueObject\EmailAddress;
 use App\Users\Infrastructure\Persistence\Doctrine\Entity\OrmUser;
 
 class UserMapper
@@ -19,7 +20,7 @@ class UserMapper
         $ormUser->setId($user->getId());
         $ormUser->setFirstName($user->getFirstName());
         $ormUser->setLastName($user->getLastName());
-        $ormUser->setEmail($user->getEmail());
+        $ormUser->setEmail($user->getEmail()->toString());
         $ormUser->setPhoneNumber($user->getPhoneNumber());
         $ormUser->setPassword($user->getPassword());
 
@@ -28,16 +29,13 @@ class UserMapper
 
     public function fromDoctrine(OrmUser $ormUser): User
     {
-        $user = new User();
-
-        $user->setId($ormUser->getId());
-        $user->setFirstName($ormUser->getFirstName());
-        $user->setLastName($ormUser->getLastName());
-        $user->setEmail($ormUser->getEmail());
-        $user->setPhoneNumber($ormUser->getPhoneNumber());
-        $user->setPassword($ormUser->getPassword());
-        // mapping another properties
-
-        return $user;
+        return new User(
+            id: $ormUser->getId(),
+            email: EmailAddress::fromString($ormUser->getEmail()),
+            firstName: $ormUser->getFirstName(),
+            lastName: $ormUser->getLastName(),
+            phoneNumber: $ormUser->getPhoneNumber(),
+            password: $ormUser->getPassword()
+        );
     }
 }

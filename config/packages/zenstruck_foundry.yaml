@@ -1,10 +1,17 @@
-when@dev: &dev
-    # See full configuration: https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#full-default-bundle-configuration
-    zenstruck_foundry:
-        persistence:
-            # Flush only once per call of `PersistentObjectFactory::create()`
-            flush_once: true
+# See full configuration: https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#full-default-bundle-configuration
+zenstruck_foundry:
+  persistence:
+    # Flush only once per call of `PersistentObjectFactory::create()`
+    flush_once: true
+  orm:
+    reset:
+      connections:
+        - default
+      entity_managers:
+        - default
+      mode: schema
 
+when@dev:
     # If you use the `make:factory --test` command, you may need to uncomment the following.
     # See https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#generate
     #services:
@@ -13,4 +20,10 @@ when@dev: &dev
     #        autowire: true
     #        autoconfigure: true
 
-when@test: *dev
+when@test:
+  zenstruck_foundry:
+    orm:
+      reset:
+        entity_managers:
+          - users
+        mode: migrate

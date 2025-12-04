@@ -2,10 +2,13 @@
 
 namespace App\Shared\Infrastructure\Persistence\Doctrine;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 
 trait DoctrineRepositoryTrait
 {
+    private EntityManagerInterface $entityManager;
+
     private function _findOneById(int $id): ?object
     {
         $doctrineObject = $this->entityManager->getRepository(static::ORM_ENTITY_CLASS_NAME)->find($id);

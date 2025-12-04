@@ -11,9 +11,9 @@ parameters:
     - tests/*
   level: 6 # (0-8)
   parallel:
-  		maximumNumberOfProcesses: 4
+  	maximumNumberOfProcesses: 4
   ignoreErrors:
     -
-        identifier: missingType.iterableValue
+       identifier: missingType.iterableValue
     -
-        identifier: missingType.generics
+       identifier: missingType.generics
