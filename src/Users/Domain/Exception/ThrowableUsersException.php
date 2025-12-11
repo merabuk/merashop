@@ -6,5 +6,4 @@ use App\Shared\Domain\Exception\ThrowableDomainException;
 
 interface ThrowableUsersException extends ThrowableDomainException
 {
-
 }

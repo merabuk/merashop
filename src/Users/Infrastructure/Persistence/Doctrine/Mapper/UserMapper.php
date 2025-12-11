@@ -5,37 +5,43 @@ declare(strict_types=1);
 namespace App\Users\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\Users\Domain\Entity\User;
+use App\Users\Domain\Exception\InvalidUserValueObjectException;
 use App\Users\Domain\ValueObject\EmailAddress;
+use App\Users\Domain\ValueObject\FirstName;
+use App\Users\Domain\ValueObject\LastName;
+use App\Users\Domain\ValueObject\PasswordHash;
+use App\Users\Domain\ValueObject\PhoneNumber;
+use App\Users\Domain\ValueObject\UserId;
 use App\Users\Infrastructure\Persistence\Doctrine\Entity\OrmUser;
 
 class UserMapper
 {
-    public const DOMAIN_CLASS_NAME = User::class;
-    public const DOCTRINE_CLASS_NAME = OrmUser::class;
-
-    public function toDoctrine(User $user): OrmUser
+    public function toDoctrineOrm(User $user): OrmUser
     {
         $ormUser = new OrmUser();
 
-        $ormUser->setId($user->getId());
-        $ormUser->setFirstName($user->getFirstName());
-        $ormUser->setLastName($user->getLastName());
-        $ormUser->setEmail($user->getEmail()->toString());
-        $ormUser->setPhoneNumber($user->getPhoneNumber());
-        $ormUser->setPassword($user->getPassword());
+        $ormUser->setId($user->getId()?->value());
+        $ormUser->setFirstName($user->getFirstName()->value());
+        $ormUser->setLastName($user->getLastName()->value());
+        $ormUser->setEmail($user->getEmail()->value());
+        $ormUser->setPhoneNumber($user->getPhoneNumber()?->value());
+        $ormUser->setPassword($user->getPassword()->value());
 
         return $ormUser;
     }
 
-    public function fromDoctrine(OrmUser $ormUser): User
+    /**
+     * @throws InvalidUserValueObjectException
+     */
+    public function fromDoctrineOrm(OrmUser $ormUser): User
     {
         return new User(
-            id: $ormUser->getId(),
+            id: UserId::fromInt($ormUser->getId() ?? throw new \RuntimeException('Missing user id')),
             email: EmailAddress::fromString($ormUser->getEmail()),
-            firstName: $ormUser->getFirstName(),
-            lastName: $ormUser->getLastName(),
-            phoneNumber: $ormUser->getPhoneNumber(),
-            password: $ormUser->getPassword()
+            firstName: FirstName::fromString($ormUser->getFirstName()),
+            lastName: LastName::fromString($ormUser->getLastName()),
+            phoneNumber: PhoneNumber::fromString($ormUser->getPhoneNumber()),
+            password: PasswordHash::fromString($ormUser->getPassword()),
         );
     }
 }

@@ -1,0 +1,45 @@
+grumphp:
+  environment:
+    variables:
+      GRUMPHP_PROJECT_DIR: "."
+      GRUMPHP_GIT_WORKING_DIR: "."
+      GRUMPHP_BIN_DIR: "vendor/bin/"
+      GRUMPHP_GIT_REPOSITORY_DIR: ".git/"
+  git_hook_variables:
+    EXEC_GRUMPHP_COMMAND: 'docker compose exec -T app php'
+  stop_on_failure: false
+  ignore_unstaged_changes: false
+  hide_circumvention_tip: false
+  process_timeout: 300
+  parallel:
+    enabled: false
+    max_workers: 2
+  fixer:
+    enabled: true
+    fix_by_default: true
+  extensions: []
+  tasks:
+    yamllint:
+      parse_custom_tags: true
+    composer: ~
+    git_blacklist:
+      keywords:
+        - ' dd('
+        - 'dump('
+        - 'die;'
+        - 'exit;'
+        - 'ini_set'
+        - 'error_reporting'
+        - 'set_time_limit'
+    phpcsfixer:
+      config: .php-cs-fixer.dist.php
+    phpstan:
+      configuration: phpstan.dist.neon
+      memory_limit: "-1"
+      use_grumphp_paths: false
+    deptrac:
+      depfile: deptrac.yaml
+    deptrac_modules:
+      depfile: deptrac-modules.yaml
+      metadata:
+        task: deptrac

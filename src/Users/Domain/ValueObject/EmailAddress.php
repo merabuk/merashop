@@ -2,36 +2,49 @@
 
 namespace App\Users\Domain\ValueObject;
 
-use App\Users\Domain\Exception\InvalidEmailAddressException;
+use App\Shared\Domain\Exception\InvalidEmailAddressException;
+use App\Shared\Domain\Service\EmailValidator;
+use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use App\Users\Domain\Exception\InvalidUserEmailAddressException;
 
-final class EmailAddress
+final class EmailAddress implements \Stringable
 {
+    use ValueObjectEqualityTrait;
+
     private string $email;
 
     /**
-     * @throws InvalidEmailAddressException
+     * @throws InvalidUserEmailAddressException
      */
     public function __construct(string $email)
     {
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw InvalidEmailAddressException::becauseItIsNotValidEmailAddress($email);
+        try {
+            $this->email = EmailValidator::validate($email);
+        } catch (InvalidEmailAddressException $e) {
+            throw InvalidUserEmailAddressException::fromBaseException($e);
         }
-
-        $this->email = mb_strtolower($email);
     }
 
-    public function toString(): string
+    public function value(): string
     {
         return $this->email;
     }
 
+    /**
+     * @throws InvalidUserEmailAddressException
+     */
     public static function fromString(string $email): self
     {
         return new self($email);
     }
 
-    public function equals(self $other): bool
+    public function __toString(): string
     {
-        return $this->email === $other->email;
+        return $this->value();
+    }
+
+    protected function getPrimitiveValue(): string
+    {
+        return $this->value();
     }
 }

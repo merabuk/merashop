@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-: "${STATIC_PHP_FPM_POOL_WORKERS:=125}"
+: "${STATIC_PHP_FPM_POOL_WORKERS:=25}"
 : "${USER_GROUP:=www}"
 : "${USER_NAME:=www}"
 

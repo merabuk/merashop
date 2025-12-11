@@ -9,22 +9,10 @@ trait DoctrineRepositoryTrait
 {
     private EntityManagerInterface $entityManager;
 
-    private function _findOneById(int $id): ?object
-    {
-        $doctrineObject = $this->entityManager->getRepository(static::ORM_ENTITY_CLASS_NAME)->find($id);
-
-        return $this->getOneOrNothing($doctrineObject);
-    }
-
-    private function getOneOrNothing(?object $doctrineObject): ?object
-    {
-        return $doctrineObject ? $this->mapper->fromDoctrine($doctrineObject) : null;
-    }
-
     private function _delete(object $domainObject): void
     {
         $this->entityManager->remove(
-            $this->mapper->toDoctrine($domainObject)
+            $this->mapper->toDoctrineOrm($domainObject)
         );
         $this->entityManager->flush();
     }
@@ -34,7 +22,7 @@ trait DoctrineRepositoryTrait
      */
     private function _save(object $domainObject): void
     {
-        $doctrineObject = $this->mapper->toDoctrine($domainObject);
+        $doctrineObject = $this->mapper->toDoctrineOrm($domainObject);
 
         if (false === is_null($doctrineObject->getId())) {
             $doctrineReference = $this->entityManager->getReference(

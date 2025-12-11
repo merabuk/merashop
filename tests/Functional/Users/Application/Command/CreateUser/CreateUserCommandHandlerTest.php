@@ -6,8 +6,7 @@ namespace App\Tests\Functional\Users\Application\Command\CreateUser;
 
 use App\Shared\Application\Command\CommandBusInterface;
 use App\Users\Application\Command\CreateUser\CreateUserCommand;
-use App\Users\Application\Dto\CreateUserDto;
-use App\Users\Domain\Repository\UserRepositoryInterface;
+use App\Users\Domain\Repository\UserReadRepositoryInterface;
 use Faker\Factory;
 use Faker\Generator;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -19,7 +18,7 @@ class CreateUserCommandHandlerTest extends WebTestCase
 
     private Generator $factory;
     private CommandBusInterface $commandBus;
-    private UserRepositoryInterface $userRepository;
+    private UserReadRepositoryInterface $userReadRepository;
 
     protected function setUp(): void
     {
@@ -27,23 +26,21 @@ class CreateUserCommandHandlerTest extends WebTestCase
 
         $this->factory = Factory::create();
         $this->commandBus = self::getContainer()->get(CommandBusInterface::class);
-        $this->userRepository = self::getContainer()->get(UserRepositoryInterface::class);
+        $this->userReadRepository = self::getContainer()->get(UserReadRepositoryInterface::class);
     }
 
     public function testCreateUserIsSuccessful(): void
     {
-        $data = new CreateUserDto(
+        $command = new CreateUserCommand(
             firstName: $this->factory->firstName(),
             lastName: $this->factory->lastName(),
             email: $this->factory->safeEmail(),
             password: $this->factory->password(),
             phoneNumber: $this->factory->phoneNumber()
         );
-
-        $command = new CreateUserCommand($data);
         $userId = $this->commandBus->execute($command);
 
-        $user = $this->userRepository->findById($userId);
+        $user = $this->userReadRepository->findById($userId);
 
         $this->assertNotEmpty($user);
     }

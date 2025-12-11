@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace App\Users\Infrastructure\Persistence\Doctrine\Entity;
 
-use App\Users\Infrastructure\Persistence\Doctrine\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
-#[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'users_user')]
 class OrmUser
 {

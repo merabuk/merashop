@@ -4,42 +4,44 @@ declare(strict_types=1);
 
 namespace App\Users\Domain\ValueObject;
 
+use App\Shared\Domain\Exception\IntegerIsNotUnsignedException;
+use App\Shared\Domain\Service\IntegerValidator;
+use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use App\Users\Domain\Exception\InvalidUserIdException;
-use Symfony\Component\Uid\Ulid;
 
-final class UserId
+final class UserId implements \Stringable
 {
-    private string $id;
+    use ValueObjectEqualityTrait;
+
+    private int $id;
 
     /**
      * @throws InvalidUserIdException
      */
-    private function __construct(string $id)
+    public function __construct(int $id)
     {
-        if (!Ulid::isValid($id)) {
-            throw InvalidUserIdException::becauseItIsNotAValidUlid($id);
+        try {
+            $this->id = IntegerValidator::validateUnsigned($id);
+        } catch (IntegerIsNotUnsignedException) {
+            throw InvalidUserIdException::becauseItIsNotAValidId();
         }
-
-        $this->id = $id;
     }
 
-    public static function fromString(string $id): self
-    {
-        return new self($id);
-    }
-
-    public static function generate(): self
-    {
-        return new self(Ulid::generate());
-    }
-
-    public function toString(): string
+    public function value(): int
     {
         return $this->id;
     }
 
-    public function equals(self $other): bool
+    /**
+     * @throws InvalidUserIdException
+     */
+    public static function fromInt(int $id): self
     {
-        return $this->id === $other->id;
+        return new self($id);
+    }
+
+    protected function getPrimitiveValue(): int
+    {
+        return $this->value();
     }
 }

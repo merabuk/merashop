@@ -18,4 +18,5 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-    App\Users\Domain\Repository\UserRepositoryInterface: '@App\Users\Infrastructure\Persistence\Doctrine\Repository\UserRepository'
+    App\Users\Domain\Repository\UserReadRepositoryInterface: '@App\Users\Infrastructure\Persistence\Doctrine\Repository\UserReadRepository'
+    App\Users\Domain\Repository\UserWriteRepositoryInterface: '@App\Users\Infrastructure\Persistence\Doctrine\Repository\UserWriteRepository'
