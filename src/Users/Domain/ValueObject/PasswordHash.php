@@ -16,7 +16,8 @@ final class PasswordHash implements \Stringable
     /**
      * @throws InvalidUserPasswordHashException
      */
-    private function __construct(string $hash) {
+    private function __construct(string $hash)
+    {
         $this->ensureIsValidHash($hash);
 
         $this->passwordHash = $hash;

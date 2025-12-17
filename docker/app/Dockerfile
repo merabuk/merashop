@@ -20,7 +20,8 @@ RUN --mount=type=cache,target=/var/cache/apk \
         libwebp-dev \
         libpng \
         libheif \
-        libde265
+        libde265 \
+        rabbitmq-c-dev
 
 # Install PHP extensions in parallel where possible (except imagick)
 RUN docker-php-ext-install -j$(nproc) \
@@ -33,9 +34,11 @@ RUN docker-php-ext-install -j$(nproc) \
 RUN --mount=type=cache,target=/tmp/pear/cache \
     pecl install \
         apcu \
+        amqp \
         redis \
     && docker-php-ext-enable \
         apcu \
+        amqp \
         redis
 
 ##################################
@@ -66,7 +69,8 @@ RUN --mount=type=cache,target=/var/cache/apk \
         libwebp \
         libpng \
         libheif \
-        libde265
+        libde265 \
+        rabbitmq-c-dev
 
 # Copy dependencies from the dependencies stage early
 COPY --from=dependencies /usr/local/lib/php/extensions /usr/local/lib/php/extensions
@@ -115,9 +119,13 @@ RUN composer dump-autoload \
       --optimize \
       --classmap-authoritative
 
-# Install XDebug using php-extension-installer for faster installation
+## Install XDebug using php-extension-installer for faster installation
 #RUN --mount=type=bind,from=mlocati/php-extension-installer:latest,source=/usr/bin/install-php-extensions,target=/usr/local/bin/install-php-extensions \
 #    install-php-extensions xdebug
+
+RUN mkdir -p /var/log/xdebug \
+    && touch /var/log/xdebug/xdebug.log \
+    && chmod 777 /var/log/xdebug/xdebug.log
 
 # Set up dependencies for compilation
 RUN --mount=type=cache,target=/var/cache/apk \
@@ -125,7 +133,7 @@ RUN --mount=type=cache,target=/var/cache/apk \
         $PHPIZE_DEPS \
         linux-headers
 
-# Install Xdebug
+# Install Xdebug using PECL (for Windows)
 RUN --mount=type=cache,target=/tmp/pear/cache \
     pecl install xdebug \
     && docker-php-ext-enable xdebug

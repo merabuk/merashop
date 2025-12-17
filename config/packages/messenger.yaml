@@ -5,7 +5,7 @@ framework:
         transports:
             # https://symfony.com/doc/current/messenger.html#transport-configuration
             async:
-                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                dsn: '%env(DOCTRINE_MESSENGER_TRANSPORT_DSN)%'
                 options:
                     use_notify: true
                     check_delayed_interval: 60000
@@ -13,6 +13,11 @@ framework:
                     max_retries: 3
                     multiplier: 2
             failed: 'doctrine://default?queue_name=failed'
+            amqp:
+              dsn: '%env(AMQP_MESSENGER_TRANSPORT_DSN)%'
+              options:
+                auto_setup: true
+                confirm_timeout: 5
             # sync: 'sync://'
 
         default_bus: command.bus
@@ -22,6 +27,7 @@ framework:
                 middleware:
                   - doctrine_transaction
             query.bus:
+            event.bus:
             messenger.bus.default: []
 
         routing:

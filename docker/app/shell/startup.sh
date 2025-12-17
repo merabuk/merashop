@@ -11,6 +11,9 @@ cat ./docker/app/php/php-fpm.d/zz-docker.conf \
 > /usr/local/etc/php-fpm.d/zz-docker.conf
 
 if [ "${APP_RUNTIME_ENV}" = "local" ]; then
+    touch /var/log/xdebug/xdebug.log
+    chown ${USER_NAME}:${USER_GROUP} /var/log/xdebug/xdebug.log
+
     echo "APP_RUNTIME_ENV is local"
 else
     echo "APP_RUNTIME_ENV is not local"
