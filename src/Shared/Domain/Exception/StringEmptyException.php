@@ -2,7 +2,7 @@
 
 namespace App\Shared\Domain\Exception;
 
-class StringEmptyException extends InvalidStringException
+final class StringEmptyException extends InvalidStringException
 {
     public static function becauseValueIsEmpty(): self
     {

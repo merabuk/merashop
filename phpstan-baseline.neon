@@ -1,2 +1,7 @@
 parameters:
 	ignoreErrors:
+	    -
+	        message: '#Call to method .*assertIsType\(\) with .* will always evaluate to true#'
+	        identifier: method.alreadyNarrowedType
+	        paths:
+	            - src/*/Infrastructure/Persistence/Doctrine/Mapper/*Mapper.php

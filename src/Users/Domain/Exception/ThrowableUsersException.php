@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Users\Domain\Exception;
 
-use App\Shared\Domain\Exception\ThrowableDomainException;
+use App\Shared\Domain\Exception\ThrowableValueObjectException;
 
-interface ThrowableUsersException extends ThrowableDomainException
+interface ThrowableUsersException extends ThrowableValueObjectException
 {
 }

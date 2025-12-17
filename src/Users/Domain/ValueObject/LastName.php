@@ -13,6 +13,8 @@ final class LastName implements \Stringable
 {
     use ValueObjectEqualityTrait;
 
+    public const int MAX_LENGTH = 64;
+
     private string $name;
 
     /**
@@ -21,7 +23,7 @@ final class LastName implements \Stringable
     public function __construct(string $name)
     {
         try {
-            $this->name = StringValidator::validate(value: $name, maxLength: 60);
+            $this->name = StringValidator::validate(value: $name, maxLength: self::MAX_LENGTH);
         } catch (InvalidStringException $e) {
             throw InvalidUserFirstNameException::fromBaseException($e);
         }

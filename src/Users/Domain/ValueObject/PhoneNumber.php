@@ -11,6 +11,8 @@ final class PhoneNumber implements \Stringable
 {
     use ValueObjectEqualityTrait;
 
+    public const int MAX_LENGTH = 15;
+
     private string $phoneNumber;
 
     /**
@@ -19,7 +21,7 @@ final class PhoneNumber implements \Stringable
     public function __construct(string $phoneNumber)
     {
         try {
-            $this->phoneNumber = PhoneNumberValidator::validate($phoneNumber);
+            $this->phoneNumber = PhoneNumberValidator::validate(phoneNumber: $phoneNumber, maxLength: self::MAX_LENGTH);
         } catch (InvalidPhoneNumberException $e) {
             throw InvalidUserPhoneNumberException::fromBaseException($e);
         }

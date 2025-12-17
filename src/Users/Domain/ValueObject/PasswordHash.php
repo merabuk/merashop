@@ -11,6 +11,8 @@ final class PasswordHash implements \Stringable
 {
     use ValueObjectEqualityTrait;
 
+    public const int MAX_LENGTH = 255;
+
     private string $passwordHash;
 
     /**
@@ -38,6 +40,10 @@ final class PasswordHash implements \Stringable
     {
         if (empty($hash)) {
             throw new InvalidUserPasswordHashException('Password hash cannot be empty');
+        }
+
+        if (self::MAX_LENGTH !== mb_strlen($hash)) {
+            throw new InvalidUserPasswordHashException('Password hash is too long');
         }
     }
 

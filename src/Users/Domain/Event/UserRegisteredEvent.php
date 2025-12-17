@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Users\Domain\Event;
 
-use App\Users\Domain\ValueObject\UserId;
+use App\Users\Domain\ValueObject\Id;
 
 readonly class UserRegisteredEvent
 {
     public function __construct(
-        private UserId $userId,
+        private Id $userId,
     ) {
     }
 
-    public function getUserId(): UserId
+    public function getUserId(): Id
     {
         return $this->userId;
     }

@@ -2,7 +2,7 @@
 
 namespace App\Shared\Domain\Exception;
 
-class StringMaxLengthException extends InvalidStringException
+final class StringMaxLengthException extends InvalidStringException
 {
     public static function becauseValueIsToLong(int $maxLength): self
     {

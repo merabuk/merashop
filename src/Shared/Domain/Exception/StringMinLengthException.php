@@ -2,7 +2,7 @@
 
 namespace App\Shared\Domain\Exception;
 
-class StringMinLengthException extends InvalidStringException
+final class StringMinLengthException extends InvalidStringException
 {
     public static function becauseValueIsToShort(int $minLength): self
     {

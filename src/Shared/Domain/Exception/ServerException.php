@@ -2,6 +2,6 @@
 
 namespace App\Shared\Domain\Exception;
 
-abstract class ServerException extends \Exception implements \Throwable, ThrowableDomainException
+abstract class ServerException extends \Exception implements \Throwable, ThrowableValueObjectException
 {
 }

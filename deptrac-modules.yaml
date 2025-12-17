@@ -16,7 +16,15 @@ parameters:
         -
           type: directory
           value: /src/Users/.*
+    -
+      name: EmailSender
+      collectors:
+        -
+          type: directory
+          value: /src/EmailSender/.*
   ruleset:
+    EmailSender:
+      - Shared
     Users:
       - Shared
     Shared: ~

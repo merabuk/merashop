@@ -9,7 +9,7 @@ use App\Shared\Domain\Service\UlidService;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use App\Users\Domain\Exception\InvalidUserUlidException;
 
-final class UserUlId implements \Stringable
+final class UlId implements \Stringable
 {
     use ValueObjectEqualityTrait;
 

@@ -4,44 +4,78 @@ declare(strict_types=1);
 
 namespace App\Users\Infrastructure\Persistence\Doctrine\Mapper;
 
+use App\Shared\Domain\Exception\EntityIdMissingException;
+use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
+use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\MapperInterface;
+use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
 use App\Users\Domain\Entity\User;
 use App\Users\Domain\Exception\InvalidUserValueObjectException;
 use App\Users\Domain\ValueObject\EmailAddress;
 use App\Users\Domain\ValueObject\FirstName;
+use App\Users\Domain\ValueObject\Id;
 use App\Users\Domain\ValueObject\LastName;
 use App\Users\Domain\ValueObject\PasswordHash;
 use App\Users\Domain\ValueObject\PhoneNumber;
-use App\Users\Domain\ValueObject\UserId;
 use App\Users\Infrastructure\Persistence\Doctrine\Entity\OrmUser;
 
-class UserMapper
+/**
+ * @implements MapperInterface<User, OrmUser>
+ */
+class UserMapper implements MapperInterface
 {
-    public function toDoctrineOrm(User $user): OrmUser
+    use TypeCheckTrait;
+
+    /**
+     * @throws IncompatibleMappedEntityException
+     */
+    public function toDoctrineOrm(object $domain): OrmUser
     {
-        $ormUser = new OrmUser();
+        $this->assertIsType(User::class, $domain);
 
-        $ormUser->setId($user->getId()?->value());
-        $ormUser->setFirstName($user->getFirstName()->value());
-        $ormUser->setLastName($user->getLastName()->value());
-        $ormUser->setEmail($user->getEmail()->value());
-        $ormUser->setPhoneNumber($user->getPhoneNumber()?->value());
-        $ormUser->setPassword($user->getPassword()->value());
+        /** @var User $domain */
+        $orm = new OrmUser();
 
-        return $ormUser;
+        $orm->setId($domain->getId()?->value());
+        $orm->firstName = $domain->getFirstName()->value();
+        $orm->lastName = $domain->getLastName()->value();
+        $orm->email = $domain->getEmail()->value();
+        $orm->phoneNumber = $domain->getPhoneNumber()?->value();
+        $orm->password = $domain->getPassword()->value();
+
+        return $orm;
     }
 
     /**
+     * @throws IncompatibleMappedEntityException
      * @throws InvalidUserValueObjectException
+     * @throws EntityIdMissingException
      */
-    public function fromDoctrineOrm(OrmUser $ormUser): User
+    public function fromDoctrineOrm(object $orm): User
     {
+        $this->assertIsType(OrmUser::class, $orm);
+
+        /* @var OrmUser $orm */
+
         return new User(
-            id: UserId::fromInt($ormUser->getId() ?? throw new \RuntimeException('Missing user id')),
-            email: EmailAddress::fromString($ormUser->getEmail()),
-            firstName: FirstName::fromString($ormUser->getFirstName()),
-            lastName: LastName::fromString($ormUser->getLastName()),
-            phoneNumber: PhoneNumber::fromString($ormUser->getPhoneNumber()),
-            password: PasswordHash::fromString($ormUser->getPassword()),
+            id: Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class)),
+            email: EmailAddress::fromString($orm->email),
+            firstName: FirstName::fromString($orm->firstName),
+            lastName: LastName::fromString($orm->lastName),
+            phoneNumber: PhoneNumber::fromString($orm->phoneNumber),
+            password: PasswordHash::fromString($orm->password),
         );
+    }
+
+    /**
+     * @throws IncompatibleMappedEntityException
+     */
+    public function mapToExistingOrm(object $domain, object $orm): void
+    {
+        $this->assertIsType(User::class, $domain);
+        $this->assertIsType(OrmUser::class, $orm);
+
+        $orm->firstName = $domain->getFirstName()->value();
+        $orm->lastName = $domain->getLastName()->value();
+        $orm->phoneNumber = $domain->getPhoneNumber()?->value();
     }
 }

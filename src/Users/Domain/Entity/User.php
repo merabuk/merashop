@@ -6,24 +6,24 @@ namespace App\Users\Domain\Entity;
 
 use App\Users\Domain\ValueObject\EmailAddress;
 use App\Users\Domain\ValueObject\FirstName;
+use App\Users\Domain\ValueObject\Id;
 use App\Users\Domain\ValueObject\LastName;
 use App\Users\Domain\ValueObject\PasswordHash;
 use App\Users\Domain\ValueObject\PhoneNumber;
-use App\Users\Domain\ValueObject\UserId;
 
-class User
+readonly class User
 {
     public function __construct(
-        private readonly ?UserId $id,
-        private readonly EmailAddress $email,
-        private readonly FirstName $firstName,
-        private readonly LastName $lastName,
-        private readonly ?PhoneNumber $phoneNumber,
-        private readonly PasswordHash $password,
+        private ?Id $id,
+        private EmailAddress $email,
+        private FirstName $firstName,
+        private LastName $lastName,
+        private ?PhoneNumber $phoneNumber,
+        private PasswordHash $password,
     ) {
     }
 
-    public function getId(): ?UserId
+    public function getId(): ?Id
     {
         if (isset($this->id)) {
             return $this->id;

@@ -11,6 +11,8 @@ final class EmailAddress implements \Stringable
 {
     use ValueObjectEqualityTrait;
 
+    public const int MAX_LENGTH = 256;
+
     private string $email;
 
     /**
@@ -19,7 +21,7 @@ final class EmailAddress implements \Stringable
     public function __construct(string $email)
     {
         try {
-            $this->email = EmailValidator::validate($email);
+            $this->email = EmailValidator::validate(email: $email, maxLength: self::MAX_LENGTH);
         } catch (InvalidEmailAddressException $e) {
             throw InvalidUserEmailAddressException::fromBaseException($e);
         }

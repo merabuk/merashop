@@ -41,7 +41,6 @@
 4. [Deptrac](https://deptrac.github.io/deptrac/)[GitHub](https://github.com/deptrac/deptrac)
 
 **Manual execution examples in container:**
-Don't forget make copy from `*.dist.*` file if current config doesn't exist
 
 - **All tasks** (except `git_commit_message`):
 
@@ -52,13 +51,13 @@ Don't forget make copy from `*.dist.*` file if current config doesn't exist
 - **CS task** with progress bar:
 
   ```bash
-  php vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --ansi --no-interaction
+  php vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --ansi --no-interaction
   ```
 
 - **PHPStan task** with progress bar:
 
   ```bash
-  php vendor/bin/phpstan analyse --configuration=phpstan.neon --memory-limit=-1 --no-ansi --no-interaction
+  php vendor/bin/phpstan analyse --configuration=phpstan.dist.neon --memory-limit=-1 --no-ansi --no-interaction
   ```
 
 - **Deptrac tasks** with progress bar:

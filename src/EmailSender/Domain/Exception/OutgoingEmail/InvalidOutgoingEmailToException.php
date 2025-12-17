@@ -1,0 +1,16 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\EmailSender\Domain\Exception\OutgoingEmail;
+
+use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectException;
+use App\Shared\Domain\Exception\InvalidEmailAddressException;
+
+class InvalidOutgoingEmailToException extends InvalidEmailSenderValueObjectException
+{
+    public static function fromBaseException(InvalidEmailAddressException $baseException): self
+    {
+        return new self($baseException->getMessage(), previous: $baseException);
+    }
+}

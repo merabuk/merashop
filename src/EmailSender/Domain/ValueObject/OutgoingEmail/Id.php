@@ -2,28 +2,28 @@
 
 declare(strict_types=1);
 
-namespace App\Users\Domain\ValueObject;
+namespace App\EmailSender\Domain\ValueObject\OutgoingEmail;
 
+use App\EmailSender\Domain\Exception\OutgoingEmail\InvalidOutgoingEmailIdException;
 use App\Shared\Domain\Exception\IntegerIsNotUnsignedException;
 use App\Shared\Domain\Service\IntegerValidator;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
-use App\Users\Domain\Exception\InvalidUserIdException;
 
-final class UserId implements \Stringable
+final class Id implements \Stringable
 {
     use ValueObjectEqualityTrait;
 
     private int $id;
 
     /**
-     * @throws InvalidUserIdException
+     * @throws InvalidOutgoingEmailIdException
      */
     public function __construct(int $id)
     {
         try {
             $this->id = IntegerValidator::validateUnsigned($id);
         } catch (IntegerIsNotUnsignedException) {
-            throw InvalidUserIdException::becauseItIsNotAValidId();
+            throw InvalidOutgoingEmailIdException::becauseItIsNotAValidId();
         }
     }
 
@@ -33,7 +33,7 @@ final class UserId implements \Stringable
     }
 
     /**
-     * @throws InvalidUserIdException
+     * @throws InvalidOutgoingEmailIdException
      */
     public static function fromInt(int $id): self
     {
