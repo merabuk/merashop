@@ -10,6 +10,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
+#[ORM\Entity]
 #[ORM\Table(name: 'email_sender_outgoing_email')]
 class OrmOutboxEmail
 {

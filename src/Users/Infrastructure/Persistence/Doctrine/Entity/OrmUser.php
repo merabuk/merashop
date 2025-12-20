@@ -15,6 +15,7 @@ use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 
+#[ORM\Entity]
 #[ORM\Table(name: 'users_user')]
 class OrmUser
 {

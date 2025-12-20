@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Users\Application\Command\CreateUser;
 
-use App\Shared\Application\Bus\BusName;
+use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
-use App\Shared\Domain\Event\UserRegisteredEvent;
+use App\Shared\Domain\Event\UserRegisteredSharedEvent;
 use App\Users\Domain\Entity\User;
 use App\Users\Domain\Exception\InvalidUserValueObjectException;
 use App\Users\Domain\Exception\UserAlreadyExistsException;
@@ -23,7 +23,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-#[AsMessageHandler(bus: BusName::Command->value)]
+#[AsMessageHandler(bus: BusNameEnum::Command->value)]
 readonly class CreateUserCommandHandler implements CommandHandlerInterface
 {
     public function __construct(
@@ -61,7 +61,7 @@ readonly class CreateUserCommandHandler implements CommandHandlerInterface
 
         $userId = $user->getId();
 
-        $event = new UserRegisteredEvent(
+        $event = new UserRegisteredSharedEvent(
             id: $user->getUlid()->value(),
             email: $user->getEmail()->value(),
             name: $user->getFirstName()->value(),

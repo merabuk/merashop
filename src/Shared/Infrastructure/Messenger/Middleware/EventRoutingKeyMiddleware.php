@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Shared\Infrastructure\Messanger\Middleware;
+namespace App\Shared\Infrastructure\Messenger\Middleware;
 
 use App\Shared\Domain\Event\DomainEventInterface;
 use Symfony\Component\Messenger\Bridge\Amqp\Transport\AmqpStamp;
