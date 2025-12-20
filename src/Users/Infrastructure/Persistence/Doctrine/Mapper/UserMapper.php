@@ -16,6 +16,7 @@ use App\Users\Domain\ValueObject\Id;
 use App\Users\Domain\ValueObject\LastName;
 use App\Users\Domain\ValueObject\PasswordHash;
 use App\Users\Domain\ValueObject\PhoneNumber;
+use App\Users\Domain\ValueObject\Ulid;
 use App\Users\Infrastructure\Persistence\Doctrine\Entity\OrmUser;
 
 /**
@@ -36,6 +37,7 @@ class UserMapper implements MapperInterface
         $orm = new OrmUser();
 
         $orm->setId($domain->getId()?->value());
+        $orm->ulid = $domain->getUlid()->value();
         $orm->firstName = $domain->getFirstName()->value();
         $orm->lastName = $domain->getLastName()->value();
         $orm->email = $domain->getEmail()->value();
@@ -58,6 +60,7 @@ class UserMapper implements MapperInterface
 
         return new User(
             id: Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class)),
+            ulid: Ulid::fromString($orm->ulid),
             email: EmailAddress::fromString($orm->email),
             firstName: FirstName::fromString($orm->firstName),
             lastName: LastName::fromString($orm->lastName),

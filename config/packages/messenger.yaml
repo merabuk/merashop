@@ -13,11 +13,18 @@ framework:
                     max_retries: 3
                     multiplier: 2
             failed: 'doctrine://default?queue_name=failed'
-            amqp:
+            amqp_events:
               dsn: '%env(AMQP_MESSENGER_TRANSPORT_DSN)%'
               options:
                 auto_setup: true
                 confirm_timeout: 5
+                exchange:
+                  name: 'domain_events'
+                  type: 'topic'
+                queues:
+                  email_sender_module:
+                    binding_keys:
+                      - 'integration.users.registered.v1'
             # sync: 'sync://'
 
         default_bus: command.bus
@@ -28,6 +35,8 @@ framework:
                   - doctrine_transaction
             query.bus:
             event.bus:
+              middleware:
+                - 'App\Shared\Infrastructure\Messenger\Middleware\EventRoutingKeyMiddleware'
             messenger.bus.default: []
 
         routing:
@@ -36,4 +45,4 @@ framework:
             Symfony\Component\Notifier\Message\SmsMessage: async
 
             # Route your messages to the transports
-            # 'App\Message\YourMessage': async
+            App\Shared\Domain\Event\UserRegisteredEvent: amqp_events

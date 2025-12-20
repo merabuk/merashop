@@ -10,11 +10,13 @@ use App\Users\Domain\ValueObject\Id;
 use App\Users\Domain\ValueObject\LastName;
 use App\Users\Domain\ValueObject\PasswordHash;
 use App\Users\Domain\ValueObject\PhoneNumber;
+use App\Users\Domain\ValueObject\Ulid;
 
 readonly class User
 {
     public function __construct(
         private ?Id $id,
+        private Ulid $ulid,
         private EmailAddress $email,
         private FirstName $firstName,
         private LastName $lastName,
@@ -30,6 +32,11 @@ readonly class User
         }
 
         return null;
+    }
+
+    public function getUlid(): Ulid
+    {
+        return $this->ulid;
     }
 
     public function getEmail(): EmailAddress

@@ -13,6 +13,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Table(name: 'users_user')]
 class OrmUser
@@ -24,6 +25,9 @@ class OrmUser
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::BIGINT)]
     public private(set) ?int $id = null;
+
+    #[ORM\Column(type: UlidType::NAME, unique: true)]
+    public ?string $ulid = null;
 
     #[ORM\Column(type: Types::STRING, length: FirstName::MAX_LENGTH)]
     public ?string $firstName = null;
