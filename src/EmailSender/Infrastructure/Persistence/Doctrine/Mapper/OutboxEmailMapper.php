@@ -36,8 +36,8 @@ class OutboxEmailMapper implements MapperInterface
         /** @var OutboxEmail $domain */
         $orm = new OrmOutboxEmail();
 
-        $orm->status = $domain->getStatus()->value()->value;
-        $orm->driver = $domain->getDriver()->value()->value;
+        $orm->status = $domain->getStatus()->value();
+        $orm->driver = $domain->getDriver()->value();
         $orm->subject = $domain->getSubject()->value();
         $orm->from = $domain->getFrom()->value();
         $orm->fromName = $domain->getFromName()->value();
@@ -59,8 +59,8 @@ class OutboxEmailMapper implements MapperInterface
 
         return new OutboxEmail(
             id: Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class)),
-            status: Status::fromString($orm->status),
-            driver: Driver::fromString($orm->driver),
+            status: Status::fromEnum($orm->status),
+            driver: Driver::fromEnum($orm->driver),
             subject: Subject::fromString($orm->subject),
             from: From::fromString($orm->from),
             fromName: FromName::fromString($orm->fromName),

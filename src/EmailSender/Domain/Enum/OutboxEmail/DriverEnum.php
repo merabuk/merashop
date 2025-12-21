@@ -4,7 +4,7 @@ namespace App\EmailSender\Domain\Enum\OutboxEmail;
 
 use App\Shared\Domain\Enum\StringEnumTrait;
 
-enum EmailDriverEnum: string
+enum DriverEnum: string
 {
     use StringEnumTrait;
 

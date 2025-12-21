@@ -6,7 +6,7 @@ namespace App\EmailSender\Domain\Enum\OutboxEmail;
 
 use App\Shared\Domain\Enum\StringEnumTrait;
 
-enum EmailStatusEnum: string
+enum StatusEnum: string
 {
     use StringEnumTrait;
 

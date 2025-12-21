@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\EmailSender\Domain\ValueObject\OutboxEmail;
 
-use App\EmailSender\Domain\Enum\OutboxEmail\EmailDriverEnum;
+use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailDriverException;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 
@@ -12,25 +12,16 @@ final class Driver implements \Stringable
 {
     use ValueObjectEqualityTrait;
 
-    private EmailDriverEnum $driver;
+    private DriverEnum $driver;
 
-    /**
-     * @throws InvalidOutboxEmailDriverException
-     */
-    public function __construct(string $status)
+    public function __construct(DriverEnum $driver)
     {
-        $enum = EmailDriverEnum::tryFrom($status);
-
-        if (false === $enum instanceof EmailDriverEnum) {
-            throw InvalidOutboxEmailDriverException::becauseItIsNotAValidDriver(invalidValue: $status, availableValues: EmailDriverEnum::getValues());
-        }
-
-        $this->driver = $enum;
+        $this->driver = $driver;
     }
 
-    public function value(): EmailDriverEnum
+    public static function fromEnum(DriverEnum $driver): self
     {
-        return $this->driver;
+        return new self($driver);
     }
 
     /**
@@ -38,7 +29,18 @@ final class Driver implements \Stringable
      */
     public static function fromString(string $driver): self
     {
-        return new self($driver);
+        $enum = DriverEnum::tryFrom($driver);
+
+        if (false === $enum instanceof DriverEnum) {
+            throw InvalidOutboxEmailDriverException::becauseItIsNotAValidDriver(invalidValue: $driver, availableValues: DriverEnum::getValues());
+        }
+
+        return new self($enum);
+    }
+
+    public function value(): DriverEnum
+    {
+        return $this->driver;
     }
 
     public function __toString(): string
