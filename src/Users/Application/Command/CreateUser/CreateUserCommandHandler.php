@@ -7,6 +7,7 @@ namespace App\Users\Application\Command\CreateUser;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
 use App\Shared\Domain\Event\UserRegisteredSharedEvent;
+use App\Shared\Domain\Service\UlidGeneratorInterface;
 use App\Users\Domain\Entity\User;
 use App\Users\Domain\Exception\InvalidUserValueObjectException;
 use App\Users\Domain\Exception\UserAlreadyExistsException;
@@ -29,6 +30,7 @@ readonly class CreateUserCommandHandler implements CommandHandlerInterface
     public function __construct(
         private UserRegisterService $userRegisterService,
         private PasswordHasherInterface $passwordHasher,
+        private UlidGeneratorInterface $idGenerator,
         private UserWriteRepositoryInterface $userWriteRepository,
         private MessageBusInterface $eventBus,
     ) {
@@ -49,7 +51,7 @@ readonly class CreateUserCommandHandler implements CommandHandlerInterface
 
         $user = new User(
             id: null,
-            ulid: Ulid::generate(),
+            ulid: Ulid::fromString($this->idGenerator->next()),
             email: $email,
             firstName: FirstName::fromString($command->firstName),
             lastName: LastName::fromString($command->lastName),

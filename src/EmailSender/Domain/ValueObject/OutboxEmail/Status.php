@@ -24,6 +24,21 @@ final class Status implements \Stringable
         return new self($status);
     }
 
+    public static function processing(): self
+    {
+        return self::fromEnum(StatusEnum::Processing);
+    }
+
+    public static function sent(): self
+    {
+        return self::fromEnum(StatusEnum::Sent);
+    }
+
+    public static function failed(): self
+    {
+        return self::fromEnum(StatusEnum::Failed);
+    }
+
     /**
      * @throws InvalidOutboxEmailStatusException
      */
@@ -41,6 +56,21 @@ final class Status implements \Stringable
     public function value(): StatusEnum
     {
         return $this->status;
+    }
+
+    public function isCreated(): bool
+    {
+        return StatusEnum::Created === $this->status;
+    }
+
+    public function isProcessing(): bool
+    {
+        return StatusEnum::Processing === $this->status;
+    }
+
+    public function isFailed(): bool
+    {
+        return StatusEnum::Failed === $this->status;
     }
 
     public function __toString(): string

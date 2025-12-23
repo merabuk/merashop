@@ -12,7 +12,6 @@ enum StatusEnum: string
 
     case Created = 'created';
     case Processing = 'processing';
-    case Processed = 'processed';
-    case Failed = 'failed';
     case Sent = 'sent';
+    case Failed = 'failed';
 }

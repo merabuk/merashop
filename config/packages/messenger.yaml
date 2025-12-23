@@ -1,48 +1,48 @@
 framework:
-    messenger:
-        failure_transport: failed
+  messenger:
+    failure_transport: failed
 
-        transports:
-            # https://symfony.com/doc/current/messenger.html#transport-configuration
-            async:
-                dsn: '%env(DOCTRINE_MESSENGER_TRANSPORT_DSN)%'
-                options:
-                    use_notify: true
-                    check_delayed_interval: 60000
-                retry_strategy:
-                    max_retries: 3
-                    multiplier: 2
-            failed: 'doctrine://default?queue_name=failed'
-            amqp_events:
-              dsn: '%env(AMQP_MESSENGER_TRANSPORT_DSN)%'
-              options:
-                auto_setup: true
-                confirm_timeout: 5
-                exchange:
-                  name: 'domain_events'
-                  type: 'topic'
-                queues:
-                  email_sender_module:
-                    binding_keys:
-                      - 'integration.users.registered.v1'
-            # sync: 'sync://'
+    transports:
+      # https://symfony.com/doc/current/messenger.html#transport-configuration
+      async:
+        dsn: '%env(DOCTRINE_MESSENGER_TRANSPORT_DSN)%'
+        options:
+          use_notify: true
+          check_delayed_interval: 60000
+        retry_strategy:
+          max_retries: 3
+          multiplier: 2
+      failed: 'doctrine://default?queue_name=failed'
+      amqp_events:
+        dsn: '%env(AMQP_MESSENGER_TRANSPORT_DSN)%'
+        options:
+          auto_setup: true
+          confirm_timeout: 5
+          exchange:
+            name: 'domain_events'
+            type: 'topic'
+          queues:
+            email_sender_module:
+              binding_keys:
+                - !php/enum App\Shared\Domain\Event\DomainEventNameEnum::UserRegistered->value
+      # sync: 'sync://'
 
-        default_bus: command.bus
+    default_bus: command.bus
 
-        buses:
-            command.bus:
-                middleware:
-                  - doctrine_transaction
-            query.bus:
-            event.bus:
-              middleware:
-                - 'App\Shared\Infrastructure\Messenger\Middleware\EventRoutingKeyMiddleware'
-            messenger.bus.default: []
+    buses:
+      command.bus:
+        middleware:
+          - doctrine_transaction
+      query.bus:
+      event.bus:
+        middleware:
+          - 'App\Shared\Infrastructure\Bus\Middleware\EventRoutingKeyMiddleware'
+      messenger.bus.default: [ ]
 
-        routing:
-            Symfony\Component\Mailer\Messenger\SendEmailMessage: async
-            Symfony\Component\Notifier\Message\ChatMessage: async
-            Symfony\Component\Notifier\Message\SmsMessage: async
+    routing:
+      Symfony\Component\Mailer\Messenger\SendEmailMessage: async
+      Symfony\Component\Notifier\Message\ChatMessage: async
+      Symfony\Component\Notifier\Message\SmsMessage: async
 
-            # Route your messages to the transports
-            App\Shared\Domain\Event\UserRegisteredSharedEvent: amqp_events
+      # Route your messages to the transports
+      App\Shared\Domain\Event\UserRegisteredSharedEvent: amqp_events
