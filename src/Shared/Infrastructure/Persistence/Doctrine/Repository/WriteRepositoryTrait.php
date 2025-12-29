@@ -20,7 +20,17 @@ trait WriteRepositoryTrait
         $em = $this->getEntityManager();
 
         if (null !== $id) {
-            $orm = $em->getReference(self::getEntityClass(), $id);
+            $stringId = (string) $id;
+
+            $orm = $em->getUnitOfWork()->tryGetById($stringId, self::getEntityClass());
+
+            if (!$orm) {
+                $orm = $em->find(self::getEntityClass(), $stringId);
+            }
+
+            if (!$orm) {
+                throw new \RuntimeException(sprintf('Entity %s with ID %s not found', self::getEntityClass(), $stringId));
+            }
 
             $this->mapper->mapToExistingOrm($domain, $orm);
         } else {

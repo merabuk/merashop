@@ -7,21 +7,19 @@ namespace App\Tests\Resource\Fixture\EmailSender;
 use App\EmailSender\Domain\Entity\OutboxEmail;
 use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;
 use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectException;
-use App\EmailSender\Infrastructure\Service\OutboxEmailFactory;
+use App\EmailSender\Domain\Exception\OutboxEmailAlreadyInProcessException;
+use App\EmailSender\Domain\Service\OutboxEmailFactoryInterface;
 use App\Shared\Domain\Service\TraceIdFactoryInterface;
 use App\Shared\Domain\ValueObject\TraceId;
 
 final readonly class OutboxEmailMother
 {
     public function __construct(
-        private OutboxEmailFactory $outboxEmailFactory,
+        private OutboxEmailFactoryInterface $outboxEmailFactory,
         private TraceIdFactoryInterface $traceIdFactory,
     ) {
     }
 
-    /**
-     * @throws InvalidEmailSenderValueObjectException
-     */
     public function createBaseEmail(
         string $to = 'test@example.com',
         string $subject = 'Subject',
@@ -42,7 +40,7 @@ final readonly class OutboxEmailMother
     }
 
     /**
-     * @throws InvalidEmailSenderValueObjectException
+     * @throws OutboxEmailAlreadyInProcessException
      */
     public function createLockedEmail(): OutboxEmail
     {

@@ -83,6 +83,16 @@ final class Status implements \Stringable
         return StatusEnum::Failed === $this->status;
     }
 
+    public function isFailedPermanently(): bool
+    {
+        return StatusEnum::FailedPermanently === $this->status;
+    }
+
+    public function isSent(): bool
+    {
+        return StatusEnum::Sent === $this->status;
+    }
+
     public function __toString(): string
     {
         return $this->value()->value;

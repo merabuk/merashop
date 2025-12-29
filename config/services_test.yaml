@@ -1,9 +1,8 @@
 services:
   _defaults:
     autowire: true
-
-  App\Shared\Infrastructure\Bus\CommandBus:
+    autoconfigure: true
     public: true
 
-  App\Shared\Infrastructure\Bus\QueryBus:
-    public: true
+  App\Tests\Resource\:
+    resource: '../tests/Resource/'

@@ -9,28 +9,39 @@ use App\EmailSender\Application\Command\SendOutboxEmail\SendOutboxEmailCommandHa
 use App\EmailSender\Domain\Repository\OutboxEmailReadRepositoryInterface;
 use App\EmailSender\Domain\Repository\OutboxEmailWriteRepositoryInterface;
 use App\EmailSender\Domain\Service\MailerServiceInterface;
+use App\Tests\Resource\Fixture\EmailSender\OutboxEmailMother;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 final class SendOutboxEmailCommandHandlerTest extends KernelTestCase
 {
-    public function testHandleIncrementsAttemptsOnMailerFailure(): void
+    private OutboxEmailMother $mother;
+    private OutboxEmailReadRepositoryInterface $readRepository;
+    private OutboxEmailWriteRepositoryInterface $writeRepository;
+
+    protected function setUp(): void
     {
         self::bootKernel();
+        $container = self::getContainer();
+
+        $this->mother = $container->get(OutboxEmailMother::class);
+        $this->readRepository = $container->get(OutboxEmailReadRepositoryInterface::class);
+        $this->writeRepository = $container->get(OutboxEmailWriteRepositoryInterface::class);
+    }
+
+    public function testHandleIncrementsAttemptsOnMailerFailure(): void
+    {
         $container = self::getContainer();
 
         $mailer = $this->createMock(MailerServiceInterface::class);
         $mailer->method('process')->willThrowException(new \Exception('SMTP Timeout'));
         $container->set(MailerServiceInterface::class, $mailer);
 
-        // 2. Создаем письмо в БД (через репозиторий или фикстуры)
-        $repository = $container->get(OutboxEmailWriteRepositoryInterface::class);
-        $email = $this->createAndSaveEmail($repository);
+        $email = $this->writeRepository->save($this->mother->createBaseEmail());
 
         $handler = $container->get(SendOutboxEmailCommandHandler::class);
         $handler(new SendOutboxEmailCommand($email->getId()->value()));
 
-        $updatedEmail = $container->get(OutboxEmailReadRepositoryInterface::class)
-            ->findById($email->getId()->value());
+        $updatedEmail = $this->readRepository->findById($email->getId()->value());
 
         $this->assertEquals(1, $updatedEmail->getAttempts()->value());
         $this->assertTrue($updatedEmail->getStatus()->isFailed());
