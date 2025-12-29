@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\Event;
 
-readonly class UserRegisteredSharedEvent implements DomainEventInterface
+use App\Shared\Domain\Bus\AsyncMessageInterface;
+
+readonly class UserRegisteredSharedEvent implements AsyncMessageInterface
 {
     public function __construct(
         public string $id,
@@ -13,8 +15,8 @@ readonly class UserRegisteredSharedEvent implements DomainEventInterface
     ) {
     }
 
-    public function getEventName(): DomainEventNameEnum
+    public function getRoutingKey(): string
     {
-        return DomainEventNameEnum::UserRegistered;
+        return SharedEventNameEnum::UserRegistered->value;
     }
 }

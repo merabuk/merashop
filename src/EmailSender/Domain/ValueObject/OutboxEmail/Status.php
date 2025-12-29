@@ -24,6 +24,11 @@ final class Status implements \Stringable
         return new self($status);
     }
 
+    public static function created(): self
+    {
+        return self::fromEnum(StatusEnum::Created);
+    }
+
     public static function processing(): self
     {
         return self::fromEnum(StatusEnum::Processing);
@@ -37,6 +42,11 @@ final class Status implements \Stringable
     public static function failed(): self
     {
         return self::fromEnum(StatusEnum::Failed);
+    }
+
+    public static function failedPermanently(): self
+    {
+        return self::fromEnum(StatusEnum::FailedPermanently);
     }
 
     /**

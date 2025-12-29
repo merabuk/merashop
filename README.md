@@ -45,7 +45,7 @@
 - **All tasks** (except `git_commit_message`):
 
   ```bash
-  php vendor/bin/grumphp run
+  php vendor/bin/grumphp run -n
   ```
 
 - **CS task** with progress bar:

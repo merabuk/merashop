@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Shared\Infrastructure\EventListener;
 
 use App\Shared\Domain\Service\TraceIdContextInterface;
-use App\Shared\Domain\Service\TraceIdGeneratorInterface;
+use App\Shared\Domain\Service\TraceIdFactoryInterface;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
@@ -12,12 +14,12 @@ final readonly class ConsoleTraceIdListener
 {
     public function __construct(
         private TraceIdContextInterface $context,
-        private TraceIdGeneratorInterface $traceIdGenerator,
+        private TraceIdFactoryInterface $traceIdGenerator,
     ) {
     }
 
     public function onConsoleCommand(ConsoleCommandEvent $event): void
     {
-        $this->context->set($this->traceIdGenerator->generate());
+        $this->context->set($this->traceIdGenerator->createNew());
     }
 }

@@ -10,5 +10,5 @@ interface TraceIdContextInterface
 {
     public function get(): TraceId;
 
-    public function set(string $traceId): void;
+    public function set(TraceId $traceId): void;
 }

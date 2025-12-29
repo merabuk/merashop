@@ -42,6 +42,34 @@ class OutboxEmail
     ) {
     }
 
+    public static function create(
+        Driver $driver,
+        From $from,
+        ?FromName $fromName,
+        To $to,
+        Subject $subject,
+        Body $body,
+        ?Payload $payload,
+        TraceId $traceId,
+    ): self {
+        return new self(
+            id: null,
+            status: Status::created(),
+            driver: $driver,
+            from: $from,
+            fromName: $fromName,
+            to: $to,
+            subject: $subject,
+            body: $body,
+            payload: $payload,
+            attempts: Attempts::initialize(),
+            traceId: $traceId,
+            scheduledAt: null,
+            lockedAt: null,
+            errorMessage: null
+        );
+    }
+
     /**
      * @throws OutboxEmailAlreadyInProcessException
      */
@@ -76,6 +104,17 @@ class OutboxEmail
         $this->lockedAt = null;
     }
 
+    /**
+     * @throws InvalidOutboxEmailErrorMessageException
+     */
+    public function markAsFailedPermanently(string $error): void
+    {
+        $this->status = Status::failedPermanently();
+        $this->errorMessage = ErrorMessage::fromString($error);
+        $this->scheduledAt = null;
+        $this->lockedAt = null;
+    }
+
     public function canBeProcessed(): bool
     {
         return ($this->status->isCreated() || $this->status->isFailed())
@@ -97,11 +136,6 @@ class OutboxEmail
         return $this->driver;
     }
 
-    public function getSubject(): Subject
-    {
-        return $this->subject;
-    }
-
     public function getFrom(): From
     {
         return $this->from;
@@ -115,6 +149,11 @@ class OutboxEmail
     public function getTo(): To
     {
         return $this->to;
+    }
+
+    public function getSubject(): Subject
+    {
+        return $this->subject;
     }
 
     public function getBody(): Body

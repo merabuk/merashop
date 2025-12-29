@@ -16,7 +16,7 @@ final class Version20251221134704 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql("CREATE TYPE outbox_email_status AS ENUM ('created', 'processing', 'sent', 'failed')");
+        $this->addSql("CREATE TYPE outbox_email_status AS ENUM ('created', 'processing', 'sent', 'failed', 'failed_permanently')");
         $this->addSql("CREATE TYPE outbox_email_driver AS ENUM ('log', 'smtp')");
 
         $this->addSql(

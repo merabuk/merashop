@@ -5,26 +5,34 @@ declare(strict_types=1);
 namespace App\Shared\Infrastructure\EventListener;
 
 use App\Shared\Domain\Service\TraceIdContextInterface;
-use App\Shared\Domain\Service\TraceIdGeneratorInterface;
+use App\Shared\Domain\Service\TraceIdFactoryInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 final readonly class HttpTraceIdListener
 {
+    public const string TRACE_ID_HEADER = 'X-Trace-Id';
+
     public function __construct(
         private TraceIdContextInterface $context,
-        private TraceIdGeneratorInterface $traceIdGenerator,
+        private TraceIdFactoryInterface $traceIdFactory,
     ) {
     }
 
     #[AsEventListener(event: RequestEvent::class, priority: 255)]
     public function onKernelRequest(RequestEvent $event): void
     {
-        if (!$event->isMainRequest()) return;
+        if (!$event->isMainRequest()) {
+            return;
+        }
 
         $request = $event->getRequest();
-        $traceId = $request->headers->get('X-Trace-Id') ?? $this->traceIdGenerator->generate();
+        $headerValue = $request->headers->get(self::TRACE_ID_HEADER);
+
+        $traceId = $headerValue
+            ? $this->traceIdFactory->createFromString($headerValue)
+            : $this->traceIdFactory->createNew();
 
         $this->context->set($traceId);
 
@@ -34,6 +42,6 @@ final readonly class HttpTraceIdListener
     #[AsEventListener(event: ResponseEvent::class)]
     public function onKernelResponse(ResponseEvent $event): void
     {
-        $event->getResponse()->headers->set('X-Trace-Id', $this->context->get()->value());
+        $event->getResponse()->headers->set(self::TRACE_ID_HEADER, $this->context->get()->value());
     }
 }

@@ -9,4 +9,9 @@ use App\EmailSender\Domain\Entity\OutboxEmail;
 interface OutboxEmailReadRepositoryInterface
 {
     public function findById(int $id): ?OutboxEmail;
+
+    /**
+     * @return array<int, OutboxEmail>
+     */
+    public function findReadyToProcess(int $limit): array;
 }

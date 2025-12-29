@@ -14,4 +14,5 @@ enum StatusEnum: string
     case Processing = 'processing';
     case Sent = 'sent';
     case Failed = 'failed';
+    case FailedPermanently = 'failed_permanently';
 }

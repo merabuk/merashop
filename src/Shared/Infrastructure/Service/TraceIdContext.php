@@ -4,41 +4,32 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Service;
 
-use App\Shared\Domain\Exception\InvalidTraceIdException;
 use App\Shared\Domain\Service\TraceIdContextInterface;
-use App\Shared\Domain\Service\TraceIdGeneratorInterface;
+use App\Shared\Domain\Service\TraceIdFactoryInterface;
 use App\Shared\Domain\ValueObject\TraceId;
+use Symfony\Contracts\Service\ResetInterface;
 
-final class TraceIdContext implements TraceIdContextInterface
+final class TraceIdContext implements TraceIdContextInterface, ResetInterface
 {
     private ?TraceId $current = null;
 
     public function __construct(
-        private readonly TraceIdGeneratorInterface $traceIdGenerator,
+        private readonly TraceIdFactoryInterface $traceIdFactory,
     ) {
     }
 
-    /**
-     * @throws InvalidTraceIdException
-     */
     public function get(): TraceId
     {
-        return $this->current ??= $this->makeTraceId($this->traceIdGenerator->generate());
+        return $this->current ??= $this->traceIdFactory->createNew();
     }
 
-    /**
-     * @throws InvalidTraceIdException
-     */
-    public function set(string $traceId): void
+    public function set(TraceId $traceId): void
     {
-        $this->current = $this->makeTraceId($traceId);
+        $this->current = $traceId;
     }
 
-    /**
-     * @throws InvalidTraceIdException
-     */
-    private function makeTraceId(string $traceId): TraceId
+    public function reset(): void
     {
-        return TraceId::fromString($traceId);
+        $this->current = null;
     }
 }

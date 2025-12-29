@@ -24,7 +24,17 @@ framework:
           queues:
             email_sender_module:
               binding_keys:
-                - !php/enum App\Shared\Domain\Event\DomainEventNameEnum::UserRegistered->value
+                - !php/enum App\Shared\Domain\Event\SharedEventNameEnum::UserRegistered->value
+      amqp_internal:
+        dsn: '%env(AMQP_MESSENGER_TRANSPORT_DSN)%'
+        options:
+          exchange:
+            name: 'internal_tasks'
+            type: 'direct'
+          queues:
+            email_processor:
+              binding_keys:
+                - !php/enum App\EmailSender\Domain\Enum\EmailSenderQueueEnum::EmailProcessor->value
       # sync: 'sync://'
 
     default_bus: command.bus
@@ -33,9 +43,12 @@ framework:
       command.bus:
         middleware:
           - doctrine_transaction
+          - 'App\Shared\Infrastructure\Bus\TraceId\TraceIdMiddleware'
+          - 'App\Shared\Infrastructure\Bus\Middleware\EventRoutingKeyMiddleware'
       query.bus:
       event.bus:
         middleware:
+          - 'App\Shared\Infrastructure\Bus\TraceId\TraceIdMiddleware'
           - 'App\Shared\Infrastructure\Bus\Middleware\EventRoutingKeyMiddleware'
       messenger.bus.default: [ ]
 
@@ -46,3 +59,5 @@ framework:
 
       # Route your messages to the transports
       App\Shared\Domain\Event\UserRegisteredSharedEvent: amqp_events
+
+      App\EmailSender\Application\Command\SendOutboxEmail\SendOutboxEmailCommand: amqp_internal

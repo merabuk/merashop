@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Bus\Middleware;
 
-use App\Shared\Domain\Event\DomainEventInterface;
+use App\Shared\Domain\Bus\AsyncMessageInterface;
 use Symfony\Component\Messenger\Bridge\Amqp\Transport\AmqpStamp;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Middleware\MiddlewareInterface;
@@ -16,9 +16,8 @@ class EventRoutingKeyMiddleware implements MiddlewareInterface
     {
         $message = $envelope->getMessage();
 
-        if ($message instanceof DomainEventInterface) {
-            $routingKey = $message->getEventName()->value;
-            $envelope = $envelope->with(new AmqpStamp($routingKey));
+        if ($message instanceof AsyncMessageInterface) {
+            $envelope = $envelope->with(new AmqpStamp($message->getRoutingKey()));
         }
 
         return $stack->next()->handle($envelope, $stack);
