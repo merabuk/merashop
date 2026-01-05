@@ -9,9 +9,11 @@ use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailErrorMessageE
 use App\EmailSender\Domain\Repository\OutboxEmailReadRepositoryInterface;
 use App\EmailSender\Domain\Repository\OutboxEmailWriteRepositoryInterface;
 use App\EmailSender\Domain\Service\MailerServiceInterface;
+use App\EmailSender\Domain\Service\OutboxRetryPolicy;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler(bus: BusNameEnum::Command->value)]
@@ -22,10 +24,13 @@ readonly class SendOutboxEmailCommandHandler implements CommandHandlerInterface
         private OutboxEmailWriteRepositoryInterface $outboxEmailWriteRepository,
         private MailerServiceInterface $mailer,
         private LoggerInterface $logger,
+        private OutboxRetryPolicy $retryPolicy,
+        private ClockInterface $clock,
     ) {
     }
 
     /**
+     * @throws \DateMalformedStringException
      * @throws InvalidOutboxEmailAttemptsException
      * @throws InvalidOutboxEmailErrorMessageException
      */
@@ -44,27 +49,27 @@ readonly class SendOutboxEmailCommandHandler implements CommandHandlerInterface
         }
 
         try {
-            $email->lock(new \DateTimeImmutable());
+            $email->lock($this->clock->now());
             $email = $this->outboxEmailWriteRepository->save($email);
 
             $this->mailer->process($email);
 
             $email->markAsSent();
         } catch (\Throwable $e) {
-            $attempts = $email->getAttempts()->value();
-
-            if ($attempts >= 5) {
+            if ($this->retryPolicy->shouldRetry($email->getAttempts())) {
+                $nextAttemptAt = $this->retryPolicy->calculateNextAttemptAt(
+                    attempts: $email->getAttempts(),
+                    now: $this->clock->now()
+                );
+                $email->markAsFailed(error: $e->getMessage(), nextAttemptAt: $nextAttemptAt);
+            } else {
                 $this->logger->critical('Email sending failed permanently', [
                     'id' => $email->getId()->value(),
                     'trace_id' => $email->getTraceId()?->value(),
                     'error' => $e->getMessage(),
                 ]);
 
-                $email->markAsFailedPermanently($e->getMessage());
-            } else {
-                $delay = $attempts ** 2;
-                $nextAttempt = new \DateTimeImmutable("+{$delay} minutes");
-                $email->markAsFailed($e->getMessage(), $nextAttempt);
+                $email->markAsFailedPermanently(error: $e->getMessage());
             }
         } finally {
             $this->outboxEmailWriteRepository->save($email);

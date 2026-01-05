@@ -42,25 +42,25 @@
 
 **Manual execution examples in container:**
 
-- **All tasks** (except `git_commit_message`):
+- **All tasks**:
 
   ```bash
   php vendor/bin/grumphp run -n
   ```
 
-- **CS task** with progress bar:
+- **CS task** with the progress bar:
 
   ```bash
   php vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --ansi --no-interaction
   ```
 
-- **PHPStan task** with progress bar:
+- **PHPStan task** with the progress bar:
 
   ```bash
   php vendor/bin/phpstan analyse --configuration=phpstan.dist.neon --memory-limit=-1 --no-ansi --no-interaction
   ```
 
-- **Deptrac tasks** with progress bar:
+- **Deptrac tasks** with the progress bar:
 
   ```bash
   php vendor/bin/deptrac analyse --config-file=deptrac.yaml

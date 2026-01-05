@@ -136,7 +136,7 @@ class OutboxEmailTest extends TestCase
         return $email;
     }
 
-    private function createBaseEmail(): OutboxEmail
+    private function createBaseEmail(int $attempts = 0): OutboxEmail
     {
         try {
             return new OutboxEmail(
@@ -149,7 +149,7 @@ class OutboxEmailTest extends TestCase
                 subject: Subject::fromString('Test subject'),
                 body: Body::fromString('Test body'),
                 payload: null,
-                attempts: Attempts::fromInt(0),
+                attempts: Attempts::fromInt($attempts),
                 traceId: null,
                 scheduledAt: null,
                 lockedAt: null,
