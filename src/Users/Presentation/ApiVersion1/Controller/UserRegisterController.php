@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Users\Infrastructure\Presentation\ApiVersion1\Controller;
+namespace App\Users\Presentation\ApiVersion1\Controller;
 
 use App\Shared\Application\Command\CommandBusInterface;
 use App\Users\Application\Command\CreateUser\CreateUserCommand;
-use App\Users\Infrastructure\Presentation\ApiVersion1\Request\UserRegisterRequest;
+use App\Users\Presentation\ApiVersion1\Request\UserRegisterRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

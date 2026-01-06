@@ -5,7 +5,7 @@ app_shared_api_v1:
   type: attribute
 
 users_api_v1:
-  resource: '../src/Users/Infrastructure/Presentation/config/routes.yaml'
+  resource: '../src/Users/Presentation/config/routes.yaml'
 
 kernel:
   resource:

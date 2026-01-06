@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Shared\Infrastructure\Presentation\ApiVersion1\Controller;
+namespace App\Shared\Presentation\ApiVersion1\Controller;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Users\Infrastructure\Presentation\ApiVersion1\Request;
+namespace App\Users\Presentation\ApiVersion1\Request;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
