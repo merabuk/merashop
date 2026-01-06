@@ -10,6 +10,7 @@ The project is built as a **Modular Monolith** following **Domain-Driven Design 
 - **Isolation**: Each module must be self-contained. Direct calls between modules are strictly forbidden.
 - **Communication**: Inter-module communication is handled exclusively via the `Shared` module or through **Events** (Asynchronous or Synchronous via Symfony Messenger).
 - **Enforcement**: **Deptrac** is used to monitor and enforce layer boundaries and dependency rules.
+- **Module Independence**: Every module must be independent. The `Shared` layer is the only exception, providing reusable components. However, `Shared` must only contain primitive logic, base interfaces, and cross-cutting concerns (e.g., `TraceId`, `ValueObjects` used by multiple modules) to maintain strict decoupling.
 
 ## 2. Directory Structure
 
@@ -35,10 +36,14 @@ Every module within `src/` must follow this standardized structure:
 ### Domain Layer
 - **Pure PHP**: No dependencies on Symfony, Doctrine, or any other framework/library.
 - **Independence**: The domain must remain agnostic of how it is persisted or triggered.
+- **Service Interfaces**:
+  - Any service that interacts with infrastructure (API, DB, Mailer, etc.) must have an interface in the `Domain` layer and its implementation in the `Infrastructure` layer.
+  - **Exception**: Simple stateless services, pure logic helpers, or validators (e.g., `StringHelper`, `StringValidator`) located in `Shared` or `Domain` may exist as final classes without an interface, provided they have no external dependencies.
+  - If a service is likely to be mocked in unit tests of other components, prefer using an interface.
 
 ### Persistence & Mapping
-- **Mapping Location**: Doctrine mapping must reside strictly within `Infrastructure/.../Mapping` or via Infrastructure-specific entities (e.g., `Orm*` classes).
-- **Explicit Definitions**: Fields must be explicitly listed. Avoid using attributes or XML inside the Domain layer.
+- **Mapping Location**: Doctrine mapping must reside strictly within `src/<ModuleName>/Infrastructure/Persistence/.../Mapping` (XML/PHP) OR within Infrastructure-specific entities (e.g., `Orm*` classes) using PHP attributes.
+- **Explicit Definitions**: Avoid using attributes or XML inside the Domain layer. Attributes are permitted only in the Infrastructure layer for ORM entities.
 
 ### Modern PHP
 - **Strict Typing**: `declare(strict_types=1);` is mandatory in every file.
@@ -59,6 +64,11 @@ Every module within `src/` must follow this standardized structure:
 - **Unit Tests**: Focus on the `Domain` layer (logic, value objects, entities).
 - **Integration Tests**: Focus on `Infrastructure` (Doctrine mapping, repository implementations, external adapters).
 - **Application/Functional Tests**: End-to-end scenario testing via API endpoints or Handlers to verify business use cases.
+
+**Mapper Testing**: Every Mapper class in the `Infrastructure` layer must have an `Integration Test`. This test must verify:
+- `toDoctrineOrm`: Correct conversion of all Domain fields to ORM properties.
+- `fromDoctrineOrm`: Correct restoration of the Domain object (including VO) from the ORM state
+- `mapToExistingOrm`: Correct update of an existing ORM entity without losing data. *Note: These tests should use real data to ensure no field is forgotten.*
 
 ## 6. AI Interaction Rules
 

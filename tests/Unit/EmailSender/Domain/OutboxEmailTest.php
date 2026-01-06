@@ -5,6 +5,9 @@ namespace App\Tests\Unit\EmailSender\Domain;
 use App\EmailSender\Domain\Entity\OutboxEmail;
 use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;
 use App\EmailSender\Domain\Enum\OutboxEmail\StatusEnum;
+use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectException;
+use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailAttemptsException;
+use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailErrorMessageException;
 use App\EmailSender\Domain\Exception\OutboxEmailAlreadyInProcessException;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Attempts;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Body;
@@ -15,27 +18,44 @@ use App\EmailSender\Domain\ValueObject\OutboxEmail\Status;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Subject;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\To;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Clock\MockClock;
 
 class OutboxEmailTest extends TestCase
 {
+    private MockClock $clock;
+
+    protected function setUp(): void
+    {
+        $this->clock = new MockClock('2024-01-01 10:00:00');
+    }
+
+    /**
+     * @throws OutboxEmailAlreadyInProcessException
+     */
     public function testSuccessfulLock(): void
     {
         $email = $this->createBaseEmail();
 
-        $email->lock(new \DateTimeImmutable());
+        $email->lock($this->clock->now());
 
         $this->assertTrue($email->getStatus()->isProcessing());
         $this->assertNotNull($email->getLockedAt());
     }
 
+    /**
+     * @throws OutboxEmailAlreadyInProcessException
+     */
     public function testCannotLockAlreadyProcessingEmail(): void
     {
         $email = $this->createLockedEmail();
 
         $this->expectException(OutboxEmailAlreadyInProcessException::class);
-        $email->lock(new \DateTimeImmutable());
+        $email->lock($this->clock->now());
     }
 
+    /**
+     * @throws OutboxEmailAlreadyInProcessException
+     */
     public function testSuccessfulSentLockedEmail(): void
     {
         $email = $this->createLockedEmail();
@@ -48,13 +68,18 @@ class OutboxEmailTest extends TestCase
         $this->assertNull($email->getErrorMessage());
     }
 
+    /**
+     * @throws InvalidOutboxEmailAttemptsException
+     * @throws InvalidOutboxEmailErrorMessageException
+     * @throws OutboxEmailAlreadyInProcessException
+     */
     public function testMarkEmailAsFailed(): void
     {
         $email = $this->createLockedEmail();
 
         $error = 'Error message text';
-        $date = new \DateTimeImmutable();
-        $format = \DateTimeImmutable::ATOM;
+        $date = $this->clock->now();
+        $format = $date::ATOM;
 
         $email->markAsFailed(
             error: $error,
@@ -71,6 +96,10 @@ class OutboxEmailTest extends TestCase
         $this->assertNull($email->getLockedAt());
     }
 
+    /**
+     * @throws InvalidOutboxEmailErrorMessageException
+     * @throws OutboxEmailAlreadyInProcessException
+     */
     public function testMarkEmailAsFailedPermanently(): void
     {
         $email = $this->createLockedEmail();
@@ -86,6 +115,11 @@ class OutboxEmailTest extends TestCase
         $this->assertNull($email->getLockedAt());
     }
 
+    /**
+     * @throws InvalidOutboxEmailAttemptsException
+     * @throws InvalidOutboxEmailErrorMessageException
+     * @throws OutboxEmailAlreadyInProcessException
+     */
     public function testEmailCanBeProcessed(): void
     {
         $createdEmail = $this->createBaseEmail();
@@ -101,6 +135,9 @@ class OutboxEmailTest extends TestCase
         $this->assertFalse($failedPermanently->canBeProcessed());
     }
 
+    /**
+     * @throws OutboxEmailAlreadyInProcessException
+     */
     private function createSentEmail(): OutboxEmail
     {
         $email = $this->createLockedEmail();
@@ -109,17 +146,26 @@ class OutboxEmailTest extends TestCase
         return $email;
     }
 
+    /**
+     * @throws InvalidOutboxEmailAttemptsException
+     * @throws InvalidOutboxEmailErrorMessageException
+     * @throws OutboxEmailAlreadyInProcessException
+     */
     private function createFailedEmail(): OutboxEmail
     {
         $email = $this->createLockedEmail();
         $email->markAsFailed(
             error: 'Error message text',
-            nextAttemptAt: new \DateTimeImmutable(),
+            nextAttemptAt: $this->clock->now(),
         );
 
         return $email;
     }
 
+    /**
+     * @throws InvalidOutboxEmailErrorMessageException
+     * @throws OutboxEmailAlreadyInProcessException
+     */
     private function createFailedPermanentlyEmail(): OutboxEmail
     {
         $email = $this->createLockedEmail();
@@ -128,10 +174,13 @@ class OutboxEmailTest extends TestCase
         return $email;
     }
 
+    /**
+     * @throws OutboxEmailAlreadyInProcessException
+     */
     private function createLockedEmail(): OutboxEmail
     {
         $email = $this->createBaseEmail();
-        $email->lock(new \DateTimeImmutable());
+        $email->lock($this->clock->now());
 
         return $email;
     }
@@ -155,8 +204,8 @@ class OutboxEmailTest extends TestCase
                 lockedAt: null,
                 errorMessage: null,
             );
-        } catch (\Throwable $e) {
-            throw new \RuntimeException($e->getMessage());
+        } catch (InvalidEmailSenderValueObjectException $e) {
+            throw new \RuntimeException(sprintf('Invalid email sender value object. Error: %s', $e->getMessage()));
         }
     }
 }

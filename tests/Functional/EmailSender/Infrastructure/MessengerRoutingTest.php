@@ -17,10 +17,11 @@ final class MessengerRoutingTest extends KernelTestCase
     public function testCommandHasCorrectRoutingStamp(): void
     {
         self::bootKernel();
+        $fakeId = 123;
 
         $middleware = self::getContainer()->get(EventRoutingKeyMiddleware::class);
 
-        $command = new SendOutboxEmailCommand(123);
+        $command = new SendOutboxEmailCommand($fakeId);
         $envelope = new Envelope($command);
 
         $envelope = $middleware->handle($envelope, $this->createMockStack());

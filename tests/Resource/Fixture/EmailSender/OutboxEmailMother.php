@@ -11,12 +11,14 @@ use App\EmailSender\Domain\Exception\OutboxEmailAlreadyInProcessException;
 use App\EmailSender\Domain\Service\OutboxEmailFactoryInterface;
 use App\Shared\Domain\Service\TraceIdFactoryInterface;
 use App\Shared\Domain\ValueObject\TraceId;
+use Symfony\Component\Clock\ClockInterface;
 
 final readonly class OutboxEmailMother
 {
     public function __construct(
         private OutboxEmailFactoryInterface $outboxEmailFactory,
         private TraceIdFactoryInterface $traceIdFactory,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -42,16 +44,17 @@ final readonly class OutboxEmailMother
     /**
      * @throws OutboxEmailAlreadyInProcessException
      */
-    public function createLockedEmail(): OutboxEmail
+    public function createLockedEmail(?\DateTimeImmutable $lockedAt = null): OutboxEmail
     {
         $email = $this->createBaseEmail();
-        $email->lock(new \DateTimeImmutable());
+        $email->lock($lockedAt ?? $this->clock->now());
 
         return $email;
     }
 
     /**
      * @throws InvalidEmailSenderValueObjectException
+     * @throws \DateMalformedStringException
      */
     public function createFailedEmail(): OutboxEmail
     {
@@ -59,7 +62,7 @@ final readonly class OutboxEmailMother
         $minutes = $email->getAttempts()->value() ** 2;
         $email->markAsFailed(
             error: 'Connection timeout',
-            nextAttemptAt: new \DateTimeImmutable("+{$minutes} minutes")
+            nextAttemptAt: $this->clock->now()->modify("+{$minutes} minutes")
         );
 
         return $email;
