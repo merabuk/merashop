@@ -35,10 +35,10 @@
 
 **Enabled GrumPHP tasks:**
 
-1. GrumPHP :octocat: [GitHub](https://github.com/phpro/grumphp)
-2. [CS Fixer](https://cs.symfony.com/)[GitHub](https://github.com/PHP-CS-Fixer/PHP-CS-Fixer)
-3. [PHPStan](https://phpstan.org/user-guide/getting-started)[GitHub](https://github.com/phpstan/phpstan)
-4. [Deptrac](https://deptrac.github.io/deptrac/)[GitHub](https://github.com/deptrac/deptrac)
+1. GrumPHP [:octocat:](https://github.com/phpro/grumphp)
+2. [CS Fixer](https://cs.symfony.com/) [:octocat:](https://github.com/PHP-CS-Fixer/PHP-CS-Fixer)
+3. [PHPStan](https://phpstan.org/user-guide/getting-started) [:octocat:](https://github.com/phpstan/phpstan)
+4. [Deptrac](https://deptrac.github.io/deptrac/) [:octocat:](https://github.com/deptrac/deptrac)
 
 **Manual execution examples in container:**
 
