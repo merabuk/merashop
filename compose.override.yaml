@@ -3,8 +3,6 @@ services:
   nginx:
     platform: ${PLATFORM_ARCHITECTURE:-linux/amd64}
     build:
-      args:
-        APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
       context: .
       dockerfile: ./docker/nginx/Dockerfile
       tags:
@@ -15,8 +13,6 @@ services:
   app:
     platform: ${PLATFORM_ARCHITECTURE:-linux/amd64}
     build:
-      args:
-        APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
       context: .
       dockerfile: ./docker/app/Dockerfile
       target: ${APP_RUNTIME_ENV}

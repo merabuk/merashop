@@ -71,8 +71,9 @@ services:
         reservations:
           cpus: '0.25'
           memory: 100M
-    env_file:
-      - .env
+    environment:
+      APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
+      PHP_CGI_PASS: ${PHP_CGI_PASS}
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost/health_check || exit 1" ]
       retries: 3
@@ -107,11 +108,11 @@ services:
         reservations:
           cpus: '0.5'
           memory: 350M
-    env_file:
-      - .env
     environment:
       PHP_IDE_CONFIG: serverName=Docker
       STATIC_PHP_FPM_POOL_WORKERS: 5
+      APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
+      PHP_CGI_PASS: ${PHP_CGI_PASS}
     healthcheck:
       test: [ "CMD-SHELL", "./docker/app/shell/php-fpm-healthcheck.sh || exit 1" ]
       retries: 3
