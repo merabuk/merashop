@@ -22,15 +22,10 @@ services:
       - pgsql
     restart: on-failure
 
-#  pgsql:
-#    ports:
-#      - "5432"
-#
-#  mailer:
-#    image: axllent/mailpit
-#    ports:
-#      - "1025"
-#      - "8025"
-#    environment:
-#      MP_SMTP_AUTH_ACCEPT_ANY: 1
-#      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+  filebeat:
+    platform: ${PLATFORM_ARCHITECTURE:-linux/amd64}
+    build:
+      context: ./docker/filebeat
+      dockerfile: ./Dockerfile
+      tags:
+        - merashop/filebeat:latest

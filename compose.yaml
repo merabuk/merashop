@@ -74,6 +74,10 @@ services:
     environment:
       APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
       PHP_CGI_PASS: ${PHP_CGI_PASS}
+      APP_WEB_DOMAIN: ${APP_WEB_DOMAIN}
+      APP_API_DOMAIN: ${APP_API_DOMAIN}
+      APP_ADMIN_API_DOMAIN: ${APP_ADMIN_API_DOMAIN}
+      APP_SOURCES_DOMAIN: ${APP_SOURCES_DOMAIN}
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost/health_check || exit 1" ]
       retries: 3
@@ -139,6 +143,49 @@ services:
     volumes:
       - rabbitmq:/var/lib/rabbitmq
 
+  elasticsearch:
+    image: elastic/elasticsearch:9.2.3
+    environment:
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+      node.name: es01
+      discovery.type: 'single-node'
+      xpack.security.enabled: ${ELASTIC_XPACK_SECURITY_ENABLED}
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    networks:
+      - merashop-network
+    ports:
+      - ${ELASTIC_FORWARD_PORT}:9200
+    volumes:
+      -  elasticsearch:/usr/share/elasticsearch/data
+
+  kibana:
+    image: elastic/kibana:9.2.3
+    environment:
+      ELASTICSEARCH_HOSTS: ${KIBANA_ELASTIC_HOST}
+      ELASTICSEARCH_USERNAME: ${KIBANA_USERNAME}
+      ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD}
+    networks:
+      - merashop-network
+    ports:
+      - ${KIBANA_FOWARD_PORT}:5601
+
+  filebeat:
+    image: merashop/filebeat:latest
+    user: root
+    environment:
+      ELASTIC_HOSTS: ${ELASTIC_HOSTS}
+      ELASTIC_USER: ${ELASTIC_USER}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+      KIBANA_HOST: ${KIBANA_HOST}
+    networks:
+      - merashop-network
+    volumes:
+      - ./var/log:/var/log/app:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - elasticsearch
+
 networks:
   merashop-network:
 
@@ -148,4 +195,6 @@ volumes:
   pgsql-test:
     driver: local
   rabbitmq:
+    driver: local
+  elasticsearch:
     driver: local

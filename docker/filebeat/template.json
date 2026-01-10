@@ -1,0 +1,44 @@
+{
+    "index_patterns": ["filebeat-*"],
+    "template": {
+        "settings": {
+            "index.lifecycle.name": "filebeat",
+            "index.number_of_shards": 1,
+            "index.number_of_replicas": 0,
+            "index.refresh_interval": "5s"
+        },
+        "mappings": {
+            "dynamic_templates": [
+                {
+                    "strings_as_keyword": {
+                        "match_mapping_type": "string",
+                        "mapping": { "type": "keyword", "ignore_above": 1024 }
+                    }
+                }
+            ],
+            "properties": {
+                "@timestamp": { "type": "date" },
+                "datetime": { "type": "date" },
+                "message": { "type": "text" },
+                "level": { "type": "long" },
+                "level_name": { "type": "keyword" },
+                "channel": { "type": "keyword" },
+                "context": { "type": "object", "dynamic": true },
+                "extra": {
+                    "type": "object",
+                    "dynamic": true,
+                    "properties": {
+                        "traceId": { "type": "keyword" }
+                    }
+                },
+                "log": { "type": "object" },
+                "agent": { "type": "object" },
+                "ecs": { "type": "object" },
+                "host": { "type": "object" },
+                "input": { "type": "object" }
+            }
+        }
+    },
+    "priority": 250,
+    "data_stream": {}
+}

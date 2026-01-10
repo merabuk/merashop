@@ -2,7 +2,7 @@
 
 Online store on Symfony.
 
-## Структура проекта
+## Project structure
 
 The project is organized using modular architecture (Modular Monolith) in the directory `src/`:
 - `EmailSender` - module for sending notifications.
@@ -14,14 +14,17 @@ Each module follows the principles of DDD (Domain-Driven Design) and has a clear
 - `Application` - services and commands.
 - `Infrastructure` - implementation of interfaces, databases, external APIs.
 - `Presentation` - controllers and CLI commands.
+- `/config/modules/*` - module-specific configurations collected by `Kernel.php`.
 
 ## Table of Contents
 
 - [Quick Start](#quick-start)
-  - [Preparing the environment](#1-preparing-the-environment) 
-  - [Project deployment](#2-project-deployment)
-  - [Access to the application](#3-access-to-the-application)
+    - [Preparing the environment](#1-preparing-the-environment)
+    - [Project deployment](#2-project-deployment)
+    - [Access to the application](#3-access-to-the-application)
 - [Development Workflow](#development-workflow)
+- [Infrastructure & Docker](#infrastructure--docker)
+- [Observability](#observability)
 
 ## Quick Start
 
@@ -92,3 +95,32 @@ This command:
   php vendor/bin/deptrac analyse --config-file=deptrac.yaml
   php vendor/bin/deptrac analyse --config-file=deptrac-modules.yaml
   ```
+
+## Infrastructure & Docker
+
+The project uses custom Docker images for key services to ensure consistency across different environments and to fix specific infrastructure issues (like permissions or pre-bundled configs).
+
+### Custom Images Principles
+- **Versioning**: We use fixed versions for base images to prevent "it works on my machine" issues.
+- **Caching**: Dockerfiles are optimized for build speed by layering dependencies separately from the application code.
+- **Portability**: All configuration files required for a service to run are bundled within the image or managed via environment variables.
+
+For more details on infrastructure standards, see [AGENTS.md](./AGENTS.md#7-infrastructure--docker).
+
+## Observability
+
+The project uses ELK stack (Elasticsearch, Logstash/Filebeat, Kibana) for logging.
+
+### Access to logs
+- Kibana: [localhost:5601](http://localhost:5601)
+
+### Local Development and Testing
+To test the production-like logging locally:
+1. Ensure the `config/packages/monolog.yaml` file `when@dev.monolog.handlers.main.formatter` option has `monolog.formatter.json` value.
+2. Ensure the `filebeat` container is running.
+3. Check logs in Kibana. By default, Symfony logs to `var/log/dev.log`, and Filebeat reads it.
+
+### Features
+- **TraceId**: Each request is assigned a unique `TraceId`, which is automatically added to all log entries via `TraceIdProcessor`. This allows tracing the entire lifecycle of a request across different modules.
+- **JSON Logging**: In the `prod` environment, logs are formatted as JSON for easy ingestion by Filebeat.
+- **Dedicated Channels**: Modules use separate logging channels (e.g., `email_sender`) to simplify filtering.

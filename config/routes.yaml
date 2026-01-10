@@ -1,7 +1,7 @@
 app_shared_api_v1:
   resource:
-    path: ../src/Shared/Infrastructure/Presentation/ApiVersion1/Controller/
-    namespace: App\Shared\Infrastructure\Presentation\ApiVersion1\Controller
+    path: ../src/Shared/Presentation/ApiVersion1/Controller/
+    namespace: App\Shared\Presentation\ApiVersion1\Controller
   type: attribute
 
 users_api_v1:
