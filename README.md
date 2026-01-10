@@ -9,8 +9,18 @@ The project is organized using modular architecture (Modular Monolith) in the di
 - `Users` - user management module (registration, authorization).
 - `Shared` - common components used between modules (Domain, Infrastructure, Application).
 
+### Domain Structure
+
 Each module follows the principles of DDD (Domain-Driven Design) and has a clear separation of layers:
 - `Domain` - business logic and entities.
+    - **Value Objects (VO)**: Use VO for all properties to ensure type safety and validation.
+        - Model-specific VOs are grouped in subfolders named after their entities (e.g., `ValueObject/UserAccount/EmailAddress.php`).
+        - Every VO must have a specific domain exception.
+    - **Exceptions**: Each module follows a strict exception hierarchy:
+        - `Throwable{Module}Exception` (interface) - module marker.
+        - `{Module}DomainException` (abstract class) - base domain exception.
+        - `Invalid{Module}ValueObjectException` (abstract class) - base exception for all VOs in the module.
+        - Specific VO exceptions (e.g., `InvalidUserAccountEmailException`) must inherit from the base VO exception.
 - `Application` - services and commands.
 - `Infrastructure` - implementation of interfaces, databases, external APIs.
 - `Presentation` - controllers and CLI commands.

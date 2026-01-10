@@ -2,7 +2,7 @@
 
 namespace App\Shared\Domain\Exception;
 
-class IntegerIsNotUnsignedException extends InvalidArgumentException
+final class IntegerIsNotUnsignedException extends InvalidArgumentException
 {
     public static function becauseValueIsNotUnsigned(): self
     {

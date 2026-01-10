@@ -6,7 +6,7 @@ namespace App\EmailSender\Domain\Exception\OutboxEmail;
 
 use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectException;
 
-class InvalidOutboxEmailStatusException extends InvalidEmailSenderValueObjectException
+final class InvalidOutboxEmailStatusException extends InvalidEmailSenderValueObjectException
 {
     /**
      * @param string[] $availableValues

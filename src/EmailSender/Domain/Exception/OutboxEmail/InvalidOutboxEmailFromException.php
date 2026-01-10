@@ -7,7 +7,7 @@ namespace App\EmailSender\Domain\Exception\OutboxEmail;
 use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectException;
 use App\Shared\Domain\Exception\InvalidEmailAddressException;
 
-class InvalidOutboxEmailFromException extends InvalidEmailSenderValueObjectException
+final class InvalidOutboxEmailFromException extends InvalidEmailSenderValueObjectException
 {
     public static function fromBaseException(InvalidEmailAddressException $baseException): self
     {

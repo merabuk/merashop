@@ -6,6 +6,6 @@ namespace App\EmailSender\Domain\Exception\OutboxEmail;
 
 use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectException;
 
-class InvalidOutboxEmailAttemptsException extends InvalidEmailSenderValueObjectException
+final class InvalidOutboxEmailAttemptsException extends InvalidEmailSenderValueObjectException
 {
 }

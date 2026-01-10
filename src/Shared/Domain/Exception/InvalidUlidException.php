@@ -2,7 +2,7 @@
 
 namespace App\Shared\Domain\Exception;
 
-class InvalidUlidException extends InvalidArgumentException
+final class InvalidUlidException extends InvalidArgumentException
 {
     public static function becauseItIsNotAValidUlid(string $invalidValue): self
     {

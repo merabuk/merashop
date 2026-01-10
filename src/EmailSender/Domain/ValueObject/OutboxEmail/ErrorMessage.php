@@ -19,7 +19,7 @@ final class ErrorMessage implements \Stringable
     public function __construct(string $message)
     {
         $trimmed = mb_trim($message);
-        if ('' === $trimmed) {
+        if (empty($trimmed)) {
             throw new InvalidOutboxEmailErrorMessageException('Email error message cannot be empty');
         }
 

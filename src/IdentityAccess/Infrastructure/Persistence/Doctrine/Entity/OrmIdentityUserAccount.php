@@ -1,0 +1,43 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity;
+
+use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
+use App\IdentityAccess\Domain\ValueObject\UserAccount\PasswordHash;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Bridge\Doctrine\Types\UlidType;
+
+#[ORM\Entity]
+#[ORM\Table(name: 'identity_access_user_accounts')]
+class OrmIdentityUserAccount
+{
+    use TimestampableEntity;
+    use SoftDeleteableEntity;
+
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: Types::BIGINT)]
+    public private(set) ?int $id = null;
+
+    #[ORM\Column(type: UlidType::NAME, unique: true)]
+    public ?string $ulid = null;
+
+    #[ORM\Column(type: Types::STRING, length: EmailAddress::MAX_LENGTH, unique: true)]
+    public ?string $email = null;
+
+    #[ORM\Column(type: Types::STRING, length: PasswordHash::MAX_LENGTH)]
+    public ?string $passwordHash = null;
+
+    #[ORM\Column(type: Types::JSONB)]
+    public array $roles = [];
+
+    public function setId(?int $value): void
+    {
+        $this->id = $value;
+    }
+}

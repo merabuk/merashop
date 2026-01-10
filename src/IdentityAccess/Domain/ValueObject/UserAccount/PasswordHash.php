@@ -1,0 +1,64 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\IdentityAccess\Domain\ValueObject\UserAccount;
+
+use App\IdentityAccess\Domain\Exception\UserAccount\InvalidUserAccountPasswordHashException;
+use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+
+final readonly class PasswordHash implements \Stringable
+{
+    use ValueObjectEqualityTrait;
+
+    public const int MAX_LENGTH = 255;
+
+    private string $passwordHash;
+
+    /**
+     * @throws InvalidUserAccountPasswordHashException
+     */
+    private function __construct(string $hash)
+    {
+        $this->ensureIsValidHash($hash);
+
+        $this->passwordHash = $hash;
+    }
+
+    /**
+     * @throws InvalidUserAccountPasswordHashException
+     */
+    public static function fromString(string $hash): self
+    {
+        return new self($hash);
+    }
+
+    /**
+     * @throws InvalidUserAccountPasswordHashException
+     */
+    private function ensureIsValidHash(string $hash): void
+    {
+        if (empty($hash)) {
+            throw new InvalidUserAccountPasswordHashException('Password hash cannot be empty');
+        }
+
+        if (self::MAX_LENGTH < mb_strlen($hash)) {
+            throw new InvalidUserAccountPasswordHashException('Password hash is too long');
+        }
+    }
+
+    public function value(): string
+    {
+        return $this->passwordHash;
+    }
+
+    public function __toString(): string
+    {
+        return $this->value();
+    }
+
+    protected function getPrimitiveValue(): string
+    {
+        return $this->value();
+    }
+}

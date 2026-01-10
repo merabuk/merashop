@@ -35,6 +35,20 @@ Every module within `src/` must follow this standardized structure:
 
 ### Domain Layer
 - **Pure PHP**: No dependencies on Symfony, Doctrine, or any other framework/library.
+- **Value Objects (VO)**: Use Value Objects for all domain properties. Avoid primitives (string, int, array) in Entities.
+    - Every property should ideally be a VO (e.g., `EmailAddress`, `ClientId`, `RoleCollection`).
+    - Collection properties must be wrapped in a Collection VO (e.g., `ScopeCollection`).
+    - **VO Exceptions**: Every VO must have a specific domain exception.
+    - **Exception Hierarchy**: Each module must implement the following structure:
+        1. `Throwable{Module}Exception` (interface): Module marker.
+        2. `{Module}DomainException` (abstract class): Base module exception.
+        3. `Invalid{Module}ValueObjectException` (abstract class): Base exception for all VOs, inherits from base module exception and implements `ThrowableValueObjectException`.
+        4. Specific VO exceptions (e.g., `InvalidUserAccountEmailException`) must inherit from `Invalid{Module}ValueObjectException`.
+    - **VO Location**: 
+        - Model-specific VO must be placed in a subfolder named after the entity (e.g., `src/IdentityAccess/Domain/ValueObject/UserAccount/EmailAddress.php`).
+        - Module-shared VO must be placed in the root `ValueObject` folder of the module.
+        - Cross-module VO must be placed in `src/Shared/Domain/ValueObject/`.
+    - **VO Validation**: VO must ensure their own validity upon creation. Use existing validators from `Shared` or `Domain` if available.
 - **Independence**: The domain must remain agnostic of how it is persisted or triggered.
 - **Service Interfaces**:
     - Any service that interacts with infrastructure (API, DB, Mailer, etc.) must have an interface in the `Domain` layer and its implementation in the `Infrastructure` layer.

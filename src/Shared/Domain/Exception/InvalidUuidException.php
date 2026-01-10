@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\Exception;
 
-class InvalidUuidException extends InvalidArgumentException
+final class InvalidUuidException extends InvalidArgumentException
 {
     public static function becauseItIsNotAValidUuidV7(string $invalidValue): self
     {

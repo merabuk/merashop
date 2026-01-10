@@ -6,7 +6,7 @@ namespace App\EmailSender\Domain\Exception\OutboxEmail;
 
 use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectException;
 
-class InvalidOutboxEmailIdException extends InvalidEmailSenderValueObjectException
+final class InvalidOutboxEmailIdException extends InvalidEmailSenderValueObjectException
 {
     public static function becauseItIsNotAValidId(): self
     {

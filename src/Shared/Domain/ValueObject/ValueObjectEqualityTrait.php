@@ -6,7 +6,7 @@ namespace App\Shared\Domain\ValueObject;
 
 trait ValueObjectEqualityTrait
 {
-    abstract protected function getPrimitiveValue(): string|int|float|bool;
+    abstract protected function getPrimitiveValue(): mixed;
 
     public function equals(object $other): bool
     {
