@@ -17,13 +17,21 @@ readonly class PasswordHasherService implements PasswordHasherInterface
 
     public function hash(string $plainPassword): string
     {
-        $dummyUser = new class implements PasswordAuthenticatedUserInterface {
+        return $this->passwordHasher->hashPassword(user: $this->createDummyUser(), plainPassword: $plainPassword);
+    }
+
+    public function verify(string $hashedPassword, string $plainPassword): bool
+    {
+        return $this->passwordHasher->isPasswordValid(user: $this->createDummyUser(), plainPassword: $plainPassword);
+    }
+
+    private function createDummyUser(): PasswordAuthenticatedUserInterface
+    {
+        return new class implements PasswordAuthenticatedUserInterface {
             public function getPassword(): ?string
             {
                 return null;
             }
         };
-
-        return $this->passwordHasher->hashPassword(user: $dummyUser, plainPassword: $plainPassword);
     }
 }

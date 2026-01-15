@@ -9,7 +9,7 @@ use App\EmailSender\Infrastructure\Persistence\Doctrine\Entity\OrmOutboxEmail;
 use App\EmailSender\Infrastructure\Persistence\Doctrine\Mapper\OutboxEmailMapper;
 use App\Shared\Domain\Exception\EntityIdMissingException;
 use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
-use App\Shared\Domain\Exception\InvalidTraceIdException;
+use App\Shared\Domain\Exception\ValueObject\InvalidTraceIdException;
 use App\Shared\Domain\Service\TraceIdFactoryInterface;
 use App\Tests\Resource\Fixture\EmailSender\OutboxEmailMother;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

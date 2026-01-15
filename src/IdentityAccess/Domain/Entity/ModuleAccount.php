@@ -5,17 +5,19 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Domain\Entity;
 
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientId;
-use App\IdentityAccess\Domain\ValueObject\ModuleAccount\PasswordHash;
+use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientSecretHash;
+use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Id;
+use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Ulid;
 use App\IdentityAccess\Domain\ValueObject\ScopeCollection;
-use App\IdentityAccess\Domain\ValueObject\Ulid;
 
 class ModuleAccount
 {
     public function __construct(
         private readonly Ulid $ulid,
         private ClientId $clientId,
-        private PasswordHash $clientSecret,
+        private ClientSecretHash $clientSecret,
         private ScopeCollection $scopes,
+        private readonly ?Id $id = null,
     ) {
     }
 
@@ -29,7 +31,7 @@ class ModuleAccount
         return $this->clientId;
     }
 
-    public function getClientSecret(): PasswordHash
+    public function getClientSecret(): ClientSecretHash
     {
         return $this->clientSecret;
     }
@@ -39,12 +41,17 @@ class ModuleAccount
         return $this->scopes;
     }
 
+    public function getId(): ?Id
+    {
+        return $this->id;
+    }
+
     public function updateClientId(ClientId $clientId): void
     {
         $this->clientId = $clientId;
     }
 
-    public function updateClientSecret(PasswordHash $clientSecret): void
+    public function updateClientSecret(ClientSecretHash $clientSecret): void
     {
         $this->clientSecret = $clientSecret;
     }

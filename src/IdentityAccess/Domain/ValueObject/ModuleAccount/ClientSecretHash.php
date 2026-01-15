@@ -7,7 +7,7 @@ namespace App\IdentityAccess\Domain\ValueObject\ModuleAccount;
 use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountPasswordHashException;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 
-final readonly class PasswordHash implements \Stringable
+final readonly class ClientSecretHash implements \Stringable
 {
     use ValueObjectEqualityTrait;
 

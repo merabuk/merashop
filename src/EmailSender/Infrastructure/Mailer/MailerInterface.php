@@ -7,7 +7,7 @@ namespace App\EmailSender\Infrastructure\Mailer;
 use App\EmailSender\Domain\Entity\OutboxEmail;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
-#[AutoconfigureTag('app.email_driver')]
+#[AutoconfigureTag('email_sender.mailer')]
 interface MailerInterface
 {
     public function send(OutboxEmail $email): ?string;

@@ -6,6 +6,7 @@ namespace App\EmailSender\Infrastructure\Console;
 
 use App\EmailSender\Application\Command\SendOutboxEmail\SendOutboxEmailCommand;
 use App\EmailSender\Domain\Repository\OutboxEmailReadRepositoryInterface;
+use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
@@ -26,18 +27,24 @@ final class OutboxRelayCommand extends Command
     public function __construct(
         private readonly OutboxEmailReadRepositoryInterface $readRepository,
         private readonly MessageBusInterface $commandBus,
+        private readonly ClockInterface $clock,
     ) {
         parent::__construct();
     }
 
     /**
      * @throws ExceptionInterface
+     * @throws \DateMalformedStringException
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
-        $emails = $this->readRepository->findReadyToProcess(100);
+        $limit = 100;
+        $now = $this->clock->now();
+        $staleTime = $this->clock->now()->modify('-10 minutes');
+
+        $emails = $this->readRepository->findReadyToProcess(limit: $limit, now: $now, staleTime: $staleTime);
 
         if (empty($emails)) {
             $io->success('No pending emails found');

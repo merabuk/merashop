@@ -6,7 +6,7 @@ namespace App\IdentityAccess\Domain\ValueObject;
 
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 
-final readonly class RoleCollection implements \Countable, \IteratorAggregate
+final readonly class RoleCollection implements \Stringable, \Countable, \IteratorAggregate
 {
     use ValueObjectEqualityTrait;
 
@@ -57,6 +57,14 @@ final readonly class RoleCollection implements \Countable, \IteratorAggregate
         return new \ArrayIterator($this->roles);
     }
 
+    public function __toString(): string
+    {
+        return implode(' ', $this->getPrimitiveValue());
+    }
+
+    /**
+     * @return string[]
+     */
     protected function getPrimitiveValue(): array
     {
         $values = $this->toStrings();

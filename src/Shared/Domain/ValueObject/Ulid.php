@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\ValueObject;
 
-use App\Shared\Domain\Exception\InvalidUlidException;
+use App\Shared\Domain\Exception\InvalidUlidException as BaseInvalidUlidException;
+use App\Shared\Domain\Exception\ValueObject\InvalidUlidException;
 use App\Shared\Domain\Service\UlidValidator;
 
 class Ulid implements \Stringable
@@ -18,15 +19,19 @@ class Ulid implements \Stringable
      */
     protected function __construct(string $ulid)
     {
-        $this->ulid = UlidValidator::validate($ulid);
+        try {
+            $this->ulid = UlidValidator::validate($ulid);
+        } catch (BaseInvalidUlidException $e) {
+            throw InvalidUlidException::fromBase($e);
+        }
     }
 
     /**
      * @throws InvalidUlidException
      */
-    public static function fromString(string $ulid): static
+    public static function fromString(string $ulid): self
     {
-        return new static($ulid);
+        return new self($ulid);
     }
 
     public function value(): string

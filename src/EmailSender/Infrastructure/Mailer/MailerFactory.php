@@ -16,7 +16,7 @@ readonly class MailerFactory
      * @param iterable<MailerInterface> $mailers
      */
     public function __construct(
-        #[AutowireIterator('app.email_driver')] iterable $mailers,
+        #[AutowireIterator('email_sender.mailer')] iterable $mailers,
     ) {
         $this->mailers = $mailers;
     }

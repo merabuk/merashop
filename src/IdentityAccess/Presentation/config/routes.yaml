@@ -1,0 +1,6 @@
+identity_access_api_v1:
+  resource:
+    path: ../ApiVersion1/Controller/
+    namespace: App\IdentityAccess\Presentation\ApiVersion1\Controller
+  type: attribute
+  prefix: /api/v1/identity-access

@@ -13,5 +13,5 @@ interface OutboxEmailReadRepositoryInterface
     /**
      * @return array<int, OutboxEmail>
      */
-    public function findReadyToProcess(int $limit): array;
+    public function findReadyToProcess(int $limit, \DateTimeImmutable $now, \DateTimeImmutable $staleTime): array;
 }

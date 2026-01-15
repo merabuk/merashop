@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Infrastructure\Security;
 
 use Lcobucci\JWT\Configuration;
-use Lcobucci\JWT\Token\RegisteredClaims;
 use Lcobucci\JWT\Token\Plain;
+use Lcobucci\JWT\Token\RegisteredClaims;
 use Symfony\Component\Security\Http\AccessToken\AccessTokenHandlerInterface;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 

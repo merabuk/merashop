@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Domain\Entity;
 
-use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
-use App\IdentityAccess\Domain\ValueObject\UserAccount\PasswordHash;
 use App\IdentityAccess\Domain\ValueObject\RoleCollection;
-use App\IdentityAccess\Domain\ValueObject\Ulid;
+use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
+use App\IdentityAccess\Domain\ValueObject\UserAccount\Id;
+use App\IdentityAccess\Domain\ValueObject\UserAccount\PasswordHash;
+use App\Shared\Domain\ValueObject\Ulid;
 
 class UserAccount
 {
@@ -16,6 +17,7 @@ class UserAccount
         private EmailAddress $email,
         private PasswordHash $passwordHash,
         private RoleCollection $roles,
+        private readonly ?Id $id = null,
     ) {
     }
 
@@ -37,6 +39,11 @@ class UserAccount
     public function getRoles(): RoleCollection
     {
         return $this->roles;
+    }
+
+    public function getId(): ?Id
+    {
+        return $this->id;
     }
 
     public function changeEmail(EmailAddress $email): void

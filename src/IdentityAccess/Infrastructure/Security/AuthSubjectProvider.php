@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Infrastructure\Security;
 
-use App\IdentityAccess\Domain\Repository\ModuleAccountRepositoryInterface;
-use App\IdentityAccess\Domain\Repository\UserAccountRepositoryInterface;
-use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
+use App\IdentityAccess\Domain\Repository\ModuleAccountReadRepositoryInterface;
+use App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientId;
-use App\IdentityAccess\Domain\ValueObject\Ulid;
+use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Ulid;
+use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
 use App\Shared\Domain\Exception\InvalidEmailAddressException;
 use App\Shared\Domain\Exception\InvalidUlidException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
@@ -22,8 +22,8 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 final readonly class AuthSubjectProvider implements UserProviderInterface
 {
     public function __construct(
-        private UserAccountRepositoryInterface $userAccountRepository,
-        private ModuleAccountRepositoryInterface $moduleAccountRepository,
+        private UserAccountReadRepositoryInterface $userAccountRepository,
+        private ModuleAccountReadRepositoryInterface $moduleAccountRepository,
     ) {
     }
 

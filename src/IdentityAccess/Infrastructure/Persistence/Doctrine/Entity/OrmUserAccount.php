@@ -14,7 +14,7 @@ use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'identity_access_user_accounts')]
-class OrmIdentityUserAccount
+class OrmUserAccount
 {
     use TimestampableEntity;
     use SoftDeleteableEntity;
@@ -33,6 +33,9 @@ class OrmIdentityUserAccount
     #[ORM\Column(type: Types::STRING, length: PasswordHash::MAX_LENGTH)]
     public ?string $passwordHash = null;
 
+    /**
+     * @var array<int, string>
+     */
     #[ORM\Column(type: Types::JSONB)]
     public array $roles = [];
 
