@@ -17,13 +17,29 @@ parameters:
           type: directory
           value: /src/Users/.*
     -
+      name: Customer
+      collectors:
+        -
+          type: directory
+          value: /src/Customer/.*
+    -
       name: EmailSender
       collectors:
         -
           type: directory
           value: /src/EmailSender/.*
+    -
+      name: IdentityAccess
+      collectors:
+        -
+          type: directory
+          value: /src/IdentityAccess/.*
   ruleset:
+    Customer:
+      - Shared
     EmailSender:
+      - Shared
+    IdentityAccess:
       - Shared
     Users:
       - Shared

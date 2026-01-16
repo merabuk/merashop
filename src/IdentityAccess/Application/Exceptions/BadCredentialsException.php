@@ -13,8 +13,13 @@ class BadCredentialsException extends IdentityAccessDomainException
         return new self('Unsupported grant type');
     }
 
-    public static function becauseInvalidCredentials(): self
+    public static function becauseInvalidCredentials(?\Throwable $previous = null): self
     {
-        return new self('Invalid credentials');
+        return new self('Invalid credentials', previous: $previous);
+    }
+
+    public static function becauseInvalidRefreshToken(?\Throwable $previous = null): self
+    {
+        return new self('Invalid refresh token', previous: $previous);
     }
 }

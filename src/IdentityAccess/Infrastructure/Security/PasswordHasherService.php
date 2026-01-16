@@ -22,15 +22,22 @@ readonly class PasswordHasherService implements PasswordHasherInterface
 
     public function verify(string $hashedPassword, string $plainPassword): bool
     {
-        return $this->passwordHasher->isPasswordValid(user: $this->createDummyUser(), plainPassword: $plainPassword);
+        return $this->passwordHasher->isPasswordValid(
+            user: $this->createDummyUser($hashedPassword),
+            plainPassword: $plainPassword
+        );
     }
 
     private function createDummyUser(?string $hashedPassword = null): PasswordAuthenticatedUserInterface
     {
-        return new class implements PasswordAuthenticatedUserInterface {
+        return new readonly class($hashedPassword) implements PasswordAuthenticatedUserInterface {
+            public function __construct(private ?string $hashedPassword)
+            {
+            }
+
             public function getPassword(): ?string
             {
-                return null;
+                return $this->hashedPassword;
             }
         };
     }

@@ -1,0 +1,31 @@
+parameters:
+  identity_access.jwt.ttl: '%env(int:JWT_TTL)%'
+  identity_access.refresh_token.ttl: '%env(int:REFRESH_TOKEN_TTL)%'
+
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  App\IdentityAccess\Application\Service\RefreshTokenService:
+    arguments:
+      $ttl: '%identity_access.refresh_token.ttl%'
+
+  App\IdentityAccess\Infrastructure\Security\JwtGenerator:
+    arguments:
+      $appName: '%app.name%'
+      $ttl: '%identity_access.jwt.ttl%'
+
+  Lcobucci\JWT\Configuration:
+    factory: [ 'App\IdentityAccess\Infrastructure\Security\JwtConfigFactory', 'create' ]
+    arguments:
+      $privateKey: '%env(base64:JWT_PRIVATE_KEY_BASE64)%'
+      $publicKey: '%env(base64:JWT_PUBLIC_KEY_BASE64)%'
+      $passphrase: '%env(JWT_PASSPHRASE)%'
+
+  App\IdentityAccess\Domain\Repository\ModuleAccountReadRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\ModuleAccountReadRepository'
+  App\IdentityAccess\Domain\Repository\RefreshTokenReadRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\RefreshTokenReadRepository'
+  App\IdentityAccess\Domain\Repository\RefreshTokenWriteRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\RefreshTokenWriteRepository'
+  App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\UserAccountReadRepository'
+  App\IdentityAccess\Domain\Service\PasswordHasherInterface: '@App\IdentityAccess\Infrastructure\Security\PasswordHasher'
+  App\IdentityAccess\Domain\Service\TokenHasherInterface: '@App\IdentityAccess\Infrastructure\Security\TokenHasher'

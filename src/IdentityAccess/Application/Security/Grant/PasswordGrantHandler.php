@@ -4,26 +4,34 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Application\Security\Grant;
 
+use App\IdentityAccess\Application\DTO\AccessTokenData;
 use App\IdentityAccess\Application\DTO\GrantResultData;
+use App\IdentityAccess\Application\DTO\RefreshTokenData;
 use App\IdentityAccess\Application\DTO\TokenResponseData;
 use App\IdentityAccess\Application\DTO\UserCredentialsInterface;
 use App\IdentityAccess\Application\Exceptions\BadCredentialsException;
+use App\IdentityAccess\Application\Exceptions\CreateRefreshTokenException;
 use App\IdentityAccess\Application\Security\TokenGeneratorInterface;
+use App\IdentityAccess\Application\Service\RefreshTokenService;
+use App\IdentityAccess\Domain\Entity\UserAccount;
+use App\IdentityAccess\Domain\Enum\AccountTypeEnum;
 use App\IdentityAccess\Domain\Enum\GrantTypeEnum;
 use App\IdentityAccess\Domain\Exception\UserAccount\InvalidUserAccountEmailException;
 use App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
-use App\IdentityAccess\Infrastructure\Security\AuthSubject;
 
-class PasswordGrantHandler implements GrantHandlerInterface
+readonly class PasswordGrantHandler implements GrantHandlerInterface
 {
+    private AccountTypeEnum $accountType;
+
     public function __construct(
-        private readonly UserAccountReadRepositoryInterface $userAccountReadRepository,
-        private readonly PasswordHasherInterface $passwordHasher,
-        private readonly TokenGeneratorInterface $tokenGenerator,
-        private readonly int $expiresIn = 3600,
+        private UserAccountReadRepositoryInterface $userAccountReadRepository,
+        private PasswordHasherInterface $passwordHasher,
+        private TokenGeneratorInterface $tokenGenerator,
+        private RefreshTokenService $refreshTokenService,
     ) {
+        $this->accountType = AccountTypeEnum::User;
     }
 
     public function supports(GrantTypeEnum $grantType): bool
@@ -32,40 +40,45 @@ class PasswordGrantHandler implements GrantHandlerInterface
     }
 
     /**
-     * @throws InvalidUserAccountEmailException
      * @throws BadCredentialsException
      */
     public function handle(UserCredentialsInterface $data): TokenResponseData
     {
-        $user = $this->userAccountReadRepository->findByEmail(
-            EmailAddress::fromString($data->getUsername())
-        );
+        try {
+            $user = $this->userAccountReadRepository->findByEmail(
+                EmailAddress::fromString($data->getUsername())
+            );
 
-        if (null === $user) {
-            throw BadCredentialsException::becauseInvalidCredentials();
+            if (null === $user || !$this->passwordHasher->verify($user->getPasswordHash()->value(), $data->getPassword())) {
+                throw BadCredentialsException::becauseInvalidCredentials();
+            }
+
+            return new TokenResponseData(
+                accessTokenData: $this->getAccessTokenData($user),
+                refreshTokenData: $this->getRefreshTokenData($user),
+            );
+        } catch (InvalidUserAccountEmailException|CreateRefreshTokenException $e) {
+            throw BadCredentialsException::becauseInvalidCredentials(previous: $e);
         }
+    }
 
-        // TODO: find out how pass entity to password hasher
-        if (!$this->passwordHasher->verify($user->getPasswordHash()->value(), $data->getPassword())) {
-            throw BadCredentialsException::becauseInvalidCredentials();
-        }
-
+    private function getAccessTokenData(UserAccount $user): AccessTokenData
+    {
         $grantResult = new GrantResultData(
             subjectUlid: $user->getUlid()->value(),
+            subjectType: $this->accountType,
             roles: $user->getRoles()->toStrings(),
             scopes: [],
-            expiresIn: $this->expiresIn,
-            type: 'user'
         );
 
-        $accessToken = $this->tokenGenerator->generateAccessToken($grantResult);
-        $refreshToken = $this->tokenGenerator->generateRefreshToken($grantResult);
+        return $this->tokenGenerator->generateAccessToken($grantResult);
+    }
 
-        return new TokenResponseData(
-            accessToken: $accessToken,
-            refreshToken: $refreshToken,
-            expiresIn: $this->expiresIn,
-            tokenType: 'Bearer',
-        );
+    /**
+     * @throws CreateRefreshTokenException
+     */
+    private function getRefreshTokenData(UserAccount $user): RefreshTokenData
+    {
+        return $this->refreshTokenService->create($user->getUlid()->value(), $this->accountType);
     }
 }

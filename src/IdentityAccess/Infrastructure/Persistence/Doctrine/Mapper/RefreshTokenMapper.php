@@ -6,9 +6,10 @@ namespace App\IdentityAccess\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\IdentityAccess\Domain\Entity\RefreshToken;
 use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
+use App\IdentityAccess\Domain\ValueObject\RefreshToken\AccountType;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\ExpiresAt;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\Id;
-use App\IdentityAccess\Domain\ValueObject\RefreshToken\Token;
+use App\IdentityAccess\Domain\ValueObject\RefreshToken\TokenHash;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\Ulid;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmRefreshToken;
 use App\Shared\Domain\Exception\EntityIdMissingException;
@@ -34,7 +35,7 @@ class RefreshTokenMapper implements MapperInterface
         $orm = new OrmRefreshToken();
 
         $orm->setId($domain->getId()?->value());
-        $orm->token = $domain->getToken()->value();
+        $orm->token = $domain->getTokenHash()->value();
         $orm->accountUlid = $domain->getAccountUlid()->value();
         $orm->expiresAt = $domain->getExpiresAt()->value();
 
@@ -52,8 +53,9 @@ class RefreshTokenMapper implements MapperInterface
 
         /* @var OrmRefreshToken $orm */
         return new RefreshToken(
-            token: Token::fromString($orm->token),
+            tokenHash: TokenHash::fromString($orm->token),
             accountUlid: Ulid::fromString($orm->accountUlid),
+            accountType: AccountType::fromEnum($orm->accountType),
             expiresAt: new ExpiresAt($orm->expiresAt),
             id: Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class)),
         );
@@ -69,8 +71,6 @@ class RefreshTokenMapper implements MapperInterface
 
         /* @var RefreshToken $domain */
         /* @var OrmRefreshToken $orm */
-        $orm->token = $domain->getToken()->value();
-        $orm->accountUlid = $domain->getAccountUlid()->value();
-        $orm->expiresAt = $domain->getExpiresAt()->value();
+        // no editable fields
     }
 }

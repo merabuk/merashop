@@ -7,14 +7,16 @@ namespace App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository;
 use App\IdentityAccess\Domain\Entity\UserAccount;
 use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
 use App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface;
-use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Ulid;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmUserAccount;
+use App\Shared\Domain\Exception\EntityIdMissingException;
 use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
+use App\Shared\Domain\ValueObject\Ulid;
 
 class UserAccountReadRepository extends BaseUserAccountRepository implements UserAccountReadRepositoryInterface
 {
     /**
+     * @throws EntityIdMissingException
      * @throws InvalidIdentityAccessValueObjectException
      * @throws IncompatibleMappedEntityException
      */
@@ -26,17 +28,7 @@ class UserAccountReadRepository extends BaseUserAccountRepository implements Use
     }
 
     /**
-     * @throws InvalidIdentityAccessValueObjectException
-     * @throws IncompatibleMappedEntityException
-     */
-    public function findByUlid(Ulid $ulid): ?UserAccount
-    {
-        $ormUser = $this->findOneBy(['ulid' => $ulid->value()]);
-
-        return $this->checkAndMapToDomain($ormUser);
-    }
-
-    /**
+     * @throws EntityIdMissingException
      * @throws InvalidIdentityAccessValueObjectException
      * @throws IncompatibleMappedEntityException
      */
@@ -48,6 +40,19 @@ class UserAccountReadRepository extends BaseUserAccountRepository implements Use
     }
 
     /**
+     * @throws EntityIdMissingException
+     * @throws InvalidIdentityAccessValueObjectException
+     * @throws IncompatibleMappedEntityException
+     */
+    public function findByUlid(Ulid $ulid): ?UserAccount
+    {
+        $ormUser = $this->findOneBy(['ulid' => $ulid->value()]);
+
+        return $this->checkAndMapToDomain($ormUser);
+    }
+
+    /**
+     * @throws EntityIdMissingException
      * @throws InvalidIdentityAccessValueObjectException
      * @throws IncompatibleMappedEntityException
      */

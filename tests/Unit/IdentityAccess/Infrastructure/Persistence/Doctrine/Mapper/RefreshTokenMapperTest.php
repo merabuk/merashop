@@ -7,7 +7,7 @@ namespace App\Tests\Unit\IdentityAccess\Infrastructure\Persistence\Doctrine\Mapp
 use App\IdentityAccess\Domain\Entity\RefreshToken;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Ulid;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\ExpiresAt;
-use App\IdentityAccess\Domain\ValueObject\RefreshToken\Token;
+use App\IdentityAccess\Domain\ValueObject\RefreshToken\TokenHash;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmRefreshToken;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Mapper\RefreshTokenMapper;
 use PHPUnit\Framework\TestCase;
@@ -26,7 +26,7 @@ final class RefreshTokenMapperTest extends TestCase
         $ulid = Ulid::fromString('01ARZ3NDEKTSV4RRFFQ6KHNQZY');
         $expiresAt = new \DateTimeImmutable('+30 days');
         $domain = new RefreshToken(
-            token: Token::fromString('test-token'),
+            tokenHash: TokenHash::fromString('test-token'),
             accountUlid: $ulid,
             expiresAt: new ExpiresAt($expiresAt),
             id: 123
@@ -55,7 +55,7 @@ final class RefreshTokenMapperTest extends TestCase
 
         self::assertInstanceOf(RefreshToken::class, $domain);
         self::assertSame(456, $domain->getId());
-        self::assertSame('orm-token', $domain->getToken()->value());
+        self::assertSame('orm-token', $domain->getTokenHash()->value());
         self::assertSame($ulid, $domain->getAccountUlid()->value());
         self::assertSame($expiresAt, $domain->getExpiresAt()->value());
     }

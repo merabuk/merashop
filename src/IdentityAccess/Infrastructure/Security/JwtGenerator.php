@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Infrastructure\Security;
 
+use App\IdentityAccess\Application\DTO\AccessTokenData;
 use App\IdentityAccess\Application\DTO\GrantResultData;
 use App\IdentityAccess\Application\Security\TokenGeneratorInterface;
 use Lcobucci\JWT\Configuration;
@@ -15,6 +16,8 @@ class JwtGenerator implements TokenGeneratorInterface
     public function __construct(
         private readonly Configuration $jwtConfiguration,
         private readonly Clock $clock,
+        private readonly string $appName,
+        private readonly int $ttl,
     ) {
     }
 
@@ -22,14 +25,13 @@ class JwtGenerator implements TokenGeneratorInterface
      * @throws \DateMalformedStringException
      * @throws RandomException
      */
-    public function generateAccessToken(GrantResultData $grantResultData): string
+    public function generateAccessToken(GrantResultData $grantResultData): AccessTokenData
     {
         $now = $this->clock->now();
-        // TODO: Config modifier through environment variable
-        $accessTokenExpiresAt = $now->modify(sprintf('+%d seconds', $grantResultData->expiresIn));
+        $accessTokenExpiresAt = $now->modify(sprintf('+%d seconds', $this->ttl));
 
         $builder = $this->jwtConfiguration->builder()
-            ->issuedBy('MeraShop') // TODO: Find out to set AppName through environment variable
+            ->issuedBy($this->appName)
             ->identifiedBy(bin2hex(random_bytes(32)))
             ->issuedAt($now)
             ->canOnlyBeUsedAfter($now)
@@ -37,15 +39,10 @@ class JwtGenerator implements TokenGeneratorInterface
             ->withClaim('sub', $grantResultData->subjectUlid)
             ->withClaim('roles', $grantResultData->roles)
             ->withClaim('scopes', $grantResultData->scopes)
-            ->withClaim('type', $grantResultData->type);
+            ->withClaim('sub_type', $grantResultData->subjectType->value);
 
         $token = $builder->getToken($this->jwtConfiguration->signer(), $this->jwtConfiguration->signingKey());
 
-        return $token->toString();
-    }
-
-    public function generateRefreshToken(GrantResultData $grantResultData): string
-    {
-        // TODO: Implement generateRefreshToken() method.
+        return new AccessTokenData(token: $token->toString(), expiresIn: $this->ttl);
     }
 }

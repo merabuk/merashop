@@ -4,29 +4,46 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Domain\Entity;
 
+use App\IdentityAccess\Domain\ValueObject\RefreshToken\AccountType;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\ExpiresAt;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\Id;
-use App\IdentityAccess\Domain\ValueObject\RefreshToken\Token;
+use App\IdentityAccess\Domain\ValueObject\RefreshToken\TokenHash;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\Ulid;
 
-class RefreshToken
+readonly class RefreshToken
 {
     public function __construct(
-        private Token $token,
+        private TokenHash $tokenHash,
         private Ulid $accountUlid,
+        private AccountType $accountType,
         private ExpiresAt $expiresAt,
-        private readonly ?Id $id = null,
+        private ?Id $id = null,
     ) {
     }
 
-    public function getToken(): Token
+    public static function create(TokenHash $token, Ulid $accountUlid, AccountType $accountType, ExpiresAt $expiresAt): self
     {
-        return $this->token;
+        return new self(
+            tokenHash: $token,
+            accountUlid: $accountUlid,
+            accountType: $accountType,
+            expiresAt: $expiresAt
+        );
+    }
+
+    public function getTokenHash(): TokenHash
+    {
+        return $this->tokenHash;
     }
 
     public function getAccountUlid(): Ulid
     {
         return $this->accountUlid;
+    }
+
+    public function getAccountType(): AccountType
+    {
+        return $this->accountType;
     }
 
     public function getExpiresAt(): ExpiresAt

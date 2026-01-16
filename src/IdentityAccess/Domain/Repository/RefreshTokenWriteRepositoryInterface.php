@@ -11,4 +11,6 @@ interface RefreshTokenWriteRepositoryInterface
     public function save(RefreshToken $refreshToken): RefreshToken;
 
     public function delete(RefreshToken $refreshToken): void;
+
+    public function deleteAllPrevious(RefreshToken $refreshToken): void;
 }
