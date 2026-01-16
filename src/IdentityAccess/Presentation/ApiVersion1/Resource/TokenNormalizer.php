@@ -8,13 +8,12 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class TokenNormalizer implements NormalizerInterface
 {
     /**
+     * @param TokenResponseData $data
      * @param array<string, mixed> $context
      * @return array<string, int|string>
      */
     public function normalize(mixed $data, ?string $format = null, array $context = []): array
     {
-        /** @var TokenResponseData $data */
-
         // RFC 6749
         $response = [
             'access_token' => $data->accessTokenData->token,
