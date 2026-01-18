@@ -9,13 +9,13 @@ use App\IdentityAccess\Application\DTO\GrantResultData;
 use App\IdentityAccess\Application\Security\TokenGeneratorInterface;
 use Lcobucci\JWT\Configuration;
 use Random\RandomException;
-use Symfony\Component\Clock\Clock;
+use Symfony\Component\Clock\ClockInterface;
 
 class JwtGenerator implements TokenGeneratorInterface
 {
     public function __construct(
         private readonly Configuration $jwtConfiguration,
-        private readonly Clock $clock,
+        private readonly ClockInterface $clock,
         private readonly string $appName,
         private readonly int $ttl,
     ) {

@@ -4,6 +4,7 @@ doctrine_migrations:
         # as migrations classes should NOT be autoloaded
         'App\Users\Infrastructure\Persistence\Doctrine\Migrations': '%kernel.project_dir%/src/Users/Infrastructure/Persistence/Doctrine/Migrations'
         'App\EmailSender\Infrastructure\Persistence\Doctrine\Migrations': '%kernel.project_dir%/src/EmailSender/Infrastructure/Persistence/Doctrine/Migrations'
+        'App\IdentityAccess\Infrastructure\Persistence\Doctrine\Migrations': '%kernel.project_dir%/src/IdentityAccess/Infrastructure/Persistence/Doctrine/Migrations'
 
         'DoctrineMigrations': '%kernel.project_dir%/migrations'
     enable_profiler: false

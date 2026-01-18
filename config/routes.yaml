@@ -7,6 +7,9 @@ app_shared_api_v1:
 users_api_v1:
   resource: '../src/Users/Presentation/config/routes.yaml'
 
+identity_access_api_v1:
+  resource: '../src/IdentityAccess/Presentation/config/routes.yaml'
+
 kernel:
   resource:
     path: ../src/Shared/Infrastructure/

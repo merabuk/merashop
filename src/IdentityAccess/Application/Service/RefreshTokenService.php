@@ -16,14 +16,14 @@ use App\IdentityAccess\Domain\ValueObject\RefreshToken\ExpiresAt;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\TokenHash;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\Ulid;
 use Random\RandomException;
-use Symfony\Component\Clock\Clock;
+use Symfony\Component\Clock\ClockInterface;
 
 final readonly class RefreshTokenService
 {
     public function __construct(
         private RefreshTokenWriteRepositoryInterface $writeRepository,
         private TokenHasherInterface $tokenHasher,
-        private Clock $clock,
+        private ClockInterface $clock,
         private int $ttl,
     ) {
     }

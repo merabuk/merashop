@@ -6,7 +6,8 @@ namespace App\IdentityAccess\Application\Service;
 
 use App\IdentityAccess\Application\DTO\OAuth2Data;
 use App\IdentityAccess\Application\DTO\TokenResponseData;
-use App\IdentityAccess\Application\Exceptions\BadCredentialsException;
+use App\IdentityAccess\Application\Exceptions\GrantHandlerException;
+use App\IdentityAccess\Application\Exceptions\UnsupportedGrantTypeException;
 use App\IdentityAccess\Application\Security\Grant\GrantHandlerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 
@@ -22,7 +23,8 @@ final readonly class OAuth2TokenService
     }
 
     /**
-     * @throws BadCredentialsException
+     * @throws GrantHandlerException
+     * @throws UnsupportedGrantTypeException
      */
     public function handle(OAuth2Data $data): TokenResponseData
     {
@@ -32,6 +34,6 @@ final readonly class OAuth2TokenService
             }
         }
 
-        throw BadCredentialsException::becauseUnsupportedGrantType();
+        throw new UnsupportedGrantTypeException();
     }
 }

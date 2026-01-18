@@ -8,8 +8,9 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class TokenNormalizer implements NormalizerInterface
 {
     /**
-     * @param TokenResponseData $data
+     * @param TokenResponseData    $data
      * @param array<string, mixed> $context
+     *
      * @return array<string, int|string>
      */
     public function normalize(mixed $data, ?string $format = null, array $context = []): array

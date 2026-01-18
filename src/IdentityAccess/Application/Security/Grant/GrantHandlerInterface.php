@@ -6,6 +6,7 @@ namespace App\IdentityAccess\Application\Security\Grant;
 
 use App\IdentityAccess\Application\DTO\OAuth2Data;
 use App\IdentityAccess\Application\DTO\TokenResponseData;
+use App\IdentityAccess\Application\Exceptions\GrantHandlerException;
 use App\IdentityAccess\Domain\Enum\GrantTypeEnum;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
@@ -14,5 +15,8 @@ interface GrantHandlerInterface
 {
     public function supports(GrantTypeEnum $grantType): bool;
 
+    /**
+     * @throws GrantHandlerException
+     */
     public function handle(OAuth2Data $data): TokenResponseData;
 }

@@ -7,8 +7,9 @@ namespace App\IdentityAccess\Application\Security\Grant;
 use App\IdentityAccess\Application\DTO\GrantResultData;
 use App\IdentityAccess\Application\DTO\RefreshTokenInterface;
 use App\IdentityAccess\Application\DTO\TokenResponseData;
-use App\IdentityAccess\Application\Exceptions\BadCredentialsException;
 use App\IdentityAccess\Application\Exceptions\CreateRefreshTokenException;
+use App\IdentityAccess\Application\Exceptions\GrantHandlerException;
+use App\IdentityAccess\Application\Exceptions\InvalidRefreshTokenException;
 use App\IdentityAccess\Application\Security\TokenGeneratorInterface;
 use App\IdentityAccess\Application\Service\RefreshTokenService;
 use App\IdentityAccess\Domain\Enum\AccountTypeEnum;
@@ -38,7 +39,7 @@ readonly class RefreshTokenGrantHandler implements GrantHandlerInterface
     }
 
     /**
-     * @throws BadCredentialsException
+     * @throws GrantHandlerException
      */
     public function handle(RefreshTokenInterface $data): TokenResponseData
     {
@@ -50,27 +51,27 @@ readonly class RefreshTokenGrantHandler implements GrantHandlerInterface
             );
 
             if (null === $refreshToken) {
-                throw BadCredentialsException::becauseInvalidRefreshToken();
+                throw new InvalidRefreshTokenException();
             }
 
             if ($refreshToken->getExpiresAt()->isExpired()) {
                 $this->refreshTokenService->revoke($refreshToken);
 
-                throw BadCredentialsException::becauseInvalidRefreshToken();
+                throw new InvalidRefreshTokenException();
             }
 
             return match ($refreshToken->getAccountType()->value()) {
                 AccountTypeEnum::User => $this->processUserAccount($refreshToken->getAccountUlid()->value()),
-                default => throw BadCredentialsException::becauseInvalidRefreshToken(),
+                default => throw new InvalidRefreshTokenException(),
             };
         } catch (CreateRefreshTokenException|InvalidUlidException|InvalidRefreshTokenTokenHashException $e) {
-            throw BadCredentialsException::becauseInvalidRefreshToken(previous: $e);
+            throw new InvalidRefreshTokenException(previous: $e);
         }
     }
 
     /**
-     * @throws BadCredentialsException
      * @throws CreateRefreshTokenException
+     * @throws InvalidRefreshTokenException
      * @throws InvalidUlidException
      */
     private function processUserAccount(string $accountUlid): TokenResponseData
@@ -79,7 +80,7 @@ readonly class RefreshTokenGrantHandler implements GrantHandlerInterface
         $user = $this->userAccountReadRepository->findByUlid(Ulid::fromString($accountUlid));
 
         if (null === $user) {
-            throw BadCredentialsException::becauseInvalidRefreshToken();
+            throw new InvalidRefreshTokenException();
         }
 
         $grantResult = new GrantResultData(

@@ -8,7 +8,8 @@ use App\IdentityAccess\Application\DTO\AccessTokenData;
 use App\IdentityAccess\Application\DTO\ClientCredentialsInterface;
 use App\IdentityAccess\Application\DTO\GrantResultData;
 use App\IdentityAccess\Application\DTO\TokenResponseData;
-use App\IdentityAccess\Application\Exceptions\BadCredentialsException;
+use App\IdentityAccess\Application\Exceptions\GrantHandlerException;
+use App\IdentityAccess\Application\Exceptions\InvalidClientException;
 use App\IdentityAccess\Application\Security\TokenGeneratorInterface;
 use App\IdentityAccess\Domain\Entity\ModuleAccount;
 use App\IdentityAccess\Domain\Enum\AccountTypeEnum;
@@ -36,7 +37,7 @@ readonly class ClientCredentialsGrantHandler implements GrantHandlerInterface
     }
 
     /**
-     * @throws BadCredentialsException
+     * @throws GrantHandlerException
      */
     public function handle(ClientCredentialsInterface $data): TokenResponseData
     {
@@ -46,12 +47,12 @@ readonly class ClientCredentialsGrantHandler implements GrantHandlerInterface
             );
 
             if (null === $module || !$this->passwordHasher->verify($module->getClientSecret()->value(), $data->getClientSecret())) {
-                throw BadCredentialsException::becauseInvalidCredentials();
+                throw new InvalidClientException();
             }
 
             return new TokenResponseData(accessTokenData: $this->getAccessTokenData($module));
         } catch (InvalidModuleAccountClientIdException $e) {
-            throw BadCredentialsException::becauseInvalidCredentials(previous: $e);
+            throw new InvalidClientException(previous: $e);
         }
     }
 
