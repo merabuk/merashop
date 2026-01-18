@@ -13,4 +13,6 @@ interface ModuleAccountReadRepositoryInterface
     public function findByClientId(ClientId $clientId): ?ModuleAccount;
 
     public function findByUlid(Ulid $ulid): ?ModuleAccount;
+
+    public function existsByClientId(ClientId $clientId): bool;
 }

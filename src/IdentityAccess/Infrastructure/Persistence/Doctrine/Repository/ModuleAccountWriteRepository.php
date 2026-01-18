@@ -1,0 +1,37 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository;
+
+use App\IdentityAccess\Domain\Entity\ModuleAccount;
+use App\IdentityAccess\Domain\Repository\ModuleAccountWriteRepositoryInterface;
+use App\Shared\Domain\Exception\EntityIdMissingException;
+use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
+use App\Shared\Domain\Exception\ThrowableValueObjectException;
+use App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait;
+use Doctrine\ORM\Exception\ORMException;
+
+final class ModuleAccountWriteRepository extends BaseModuleAccountRepository implements ModuleAccountWriteRepositoryInterface
+{
+    use WriteRepositoryTrait;
+
+    /**
+     * @throws EntityIdMissingException
+     * @throws ThrowableValueObjectException
+     * @throws IncompatibleMappedEntityException
+     * @throws ORMException
+     */
+    public function save(ModuleAccount $moduleAccount): ModuleAccount
+    {
+        return $this->_save(domain: $moduleAccount, id: $moduleAccount->getId()?->value());
+    }
+
+    /**
+     * @throws IncompatibleMappedEntityException
+     */
+    public function delete(ModuleAccount $moduleAccount): void
+    {
+        $this->_delete($moduleAccount);
+    }
+}

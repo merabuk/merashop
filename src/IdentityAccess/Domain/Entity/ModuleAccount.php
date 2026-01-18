@@ -21,6 +21,16 @@ class ModuleAccount
     ) {
     }
 
+    public static function create(Ulid $ulid, ClientId $clientId, ClientSecretHash $clientSecret, ScopeCollection $scopes): self
+    {
+        return new self(
+            ulid: $ulid,
+            clientId: $clientId,
+            clientSecret: $clientSecret,
+            scopes: $scopes
+        );
+    }
+
     public function getUlid(): Ulid
     {
         return $this->ulid;

@@ -12,9 +12,12 @@ use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Ulid;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmModuleAccount;
 use App\Shared\Domain\Exception\EntityIdMissingException;
 use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
+use App\Shared\Infrastructure\Persistence\Doctrine\Repository\ReadRepositoryTrait;
 
 class ModuleAccountReadRepository extends BaseModuleAccountRepository implements ModuleAccountReadRepositoryInterface
 {
+    use ReadRepositoryTrait;
+
     /**
      * @throws EntityIdMissingException
      * @throws InvalidIdentityAccessValueObjectException
@@ -37,6 +40,11 @@ class ModuleAccountReadRepository extends BaseModuleAccountRepository implements
         $orm = $this->findOneBy(['ulid' => $ulid->value()]);
 
         return $this->checkAndMapToDomain($orm);
+    }
+
+    public function existsByClientId(ClientId $clientId): bool
+    {
+        return $this->_existsBy(['client_id' => $clientId->value()]);
     }
 
     /**
