@@ -5,11 +5,18 @@ declare(strict_types=1);
 namespace App\Tests\Unit\IdentityAccess\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\IdentityAccess\Domain\Entity\RefreshToken;
-use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Ulid;
+use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
+use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountUlidException;
+use App\IdentityAccess\Domain\Exception\RefreshToken\InvalidRefreshTokenTokenHashException;
+use App\IdentityAccess\Domain\ValueObject\RefreshToken\Ulid;
+use App\IdentityAccess\Domain\ValueObject\RefreshToken\AccountType;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\ExpiresAt;
+use App\IdentityAccess\Domain\ValueObject\RefreshToken\Id;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\TokenHash;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmRefreshToken;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Mapper\RefreshTokenMapper;
+use App\Shared\Domain\Exception\EntityIdMissingException;
+use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
 use PHPUnit\Framework\TestCase;
 
 final class RefreshTokenMapperTest extends TestCase
@@ -21,42 +28,119 @@ final class RefreshTokenMapperTest extends TestCase
         $this->mapper = new RefreshTokenMapper();
     }
 
+    /**
+     * @throws IncompatibleMappedEntityException
+     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidModuleAccountUlidException
+     * @throws InvalidRefreshTokenTokenHashException
+     */
     public function testToDoctrineOrm(): void
     {
-        $ulid = Ulid::fromString('01ARZ3NDEKTSV4RRFFQ6KHNQZY');
-        $expiresAt = new \DateTimeImmutable('+30 days');
-        $domain = new RefreshToken(
-            tokenHash: TokenHash::fromString('test-token'),
-            accountUlid: $ulid,
-            expiresAt: new ExpiresAt($expiresAt),
-            id: 123
-        );
+        $domain = $this->makeDomainEntity();
 
         $orm = $this->mapper->toDoctrineOrm($domain);
 
-        self::assertInstanceOf(OrmRefreshToken::class, $orm);
-        self::assertSame(123, $orm->id);
-        self::assertSame('test-token', $orm->token);
-        self::assertSame($ulid->value(), $orm->accountUlid);
-        self::assertSame($expiresAt, $orm->expiresAt);
+        self::assertSame($domain->getId()?->value(), $orm->id);
+        self::assertSame($domain->getTokenHash()->value(), $orm->token);
+        self::assertSame($domain->getAccountUlid()->value(), $orm->accountUlid);
+        self::assertSame($domain->getAccountType()->value(), $orm->accountType);
+        self::assertSame($domain->getExpiresAt()->value(), $orm->expiresAt);
     }
 
+    /**
+     * @throws InvalidIdentityAccessValueObjectException
+     * @throws EntityIdMissingException
+     * @throws IncompatibleMappedEntityException
+     */
     public function testFromDoctrineOrm(): void
     {
-        $ulid = '01ARZ3NDEKTSV4RRFFQ6KHNQZY';
-        $expiresAt = new \DateTimeImmutable('+30 days');
-        $orm = new OrmRefreshToken();
-        $orm->setId(456);
-        $orm->token = 'orm-token';
-        $orm->accountUlid = $ulid;
-        $orm->expiresAt = $expiresAt;
+        $orm = $this->makeOrmEntity();
 
         $domain = $this->mapper->fromDoctrineOrm($orm);
 
-        self::assertInstanceOf(RefreshToken::class, $domain);
-        self::assertSame(456, $domain->getId());
-        self::assertSame('orm-token', $domain->getTokenHash()->value());
-        self::assertSame($ulid, $domain->getAccountUlid()->value());
-        self::assertSame($expiresAt, $domain->getExpiresAt()->value());
+        self::assertSame($orm->id, $domain->getId()?->value());
+        self::assertSame($orm->token, $domain->getTokenHash()->value());
+        self::assertSame($orm->accountUlid, $domain->getAccountUlid()->value());
+        self::assertSame($orm->accountType, $domain->getAccountType()->value());
+        self::assertSame($orm->expiresAt, $domain->getExpiresAt()->value());
+    }
+
+    /**
+     * @throws IncompatibleMappedEntityException
+     * @throws InvalidIdentityAccessValueObjectException
+     */
+    public function testMapToExistingOrm(): void
+    {
+        $domain = $this->makeDomainEntity();
+        $orm = new OrmRefreshToken();
+
+        $this->mapper->mapToExistingOrm($domain, $orm);
+
+        // no editable fields
+        self::assertNull($orm->id);
+        self::assertNull($orm->token);
+        self::assertNull($orm->accountUlid);
+        self::assertNull($orm->accountType);
+        self::assertNull($orm->expiresAt);
+    }
+
+    /**
+     * @throws EntityIdMissingException
+     * @throws InvalidIdentityAccessValueObjectException
+     */
+    public function testThrowExceptionOnInvalidEntity(): void
+    {
+        $this->expectException(IncompatibleMappedEntityException::class);
+        $this->mapper->fromDoctrineOrm(new \stdClass());
+
+        $this->expectException(IncompatibleMappedEntityException::class);
+        $this->mapper->toDoctrineOrm(new \stdClass());
+    }
+
+    /**
+     * @throws IncompatibleMappedEntityException
+     * @throws InvalidIdentityAccessValueObjectException
+     */
+    public function testThrowExceptionOnInvalidId(): void
+    {
+        $this->expectException(EntityIdMissingException::class);
+        $this->mapper->fromDoctrineOrm(new OrmRefreshToken());
+    }
+
+    /**
+     * @throws InvalidIdentityAccessValueObjectException
+     */
+    private function makeDomainEntity(): RefreshToken
+    {
+        $fakeId = 123;
+        $fakeToken = 'test-token';
+        $fakeAccountUlid = '01ARZ3NDEKTSV4RRFFQ6KHNQZY';
+        $fakeExpiresAt = new \DateTimeImmutable('+30 days');
+
+        return new RefreshToken(
+            tokenHash: TokenHash::fromString($fakeToken),
+            accountUlid: Ulid::fromString($fakeAccountUlid),
+            accountType: AccountType::user(),
+            expiresAt: ExpiresAt::fromDate($fakeExpiresAt),
+            id: Id::fromInt($fakeId)
+        );
+    }
+
+    private function makeOrmEntity(): OrmRefreshToken
+    {
+        $fakeId = 123;
+        $fakeToken = 'test-token'; // hash isn't needed for this test'
+        $fakeAccountUlid = '01ARZ3NDEKTSV4RRFFQ6KHNQZY';
+        $fakeAccountType = AccountType::user()->value();
+        $fakeExpiresAt = new \DateTimeImmutable('+30 days');
+
+        $orm = new OrmRefreshToken();
+        $orm->setId($fakeId);
+        $orm->token = $fakeToken;
+        $orm->accountUlid = $fakeAccountUlid;
+        $orm->accountType = $fakeAccountType;
+        $orm->expiresAt = $fakeExpiresAt;
+
+        return $orm;
     }
 }

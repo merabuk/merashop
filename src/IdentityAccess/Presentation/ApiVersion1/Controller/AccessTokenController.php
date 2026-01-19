@@ -26,7 +26,7 @@ final class AccessTokenController extends AbstractController
      * @throws GrantHandlerException
      * @throws UnsupportedGrantTypeException
      */
-    #[Route('/auth/token', name: 'identity_access_api_v1_auth_token', methods: [Request::METHOD_POST])]
+    #[Route('/auth/token', name: 'identity_access_api_v1_auth_token', methods: [Request::METHOD_POST], format: 'json')]
     public function __invoke(#[MapRequestPayload] AccessTokenRequest $request): JsonResponse
     {
         $authData = new OAuth2Data(

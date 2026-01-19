@@ -27,7 +27,7 @@ class OrmRefreshToken
     public ?string $accountUlid = null;
 
     #[ORM\Column(type: AccountType::NAME)]
-    public AccountTypeEnum $accountType;
+    public ?AccountTypeEnum $accountType = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     public ?\DateTimeImmutable $expiresAt = null;

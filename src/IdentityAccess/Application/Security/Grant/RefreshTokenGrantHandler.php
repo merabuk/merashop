@@ -10,6 +10,7 @@ use App\IdentityAccess\Application\DTO\TokenResponseData;
 use App\IdentityAccess\Application\Exceptions\CreateRefreshTokenException;
 use App\IdentityAccess\Application\Exceptions\GrantHandlerException;
 use App\IdentityAccess\Application\Exceptions\InvalidRefreshTokenException;
+use App\IdentityAccess\Application\Exceptions\TokenGenerateException;
 use App\IdentityAccess\Application\Security\TokenGeneratorInterface;
 use App\IdentityAccess\Application\Service\RefreshTokenService;
 use App\IdentityAccess\Domain\Enum\AccountTypeEnum;
@@ -64,8 +65,13 @@ readonly class RefreshTokenGrantHandler implements GrantHandlerInterface
                 AccountTypeEnum::User => $this->processUserAccount($refreshToken->getAccountUlid()->value()),
                 default => throw new InvalidRefreshTokenException(),
             };
-        } catch (CreateRefreshTokenException|InvalidUlidException|InvalidRefreshTokenTokenHashException $e) {
-            throw new InvalidRefreshTokenException(previous: $e);
+        } catch (
+            CreateRefreshTokenException
+            |InvalidUlidException
+            |InvalidRefreshTokenTokenHashException
+            |TokenGenerateException $e
+        ) {
+            throw new InvalidRefreshTokenException('Failed to process refresh token', previous: $e);
         }
     }
 
@@ -73,6 +79,7 @@ readonly class RefreshTokenGrantHandler implements GrantHandlerInterface
      * @throws CreateRefreshTokenException
      * @throws InvalidRefreshTokenException
      * @throws InvalidUlidException
+     * @throws TokenGenerateException
      */
     private function processUserAccount(string $accountUlid): TokenResponseData
     {

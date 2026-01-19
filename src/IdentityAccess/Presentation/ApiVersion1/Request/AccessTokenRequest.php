@@ -13,8 +13,11 @@ final readonly class AccessTokenRequest implements GroupSequenceProviderInterfac
 {
     public function __construct(
         #[Assert\NotBlank]
-        #[Assert\Choice(callback: 'getGrantTypes')]
-        public string $grant_type,
+        #[Assert\Choice(
+            callback: 'getGrantTypes',
+            message: 'The selected grant_type is invalid. Allowed values are: {{ choices }}.'
+        )]
+        public ?string $grant_type,
 
         #[Assert\NotBlank(groups: [GrantTypeEnum::Password->value])]
         #[Assert\Blank(groups: [GrantTypeEnum::ClientCredentials->value, GrantTypeEnum::RefreshToken->value])]
@@ -40,9 +43,7 @@ final readonly class AccessTokenRequest implements GroupSequenceProviderInterfac
     {
         $groups = ['AccessTokenRequest'];
 
-        $type = GrantTypeEnum::tryFrom($this->grant_type);
-
-        if ($type) {
+        if ($type = GrantTypeEnum::tryFrom((string) $this->grant_type)) {
             $groups[] = $type->value;
         }
 

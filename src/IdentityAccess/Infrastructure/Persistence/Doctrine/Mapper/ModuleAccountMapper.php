@@ -53,13 +53,14 @@ class ModuleAccountMapper implements MapperInterface
         $this->assertIsType(OrmModuleAccount::class, $orm);
 
         /* @var OrmModuleAccount $orm */
+        $id = Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class));
 
         return new ModuleAccount(
             ulid: Ulid::fromString($orm->ulid),
             clientId: ClientId::fromString($orm->clientId),
             clientSecret: ClientSecretHash::fromString($orm->clientSecret),
             scopes: ScopeCollection::fromStrings($orm->scopes),
-            id: Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class)),
+            id: $id,
         );
     }
 

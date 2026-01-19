@@ -56,8 +56,9 @@ Every module within `src/` must follow this standardized structure:
     - If a service is likely to be mocked in unit tests of other components, prefer using an interface.
 
 ### Persistence & Mapping
-- **Mapping Location**: Doctrine mapping must reside strictly within `src/<ModuleName>/Infrastructure/Persistence/.../Mapping` (XML/PHP) OR within Infrastructure-specific entities (e.g., `Orm*` classes) using PHP attributes.
+- **Mapping Location**: Doctrine mapping must reside strictly within `src/<ModuleName>/Infrastructure/Persistence/Doctrine/Mapping` (XML/PHP) OR within Infrastructure-specific entities (e.g., `Orm*` classes) using PHP attributes.
 - **Explicit Definitions**: Avoid using attributes or XML inside the Domain layer. Attributes are permitted only in the Infrastructure layer for ORM entities.
+- **Exception Handling**: Each module should contain its own exception handler (like `src/IdentityAccess/Infrastructure/EventListener/IdentityExceptionListener.php`). The structure in such handlers might be module-specific (e.g., to comply with OAuth2 requirements).
 
 ### Modern PHP
 - **Strict Typing**: `declare(strict_types=1);` is mandatory in every file.
@@ -70,7 +71,7 @@ Every module within `src/` must follow this standardized structure:
 ## 4. Reliability & Patterns
 
 - **Transactional Outbox**: Guaranteed message delivery. Domain events or messages are saved to the database within the same transaction as business changes and then dispatched by a separate process.
-- **Config Collection**: The `Kernel.php` is configured to automatically collect configurations from modules. Each module should place its configuration files in `src/<ModuleName>/Infrastructure/Resources/config/modules/`. This ensures module isolation while maintaining a unified application configuration.
+- **Config Collection**: The `Kernel.php` is configured to automatically collect configurations from modules. Each module should place its configuration files in the root `config/modules/` directory (e.g., `config/modules/identity_access.yaml`). This ensures module-specific settings are organized while maintaining a unified application configuration.
 - **Observability**: A `TraceId` must be present in all messages and log entries to enable end-to-end request tracking. All logs must be output in JSON format (using `monolog.formatter.json` in production) to ensure compatibility with log collectors like Filebeat.
 - **Logging Channels**: Each module should use its own dedicated logging channel (e.g., `email_sender`) to facilitate filtering and analysis in Elasticsearch/Kibana.
 - **Idempotency**: Use `TraceId` as an idempotency key to prevent duplicate processing of messages in RabbitMQ/Messenger.

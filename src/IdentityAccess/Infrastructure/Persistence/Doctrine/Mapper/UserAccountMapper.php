@@ -25,26 +25,6 @@ class UserAccountMapper implements MapperInterface
     use TypeCheckTrait;
 
     /**
-     * @throws EntityIdMissingException
-     * @throws IncompatibleMappedEntityException
-     * @throws InvalidIdentityAccessValueObjectException
-     */
-    public function fromDoctrineOrm(object $orm): UserAccount
-    {
-        $this->assertIsType(OrmUserAccount::class, $orm);
-
-        /* @var OrmUserAccount $orm */
-
-        return new UserAccount(
-            ulid: Ulid::fromString($orm->ulid),
-            email: EmailAddress::fromString($orm->email),
-            passwordHash: PasswordHash::fromString($orm->passwordHash),
-            roles: RoleCollection::fromStrings($orm->roles),
-            id: Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class)),
-        );
-    }
-
-    /**
      * @throws IncompatibleMappedEntityException
      */
     public function toDoctrineOrm(object $domain): OrmUserAccount
@@ -61,6 +41,27 @@ class UserAccountMapper implements MapperInterface
         $orm->roles = $domain->getRoles()->toStrings();
 
         return $orm;
+    }
+
+    /**
+     * @throws EntityIdMissingException
+     * @throws IncompatibleMappedEntityException
+     * @throws InvalidIdentityAccessValueObjectException
+     */
+    public function fromDoctrineOrm(object $orm): UserAccount
+    {
+        $this->assertIsType(OrmUserAccount::class, $orm);
+
+        /* @var OrmUserAccount $orm */
+        $id = Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class));
+
+        return new UserAccount(
+            ulid: Ulid::fromString($orm->ulid),
+            email: EmailAddress::fromString($orm->email),
+            passwordHash: PasswordHash::fromString($orm->passwordHash),
+            roles: RoleCollection::fromStrings($orm->roles),
+            id: $id,
+        );
     }
 
     /**

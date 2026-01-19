@@ -40,7 +40,7 @@ class OutboxEmailMapperTest extends KernelTestCase
         $domain = $this->mother->createBaseEmail(traceId: $this->traceIdFactory->createNew());
 
         $orm = $this->mapper->toDoctrineOrm($domain);
-        $this->assertInstanceOf(OrmOutboxEmail::class, $orm);
+
         $this->assertNull($orm->id);
         $this->assertEquals($domain->getStatus()->value(), $orm->status);
         $this->assertEquals($domain->getDriver()->value(), $orm->driver);

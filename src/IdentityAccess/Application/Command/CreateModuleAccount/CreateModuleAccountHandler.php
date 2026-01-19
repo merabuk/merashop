@@ -20,7 +20,7 @@ use Random\RandomException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler(bus: BusNameEnum::Command->value)]
-class CreateModuleAccountHandler implements CommandHandlerInterface
+readonly class CreateModuleAccountHandler implements CommandHandlerInterface
 {
     public function __construct(
         private ModuleAccountWriteRepositoryInterface $writeRepository,
@@ -32,7 +32,7 @@ class CreateModuleAccountHandler implements CommandHandlerInterface
     /**
      * @throws CreateModuleAccountException
      */
-    public function handle(CreateModuleAccountCommand $command): string
+    public function __invoke(CreateModuleAccountCommand $command): string
     {
         try {
             $plainSecret = $this->generatePlainSecret();

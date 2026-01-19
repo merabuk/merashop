@@ -8,6 +8,7 @@ use App\IdentityAccess\Application\Command\CreateModuleAccount\CreateModuleAccou
 use App\IdentityAccess\Application\Command\CreateModuleAccount\CreateModuleAccountHandler;
 use App\IdentityAccess\Domain\Repository\ModuleAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientId;
+use App\Shared\Domain\Enum\ScopeEnum;
 use App\Shared\Presentation\Console\BaseConsoleCommand;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -19,8 +20,8 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[AsCommand(
-    name: 'app:identity:create-module',
-    description: 'Create a new module account'
+    name: 'app:identity-access:create-module',
+    description: 'Create a new module account for M2M authentication'
 )]
 final class CreateModuleAccountConsoleCommand extends BaseConsoleCommand
 {
@@ -69,12 +70,16 @@ final class CreateModuleAccountConsoleCommand extends BaseConsoleCommand
     {
         $clientId = (string) $input->getArgument('clientId');
 
-        $scopes = []; // TODO: implement scopes
-        $selectedScopes = $this->io->choice(question: 'Select Scopes for the module account', choices: $scopes);
+        $scopes = ScopeEnum::getValues();
+        $selectedScopes = $this->io->choice(
+            question: 'Select Scopes for the module account',
+            choices: $scopes,
+            multiSelect: true
+        );
 
         try {
             $command = new CreateModuleAccountCommand(clientId: $clientId, scopes: $selectedScopes);
-            $plainSecret = $this->handler->handle($command);
+            $plainSecret = ($this->handler)($command);
 
             $this->io->success('Module account created!');
             $this->io->info("Secret: $plainSecret");

@@ -14,8 +14,8 @@ class JwtConfigFactory
     {
         return Configuration::forAsymmetricSigner(
             signer: new Sha256(),
-            signingKey: InMemory::file($privateKey, $passphrase),
-            verificationKey: InMemory::file($publicKey)
+            signingKey: InMemory::plainText($privateKey, $passphrase),
+            verificationKey: InMemory::plainText($publicKey)
         );
     }
 }

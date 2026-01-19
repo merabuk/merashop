@@ -10,6 +10,7 @@ use App\IdentityAccess\Application\DTO\GrantResultData;
 use App\IdentityAccess\Application\DTO\TokenResponseData;
 use App\IdentityAccess\Application\Exceptions\GrantHandlerException;
 use App\IdentityAccess\Application\Exceptions\InvalidClientException;
+use App\IdentityAccess\Application\Exceptions\TokenGenerateException;
 use App\IdentityAccess\Application\Security\TokenGeneratorInterface;
 use App\IdentityAccess\Domain\Entity\ModuleAccount;
 use App\IdentityAccess\Domain\Enum\AccountTypeEnum;
@@ -46,16 +47,25 @@ readonly class ClientCredentialsGrantHandler implements GrantHandlerInterface
                 ClientId::fromString($data->getClientId())
             );
 
-            if (null === $module || !$this->passwordHasher->verify($module->getClientSecret()->value(), $data->getClientSecret())) {
+            if (
+                null === $module
+                || !$this->passwordHasher->verify(
+                    hashedPassword: $module->getClientSecret()->value(),
+                    plainPassword: $data->getClientSecret()
+                )
+            ) {
                 throw new InvalidClientException();
             }
 
             return new TokenResponseData(accessTokenData: $this->getAccessTokenData($module));
-        } catch (InvalidModuleAccountClientIdException $e) {
-            throw new InvalidClientException(previous: $e);
+        } catch (InvalidModuleAccountClientIdException|TokenGenerateException $e) {
+            throw new InvalidClientException('Failed to process client credentials', previous: $e);
         }
     }
 
+    /**
+     * @throws TokenGenerateException
+     */
     private function getAccessTokenData(ModuleAccount $module): AccessTokenData
     {
         $grantResult = new GrantResultData(

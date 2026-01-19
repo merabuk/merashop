@@ -12,6 +12,7 @@ use App\IdentityAccess\Application\DTO\UserCredentialsInterface;
 use App\IdentityAccess\Application\Exceptions\CreateRefreshTokenException;
 use App\IdentityAccess\Application\Exceptions\GrantHandlerException;
 use App\IdentityAccess\Application\Exceptions\InvalidCredentialsException;
+use App\IdentityAccess\Application\Exceptions\TokenGenerateException;
 use App\IdentityAccess\Application\Security\TokenGeneratorInterface;
 use App\IdentityAccess\Application\Service\RefreshTokenService;
 use App\IdentityAccess\Domain\Entity\UserAccount;
@@ -50,7 +51,13 @@ readonly class PasswordGrantHandler implements GrantHandlerInterface
                 EmailAddress::fromString($data->getUsername())
             );
 
-            if (null === $user || !$this->passwordHasher->verify($user->getPasswordHash()->value(), $data->getPassword())) {
+            if (
+                null === $user
+                || !$this->passwordHasher->verify(
+                    hashedPassword: $user->getPasswordHash()->value(),
+                    plainPassword: $data->getPassword()
+                )
+            ) {
                 throw new InvalidCredentialsException();
             }
 
@@ -58,11 +65,14 @@ readonly class PasswordGrantHandler implements GrantHandlerInterface
                 accessTokenData: $this->getAccessTokenData($user),
                 refreshTokenData: $this->getRefreshTokenData($user),
             );
-        } catch (InvalidUserAccountEmailException|CreateRefreshTokenException $e) {
-            throw new InvalidCredentialsException(previous: $e);
+        } catch (InvalidUserAccountEmailException|CreateRefreshTokenException|TokenGenerateException $e) {
+            throw new InvalidCredentialsException('Failed to process user credentials', previous: $e);
         }
     }
 
+    /**
+     * @throws TokenGenerateException
+     */
     private function getAccessTokenData(UserAccount $user): AccessTokenData
     {
         $grantResult = new GrantResultData(

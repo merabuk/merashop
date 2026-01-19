@@ -37,6 +37,7 @@ class RefreshTokenMapper implements MapperInterface
         $orm->setId($domain->getId()?->value());
         $orm->token = $domain->getTokenHash()->value();
         $orm->accountUlid = $domain->getAccountUlid()->value();
+        $orm->accountType = $domain->getAccountType()->value();
         $orm->expiresAt = $domain->getExpiresAt()->value();
 
         return $orm;
@@ -51,13 +52,15 @@ class RefreshTokenMapper implements MapperInterface
     {
         $this->assertIsType(OrmRefreshToken::class, $orm);
 
+        $id = Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class));
+
         /* @var OrmRefreshToken $orm */
         return new RefreshToken(
             tokenHash: TokenHash::fromString($orm->token),
             accountUlid: Ulid::fromString($orm->accountUlid),
             accountType: AccountType::fromEnum($orm->accountType),
             expiresAt: new ExpiresAt($orm->expiresAt),
-            id: Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class)),
+            id: $id,
         );
     }
 

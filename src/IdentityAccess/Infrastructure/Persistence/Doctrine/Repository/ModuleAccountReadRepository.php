@@ -44,7 +44,7 @@ class ModuleAccountReadRepository extends BaseModuleAccountRepository implements
 
     public function existsByClientId(ClientId $clientId): bool
     {
-        return $this->_existsBy(['client_id' => $clientId->value()]);
+        return $this->_existsBy(['clientId' => $clientId->value()]);
     }
 
     /**
