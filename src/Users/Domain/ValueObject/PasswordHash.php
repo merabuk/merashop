@@ -42,7 +42,7 @@ final class PasswordHash implements \Stringable
             throw new InvalidUserPasswordHashException('Password hash cannot be empty');
         }
 
-        if (self::MAX_LENGTH !== mb_strlen($hash)) {
+        if (self::MAX_LENGTH < mb_strlen($hash)) {
             throw new InvalidUserPasswordHashException('Password hash is too long');
         }
     }

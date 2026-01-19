@@ -78,9 +78,11 @@ Every module within `src/` must follow this standardized structure:
 
 ## 5. Testing Strategy
 
+- **Structure**: Tests are grouped by **Module** and then by **Test Type**. The standard structure is `tests/{ModuleName}/{TestType}/{OptionalSubPath}` (e.g., `tests/IdentityAccess/Unit/`).
 - **Unit Tests**: Focus on the `Domain` layer (logic, value objects, entities).
 - **Integration Tests**: Focus on `Infrastructure` (Doctrine mapping, repository implementations, external adapters).
-- **Application/Functional Tests**: End-to-end scenario testing via API endpoints or Handlers to verify business use cases.
+- **Functional Tests**: End-to-end scenario testing via API endpoints or Handlers to verify business use cases.
+- **Support**: Common test utilities, fixtures, and mothers for a module are located in `tests/{ModuleName}/Support/`.
 
 **Mapper Testing**: Every Mapper class in the `Infrastructure` layer must have an `Integration Test`. This test must verify:
 - `toDoctrineOrm`: Correct conversion of all Domain fields to ORM properties.

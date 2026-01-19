@@ -4,5 +4,5 @@ services:
     autoconfigure: true
     public: true
 
-  App\Tests\Resource\:
-    resource: '../tests/Resource/'
+  App\Tests\EmailSender\Support\:
+    resource: '../tests/EmailSender/Support/'

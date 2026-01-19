@@ -34,6 +34,7 @@ Each module follows the principles of DDD (Domain-Driven Design) and has a clear
     - [Project deployment](#2-project-deployment)
     - [Access to the application](#3-access-to-the-application)
 - [Development Workflow](#development-workflow)
+- [Tests](#tests)
 - [Infrastructure & Docker](#infrastructure--docker)
 - [Observability](#observability)
 
@@ -106,6 +107,26 @@ This command:
   php vendor/bin/deptrac analyse --config-file=deptrac.yaml
   php vendor/bin/deptrac analyse --config-file=deptrac-modules.yaml
   ```
+
+## Tests
+
+The project uses PHPUnit for testing. Tests are organized by module to support the Modular Monolith architecture.
+
+**Run all tests:**
+```bash
+php vendor/bin/phpunit
+```
+
+**Run tests for a specific module:**
+```bash
+php vendor/bin/phpunit --testsuite identity_access
+```
+
+**Test Structure:**
+- `tests/{ModuleName}/Unit` - Logic and Domain tests.
+- `tests/{ModuleName}/Integration` - Infrastructure and Persistence tests.
+- `tests/{ModuleName}/Functional` - Application and API tests.
+- `tests/{ModuleName}/Support` - Test mothers, fixtures, and utilities.
 
 ## Infrastructure & Docker
 

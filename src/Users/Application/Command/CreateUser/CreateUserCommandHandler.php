@@ -60,7 +60,7 @@ readonly class CreateUserCommandHandler implements CommandHandlerInterface
             password: PasswordHash::fromString($passwordHashString),
         );
 
-        $this->userWriteRepository->save($user);
+        $user = $this->userWriteRepository->save($user);
 
         $event = new UserRegisteredSharedEvent(
             id: $user->getUlid()->value(),
