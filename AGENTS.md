@@ -5,9 +5,9 @@ This document serves as the primary system instruction for AI Agents (like Junie
 ## 1. Project Philosophy
 
 ### Modular Monolith & DDD
-The project is built as a **Modular Monolith** following **Domain-Driven Design (DDD)** principles. The system is divided into high-level modules (e.g., `Users`, `EmailSender`) located in `src/`.
+The project is built as a **Modular Monolith** following **Domain-Driven Design (DDD)** principles. The system is divided into high-level modules (e.g., `IdentityAccess`, `EmailSender`) located in `src/`.
 
-- **Isolation**: Each module must be self-contained. Direct calls between modules are strictly forbidden.
+- **Isolation**: Each module must be self-contained. Direct calls between modules are strictly forbidden. This isolation extends to the database level: each module must have its own database schema (or a separate database) and its own entity manager.
 - **Communication**: Inter-module communication is handled exclusively via the `Shared` module or through **Events** (Asynchronous or Synchronous via Symfony Messenger).
 - **Enforcement**: **Deptrac** is used to monitor and enforce layer boundaries and dependency rules.
 - **Module Independence**: Every module must be independent. The `Shared` layer is the only exception, providing reusable components. However, `Shared` must only contain primitive logic, base interfaces, and cross-cutting concerns (e.g., `TraceId`, `ValueObjects` used by multiple modules) to maintain strict decoupling.
@@ -56,8 +56,10 @@ Every module within `src/` must follow this standardized structure:
     - If a service is likely to be mocked in unit tests of other components, prefer using an interface.
 
 ### Persistence & Mapping
+- **Database Isolation**: Each module MUST use its own dedicated connection and entity manager. Cross-module database queries are strictly forbidden.
 - **Mapping Location**: Doctrine mapping must reside strictly within `src/<ModuleName>/Infrastructure/Persistence/Doctrine/Mapping` (XML/PHP) OR within Infrastructure-specific entities (e.g., `Orm*` classes) using PHP attributes.
 - **Explicit Definitions**: Avoid using attributes or XML inside the Domain layer. Attributes are permitted only in the Infrastructure layer for ORM entities.
+- **Migrations**: Each module has its own migration configuration in `config/migrations/<module_name>.yaml`. Migrations must be run separately for each module using the `--em` and `--configuration` options.
 - **Exception Handling**: Each module should contain its own exception handler (like `src/IdentityAccess/Infrastructure/EventListener/IdentityExceptionListener.php`). The structure in such handlers might be module-specific (e.g., to comply with OAuth2 requirements).
 
 ### Modern PHP

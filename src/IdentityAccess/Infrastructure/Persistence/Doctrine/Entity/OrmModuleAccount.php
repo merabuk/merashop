@@ -13,7 +13,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'identity_access_module_accounts')]
+#[ORM\Table(name: 'module_accounts')]
 class OrmModuleAccount
 {
     use TimestampableEntity;

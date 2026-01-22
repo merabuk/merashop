@@ -5,8 +5,8 @@ Online store on Symfony.
 ## Project structure
 
 The project is organized using modular architecture (Modular Monolith) in the directory `src/`:
+- `IdentityAccess` - user management, registration, and authorization.
 - `EmailSender` - module for sending notifications.
-- `Users` - user management module (registration, authorization).
 - `Shared` - common components used between modules (Domain, Infrastructure, Application).
 
 ### Domain Structure
@@ -26,6 +26,24 @@ Each module follows the principles of DDD (Domain-Driven Design) and has a clear
 - `Infrastructure` - implementation of interfaces, databases, external APIs.
 - `Presentation` - controllers and CLI commands.
 - `/config/modules/*` - module-specific configurations collected by `Kernel.php`.
+
+## Databases & Migrations
+
+The project uses database isolation at the module level. Each module has its own connection and entity manager.
+
+### Running Migrations
+
+Migrations are run separately for each module using their respective entity managers and configurations:
+
+**IdentityAccess:**
+```bash
+php bin/console doctrine:migrations:migrate --em=identity_access --configuration=config/migrations/identity_access.yaml --no-interaction
+```
+
+**EmailSender:**
+```bash
+php bin/console doctrine:migrations:migrate --em=email_sender --configuration=config/migrations/email_sender.yaml --no-interaction
+```
 
 ## Table of Contents
 

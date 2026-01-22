@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'email_sender_outbox_email')]
+#[ORM\Table(name: 'outbox_email')]
 #[ORM\Index(name: 'idx_outbox_status_schedule', fields: ['status', 'scheduledAt'])]
 class OrmOutboxEmail
 {

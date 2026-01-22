@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'identity_access_refresh_tokens')]
+#[ORM\Table(name: 'refresh_tokens')]
 class OrmRefreshToken
 {
     #[ORM\Id]

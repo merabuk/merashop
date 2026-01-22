@@ -16,7 +16,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'users_user')]
+#[ORM\Table(name: 'users')]
 class OrmUser
 {
     use TimestampableEntity;

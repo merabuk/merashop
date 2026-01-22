@@ -1,22 +1,31 @@
 doctrine:
   dbal:
-    url: '%env(resolve:DATABASE_URL)%'
     types:
       outbox_email_status: App\EmailSender\Infrastructure\Persistence\Doctrine\Type\OutboxEmail\StatusType
       outbox_email_driver: App\EmailSender\Infrastructure\Persistence\Doctrine\Type\OutboxEmail\DriverType
       refresh_token_account_type: App\IdentityAccess\Infrastructure\Persistence\Doctrine\Type\RefreshToken\AccountType
-
-    # IMPORTANT: You MUST configure your server version,
-    # either here or in the DATABASE_URL env var (see .env file)
-    #server_version: '16'
-
-    profiling_collect_backtrace: '%kernel.debug%'
+    default_connection: identity_access
+    connections:
+      users:
+        url: '%env(resolve:DATABASE_URL_USERS)%'
+        profiling_collect_backtrace: '%kernel.debug%'
+      email_sender:
+        url: '%env(resolve:DATABASE_URL_EMAIL_SENDER)%'
+        profiling_collect_backtrace: '%kernel.debug%'
+        mapping_types:
+          outbox_email_status: outbox_email_status
+          outbox_email_driver: outbox_email_driver
+      identity_access:
+        url: '%env(resolve:DATABASE_URL_IDENTITY_ACCESS)%'
+        profiling_collect_backtrace: '%kernel.debug%'
+        mapping_types:
+          refresh_token_account_type: refresh_token_account_type
   orm:
     controller_resolver:
       auto_mapping: false
     entity_managers:
       users:
-        connection: default
+        connection: users
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
         mappings:
           Users:
@@ -26,7 +35,7 @@ doctrine:
             prefix: 'App\Users\Infrastructure\Persistence\Doctrine\Entity'
             alias: Users
       email_sender:
-        connection: default
+        connection: email_sender
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
         mappings:
           EmailSender:
@@ -36,7 +45,7 @@ doctrine:
             prefix: 'App\EmailSender\Infrastructure\Persistence\Doctrine\Entity'
             alias: EmailSender
       identity_access:
-        connection: default
+        connection: identity_access
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
         mappings:
           IdentityAccess:
@@ -47,9 +56,6 @@ doctrine:
             alias: IdentityAccess
 
 when@test:
-  doctrine:
-    dbal:
-      url: '%env(resolve:TEST_DATABASE_URL)%'
 
 when@prod:
   doctrine:
