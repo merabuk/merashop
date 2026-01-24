@@ -7,6 +7,7 @@ Online store on Symfony.
 The project is organized using modular architecture (Modular Monolith) in the directory `src/`:
 - `IdentityAccess` - user management, registration, and authorization.
 - `EmailSender` - module for sending notifications.
+- `Users` - user management for specific context (if distinct from IdentityAccess).
 - `Shared` - common components used between modules (Domain, Infrastructure, Application).
 
 ### Domain Structure
@@ -37,13 +38,20 @@ Migrations are run separately for each module using their respective entity mana
 
 **IdentityAccess:**
 ```bash
-php bin/console doctrine:migrations:migrate --em=identity_access --configuration=config/migrations/identity_access.yaml --no-interaction
+php bin/console doctrine:migrations:migrate --em=identity_access --configuration=config/migrations/identity_access.php --no-interaction
 ```
 
 **EmailSender:**
 ```bash
-php bin/console doctrine:migrations:migrate --em=email_sender --configuration=config/migrations/email_sender.yaml --no-interaction
+php bin/console doctrine:migrations:migrate --em=email_sender --configuration=config/migrations/email_sender.php --no-interaction
 ```
+
+**Users:**
+```bash
+php bin/console doctrine:migrations:migrate --em=users --configuration=config/migrations/users.php --no-interaction
+```
+
+Also, remember to run this command for test environment with flag `--env=test` if you need to migrate test databases manually. However, for testing, migrations are handled automatically (see [Tests](#tests)).
 
 ## Table of Contents
 
@@ -129,6 +137,12 @@ This command:
 ## Tests
 
 The project uses PHPUnit for testing. Tests are organized by module to support the Modular Monolith architecture.
+
+**Automatic Database Preparation:**
+The project is configured to automatically migrate all module databases before running tests. This is handled by `tests/bootstrap.php`. When you run `phpunit`, it will:
+1. Load the test environment.
+2. Run migrations for all entity managers (`identity_access`, `email_sender`, `users`).
+3. Ensure the databases are ready for testing.
 
 **Run all tests:**
 ```bash

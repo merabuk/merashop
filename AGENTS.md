@@ -59,7 +59,8 @@ Every module within `src/` must follow this standardized structure:
 - **Database Isolation**: Each module MUST use its own dedicated connection and entity manager. Cross-module database queries are strictly forbidden.
 - **Mapping Location**: Doctrine mapping must reside strictly within `src/<ModuleName>/Infrastructure/Persistence/Doctrine/Mapping` (XML/PHP) OR within Infrastructure-specific entities (e.g., `Orm*` classes) using PHP attributes.
 - **Explicit Definitions**: Avoid using attributes or XML inside the Domain layer. Attributes are permitted only in the Infrastructure layer for ORM entities.
-- **Migrations**: Each module has its own migration configuration in `config/migrations/<module_name>.yaml`. Migrations must be run separately for each module using the `--em` and `--configuration` options.
+- **Migrations**: Each module has its own migration configuration in `config/migrations/<module_name>.php`. Migrations must be run separately for each module using the `--em` and `--configuration` options.
+- **Testing Isolation**: For testing, all module databases are automatically migrated and prepared by `tests/bootstrap.php` when running PHPUnit. This ensures a clean and isolated state for each module's database during joint testing.
 - **Exception Handling**: Each module should contain its own exception handler (like `src/IdentityAccess/Infrastructure/EventListener/IdentityExceptionListener.php`). The structure in such handlers might be module-specific (e.g., to comply with OAuth2 requirements).
 
 ### Modern PHP

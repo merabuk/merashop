@@ -10,12 +10,9 @@ use App\Users\Domain\Repository\UserReadRepositoryInterface;
 use Faker\Factory;
 use Faker\Generator;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Zenstruck\Foundry\Test\ResetDatabase;
 
 class CreateUserCommandHandlerTest extends WebTestCase
 {
-    use ResetDatabase;
-
     private Generator $factory;
     private CommandBusInterface $commandBus;
     private UserReadRepositoryInterface $userReadRepository;
