@@ -1,0 +1,6 @@
+shared_api_v1:
+  resource:
+    path: ../ApiVersion1/Controller/
+    namespace: App\Shared\Presentation\Http\ApiVersion1\Controller
+  type: attribute
+  prefix: /api/v1/

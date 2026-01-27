@@ -4,6 +4,13 @@ framework:
 
     transports:
       # https://symfony.com/doc/current/messenger.html#transport-configuration
+      identity_access_outbox:
+        dsn: 'doctrine://identity_access'
+        options:
+          table_name: 'identity_access_messages'
+          queue_name: 'outbox'
+          auto_setup: true
+      identity_access_failed: 'doctrine://identity_access?queue_name=failed'
       async:
         dsn: '%env(DOCTRINE_MESSENGER_TRANSPORT_DSN)%'
         options:
@@ -12,7 +19,6 @@ framework:
         retry_strategy:
           max_retries: 3
           multiplier: 2
-      failed: 'doctrine://default?queue_name=failed'
       amqp_events:
         dsn: '%env(AMQP_MESSENGER_TRANSPORT_DSN)%'
         options:
@@ -58,6 +64,6 @@ framework:
       Symfony\Component\Notifier\Message\SmsMessage: async
 
       # Route your messages to the transports
-      App\Shared\Domain\Event\UserRegisteredSharedEvent: amqp_events
+      App\Shared\Domain\Event\UserRegisteredSharedEvent: identity_access_outbox
 
       App\EmailSender\Application\Command\SendOutboxEmail\SendOutboxEmailCommand: amqp_internal

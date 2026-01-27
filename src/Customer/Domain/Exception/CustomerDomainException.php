@@ -8,4 +8,8 @@ use App\Shared\Domain\Exception\ServerException;
 
 abstract class CustomerDomainException extends ServerException implements ThrowableCustomerException
 {
+    public function getErrorCode(): string
+    {
+        return 'CUSTOMER_DOMAIN_ERROR';
+    }
 }

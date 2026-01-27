@@ -15,4 +15,6 @@ interface UserAccountReadRepositoryInterface
     public function findByEmail(EmailAddress $email): ?UserAccount;
 
     public function findByUlid(Ulid $ulid): ?UserAccount;
+
+    public function existsByEmail(EmailAddress $email): bool;
 }

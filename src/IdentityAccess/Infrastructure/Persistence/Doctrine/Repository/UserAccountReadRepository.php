@@ -12,9 +12,12 @@ use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmUserAccount
 use App\Shared\Domain\Exception\EntityIdMissingException;
 use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
 use App\Shared\Domain\ValueObject\Ulid;
+use App\Shared\Infrastructure\Persistence\Doctrine\Repository\ReadRepositoryTrait;
 
 class UserAccountReadRepository extends BaseUserAccountRepository implements UserAccountReadRepositoryInterface
 {
+    use ReadRepositoryTrait;
+
     /**
      * @throws EntityIdMissingException
      * @throws InvalidIdentityAccessValueObjectException
@@ -49,6 +52,11 @@ class UserAccountReadRepository extends BaseUserAccountRepository implements Use
         $ormUser = $this->findOneBy(['ulid' => $ulid->value()]);
 
         return $this->checkAndMapToDomain($ormUser);
+    }
+
+    public function existsByEmail(EmailAddress $email): bool
+    {
+        return $this->_existsBy(['email' => $email->value()]);
     }
 
     /**

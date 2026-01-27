@@ -21,6 +21,20 @@ class UserAccount
     ) {
     }
 
+    public static function create(
+        Ulid $ulid,
+        EmailAddress $email,
+        PasswordHash $passwordHash,
+        RoleCollection $roles,
+    ): self {
+        return new self(
+            ulid: $ulid,
+            email: $email,
+            passwordHash: $passwordHash,
+            roles: $roles,
+        );
+    }
+
     public function getUlid(): Ulid
     {
         return $this->ulid;

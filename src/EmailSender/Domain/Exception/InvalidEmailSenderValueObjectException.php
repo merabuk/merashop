@@ -8,4 +8,8 @@ use App\Shared\Domain\Exception\ThrowableValueObjectException;
 
 abstract class InvalidEmailSenderValueObjectException extends EmailSenderDomainException implements ThrowableValueObjectException
 {
+    public function getErrorCode(): string
+    {
+        return 'INVALID_EMAIL_SENDER_VALUE_OBJECT';
+    }
 }

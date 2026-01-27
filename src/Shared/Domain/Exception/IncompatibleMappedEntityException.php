@@ -6,6 +6,11 @@ namespace App\Shared\Domain\Exception;
 
 final class IncompatibleMappedEntityException extends LogicException
 {
+    public function getErrorCode(): string
+    {
+        return 'INCOMPATIBLE_MAPPED_ENTITY';
+    }
+
     public static function expected(object $mapper, string $expectedClass, object $actualObject): self
     {
         return new self(sprintf(

@@ -28,8 +28,8 @@ Every module within `src/` must follow this standardized structure:
     - `Repository Implementations`.
     - `Adapters` for external services.
 - **Presentation/**: Entry points to the module.
-    - `Controllers` (Web API).
-    - `CLI Commands`.
+    - `Http/`: Web API controllers, requests, resources, and HTTP-specific event listeners.
+    - `Console/`: CLI commands, and Console-specific event listeners.
 
 ## 3. Coding Standards & Constraints
 
@@ -40,10 +40,12 @@ Every module within `src/` must follow this standardized structure:
     - Collection properties must be wrapped in a Collection VO (e.g., `ScopeCollection`).
     - **VO Exceptions**: Every VO must have a specific domain exception.
     - **Exception Hierarchy**: Each module must implement the following structure:
-        1. `Throwable{Module}Exception` (interface): Module marker.
-        2. `{Module}DomainException` (abstract class): Base module exception.
-        3. `Invalid{Module}ValueObjectException` (abstract class): Base exception for all VOs, inherits from base module exception and implements `ThrowableValueObjectException`.
-        4. Specific VO exceptions (e.g., `InvalidUserAccountEmailException`) must inherit from `Invalid{Module}ValueObjectException`.
+        1. `ServerException` (abstract class, in `Shared`): Base exception with `getErrorCode(): string` method.
+        2. `ErrorCodeEnum` (enum, in `Shared`): Standardized error codes (e.g., `UnexpectedError`, `ValidationFailed`).
+        3. `Throwable{Module}Exception` (interface): Module marker.
+        4. `{Module}DomainException` (abstract class): Base module exception, inherits from `ServerException`.
+        5. `Invalid{Module}ValueObjectException` (abstract class): Base exception for all VOs, inherits from base module exception and implements `ThrowableValueObjectException`.
+        6. Specific VO exceptions (e.g., `InvalidUserAccountEmailException`) must inherit from `Invalid{Module}ValueObjectException`.
     - **VO Location**: 
         - Model-specific VO must be placed in a subfolder named after the entity (e.g., `src/IdentityAccess/Domain/ValueObject/UserAccount/EmailAddress.php`).
         - Module-shared VO must be placed in the root `ValueObject` folder of the module.
@@ -61,7 +63,7 @@ Every module within `src/` must follow this standardized structure:
 - **Explicit Definitions**: Avoid using attributes or XML inside the Domain layer. Attributes are permitted only in the Infrastructure layer for ORM entities.
 - **Migrations**: Each module has its own migration configuration in `config/migrations/<module_name>.php`. Migrations must be run separately for each module using the `--em` and `--configuration` options.
 - **Testing Isolation**: For testing, all module databases are automatically migrated and prepared by `tests/bootstrap.php` when running PHPUnit. This ensures a clean and isolated state for each module's database during joint testing.
-- **Exception Handling**: Each module should contain its own exception handler (like `src/IdentityAccess/Infrastructure/EventListener/IdentityExceptionListener.php`). The structure in such handlers might be module-specific (e.g., to comply with OAuth2 requirements).
+- **Exception Handling**: Each module should contain its own exception handler (like `src/IdentityAccess/Presentation/Http/EventListener/IdentityExceptionListener.php`). The structure in such handlers might be module-specific (e.g., to comply with OAuth2 requirements).
 
 ### Modern PHP
 - **Strict Typing**: `declare(strict_types=1);` is mandatory in every file.

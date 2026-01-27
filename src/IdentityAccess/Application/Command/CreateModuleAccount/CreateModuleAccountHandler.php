@@ -50,7 +50,7 @@ readonly class CreateModuleAccountHandler implements CommandHandlerInterface
 
             return $plainSecret;
         } catch (RandomException|InvalidIdentityAccessValueObjectException $e) {
-            throw new CreateModuleAccountException(message: 'Error while creating module account', previous: $e);
+            throw new CreateModuleAccountException(message: 'Error during creating module account', previous: $e);
         }
     }
 

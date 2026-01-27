@@ -18,14 +18,17 @@ Each module follows the principles of DDD (Domain-Driven Design) and has a clear
         - Model-specific VOs are grouped in subfolders named after their entities (e.g., `ValueObject/UserAccount/EmailAddress.php`).
         - Every VO must have a specific domain exception.
     - **Exceptions**: Each module follows a strict exception hierarchy:
+        - `ServerException` (abstract class, in `Shared`) - base exception with `getErrorCode()` method.
         - `Throwable{Module}Exception` (interface) - module marker.
-        - `{Module}DomainException` (abstract class) - base domain exception.
+        - `{Module}DomainException` (abstract class) - base domain exception, inherits from `ServerException`.
         - `Invalid{Module}ValueObjectException` (abstract class) - base exception for all VOs in the module.
         - Specific VO exceptions (e.g., `InvalidUserAccountEmailException`) must inherit from the base VO exception.
-    - **Exception Handling**: Each module contains its own exception handler (e.g., `src/IdentityAccess/Infrastructure/EventListener/IdentityExceptionListener.php`) to manage module-specific error responses and maintain independence.
+    - **Exception Handling**: Each module contains its own exception handler (e.g., `src/IdentityAccess/Presentation/Http/EventListener/IdentityExceptionListener.php`) to manage module-specific error responses and maintain independence.
 - `Application` - services and commands.
 - `Infrastructure` - implementation of interfaces, databases, external APIs.
-- `Presentation` - controllers and CLI commands.
+- `Presentation` - entry points to the module.
+    - `Http` - controllers, requests, resources, and HTTP-specific event listeners.
+    - `Console` - CLI commands, and Console-specific event listeners.
 - `/config/modules/*` - module-specific configurations collected by `Kernel.php`.
 
 ## Databases & Migrations

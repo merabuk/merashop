@@ -1,14 +1,11 @@
-app_shared_api_v1:
-  resource:
-    path: ../src/Shared/Presentation/ApiVersion1/Controller/
-    namespace: App\Shared\Presentation\ApiVersion1\Controller
-  type: attribute
+app_shared_api:
+  resource: '../src/Shared/Presentation/Http/config/routes.yaml'
 
-users_api_v1:
-  resource: '../src/Users/Presentation/config/routes.yaml'
+users_api:
+  resource: '../src/Users/Presentation/Http/config/routes.yaml'
 
-identity_access_api_v1:
-  resource: '../src/IdentityAccess/Presentation/config/routes.yaml'
+identity_access_api:
+  resource: '../src/IdentityAccess/Presentation/Http/config/routes.yaml'
 
 kernel:
   resource:
