@@ -28,7 +28,7 @@ final class Version20260118124301 extends AbstractMigration
             PRIMARY KEY (id)
         )'
         );
-        $this->addSql('CREATE UNIQUE INDEX UNIQ_75AD3CC55F37A13B ON refresh_tokens (token)');
+        $this->addSql('CREATE UNIQUE INDEX uniq_refresh_token ON refresh_tokens (token)');
     }
 
     public function down(Schema $schema): void

@@ -54,7 +54,26 @@ php bin/console doctrine:migrations:migrate --em=email_sender --configuration=co
 php bin/console doctrine:migrations:migrate --em=users --configuration=config/migrations/users.php --no-interaction
 ```
 
-Also, remember to run this command for test environment with flag `--env=test` if you need to migrate test databases manually. However, for testing, migrations are handled automatically (see [Tests](#tests)).
+### Making Migrations
+
+Make migration files for each module using their respective entity managers and configurations:
+
+**IdentityAccess:**
+```bash
+php bin/console doctrine:migrations:diff --em=identity_access --configuration=config/migrations/identity_access.php --no-interaction
+```
+
+**EmailSender:**
+```bash
+php bin/console doctrine:migrations:diff --em=email_sender --configuration=config/migrations/email_sender.php --no-interaction
+```
+
+**Users:**
+```bash
+php bin/console doctrine:migrations:diff --em=users --configuration=config/migrations/users.php --no-interaction
+```
+
+Use lowercase human-friendly indexes.
 
 ## Table of Contents
 

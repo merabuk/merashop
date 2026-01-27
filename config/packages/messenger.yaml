@@ -1,24 +1,23 @@
 framework:
   messenger:
-    failure_transport: failed
+    # need to define each failure_transport separately
+    failure_transport: null
 
     transports:
       # https://symfony.com/doc/current/messenger.html#transport-configuration
+      # Identity Access Module
       identity_access_outbox:
         dsn: 'doctrine://identity_access'
-        options:
+        failure_transport: identity_access_failed
+        options: &identity_access_options
           table_name: 'identity_access_messages'
           queue_name: 'outbox'
           auto_setup: true
-      identity_access_failed: 'doctrine://identity_access?queue_name=failed'
-      async:
-        dsn: '%env(DOCTRINE_MESSENGER_TRANSPORT_DSN)%'
+      identity_access_failed:
+        dsn: 'doctrine://identity_access'
         options:
-          use_notify: true
-          check_delayed_interval: 60000
-        retry_strategy:
-          max_retries: 3
-          multiplier: 2
+          <<: *identity_access_options
+          queue_name: 'failed'
       amqp_events:
         dsn: '%env(AMQP_MESSENGER_TRANSPORT_DSN)%'
         options:
@@ -59,10 +58,6 @@ framework:
       messenger.bus.default: [ ]
 
     routing:
-      Symfony\Component\Mailer\Messenger\SendEmailMessage: async
-      Symfony\Component\Notifier\Message\ChatMessage: async
-      Symfony\Component\Notifier\Message\SmsMessage: async
-
       # Route your messages to the transports
       App\Shared\Domain\Event\UserRegisteredSharedEvent: identity_access_outbox
 
