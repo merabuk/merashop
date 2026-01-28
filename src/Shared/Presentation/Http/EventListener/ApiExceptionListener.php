@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Shared\Presentation\Http\EventListener;
 
 use App\Shared\Domain\Enum\ErrorCodeEnum;
+use App\Shared\Domain\Exception\ConflictExceptionInterface;
+use App\Shared\Domain\Exception\ForbiddenExceptionInterface;
+use App\Shared\Domain\Exception\NotFoundExceptionInterface;
 use App\Shared\Domain\Exception\ServerException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
@@ -13,13 +16,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Translation\MessageCatalogueInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ApiExceptionListener
 {
     private const string API_PREFIX = '/api/';
 
     public function __construct(
+        private readonly TranslatorInterface $translator,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -49,9 +55,15 @@ class ApiExceptionListener
 
         $this->logger->error($exception->getMessage(), ['exception' => $exception]);
 
+        $errorCode = ErrorCodeEnum::UnexpectedError->value;
+
         return $this->baseResponse(
-            errorCode: ErrorCodeEnum::UnexpectedError->value,
-            errorMessage: 'An unexpected error occurred',
+            errorCode: $errorCode,
+            errorMessage: $this->translator->trans(
+                id: $errorCode,
+                parameters: [],
+                domain: 'exceptions'.MessageCatalogueInterface::INTL_DOMAIN_SUFFIX
+            ),
             statusCode: Response::HTTP_INTERNAL_SERVER_ERROR,
         );
     }
@@ -64,6 +76,7 @@ class ApiExceptionListener
             return $this->handleValidationException($previousException);
         }
 
+        $statusCode = $this->getStatusCode($exception);
         $errorCode = $previousException instanceof ServerException
             ? $previousException->getErrorCode()
             : ErrorCodeEnum::UnexpectedError->value;
@@ -71,7 +84,7 @@ class ApiExceptionListener
         return $this->baseResponse(
             errorCode: $errorCode,
             errorMessage: $exception->getMessage(),
-            statusCode: $exception->getStatusCode(),
+            statusCode: $statusCode,
         );
     }
 
@@ -86,9 +99,15 @@ class ApiExceptionListener
             ];
         }
 
+        $errorCode = ErrorCodeEnum::ValidationFailed->value;
+
         return $this->baseResponse(
-            errorCode: ErrorCodeEnum::ValidationFailed->value,
-            errorMessage: 'Validation failed',
+            errorCode: $errorCode,
+            errorMessage: $this->translator->trans(
+                id: $errorCode,
+                parameters: [],
+                domain: 'exceptions'.MessageCatalogueInterface::INTL_DOMAIN_SUFFIX
+            ),
             statusCode: Response::HTTP_UNPROCESSABLE_ENTITY,
             extraData: ['violations' => $errors],
         );
@@ -108,5 +127,15 @@ class ApiExceptionListener
             'code' => $errorCode,
             'message' => $errorMessage,
         ], $statusCode);
+    }
+
+    private function getStatusCode(\Throwable $exception): int
+    {
+        return match (true) {
+            $exception instanceof ForbiddenExceptionInterface => Response::HTTP_FORBIDDEN,
+            $exception instanceof NotFoundExceptionInterface => Response::HTTP_NOT_FOUND,
+            $exception instanceof ConflictExceptionInterface => Response::HTTP_CONFLICT,
+            default => Response::HTTP_INTERNAL_SERVER_ERROR,
+        };
     }
 }

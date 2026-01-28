@@ -5,7 +5,7 @@ namespace App\Tests\EmailSender\Unit\Domain\Entity\Entity;
 use App\EmailSender\Domain\Entity\OutboxEmail;
 use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;
 use App\EmailSender\Domain\Enum\OutboxEmail\StatusEnum;
-use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectException;
+use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectExceptionInterface;
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailAttemptsException;
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailErrorMessageException;
 use App\EmailSender\Domain\Exception\OutboxEmailAlreadyInProcessException;
@@ -204,7 +204,7 @@ class OutboxEmailTest extends TestCase
                 lockedAt: null,
                 errorMessage: null,
             );
-        } catch (InvalidEmailSenderValueObjectException $e) {
+        } catch (InvalidEmailSenderValueObjectExceptionInterface $e) {
             throw new \RuntimeException(sprintf('Invalid email sender value object. Error: %s', $e->getMessage()));
         }
     }

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Users\Domain\Exception;
 
-use App\Shared\Domain\Exception\ServerException;
+use App\Shared\Domain\Exception\LogicException;
 
-abstract class UserDomainException extends ServerException implements ThrowableUsersException
+abstract class UserDomainException extends LogicException implements UsersExceptionInterface
 {
     public function getErrorCode(): string
     {

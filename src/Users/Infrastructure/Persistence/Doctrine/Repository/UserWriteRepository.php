@@ -6,10 +6,10 @@ namespace App\Users\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Shared\Domain\Exception\EntityIdMissingException;
 use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
-use App\Shared\Domain\Exception\ThrowableValueObjectException;
+use App\Shared\Domain\Exception\ValueObjectExceptionInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait;
 use App\Users\Domain\Entity\User;
-use App\Users\Domain\Exception\InvalidUserValueObjectException;
+use App\Users\Domain\Exception\InvalidUserValueObjectExceptionInterface;
 use App\Users\Domain\Repository\UserWriteRepositoryInterface;
 use Doctrine\ORM\Exception\ORMException;
 
@@ -20,9 +20,9 @@ class UserWriteRepository extends BaseUserRepository implements UserWriteReposit
     /**
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
-     * @throws InvalidUserValueObjectException
+     * @throws InvalidUserValueObjectExceptionInterface
      * @throws ORMException
-     * @throws ThrowableValueObjectException
+     * @throws ValueObjectExceptionInterface
      */
     public function save(User $user): User
     {

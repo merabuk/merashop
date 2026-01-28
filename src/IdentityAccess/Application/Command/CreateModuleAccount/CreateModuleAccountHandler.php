@@ -6,7 +6,7 @@ namespace App\IdentityAccess\Application\Command\CreateModuleAccount;
 
 use App\IdentityAccess\Application\Exceptions\CreateModuleAccountException;
 use App\IdentityAccess\Domain\Entity\ModuleAccount;
-use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
+use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectExceptionInterface;
 use App\IdentityAccess\Domain\Repository\ModuleAccountWriteRepositoryInterface;
 use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientId;
@@ -49,7 +49,7 @@ readonly class CreateModuleAccountHandler implements CommandHandlerInterface
             $this->writeRepository->save($module);
 
             return $plainSecret;
-        } catch (RandomException|InvalidIdentityAccessValueObjectException $e) {
+        } catch (RandomException|InvalidIdentityAccessValueObjectExceptionInterface $e) {
             throw new CreateModuleAccountException(message: 'Error during creating module account', previous: $e);
         }
     }

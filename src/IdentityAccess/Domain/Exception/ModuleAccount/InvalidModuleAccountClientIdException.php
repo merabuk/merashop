@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Domain\Exception\ModuleAccount;
 
-use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
+use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectExceptionInterface;
 
-final class InvalidModuleAccountClientIdException extends InvalidIdentityAccessValueObjectException
+final class InvalidModuleAccountClientIdException extends InvalidIdentityAccessValueObjectExceptionInterface
 {
 }

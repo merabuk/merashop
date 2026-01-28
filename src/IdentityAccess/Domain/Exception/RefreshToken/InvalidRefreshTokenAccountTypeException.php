@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Domain\Exception\RefreshToken;
 
-use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
+use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectExceptionInterface;
 
-final class InvalidRefreshTokenAccountTypeException extends InvalidIdentityAccessValueObjectException
+final class InvalidRefreshTokenAccountTypeException extends InvalidIdentityAccessValueObjectExceptionInterface
 {
     /**
      * @param string[] $availableValues

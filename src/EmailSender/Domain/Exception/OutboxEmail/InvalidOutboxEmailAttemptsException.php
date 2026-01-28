@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\EmailSender\Domain\Exception\OutboxEmail;
 
-use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectException;
+use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectExceptionInterface;
 
-final class InvalidOutboxEmailAttemptsException extends InvalidEmailSenderValueObjectException
+final class InvalidOutboxEmailAttemptsException extends InvalidEmailSenderValueObjectExceptionInterface
 {
 }

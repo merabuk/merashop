@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\EmailSender\Integration\Infrastructure\Persistence\Doctrine\Mapper;
 
-use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectException;
+use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectExceptionInterface;
 use App\EmailSender\Infrastructure\Persistence\Doctrine\Entity\OrmOutboxEmail;
 use App\EmailSender\Infrastructure\Persistence\Doctrine\Mapper\OutboxEmailMapper;
 use App\Shared\Domain\Exception\EntityIdMissingException;
@@ -30,7 +30,7 @@ class OutboxEmailMapperTest extends KernelTestCase
 
     /**
      * @throws EntityIdMissingException
-     * @throws InvalidEmailSenderValueObjectException
+     * @throws InvalidEmailSenderValueObjectExceptionInterface
      * @throws IncompatibleMappedEntityException
      * @throws InvalidTraceIdException
      */
@@ -92,7 +92,7 @@ class OutboxEmailMapperTest extends KernelTestCase
     }
 
     /**
-     * @throws InvalidEmailSenderValueObjectException
+     * @throws InvalidEmailSenderValueObjectExceptionInterface
      * @throws EntityIdMissingException
      * @throws InvalidTraceIdException
      */
@@ -107,7 +107,7 @@ class OutboxEmailMapperTest extends KernelTestCase
 
     /**
      * @throws InvalidTraceIdException
-     * @throws InvalidEmailSenderValueObjectException
+     * @throws InvalidEmailSenderValueObjectExceptionInterface
      * @throws IncompatibleMappedEntityException
      */
     public function testThrowExceptionOnInvalidId(): void

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Domain\Exception;
 
-use App\Shared\Domain\Exception\ServerException;
+use App\Shared\Domain\Exception\LogicException;
 
-abstract class IdentityAccessDomainException extends ServerException implements ThrowableIdentityAccessException
+abstract class IdentityAccessDomainException extends LogicException implements IdentityAccessExceptionInterface
 {
     public function getErrorCode(): string
     {

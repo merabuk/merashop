@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\IdentityAccess\Unit\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\IdentityAccess\Domain\Entity\UserAccount;
-use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
+use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectExceptionInterface;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Ulid;
 use App\IdentityAccess\Domain\ValueObject\RoleCollection;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
@@ -28,7 +28,7 @@ final class UserAccountMapperTest extends TestCase
 
     /**
      * @throws IncompatibleMappedEntityException
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      */
     public function testToDoctrineOrm(): void
     {
@@ -46,7 +46,7 @@ final class UserAccountMapperTest extends TestCase
     /**
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      */
     public function testFromDoctrineOrm(): void
     {
@@ -63,7 +63,7 @@ final class UserAccountMapperTest extends TestCase
 
     /**
      * @throws IncompatibleMappedEntityException
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      */
     public function testMapToExistingOrm(): void
     {
@@ -83,7 +83,7 @@ final class UserAccountMapperTest extends TestCase
 
     /**
      * @throws EntityIdMissingException
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      */
     public function testThrowExceptionOnInvalidEntity(): void
     {
@@ -96,7 +96,7 @@ final class UserAccountMapperTest extends TestCase
 
     /**
      * @throws IncompatibleMappedEntityException
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      */
     public function testThrowExceptionOnInvalidId(): void
     {
@@ -105,7 +105,7 @@ final class UserAccountMapperTest extends TestCase
     }
 
     /**
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      */
     private function makeDomainEntity(): UserAccount
     {

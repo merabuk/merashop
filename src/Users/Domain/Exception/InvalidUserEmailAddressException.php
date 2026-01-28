@@ -6,7 +6,7 @@ namespace App\Users\Domain\Exception;
 
 use App\Shared\Domain\Exception\InvalidEmailAddressException;
 
-class InvalidUserEmailAddressException extends InvalidUserValueObjectException
+class InvalidUserEmailAddressException extends InvalidUserValueObjectExceptionInterface
 {
     public static function fromBaseException(InvalidEmailAddressException $baseException): self
     {

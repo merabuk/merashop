@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\IdentityAccess\Domain\Entity\UserAccount;
-use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
+use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectExceptionInterface;
 use App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmUserAccount;
@@ -20,7 +20,7 @@ class UserAccountReadRepository extends BaseUserAccountRepository implements Use
 
     /**
      * @throws EntityIdMissingException
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      * @throws IncompatibleMappedEntityException
      */
     public function findById(int $id): ?UserAccount
@@ -32,7 +32,7 @@ class UserAccountReadRepository extends BaseUserAccountRepository implements Use
 
     /**
      * @throws EntityIdMissingException
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      * @throws IncompatibleMappedEntityException
      */
     public function findByEmail(EmailAddress $email): ?UserAccount
@@ -44,7 +44,7 @@ class UserAccountReadRepository extends BaseUserAccountRepository implements Use
 
     /**
      * @throws EntityIdMissingException
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      * @throws IncompatibleMappedEntityException
      */
     public function findByUlid(Ulid $ulid): ?UserAccount
@@ -61,7 +61,7 @@ class UserAccountReadRepository extends BaseUserAccountRepository implements Use
 
     /**
      * @throws EntityIdMissingException
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      * @throws IncompatibleMappedEntityException
      */
     private function checkAndMapToDomain(?object $ormUser): ?UserAccount

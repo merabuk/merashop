@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\IdentityAccess\Unit\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\IdentityAccess\Domain\Entity\ModuleAccount;
-use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
+use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectExceptionInterface;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientId;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientSecretHash;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Id;
@@ -28,7 +28,7 @@ final class ModuleAccountMapperTest extends TestCase
 
     /**
      * @throws IncompatibleMappedEntityException
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      */
     public function testToDoctrineOrm(): void
     {
@@ -44,7 +44,7 @@ final class ModuleAccountMapperTest extends TestCase
     }
 
     /**
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
      */
@@ -63,7 +63,7 @@ final class ModuleAccountMapperTest extends TestCase
 
     /**
      * @throws IncompatibleMappedEntityException
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      */
     public function testMapToExistingOrm(): void
     {
@@ -83,7 +83,7 @@ final class ModuleAccountMapperTest extends TestCase
 
     /**
      * @throws EntityIdMissingException
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      */
     public function testThrowExceptionOnInvalidEntity(): void
     {
@@ -95,7 +95,7 @@ final class ModuleAccountMapperTest extends TestCase
     }
 
     /**
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      * @throws IncompatibleMappedEntityException
      */
     public function testThrowExceptionOnInvalidId(): void
@@ -105,7 +105,7 @@ final class ModuleAccountMapperTest extends TestCase
     }
 
     /**
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      */
     private function makeDomainEntity(): ModuleAccount
     {

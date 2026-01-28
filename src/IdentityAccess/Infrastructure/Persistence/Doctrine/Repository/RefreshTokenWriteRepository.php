@@ -9,7 +9,7 @@ use App\IdentityAccess\Domain\Repository\RefreshTokenWriteRepositoryInterface;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Type\RefreshToken\AccountType as DbalAccountType;
 use App\Shared\Domain\Exception\EntityIdMissingException;
 use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
-use App\Shared\Domain\Exception\ThrowableValueObjectException;
+use App\Shared\Domain\Exception\ValueObjectExceptionInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait;
 use Doctrine\ORM\Exception\ORMException;
 
@@ -19,7 +19,7 @@ final class RefreshTokenWriteRepository extends BaseRefreshTokenRepository imple
 
     /**
      * @throws EntityIdMissingException
-     * @throws ThrowableValueObjectException
+     * @throws ValueObjectExceptionInterface
      * @throws IncompatibleMappedEntityException
      * @throws ORMException
      */

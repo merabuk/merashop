@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\EmailSender\Domain\Exception\OutboxEmail;
 
-use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectException;
+use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectExceptionInterface;
 
-final class InvalidOutboxEmailStatusException extends InvalidEmailSenderValueObjectException
+final class InvalidOutboxEmailStatusException extends InvalidEmailSenderValueObjectExceptionInterface
 {
     /**
      * @param string[] $availableValues

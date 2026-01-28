@@ -18,7 +18,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 #[ORM\Index(
     name: 'idx_outbox_process',
     columns: ['status', 'scheduled_at'],
-    options: ['where' => "((status = '".StatusEnum::Created->value."'::".StatusType::NAME.") OR (status = '".StatusEnum::Failed->value."'::".StatusType::NAME."))"]
+    options: ['where' => "((status = '".StatusEnum::Created->value."'::".StatusType::NAME.") OR (status = '".StatusEnum::Failed->value."'::".StatusType::NAME.'))']
 )]
 #[ORM\Index(name: 'idx_outbox_trace', columns: ['trace_id'])]
 class OrmOutboxEmail

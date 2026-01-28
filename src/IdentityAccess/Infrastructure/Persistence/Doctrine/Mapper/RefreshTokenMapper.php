@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\IdentityAccess\Domain\Entity\RefreshToken;
-use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
+use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectExceptionInterface;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\AccountType;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\ExpiresAt;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\Id;
@@ -46,7 +46,7 @@ class RefreshTokenMapper implements MapperInterface
     /**
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      */
     public function fromDoctrineOrm(object $orm): RefreshToken
     {

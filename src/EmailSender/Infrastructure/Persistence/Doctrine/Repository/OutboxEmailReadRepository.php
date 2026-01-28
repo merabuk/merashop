@@ -6,7 +6,7 @@ namespace App\EmailSender\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\EmailSender\Domain\Entity\OutboxEmail;
 use App\EmailSender\Domain\Enum\OutboxEmail\StatusEnum;
-use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectException;
+use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectExceptionInterface;
 use App\EmailSender\Domain\Repository\OutboxEmailReadRepositoryInterface;
 use App\EmailSender\Infrastructure\Persistence\Doctrine\Entity\OrmOutboxEmail;
 use App\Shared\Domain\Exception\EntityIdMissingException;
@@ -16,7 +16,7 @@ use App\Shared\Domain\Exception\ValueObject\InvalidTraceIdException;
 class OutboxEmailReadRepository extends BaseOutgoingEmailRepository implements OutboxEmailReadRepositoryInterface
 {
     /**
-     * @throws InvalidEmailSenderValueObjectException
+     * @throws InvalidEmailSenderValueObjectExceptionInterface
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidTraceIdException
@@ -33,7 +33,7 @@ class OutboxEmailReadRepository extends BaseOutgoingEmailRepository implements O
      *
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
-     * @throws InvalidEmailSenderValueObjectException
+     * @throws InvalidEmailSenderValueObjectExceptionInterface
      * @throws InvalidTraceIdException
      */
     public function findReadyToProcess(int $limit, \DateTimeImmutable $now, \DateTimeImmutable $staleTime): array
@@ -60,7 +60,7 @@ class OutboxEmailReadRepository extends BaseOutgoingEmailRepository implements O
     /**
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
-     * @throws InvalidEmailSenderValueObjectException
+     * @throws InvalidEmailSenderValueObjectExceptionInterface
      * @throws InvalidTraceIdException
      */
     private function checkAndMapToDomain(?object $ormOutgoingEmail): ?OutboxEmail

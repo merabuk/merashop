@@ -9,7 +9,7 @@ use App\Shared\Application\Command\CommandHandlerInterface;
 use App\Shared\Domain\Event\UserRegisteredSharedEvent;
 use App\Shared\Domain\Service\UlidGeneratorInterface;
 use App\Users\Domain\Entity\User;
-use App\Users\Domain\Exception\InvalidUserValueObjectException;
+use App\Users\Domain\Exception\InvalidUserValueObjectExceptionInterface;
 use App\Users\Domain\Exception\UserAlreadyExistsException;
 use App\Users\Domain\Repository\UserWriteRepositoryInterface;
 use App\Users\Domain\Service\PasswordHasherInterface;
@@ -39,7 +39,7 @@ readonly class CreateUserCommandHandler implements CommandHandlerInterface
 
     /**
      * @throws ExceptionInterface
-     * @throws InvalidUserValueObjectException
+     * @throws InvalidUserValueObjectExceptionInterface
      * @throws UserAlreadyExistsException
      */
     public function __invoke(CreateUserCommand $command): int

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\EmailSender\Domain\Exception;
 
-use App\Shared\Domain\Exception\ServerException;
+use App\Shared\Domain\Exception\LogicException;
 
-abstract class EmailSenderDomainException extends ServerException implements ThrowableEmailSenderException
+abstract class EmailSenderDomainException extends LogicException implements EmailSenderExceptionInterface
 {
     public function getErrorCode(): string
     {

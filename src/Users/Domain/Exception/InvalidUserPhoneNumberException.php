@@ -6,7 +6,7 @@ namespace App\Users\Domain\Exception;
 
 use App\Shared\Domain\Exception\InvalidPhoneNumberException;
 
-class InvalidUserPhoneNumberException extends InvalidUserValueObjectException
+class InvalidUserPhoneNumberException extends InvalidUserValueObjectExceptionInterface
 {
     public static function fromBaseException(InvalidPhoneNumberException $baseException): self
     {

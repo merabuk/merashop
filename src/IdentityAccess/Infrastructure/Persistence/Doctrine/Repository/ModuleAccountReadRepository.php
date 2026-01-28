@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\IdentityAccess\Domain\Entity\ModuleAccount;
-use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
+use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectExceptionInterface;
 use App\IdentityAccess\Domain\Repository\ModuleAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientId;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Ulid;
@@ -20,7 +20,7 @@ class ModuleAccountReadRepository extends BaseModuleAccountRepository implements
 
     /**
      * @throws EntityIdMissingException
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      * @throws IncompatibleMappedEntityException
      */
     public function findByClientId(ClientId $clientId): ?ModuleAccount
@@ -32,7 +32,7 @@ class ModuleAccountReadRepository extends BaseModuleAccountRepository implements
 
     /**
      * @throws EntityIdMissingException
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      * @throws IncompatibleMappedEntityException
      */
     public function findByUlid(Ulid $ulid): ?ModuleAccount
@@ -49,7 +49,7 @@ class ModuleAccountReadRepository extends BaseModuleAccountRepository implements
 
     /**
      * @throws EntityIdMissingException
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      * @throws IncompatibleMappedEntityException
      */
     private function checkAndMapToDomain(?object $orm): ?ModuleAccount

@@ -6,7 +6,7 @@ namespace App\Tests\EmailSender\Support;
 
 use App\EmailSender\Domain\Entity\OutboxEmail;
 use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;
-use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectException;
+use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectExceptionInterface;
 use App\EmailSender\Domain\Exception\OutboxEmailAlreadyInProcessException;
 use App\EmailSender\Domain\Service\OutboxEmailFactoryInterface;
 use App\Shared\Domain\Service\TraceIdFactoryInterface;
@@ -53,7 +53,7 @@ final readonly class OutboxEmailMother
     }
 
     /**
-     * @throws InvalidEmailSenderValueObjectException
+     * @throws InvalidEmailSenderValueObjectExceptionInterface
      * @throws \DateMalformedStringException
      */
     public function createFailedEmail(): OutboxEmail

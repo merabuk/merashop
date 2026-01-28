@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\Exception\ValueObject;
 
-final class InvalidTraceIdException extends InvalidValueObjectException
+final class InvalidTraceIdException extends InvalidValueObjectExceptionInterface
 {
 }

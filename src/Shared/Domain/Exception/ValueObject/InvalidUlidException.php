@@ -4,7 +4,7 @@ namespace App\Shared\Domain\Exception\ValueObject;
 
 use App\Shared\Domain\Exception\InvalidUlidException as BaseInvalidUlidException;
 
-final class InvalidUlidException extends InvalidValueObjectException
+final class InvalidUlidException extends InvalidValueObjectExceptionInterface
 {
     public static function fromBase(BaseInvalidUlidException $e): self
     {

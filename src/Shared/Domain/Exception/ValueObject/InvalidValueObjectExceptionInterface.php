@@ -3,9 +3,9 @@
 namespace App\Shared\Domain\Exception\ValueObject;
 
 use App\Shared\Domain\Exception\LogicException;
-use App\Shared\Domain\Exception\ThrowableValueObjectException;
+use App\Shared\Domain\Exception\ValueObjectExceptionInterface;
 
-abstract class InvalidValueObjectException extends LogicException implements ThrowableValueObjectException
+abstract class InvalidValueObjectExceptionInterface extends LogicException implements ValueObjectExceptionInterface
 {
     public function getErrorCode(): string
     {

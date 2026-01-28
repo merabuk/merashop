@@ -9,7 +9,6 @@ use App\IdentityAccess\Application\Exceptions\InvalidCredentialsException;
 use App\IdentityAccess\Application\Exceptions\InvalidRefreshTokenException;
 use App\IdentityAccess\Application\Exceptions\UnsupportedGrantTypeException;
 use App\IdentityAccess\Domain\Exception\IdentityAccessDomainException;
-use App\IdentityAccess\Domain\Exception\UserAccount\UserAccountAlreadyExistsException;
 use App\IdentityAccess\Infrastructure\Security\OAuth2Error;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,9 +18,9 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 
-final class IdentityExceptionListener
+final class ApiIdentityAccessExceptionListener
 {
-    private const string API_PREFIX = '/api/v1/identity-access/';
+    private const string OAUTH2_TOKEN_PATH = '/api/v1/identity-access/auth/token';
 
     public function __construct()
     {
@@ -37,7 +36,7 @@ final class IdentityExceptionListener
         $request = $event->getRequest();
         $exception = $event->getThrowable();
 
-        if (!str_starts_with($request->getPathInfo(), self::API_PREFIX)) {
+        if (self::OAUTH2_TOKEN_PATH !== $request->getPathInfo()) {
             return;
         }
 
@@ -51,13 +50,6 @@ final class IdentityExceptionListener
 
     private function handleIdentityException(\Throwable $exception): ?JsonResponse
     {
-        if ($exception instanceof UserAccountAlreadyExistsException) {
-            return new JsonResponse([
-                'code' => $exception->getErrorCode(),
-                'message' => $exception->getMessage(), // TODO: use translations in future getErrorMessageTranslationKey
-            ], Response::HTTP_CONFLICT);
-        }
-
         $previousException = $exception->getPrevious();
 
         if (

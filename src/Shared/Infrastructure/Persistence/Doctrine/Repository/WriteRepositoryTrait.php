@@ -4,7 +4,7 @@ namespace App\Shared\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Shared\Domain\Exception\EntityIdMissingException;
 use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
-use App\Shared\Domain\Exception\ThrowableValueObjectException;
+use App\Shared\Domain\Exception\ValueObjectExceptionInterface;
 use Doctrine\ORM\Exception\ORMException;
 
 trait WriteRepositoryTrait
@@ -13,7 +13,7 @@ trait WriteRepositoryTrait
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
      * @throws ORMException
-     * @throws ThrowableValueObjectException
+     * @throws ValueObjectExceptionInterface
      */
     protected function _save(object $domain, ?int $id): object
     {

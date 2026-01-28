@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\IdentityAccess\Unit\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\IdentityAccess\Domain\Entity\RefreshToken;
-use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
+use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectExceptionInterface;
 use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountUlidException;
 use App\IdentityAccess\Domain\Exception\RefreshToken\InvalidRefreshTokenTokenHashException;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\AccountType;
@@ -30,7 +30,7 @@ final class RefreshTokenMapperTest extends TestCase
 
     /**
      * @throws IncompatibleMappedEntityException
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      * @throws InvalidModuleAccountUlidException
      * @throws InvalidRefreshTokenTokenHashException
      */
@@ -48,7 +48,7 @@ final class RefreshTokenMapperTest extends TestCase
     }
 
     /**
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
      */
@@ -67,7 +67,7 @@ final class RefreshTokenMapperTest extends TestCase
 
     /**
      * @throws IncompatibleMappedEntityException
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      */
     public function testMapToExistingOrm(): void
     {
@@ -86,7 +86,7 @@ final class RefreshTokenMapperTest extends TestCase
 
     /**
      * @throws EntityIdMissingException
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      */
     public function testThrowExceptionOnInvalidEntity(): void
     {
@@ -99,7 +99,7 @@ final class RefreshTokenMapperTest extends TestCase
 
     /**
      * @throws IncompatibleMappedEntityException
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      */
     public function testThrowExceptionOnInvalidId(): void
     {
@@ -108,7 +108,7 @@ final class RefreshTokenMapperTest extends TestCase
     }
 
     /**
-     * @throws InvalidIdentityAccessValueObjectException
+     * @throws InvalidIdentityAccessValueObjectExceptionInterface
      */
     private function makeDomainEntity(): RefreshToken
     {

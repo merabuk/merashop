@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Customer\Domain\Exception\CustomerProfile;
 
-use App\Customer\Domain\Exception\InvalidCustomerValueObjectException;
+use App\Customer\Domain\Exception\InvalidCustomerValueObjectExceptionInterface;
 use App\Shared\Domain\Exception\InvalidStringException;
 
-final class InvalidCustomerProfileLastNameException extends InvalidCustomerValueObjectException
+final class InvalidCustomerProfileLastNameException extends InvalidCustomerValueObjectExceptionInterface
 {
     public static function fromBaseException(InvalidStringException $baseException): self
     {

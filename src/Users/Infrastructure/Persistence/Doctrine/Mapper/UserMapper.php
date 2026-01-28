@@ -9,7 +9,7 @@ use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\MapperInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
 use App\Users\Domain\Entity\User;
-use App\Users\Domain\Exception\InvalidUserValueObjectException;
+use App\Users\Domain\Exception\InvalidUserValueObjectExceptionInterface;
 use App\Users\Domain\ValueObject\EmailAddress;
 use App\Users\Domain\ValueObject\FirstName;
 use App\Users\Domain\ValueObject\Id;
@@ -49,7 +49,7 @@ class UserMapper implements MapperInterface
 
     /**
      * @throws IncompatibleMappedEntityException
-     * @throws InvalidUserValueObjectException
+     * @throws InvalidUserValueObjectExceptionInterface
      * @throws EntityIdMissingException
      */
     public function fromDoctrineOrm(object $orm): User

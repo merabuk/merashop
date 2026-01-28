@@ -8,7 +8,7 @@ final class EntityIdMissingException extends LogicException
 {
     public function getErrorCode(): string
     {
-        return 'ENTITY_ID_MISSING';
+        return 'ENTITY_ID_MISSING_ERROR';
     }
 
     public static function forEntity(string $className): self

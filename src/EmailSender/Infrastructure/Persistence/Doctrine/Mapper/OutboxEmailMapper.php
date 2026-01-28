@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\EmailSender\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\EmailSender\Domain\Entity\OutboxEmail;
-use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectException;
+use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectExceptionInterface;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Attempts;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Body;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Driver;
@@ -64,7 +64,7 @@ class OutboxEmailMapper implements MapperInterface
     /**
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
-     * @throws InvalidEmailSenderValueObjectException
+     * @throws InvalidEmailSenderValueObjectExceptionInterface
      * @throws InvalidTraceIdException
      */
     public function fromDoctrineOrm(object $orm): OutboxEmail

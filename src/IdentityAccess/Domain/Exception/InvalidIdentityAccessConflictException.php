@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Domain\Exception;
 
-use App\Shared\Domain\Exception\ThrowableValueObjectException;
+use App\Shared\Domain\Exception\ConflictExceptionInterface;
 
-abstract class InvalidIdentityAccessConflictException extends IdentityAccessDomainException implements ThrowableValueObjectException
+abstract class InvalidIdentityAccessConflictException extends IdentityAccessDomainException implements ConflictExceptionInterface
 {
     public function getErrorCode(): string
     {

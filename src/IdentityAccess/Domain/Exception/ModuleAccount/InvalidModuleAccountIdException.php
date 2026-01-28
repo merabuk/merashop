@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Domain\Exception\ModuleAccount;
 
-use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
+use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectExceptionInterface;
 
-final class InvalidModuleAccountIdException extends InvalidIdentityAccessValueObjectException
+final class InvalidModuleAccountIdException extends InvalidIdentityAccessValueObjectExceptionInterface
 {
     public static function becauseItIsNotAValidId(): self
     {
