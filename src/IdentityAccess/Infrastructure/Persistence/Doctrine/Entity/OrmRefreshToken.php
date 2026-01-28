@@ -13,6 +13,7 @@ use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'refresh_tokens')]
+#[ORM\UniqueConstraint(name: 'uniq_refresh_token', columns: ['token'])]
 class OrmRefreshToken
 {
     #[ORM\Id]
@@ -20,7 +21,7 @@ class OrmRefreshToken
     #[ORM\Column(type: Types::BIGINT)]
     public private(set) ?int $id = null;
 
-    #[ORM\Column(type: Types::STRING, length: TokenHash::MAX_LENGTH, unique: true)]
+    #[ORM\Column(type: Types::STRING, length: TokenHash::MAX_LENGTH)]
     public ?string $token = null;
 
     #[ORM\Column(type: UlidType::NAME)]

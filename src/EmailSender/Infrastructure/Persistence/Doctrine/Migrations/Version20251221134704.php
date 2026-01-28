@@ -41,7 +41,14 @@ final class Version20251221134704 extends AbstractMigration
         )'
         );
 
-        $this->addSql('CREATE INDEX idx_outbox_process ON outbox_email (status, scheduled_at) WHERE status IN (\'created\', \'failed\')');
+        $this->addSql(
+            'CREATE INDEX idx_outbox_process
+                ON outbox_email (status, scheduled_at)
+                WHERE (
+                    (status = \'created\'::outbox_email_status)
+                        OR (status = \'failed\'::outbox_email_status)
+                    )'
+        );
         $this->addSql('CREATE INDEX idx_outbox_trace ON outbox_email (trace_id)');
     }
 

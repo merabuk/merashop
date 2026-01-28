@@ -11,13 +11,13 @@ framework:
         failure_transport: identity_access_failed
         options: &identity_access_options
           table_name: 'identity_access_messages'
-          queue_name: 'outbox'
-          auto_setup: true
+          queue_name: !php/enum App\IdentityAccess\Domain\Enum\MessengerQueueEnum::Outbox->value
+          auto_setup: false
       identity_access_failed:
         dsn: 'doctrine://identity_access'
         options:
           <<: *identity_access_options
-          queue_name: 'failed'
+          queue_name: !php/enum App\IdentityAccess\Domain\Enum\MessengerQueueEnum::Failed->value
       amqp_events:
         dsn: '%env(AMQP_MESSENGER_TRANSPORT_DSN)%'
         options:

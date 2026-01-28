@@ -14,6 +14,8 @@ use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'user_accounts')]
+#[ORM\UniqueConstraint(name: 'uniq_user_ulid', columns: ['ulid'])]
+#[ORM\UniqueConstraint(name: 'uniq_user_email', columns: ['email'])]
 class OrmUserAccount
 {
     use TimestampableEntity;
@@ -24,10 +26,10 @@ class OrmUserAccount
     #[ORM\Column(type: Types::BIGINT)]
     public private(set) ?int $id = null;
 
-    #[ORM\Column(type: UlidType::NAME, unique: true)]
+    #[ORM\Column(type: UlidType::NAME)]
     public ?string $ulid = null;
 
-    #[ORM\Column(type: Types::STRING, length: EmailAddress::MAX_LENGTH, unique: true)]
+    #[ORM\Column(type: Types::STRING, length: EmailAddress::MAX_LENGTH)]
     public ?string $email = null;
 
     #[ORM\Column(type: Types::STRING, length: PasswordHash::MAX_LENGTH)]

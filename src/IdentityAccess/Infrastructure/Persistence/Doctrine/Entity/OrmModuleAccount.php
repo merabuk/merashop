@@ -14,6 +14,8 @@ use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'module_accounts')]
+#[ORM\UniqueConstraint(name: 'uniq_module_ulid', columns: ['ulid'])]
+#[ORM\UniqueConstraint(name: 'uniq_module_client', columns: ['client_id'])]
 class OrmModuleAccount
 {
     use TimestampableEntity;
@@ -24,10 +26,10 @@ class OrmModuleAccount
     #[ORM\Column(type: Types::BIGINT)]
     public private(set) ?int $id = null;
 
-    #[ORM\Column(type: UlidType::NAME, unique: true)]
+    #[ORM\Column(type: UlidType::NAME)]
     public ?string $ulid = null;
 
-    #[ORM\Column(type: Types::STRING, length: ClientId::MAX_LENGTH, unique: true)]
+    #[ORM\Column(type: Types::STRING, length: ClientId::MAX_LENGTH)]
     public ?string $clientId = null;
 
     #[ORM\Column(type: Types::STRING, length: ClientSecretHash::MAX_LENGTH)]

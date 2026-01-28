@@ -15,7 +15,12 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'outbox_email')]
-#[ORM\Index(name: 'idx_outbox_status_schedule', fields: ['status', 'scheduledAt'])]
+#[ORM\Index(
+    name: 'idx_outbox_process',
+    columns: ['status', 'scheduled_at'],
+    options: ['where' => "((status = '".StatusEnum::Created->value."'::".StatusType::NAME.") OR (status = '".StatusEnum::Failed->value."'::".StatusType::NAME."))"]
+)]
+#[ORM\Index(name: 'idx_outbox_trace', columns: ['trace_id'])]
 class OrmOutboxEmail
 {
     use TimestampableEntity;
@@ -25,11 +30,11 @@ class OrmOutboxEmail
     #[ORM\Column(type: Types::BIGINT)]
     public private(set) ?int $id = null;
 
-    #[ORM\Column(type: StatusType::NAME)]
+    #[ORM\Column(type: StatusType::NAME, options: ['default' => StatusEnum::Created->value])]
     public StatusEnum $status = StatusEnum::Created;
 
     #[ORM\Column(type: DriverType::NAME)]
-    public DriverEnum $driver = DriverEnum::Smtp;
+    public DriverEnum $driver = DriverEnum::Log;
 
     #[ORM\Column(name: '`from`', type: Types::STRING, length: 255)]
     public string $from;
@@ -48,7 +53,7 @@ class OrmOutboxEmail
     /**
      * @var ?array<string, mixed>
      */
-    #[ORM\Column(type: Types::JSON, nullable: true)]
+    #[ORM\Column(type: Types::JSONB, nullable: true)]
     public ?array $payload = null;
 
     #[ORM\Column(type: Types::INTEGER, options: ['default' => Attempts::DEFAULT])]
