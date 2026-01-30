@@ -8,6 +8,6 @@ enum RoleEnum: string
 {
     use StringEnumTrait;
 
-    case User = 'user';
-    case Customer = 'customer';
+    case User = 'ROLE_USER';
+    case Customer = 'ROLE_CUSTOMER';
 }

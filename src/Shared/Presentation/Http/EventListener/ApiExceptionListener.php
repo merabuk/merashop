@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Shared\Presentation\Http\EventListener;
 
 use App\Shared\Domain\Enum\ErrorCodeEnum;
+use App\Shared\Domain\Exception\AppExceptionInterface;
 use App\Shared\Domain\Exception\ConflictExceptionInterface;
 use App\Shared\Domain\Exception\ForbiddenExceptionInterface;
 use App\Shared\Domain\Exception\NotFoundExceptionInterface;
@@ -16,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\Messenger\Exception\HandlerFailedException;
 use Symfony\Component\Translation\MessageCatalogueInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -47,25 +49,12 @@ class ApiExceptionListener
 
     private function determineResponse(\Throwable $exception): JsonResponse
     {
-        if ($exception instanceof HttpExceptionInterface) {
-            return $this->handleHttpException($exception);
-        }
-
-        // TODO: in future, handle specific exceptions using their own error codes
-
-        $this->logger->error($exception->getMessage(), ['exception' => $exception]);
-
-        $errorCode = ErrorCodeEnum::UnexpectedError->value;
-
-        return $this->baseResponse(
-            errorCode: $errorCode,
-            errorMessage: $this->translator->trans(
-                id: $errorCode,
-                parameters: [],
-                domain: 'exceptions'.MessageCatalogueInterface::INTL_DOMAIN_SUFFIX
-            ),
-            statusCode: Response::HTTP_INTERNAL_SERVER_ERROR,
-        );
+        return match (true) {
+            $exception instanceof HttpExceptionInterface => $this->handleHttpException($exception),
+            $exception instanceof HandlerFailedException => $this->handleHandlerFailedException($exception),
+            $exception instanceof AppExceptionInterface => $this->handleAppException($exception),
+            default => $this->logAndResponseWithBaseUnexpectedError($exception),
+        };
     }
 
     private function handleHttpException(HttpExceptionInterface $exception): JsonResponse
@@ -113,6 +102,34 @@ class ApiExceptionListener
         );
     }
 
+    public function handleHandlerFailedException(HandlerFailedException $exception): JsonResponse
+    {
+        $previousException = $exception->getPrevious();
+
+        if ($previousException instanceof AppExceptionInterface) {
+            return $this->handleAppException($previousException);
+        }
+
+        return $this->logAndResponseWithBaseUnexpectedError($exception);
+    }
+
+    public function handleAppException(AppExceptionInterface $exception): JsonResponse
+    {
+        $statusCode = $this->getStatusCode($exception);
+        $errorCode = $exception->getErrorCode();
+        $errorMessageData = $exception->getMessageData();
+
+        return $this->baseResponse(
+            errorCode: $errorCode,
+            errorMessage: $this->translator->trans(
+                id: $errorCode,
+                parameters: $errorMessageData,
+                domain: 'exceptions'.MessageCatalogueInterface::INTL_DOMAIN_SUFFIX
+            ),
+            statusCode: $statusCode
+        );
+    }
+
     /**
      * @param array<string, mixed> $extraData
      */
@@ -127,6 +144,22 @@ class ApiExceptionListener
             'code' => $errorCode,
             'message' => $errorMessage,
         ], $statusCode);
+    }
+
+    private function logAndResponseWithBaseUnexpectedError(\Throwable $exception): JsonResponse
+    {
+        $this->logger->error($exception->getMessage(), ['exception' => $exception]);
+
+        $errorCode = ErrorCodeEnum::UnexpectedError->value;
+
+        return $this->baseResponse(
+            errorCode: $errorCode,
+            errorMessage: $this->translator->trans(
+                id: $errorCode,
+                domain: 'exceptions'.MessageCatalogueInterface::INTL_DOMAIN_SUFFIX
+            ),
+            statusCode: Response::HTTP_INTERNAL_SERVER_ERROR,
+        );
     }
 
     private function getStatusCode(\Throwable $exception): int

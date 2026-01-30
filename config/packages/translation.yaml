@@ -2,6 +2,5 @@ framework:
     default_locale: en
     translator:
         default_path: '%kernel.project_dir%/translations'
-        paths:
-          - '%kernel.project_dir%/src/Shared/Presentation/translations'
-          - '%kernel.project_dir%/src/IdentityAccess/Presentation/Http/ApiVersion1/translations'
+        # translation paths collected automatically by
+        # App\Shared\Infrastructure\Symfony\DependencyInjection\Compiler\RegisterModuleTranslationsPass

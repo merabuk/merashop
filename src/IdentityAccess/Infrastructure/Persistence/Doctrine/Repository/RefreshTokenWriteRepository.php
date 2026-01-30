@@ -12,6 +12,7 @@ use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObjectExceptionInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait;
 use Doctrine\ORM\Exception\ORMException;
+use Symfony\Bridge\Doctrine\Types\UlidType;
 
 final class RefreshTokenWriteRepository extends BaseRefreshTokenRepository implements RefreshTokenWriteRepositoryInterface
 {
@@ -42,7 +43,7 @@ final class RefreshTokenWriteRepository extends BaseRefreshTokenRepository imple
             ->delete()
             ->where('rt.accountUlid = :accountUlid')
             ->andWhere('rt.accountType = :accountType')
-            ->setParameter('accountUlid', $refreshToken->getAccountUlid()->value())
+            ->setParameter('accountUlid', $refreshToken->getAccountUlid()->value(), UlidType::NAME)
             ->setParameter('accountType', $refreshToken->getAccountType()->value(), DbalAccountType::NAME)
             ->getQuery()
             ->execute();

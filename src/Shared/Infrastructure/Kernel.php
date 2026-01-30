@@ -2,6 +2,7 @@
 
 namespace App\Shared\Infrastructure;
 
+use App\Shared\Infrastructure\Symfony\DependencyInjection\Compiler\RegisterModuleTranslationsPass;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -32,5 +33,10 @@ class Kernel extends BaseKernel
 
         $container->import($configDir.'/{modules}/*.{php,yaml}');
         $container->import($configDir.'/{modules}/'.$this->environment.'/*.{php,yaml}');
+    }
+
+    protected function build(ContainerBuilder $container): void
+    {
+        $container->addCompilerPass(new RegisterModuleTranslationsPass());
     }
 }
