@@ -6,7 +6,7 @@ namespace App\IdentityAccess\Domain\Exception;
 
 use App\Shared\Domain\Exception\ValueObjectExceptionInterface;
 
-abstract class InvalidIdentityAccessValueObjectExceptionInterface extends IdentityAccessDomainException implements ValueObjectExceptionInterface
+abstract class InvalidIdentityAccessValueObjectException extends IdentityAccessDomainException implements ValueObjectExceptionInterface
 {
     public function getErrorCode(): string
     {

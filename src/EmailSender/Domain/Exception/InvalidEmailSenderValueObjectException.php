@@ -6,7 +6,7 @@ namespace App\EmailSender\Domain\Exception;
 
 use App\Shared\Domain\Exception\ValueObjectExceptionInterface;
 
-abstract class InvalidEmailSenderValueObjectExceptionInterface extends EmailSenderDomainException implements ValueObjectExceptionInterface
+abstract class InvalidEmailSenderValueObjectException extends EmailSenderDomainException implements ValueObjectExceptionInterface
 {
     public function getErrorCode(): string
     {

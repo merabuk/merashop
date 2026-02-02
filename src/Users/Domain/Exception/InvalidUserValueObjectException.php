@@ -6,7 +6,7 @@ namespace App\Users\Domain\Exception;
 
 use App\Shared\Domain\Exception\ValueObjectExceptionInterface;
 
-abstract class InvalidUserValueObjectExceptionInterface extends UserDomainException implements ValueObjectExceptionInterface
+abstract class InvalidUserValueObjectException extends UserDomainException implements ValueObjectExceptionInterface
 {
     public function getErrorCode(): string
     {

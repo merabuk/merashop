@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Users\Domain\Exception;
 
-class InvalidUserUlidException extends InvalidUserValueObjectExceptionInterface
+class InvalidUserUlidException extends InvalidUserValueObjectException
 {
     public static function becauseItIsNotAValidUlid(string $invalidValue): self
     {

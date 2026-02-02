@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Domain\Exception\ModuleAccount;
 
-use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectExceptionInterface;
+use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
 
-final class InvalidModuleAccountPasswordHashException extends InvalidIdentityAccessValueObjectExceptionInterface
+final class InvalidModuleAccountPasswordHashException extends InvalidIdentityAccessValueObjectException
 {
 }

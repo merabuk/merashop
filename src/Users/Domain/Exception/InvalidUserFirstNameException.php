@@ -6,7 +6,7 @@ namespace App\Users\Domain\Exception;
 
 use App\Shared\Domain\Exception\InvalidStringException;
 
-class InvalidUserFirstNameException extends InvalidUserValueObjectExceptionInterface
+class InvalidUserFirstNameException extends InvalidUserValueObjectException
 {
     public static function fromBaseException(InvalidStringException $baseException): self
     {

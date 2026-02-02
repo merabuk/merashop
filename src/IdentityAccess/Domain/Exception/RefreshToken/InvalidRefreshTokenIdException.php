@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Domain\Exception\RefreshToken;
 
-use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectExceptionInterface;
+use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
 
-final class InvalidRefreshTokenIdException extends InvalidIdentityAccessValueObjectExceptionInterface
+final class InvalidRefreshTokenIdException extends InvalidIdentityAccessValueObjectException
 {
     public static function becauseItIsNotAValidId(): self
     {

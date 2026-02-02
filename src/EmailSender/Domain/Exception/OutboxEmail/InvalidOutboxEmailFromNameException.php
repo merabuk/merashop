@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\EmailSender\Domain\Exception\OutboxEmail;
 
-use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectExceptionInterface;
+use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectException;
 use App\Shared\Domain\Exception\InvalidStringException;
 
-final class InvalidOutboxEmailFromNameException extends InvalidEmailSenderValueObjectExceptionInterface
+final class InvalidOutboxEmailFromNameException extends InvalidEmailSenderValueObjectException
 {
     public static function fromBaseException(InvalidStringException $baseException): self
     {
