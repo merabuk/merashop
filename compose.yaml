@@ -1,3 +1,39 @@
+x-queue-worker-defaults: &queue-worker-defaults
+  image: merashop/queue-worker:latest
+  depends_on:
+    pgsql:
+      condition: service_healthy
+    rabbitmq:
+      condition: service_healthy
+  deploy:
+    mode: replicated
+    replicas: 1
+    update_config:
+      parallelism: 1
+      failure_action: rollback
+      order: start-first
+    rollback_config:
+      parallelism: 1
+      order: start-first
+      failure_action: continue
+    resources:
+      limits:
+        cpus: '0.35'
+        memory: 512M
+      reservations:
+        cpus: '0.25'
+        memory: 256M
+  environment:
+    APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
+  healthcheck:
+    test: [ "CMD-SHELL", "php -r \"echo 'php is alive';\" || exit 1" ]
+    retries: 3
+    timeout: 5s
+  networks:
+    - merashop-network
+  volumes:
+    - ./:/var/www
+
 services:
   pgsql:
     image: postgres:18-alpine3.21
@@ -6,8 +42,9 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB_IDENTITY_ACCESS}
       POSTGRES_DB_USERS: ${POSTGRES_DB_USERS}
-      POSTGRES_DB_EMAIL_SENDER: ${POSTGRES_DB_EMAIL_SENDER}
+      POSTGRES_DB_CUSTOMER: ${POSTGRES_DB_CUSTOMER}
       POSTGRES_DB_IDENTITY_ACCESS: ${POSTGRES_DB_IDENTITY_ACCESS}
+      POSTGRES_DB_EMAIL_SENDER: ${POSTGRES_DB_EMAIL_SENDER}
     healthcheck:
       test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB_IDENTITY_ACCESS}", "-U", "${POSTGRES_USER}"]
       timeout: 5s
@@ -37,8 +74,9 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB_IDENTITY_ACCESS}
       POSTGRES_DB_USERS: ${POSTGRES_DB_USERS}
-      POSTGRES_DB_EMAIL_SENDER: ${POSTGRES_DB_EMAIL_SENDER}
+      POSTGRES_DB_CUSTOMER: ${POSTGRES_DB_CUSTOMER}
       POSTGRES_DB_IDENTITY_ACCESS: ${POSTGRES_DB_IDENTITY_ACCESS}
+      POSTGRES_DB_EMAIL_SENDER: ${POSTGRES_DB_EMAIL_SENDER}
     healthcheck:
       test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB_IDENTITY_ACCESS}", "-U", "${POSTGRES_USER}"]
       timeout: 5s
@@ -145,6 +183,11 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - merashop-network
     ports:
@@ -195,6 +238,49 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     depends_on:
       - elasticsearch
+
+  identity-access-queue-worker:
+    <<: *queue-worker-defaults
+    environment:
+      APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
+      WAIT_RABBITMQ: true
+      WORKER_TYPE: queue
+      MESSENGER_TRANSPORT: identity_access_outbox
+
+  customer-external-queue-worker:
+    <<: *queue-worker-defaults
+    environment:
+      APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
+      WAIT_RABBITMQ: true
+      WORKER_TYPE: queue
+      MESSENGER_TRANSPORT: customer_external
+      MESSENGER_QUEUES: customer_module
+
+  email-sender-external-queue-worker:
+    <<: *queue-worker-defaults
+    environment:
+      APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
+      WAIT_RABBITMQ: true
+      WORKER_TYPE: queue
+      MESSENGER_TRANSPORT: email_sender_external
+      MESSENGER_QUEUES: email_sender_module
+
+  email-sender-internal-queue-worker:
+    <<: *queue-worker-defaults
+    environment:
+      APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
+      WAIT_RABBITMQ: true
+      WORKER_TYPE: queue
+      MESSENGER_TRANSPORT: email_sender_internal
+      MESSENGER_QUEUES: email_processor
+
+  email-sender-sheduler-worker:
+    <<: *queue-worker-defaults
+    environment:
+      APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
+      WAIT_RABBITMQ: true
+      WORKER_TYPE: scheduler
+      MESSENGER_TRANSPORT: scheduler_email_sender
 
 networks:
   merashop-network:

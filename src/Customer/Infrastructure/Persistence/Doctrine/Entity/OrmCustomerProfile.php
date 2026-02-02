@@ -15,6 +15,7 @@ use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'customer_profiles')]
+#[ORM\UniqueConstraint(name: 'uniq_customer_profile_user_ulid', columns: ['user_ulid'])]
 class OrmCustomerProfile
 {
     use TimestampableEntity;
@@ -25,13 +26,13 @@ class OrmCustomerProfile
     #[ORM\Column(type: Types::BIGINT)]
     public private(set) ?int $id = null;
 
-    #[ORM\Column(type: UlidType::NAME, unique: true)]
+    #[ORM\Column(type: UlidType::NAME)]
     public ?string $userUlid = null;
 
-    #[ORM\Column(type: Types::STRING, length: FirstName::MAX_LENGTH)]
+    #[ORM\Column(type: Types::STRING, length: FirstName::MAX_LENGTH, nullable: true)]
     public ?string $firstName = null;
 
-    #[ORM\Column(type: Types::STRING, length: LastName::MAX_LENGTH)]
+    #[ORM\Column(type: Types::STRING, length: LastName::MAX_LENGTH, nullable: true)]
     public ?string $lastName = null;
 
     #[ORM\Column(type: Types::STRING, length: PhoneNumber::MAX_LENGTH, nullable: true)]

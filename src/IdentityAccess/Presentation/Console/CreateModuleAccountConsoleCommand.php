@@ -14,7 +14,6 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -30,18 +29,17 @@ final class CreateModuleAccountConsoleCommand extends BaseConsoleCommand
         private readonly CreateModuleAccountHandler $handler,
         private readonly ModuleAccountReadRepositoryInterface $readRepository,
     ) {
-        parent::__construct($validator);
+        parent::__construct(validator: $validator);
     }
 
     protected function configure(): void
     {
         $this
-            ->addArgument('clientId', InputArgument::OPTIONAL, 'The unique ID of the module');
-    }
-
-    protected function initialize(InputInterface $input, OutputInterface $output): void
-    {
-        $this->io = new SymfonyStyle($input, $output);
+            ->addArgument(
+                name: 'clientId',
+                mode: InputArgument::OPTIONAL,
+                description: 'The unique ID of the module'
+            );
     }
 
     protected function interact(InputInterface $input, OutputInterface $output): void

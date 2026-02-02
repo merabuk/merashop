@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Shared\Presentation\Console;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -17,6 +19,11 @@ abstract class BaseConsoleCommand extends Command
         protected readonly ValidatorInterface $validator,
     ) {
         parent::__construct();
+    }
+
+    protected function initialize(InputInterface $input, OutputInterface $output): void
+    {
+        $this->io = new SymfonyStyle($input, $output);
     }
 
     /**

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\EmailSender\Application\Command\SendOutboxEmail;
 
-use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailAttemptsException;
-use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailErrorMessageException;
+use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectException;
 use App\EmailSender\Domain\Repository\OutboxEmailReadRepositoryInterface;
 use App\EmailSender\Domain\Repository\OutboxEmailWriteRepositoryInterface;
 use App\EmailSender\Domain\Service\MailerServiceInterface;
 use App\EmailSender\Domain\Service\OutboxRetryPolicy;
+use App\EmailSender\Domain\ValueObject\OutboxEmail\Id;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
 use Psr\Log\LoggerInterface;
@@ -31,12 +31,11 @@ readonly class SendOutboxEmailCommandHandler implements CommandHandlerInterface
 
     /**
      * @throws \DateMalformedStringException
-     * @throws InvalidOutboxEmailAttemptsException
-     * @throws InvalidOutboxEmailErrorMessageException
+     * @throws InvalidEmailSenderValueObjectException
      */
     public function __invoke(SendOutboxEmailCommand $command): void
     {
-        $email = $this->outboxEmailReadRepository->findById($command->id);
+        $email = $this->outboxEmailReadRepository->findByIdForUpdate(Id::fromInt($command->id));
 
         if (!$email || !$email->canBeProcessed()) {
             $this->logger->notice("Email not found or can't be processed", [

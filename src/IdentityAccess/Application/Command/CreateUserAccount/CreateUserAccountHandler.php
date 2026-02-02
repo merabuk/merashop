@@ -6,7 +6,7 @@ namespace App\IdentityAccess\Application\Command\CreateUserAccount;
 
 use App\IdentityAccess\Application\Exceptions\CreateUserAccountException;
 use App\IdentityAccess\Domain\Entity\UserAccount;
-use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectExceptionInterface;
+use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
 use App\IdentityAccess\Domain\Exception\UserAccount\UserAccountAlreadyExistsException;
 use App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\Repository\UserAccountWriteRepositoryInterface;
@@ -67,7 +67,7 @@ readonly class CreateUserAccountHandler implements CommandHandlerInterface
                 email: $user->getEmail()->value(),
                 name: 'Customer' // TODO[user_account]: refactor receiving name in future
             ));
-        } catch (InvalidIdentityAccessValueObjectExceptionInterface|ExceptionInterface $e) {
+        } catch (InvalidIdentityAccessValueObjectException|ExceptionInterface $e) {
             throw new CreateUserAccountException(message: 'Error during creating user account', previous: $e);
         }
     }

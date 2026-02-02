@@ -10,5 +10,7 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 #[AutoconfigureTag('email_sender.mailer')]
 interface MailerInterface
 {
+    public static function getDefaultIndexName(): string;
+
     public function send(OutboxEmail $email): ?string;
 }

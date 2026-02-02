@@ -7,6 +7,9 @@ stof_doctrine_extensions:
       timestampable: true
       softdeleteable: true
 
+    customer:
+      <<: *default_sts
+
     email_sender:
       <<: *default_sts
 

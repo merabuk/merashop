@@ -18,8 +18,10 @@ framework:
         options:
           <<: *identity_access_options
           queue_name: !php/enum App\IdentityAccess\Domain\Enum\MessengerQueueEnum::Failed->value
-      amqp_events:
+      # EmailSender Module
+      email_sender_external:
         dsn: '%env(AMQP_MESSENGER_TRANSPORT_DSN)%'
+        failure_transport: amqp_failed
         options:
           auto_setup: true
           confirm_timeout: 5
@@ -30,24 +32,60 @@ framework:
             email_sender_module:
               binding_keys:
                 - !php/enum App\Shared\Domain\Event\SharedEventNameEnum::UserRegistered->value
-      amqp_internal:
+      email_sender_internal:
         dsn: '%env(AMQP_MESSENGER_TRANSPORT_DSN)%'
+        failure_transport: amqp_failed
         options:
           exchange:
-            name: 'internal_tasks'
+            name: 'email_sender.internal'
             type: 'direct'
           queues:
             email_processor:
               binding_keys:
                 - !php/enum App\EmailSender\Domain\Enum\EmailSenderQueueEnum::EmailProcessor->value
-      # sync: 'sync://'
+      # Customer Module
+      customer_external:
+        dsn: '%env(AMQP_MESSENGER_TRANSPORT_DSN)%'
+        failure_transport: amqp_failed
+        options:
+          auto_setup: true
+          confirm_timeout: 5
+          exchange:
+            name: 'domain_events'
+            type: 'topic'
+          queues:
+            customer_module:
+              binding_keys:
+                - !php/enum App\Shared\Domain\Event\SharedEventNameEnum::UserRegistered->value
+      # Base
+      amqp_events:
+        dsn: '%env(AMQP_MESSENGER_TRANSPORT_DSN)%'
+        failure_transport: amqp_failed
+        options:
+          auto_setup: true
+          confirm_timeout: 5
+          exchange:
+            name: 'domain_events'
+            type: 'topic'
+      amqp_failed:
+        dsn: '%env(AMQP_MESSENGER_TRANSPORT_DSN)%'
+        options:
+          auto_setup: true
+          exchange:
+            name: 'failed_events'
+            type: 'fanout'
+          queues:
+            failed_events: ~
 
     default_bus: command.bus
 
     buses:
       command.bus:
         middleware:
-          - doctrine_transaction
+          - doctrine_transaction: [users]
+          - doctrine_transaction: [customer]
+          - doctrine_transaction: [identity_access]
+          - doctrine_transaction: [email_sender]
           - 'App\Shared\Infrastructure\Bus\TraceId\TraceIdMiddleware'
           - 'App\Shared\Infrastructure\Bus\Middleware\EventRoutingKeyMiddleware'
       query.bus:
@@ -61,4 +99,4 @@ framework:
       # Route your messages to the transports
       App\Shared\Domain\Event\UserRegisteredSharedEvent: identity_access_outbox
 
-      App\EmailSender\Application\Command\SendOutboxEmail\SendOutboxEmailCommand: amqp_internal
+      App\EmailSender\Application\Command\SendOutboxEmail\SendOutboxEmailCommand: email_sender_internal

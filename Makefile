@@ -34,10 +34,5 @@ php-cs-fixer:
 phpstan:
 	docker compose exec app php vendor/bin/phpstan analyse --configuration=phpstan.dist.neon --memory-limit=-1 --no-ansi --no-interaction
 
-test-prepare:
-	docker compose exec app php bin/console doctrine:database:drop --env=test --force --if-exists
-	docker compose exec app php bin/console doctrine:database:create --env=test
-	docker compose exec app php bin/console doctrine:migrations:migrate --env=test --no-interaction
-
 test:
 	docker compose exec app vendor/bin/phpunit

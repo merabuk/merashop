@@ -5,33 +5,38 @@ declare(strict_types=1);
 namespace App\EmailSender\Infrastructure\Mailer;
 
 use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;
-use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 
 readonly class MailerFactory
 {
-    /** @var iterable<MailerInterface> */
-    private iterable $mailers;
-
-    /**
-     * @param iterable<MailerInterface> $mailers
-     */
     public function __construct(
-        #[AutowireIterator('email_sender.mailer')] iterable $mailers,
+        #[AutowireLocator(
+            services: 'email_sender.mailer',
+            defaultIndexMethod: 'getDefaultIndexName',
+        )]
+        private ContainerInterface $mailers,
     ) {
-        $this->mailers = $mailers;
     }
 
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
     public function make(DriverEnum $driver): MailerInterface
     {
-        foreach ($this->mailers as $mailer) {
-            if (DriverEnum::Log === $driver && $mailer instanceof LogMailer) {
-                return $mailer;
-            }
-            if (DriverEnum::Smtp === $driver && $mailer instanceof SmtpMailer) {
-                return $mailer;
-            }
+        if (!$this->mailers->has($driver->value)) {
+            throw new \RuntimeException(sprintf('Mailer driver "%s" not found', $driver->value));
         }
 
-        throw new \RuntimeException(sprintf('Mailer driver "%s" not found', $driver->value));
+        $mailer = $this->mailers->get($driver->value);
+
+        if ($mailer instanceof MailerInterface) {
+            return $mailer;
+        }
+
+        throw new \RuntimeException(sprintf('Mailer driver "%s" is not an instance of MailerInterface', $driver->value));
     }
 }

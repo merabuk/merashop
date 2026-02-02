@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\EmailSender\Infrastructure\Mailer;
 
 use App\EmailSender\Domain\Entity\OutboxEmail;
+use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 
@@ -26,5 +27,10 @@ readonly class LogMailer implements MailerInterface
         ]);
 
         return null;
+    }
+
+    public static function getDefaultIndexName(): string
+    {
+        return DriverEnum::Log->value;
     }
 }

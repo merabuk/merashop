@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\IdentityAccess\Domain\Entity\ModuleAccount;
-use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectExceptionInterface;
+use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientId;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientSecretHash;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Id;
@@ -45,7 +45,7 @@ class ModuleAccountMapper implements MapperInterface
 
     /**
      * @throws IncompatibleMappedEntityException
-     * @throws InvalidIdentityAccessValueObjectExceptionInterface
+     * @throws InvalidIdentityAccessValueObjectException
      * @throws EntityIdMissingException
      */
     public function fromDoctrineOrm(object $orm): ModuleAccount

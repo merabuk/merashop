@@ -8,7 +8,7 @@ use App\IdentityAccess\Application\DTO\RefreshTokenData;
 use App\IdentityAccess\Application\Exceptions\CreateRefreshTokenException;
 use App\IdentityAccess\Domain\Entity\RefreshToken;
 use App\IdentityAccess\Domain\Enum\AccountTypeEnum;
-use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectExceptionInterface;
+use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
 use App\IdentityAccess\Domain\Repository\RefreshTokenWriteRepositoryInterface;
 use App\IdentityAccess\Domain\Service\TokenHasherInterface;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\AccountType;
@@ -48,7 +48,7 @@ final readonly class RefreshTokenService
             $this->writeRepository->save($refreshToken);
 
             return new RefreshTokenData(token: $plainToken, expiresIn: $this->ttl);
-        } catch (\DateMalformedStringException|InvalidIdentityAccessValueObjectExceptionInterface|RandomException $e) {
+        } catch (\DateMalformedStringException|InvalidIdentityAccessValueObjectException|RandomException $e) {
             throw new CreateRefreshTokenException('Error while creating refresh token', previous: $e);
         }
     }

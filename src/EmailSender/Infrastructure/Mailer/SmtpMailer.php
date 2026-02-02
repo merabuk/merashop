@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\EmailSender\Infrastructure\Mailer;
 
 use App\EmailSender\Domain\Entity\OutboxEmail;
+use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface as SymfonyMailerInterface;
 use Symfony\Component\Mime\Address;
@@ -31,5 +32,10 @@ readonly class SmtpMailer implements MailerInterface
         $this->symfonyMailer->send($mimeEmail);
 
         return null;
+    }
+
+    public static function getDefaultIndexName(): string
+    {
+        return DriverEnum::Smtp->value;
     }
 }

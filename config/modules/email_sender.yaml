@@ -13,9 +13,13 @@ services:
 
   App\EmailSender\Infrastructure\Service\OutboxEmailFactory:
     arguments:
-      $defaultFrom: '%env(MAIL_FROM_NAME)%'
-      $defaultFromName: '%env(MAIL_FROM_ADDRESS)%'
+      $defaultFrom: '%env(MAIL_FROM_ADDRESS)%'
+      $defaultFromName: '%env(MAIL_FROM_NAME)%'
       $defaultMailDriver: "%env(MAIL_DRIVER)%"
+
+  App\EmailSender\Application\EventHandler\UserRegisteredHandler:
+    arguments:
+      $appName: '%app.name%'
 
   App\EmailSender\Domain\Repository\OutboxEmailReadRepositoryInterface: '@App\EmailSender\Infrastructure\Persistence\Doctrine\Repository\OutboxEmailReadRepository'
   App\EmailSender\Domain\Repository\OutboxEmailWriteRepositoryInterface: '@App\EmailSender\Infrastructure\Persistence\Doctrine\Repository\OutboxEmailWriteRepository'

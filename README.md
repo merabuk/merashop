@@ -2,6 +2,22 @@
 
 Online store on Symfony.
 
+## Table of Contents
+
+- [Project Structure](#project-structure)
+- [Databases & Migrations](#databases--migrations)
+  - [Create or sync databases](#create-or-sync-databases)
+  - [Running migrations](#running-migrations)
+  - [Making migrations](#making-migrations)
+- [Quick Start](#quick-start)
+  - [Preparing the environment](#1-preparing-the-environment)
+  - [Project deployment](#2-project-deployment)
+  - [Access to the application](#3-access-to-the-application)
+- [Development Workflow](#development-workflow)
+- [Tests](#tests)
+- [Infrastructure & Docker](#infrastructure--docker)
+- [Observability](#observability)
+
 ## Project structure
 
 The project is organized using modular architecture (Modular Monolith) in the directory `src/`:
@@ -35,9 +51,22 @@ Each module follows the principles of DDD (Domain-Driven Design) and has a clear
 
 The project uses database isolation at the module level. Each module has its own connection and entity manager.
 
+### Create or sync databases
+
+When a new module database is added and the PostgreSQL data volume already exists, the entrypoint init scripts will not run automatically. To create missing databases, run:
+
+```bash
+docker compose exec -T pgsql bash /docker-entrypoint-initdb.d/init-db.sh
+```
+
 ### Running Migrations
 
 Migrations are run separately for each module using their respective entity managers and configurations:
+
+**Customer:**
+```bash
+php bin/console doctrine:migrations:migrate --em=customer --configuration=config/migrations/customer.php --no-interaction
+```
 
 **IdentityAccess:**
 ```bash
@@ -58,6 +87,11 @@ php bin/console doctrine:migrations:migrate --em=users --configuration=config/mi
 
 Make migration files for each module using their respective entity managers and configurations:
 
+**Customer:**
+```bash
+php bin/console doctrine:migrations:diff --em=customer --configuration=config/migrations/customer.php --no-interaction
+```
+
 **IdentityAccess:**
 ```bash
 php bin/console doctrine:migrations:diff --em=identity_access --configuration=config/migrations/identity_access.php --no-interaction
@@ -74,17 +108,6 @@ php bin/console doctrine:migrations:diff --em=users --configuration=config/migra
 ```
 
 Use lowercase human-friendly indexes.
-
-## Table of Contents
-
-- [Quick Start](#quick-start)
-    - [Preparing the environment](#1-preparing-the-environment)
-    - [Project deployment](#2-project-deployment)
-    - [Access to the application](#3-access-to-the-application)
-- [Development Workflow](#development-workflow)
-- [Tests](#tests)
-- [Infrastructure & Docker](#infrastructure--docker)
-- [Observability](#observability)
 
 ## Quick Start
 

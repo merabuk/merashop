@@ -1,3 +1,13 @@
+x-queue-worker-defaults: &queue-worker-defaults-override
+  platform: ${PLATFORM_ARCHITECTURE:-linux/amd64}
+  pull_policy: never
+  build:
+    context: .
+    target: ${APP_RUNTIME_ENV}
+    dockerfile: ./docker/queue-worker/Dockerfile
+    tags:
+      - merashop/queue-worker:latest
+  restart: on-failure
 
 services:
   nginx:
@@ -29,3 +39,18 @@ services:
       dockerfile: ./Dockerfile
       tags:
         - merashop/filebeat:latest
+
+  identity-access-queue-worker:
+    <<: *queue-worker-defaults-override
+
+  customer-external-queue-worker:
+    <<: *queue-worker-defaults-override
+
+  email-sender-external-queue-worker:
+    <<: *queue-worker-defaults-override
+
+  email-sender-internal-queue-worker:
+    <<: *queue-worker-defaults-override
+
+  email-sender-sheduler-worker:
+    <<: *queue-worker-defaults-override
