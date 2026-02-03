@@ -31,3 +31,5 @@ services:
   App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\UserAccountReadRepository'
   App\IdentityAccess\Domain\Service\PasswordHasherInterface: '@App\IdentityAccess\Infrastructure\Security\PasswordHasherService'
   App\IdentityAccess\Domain\Service\TokenHasherInterface: '@App\IdentityAccess\Infrastructure\Security\TokenHasherService'
+
+  App\Shared\Application\Security\AuthEntityContextInterface: '@App\IdentityAccess\Infrastructure\Security\SymfonyAuthEntityContext'

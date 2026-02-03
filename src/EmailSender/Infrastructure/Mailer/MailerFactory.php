@@ -27,16 +27,18 @@ readonly class MailerFactory
      */
     public function make(DriverEnum $driver): MailerInterface
     {
-        if (!$this->mailers->has($driver->value)) {
+        $id = $driver->value;
+
+        if (!$this->mailers->has($id)) {
             throw new \RuntimeException(sprintf('Mailer driver "%s" not found', $driver->value));
         }
 
-        $mailer = $this->mailers->get($driver->value);
+        $mailer = $this->mailers->get($id);
 
         if ($mailer instanceof MailerInterface) {
             return $mailer;
         }
 
-        throw new \RuntimeException(sprintf('Mailer driver "%s" is not an instance of MailerInterface', $driver->value));
+        throw new \RuntimeException(sprintf('Mailer driver "%s" is not an instance of %s', $driver->value, MailerInterface::class));
     }
 }

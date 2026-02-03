@@ -16,16 +16,16 @@ use App\IdentityAccess\Application\Exceptions\TokenGenerateException;
 use App\IdentityAccess\Application\Security\TokenGeneratorInterface;
 use App\IdentityAccess\Application\Service\RefreshTokenService;
 use App\IdentityAccess\Domain\Entity\UserAccount;
-use App\IdentityAccess\Domain\Enum\AccountTypeEnum;
 use App\IdentityAccess\Domain\Enum\GrantTypeEnum;
 use App\IdentityAccess\Domain\Exception\UserAccount\InvalidUserAccountEmailException;
 use App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
+use App\Shared\Domain\Enum\IdentityTypeEnum;
 
 readonly class PasswordGrantHandler implements GrantHandlerInterface
 {
-    private AccountTypeEnum $accountType;
+    private IdentityTypeEnum $accountType;
 
     public function __construct(
         private UserAccountReadRepositoryInterface $userAccountReadRepository,
@@ -33,12 +33,12 @@ readonly class PasswordGrantHandler implements GrantHandlerInterface
         private TokenGeneratorInterface $tokenGenerator,
         private RefreshTokenService $refreshTokenService,
     ) {
-        $this->accountType = AccountTypeEnum::User;
+        $this->accountType = IdentityTypeEnum::User;
     }
 
-    public function supports(GrantTypeEnum $grantType): bool
+    public static function getDefaultIndexName(): string
     {
-        return GrantTypeEnum::Password === $grantType;
+        return GrantTypeEnum::Password->value;
     }
 
     /**
@@ -58,7 +58,7 @@ readonly class PasswordGrantHandler implements GrantHandlerInterface
                     plainPassword: $data->getPassword()
                 )
             ) {
-                throw new InvalidCredentialsException();
+                throw new InvalidCredentialsException('Invalid credentials');
             }
 
             return new TokenResponseData(

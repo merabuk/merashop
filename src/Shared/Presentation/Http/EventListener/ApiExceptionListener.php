@@ -10,14 +10,18 @@ use App\Shared\Domain\Exception\ConflictExceptionInterface;
 use App\Shared\Domain\Exception\ForbiddenExceptionInterface;
 use App\Shared\Domain\Exception\NotFoundExceptionInterface;
 use App\Shared\Domain\Exception\ServerException;
+use App\Shared\Domain\Exception\UnauthorizedExceptionInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Messenger\Exception\HandlerFailedException;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Translation\MessageCatalogueInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -50,11 +54,26 @@ class ApiExceptionListener
     private function determineResponse(\Throwable $exception): JsonResponse
     {
         return match (true) {
+            $exception instanceof AccessDeniedException => $this->handleAccessException($exception),
             $exception instanceof HttpExceptionInterface => $this->handleHttpException($exception),
             $exception instanceof HandlerFailedException => $this->handleHandlerFailedException($exception),
             $exception instanceof AppExceptionInterface => $this->handleAppException($exception),
             default => $this->logAndResponseWithBaseUnexpectedError($exception),
         };
+    }
+
+    private function handleAccessException(AccessDeniedException $exception): JsonResponse
+    {
+        $errorCode = ErrorCodeEnum::AccessDenied->value;
+
+        return $this->baseResponse(
+            errorCode: $errorCode,
+            errorMessage: $this->translator->trans(
+                id: $errorCode,
+                domain: 'exceptions'.MessageCatalogueInterface::INTL_DOMAIN_SUFFIX
+            ),
+            statusCode: Response::HTTP_FORBIDDEN,
+        );
     }
 
     private function handleHttpException(HttpExceptionInterface $exception): JsonResponse
@@ -64,6 +83,19 @@ class ApiExceptionListener
         if ($previousException instanceof ValidationFailedException) {
             return $this->handleValidationException($previousException);
         }
+
+        if (
+            $exception instanceof BadRequestHttpException
+            && $previousException instanceof NotEncodableValueException
+        ) {
+            return $this->baseResponse(
+                errorCode: ErrorCodeEnum::BadRequest->value,
+                errorMessage: $exception->getMessage(),
+                statusCode: Response::HTTP_BAD_REQUEST,
+            );
+        }
+
+        // TODO: rework this on match
 
         $statusCode = $this->getStatusCode($exception);
         $errorCode = $previousException instanceof ServerException
@@ -148,7 +180,10 @@ class ApiExceptionListener
 
     private function logAndResponseWithBaseUnexpectedError(\Throwable $exception): JsonResponse
     {
-        $this->logger->error($exception->getMessage(), ['exception' => $exception]);
+        $this->logger->error($exception->getMessage(), [
+            'exception_class' => get_class($exception),
+            'trace' => $exception->getTraceAsString(),
+        ]);
 
         $errorCode = ErrorCodeEnum::UnexpectedError->value;
 
@@ -165,6 +200,7 @@ class ApiExceptionListener
     private function getStatusCode(\Throwable $exception): int
     {
         return match (true) {
+            $exception instanceof UnauthorizedExceptionInterface => Response::HTTP_UNAUTHORIZED,
             $exception instanceof ForbiddenExceptionInterface => Response::HTTP_FORBIDDEN,
             $exception instanceof NotFoundExceptionInterface => Response::HTTP_NOT_FOUND,
             $exception instanceof ConflictExceptionInterface => Response::HTTP_CONFLICT,

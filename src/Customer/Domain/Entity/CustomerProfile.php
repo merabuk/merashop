@@ -53,7 +53,7 @@ class CustomerProfile
 
     public function isProfileCompleted(): bool
     {
-        return null !== $this->firstName && null !== $this->lastName;
+        return null !== $this->firstName && null !== $this->lastName && null !== $this->phoneNumber;
     }
 
     public function updatePersonalData(FirstName $firstName, LastName $lastName, ?PhoneNumber $phoneNumber): void

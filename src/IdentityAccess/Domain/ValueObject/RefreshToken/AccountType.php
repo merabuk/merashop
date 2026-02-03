@@ -4,34 +4,34 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Domain\ValueObject\RefreshToken;
 
-use App\IdentityAccess\Domain\Enum\AccountTypeEnum;
 use App\IdentityAccess\Domain\Exception\RefreshToken\InvalidRefreshTokenAccountTypeException;
+use App\Shared\Domain\Enum\IdentityTypeEnum;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 
 final class AccountType implements \Stringable
 {
     use ValueObjectEqualityTrait;
 
-    private AccountTypeEnum $type;
+    private IdentityTypeEnum $type;
 
-    private function __construct(AccountTypeEnum $type)
+    private function __construct(IdentityTypeEnum $type)
     {
         $this->type = $type;
     }
 
-    public static function fromEnum(AccountTypeEnum $type): self
+    public static function fromEnum(IdentityTypeEnum $type): self
     {
         return new self($type);
     }
 
     public static function user(): self
     {
-        return self::fromEnum(AccountTypeEnum::User);
+        return self::fromEnum(IdentityTypeEnum::User);
     }
 
     public static function module(): self
     {
-        return self::fromEnum(AccountTypeEnum::Module);
+        return self::fromEnum(IdentityTypeEnum::Module);
     }
 
     /**
@@ -39,28 +39,28 @@ final class AccountType implements \Stringable
      */
     public static function fromString(string $type): self
     {
-        $enum = AccountTypeEnum::tryFrom($type);
+        $enum = IdentityTypeEnum::tryFrom($type);
 
         if (null === $enum) {
-            throw InvalidRefreshTokenAccountTypeException::becauseItIsNotAValidAccountType(invalidValue: $type, availableValues: AccountTypeEnum::getValues());
+            throw InvalidRefreshTokenAccountTypeException::becauseItIsNotAValidAccountType(invalidValue: $type, availableValues: IdentityTypeEnum::getValues());
         }
 
         return new self($enum);
     }
 
-    public function value(): AccountTypeEnum
+    public function value(): IdentityTypeEnum
     {
         return $this->type;
     }
 
     public function isUser(): bool
     {
-        return AccountTypeEnum::User === $this->type;
+        return IdentityTypeEnum::User === $this->type;
     }
 
     public function isModule(): bool
     {
-        return AccountTypeEnum::Module === $this->type;
+        return IdentityTypeEnum::Module === $this->type;
     }
 
     public function __toString(): string

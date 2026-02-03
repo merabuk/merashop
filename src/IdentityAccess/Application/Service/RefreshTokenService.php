@@ -7,7 +7,6 @@ namespace App\IdentityAccess\Application\Service;
 use App\IdentityAccess\Application\DTO\RefreshTokenData;
 use App\IdentityAccess\Application\Exceptions\CreateRefreshTokenException;
 use App\IdentityAccess\Domain\Entity\RefreshToken;
-use App\IdentityAccess\Domain\Enum\AccountTypeEnum;
 use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
 use App\IdentityAccess\Domain\Repository\RefreshTokenWriteRepositoryInterface;
 use App\IdentityAccess\Domain\Service\TokenHasherInterface;
@@ -15,6 +14,7 @@ use App\IdentityAccess\Domain\ValueObject\RefreshToken\AccountType;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\ExpiresAt;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\TokenHash;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\Ulid;
+use App\Shared\Domain\Enum\IdentityTypeEnum;
 use Random\RandomException;
 use Symfony\Component\Clock\ClockInterface;
 
@@ -31,7 +31,7 @@ final readonly class RefreshTokenService
     /**
      * @throws CreateRefreshTokenException
      */
-    public function create(string $accountUlid, AccountTypeEnum $accountType): RefreshTokenData
+    public function create(string $accountUlid, IdentityTypeEnum $accountType): RefreshTokenData
     {
         try {
             $plainToken = $this->generatePlainToken();

@@ -9,31 +9,42 @@ use App\IdentityAccess\Application\DTO\TokenResponseData;
 use App\IdentityAccess\Application\Exceptions\GrantHandlerException;
 use App\IdentityAccess\Application\Exceptions\UnsupportedGrantTypeException;
 use App\IdentityAccess\Application\Security\Grant\GrantHandlerInterface;
-use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 
 final readonly class OAuth2TokenService
 {
-    /**
-     * @param iterable<GrantHandlerInterface> $handlers
-     */
     public function __construct(
-        #[AutowireIterator('identity_access.grant_handler')]
-        private iterable $handlers,
+        #[AutowireLocator(
+            services: 'identity_access.grant_handler',
+            defaultIndexMethod: 'getDefaultIndexName',
+        )]
+        private ContainerInterface $handlers,
     ) {
     }
 
     /**
+     * @throws ContainerExceptionInterface
      * @throws GrantHandlerException
+     * @throws NotFoundExceptionInterface
      * @throws UnsupportedGrantTypeException
      */
     public function handle(OAuth2Data $data): TokenResponseData
     {
-        foreach ($this->handlers as $handler) {
-            if ($handler->supports($data->getGrantType())) {
-                return $handler->handle($data);
-            }
+        $id = $data->getGrantType()->value;
+
+        if (!$this->handlers->has($id)) {
+            throw new UnsupportedGrantTypeException(sprintf('Container does not have a handler for "%s" grant type', $id));
         }
 
-        throw new UnsupportedGrantTypeException();
+        $handler = $this->handlers->get($id);
+
+        if ($handler instanceof GrantHandlerInterface) {
+            return $handler->handle($data);
+        }
+
+        throw new UnsupportedGrantTypeException(sprintf('Grant type handler %s is not an instance of %s', is_object($handler) ? get_class($handler) : (string) $handler, GrantHandlerInterface::class));
     }
 }

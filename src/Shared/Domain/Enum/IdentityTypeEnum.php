@@ -2,11 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\IdentityAccess\Domain\Enum;
+namespace App\Shared\Domain\Enum;
 
-use App\Shared\Domain\Enum\StringEnumTrait;
-
-enum AccountTypeEnum: string
+enum IdentityTypeEnum: string
 {
     use StringEnumTrait;
 

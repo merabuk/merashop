@@ -10,4 +10,5 @@ enum RoleEnum: string
 
     case User = 'ROLE_USER';
     case Customer = 'ROLE_CUSTOMER';
+    case Module = 'ROLE_MODULE';
 }

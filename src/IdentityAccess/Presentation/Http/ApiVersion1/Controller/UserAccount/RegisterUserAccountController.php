@@ -14,14 +14,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
 
 final class RegisterUserAccountController extends AbstractController
 {
     #[Route(
         path: '/users/register',
-        name: 'identity_access_api_v1_users_register',
+        name: 'identity_access.api.v1.users.register',
         methods: [Request::METHOD_POST],
-        format: 'json'
+        format: JsonEncoder::FORMAT
     )]
     public function __invoke(
         #[MapRequestPayload] RegisterUserAccountRequest $request,

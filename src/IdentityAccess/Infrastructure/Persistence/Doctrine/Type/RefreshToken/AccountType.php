@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Infrastructure\Persistence\Doctrine\Type\RefreshToken;
 
-use App\IdentityAccess\Domain\Enum\AccountTypeEnum;
+use App\Shared\Domain\Enum\IdentityTypeEnum;
 use App\Shared\Infrastructure\Persistence\Doctrine\Type\AbstractPostgresEnumType;
 
 class AccountType extends AbstractPostgresEnumType
@@ -13,7 +13,7 @@ class AccountType extends AbstractPostgresEnumType
 
     protected function getEnumClass(): string
     {
-        return AccountTypeEnum::class;
+        return IdentityTypeEnum::class;
     }
 
     public function getEnumName(): string

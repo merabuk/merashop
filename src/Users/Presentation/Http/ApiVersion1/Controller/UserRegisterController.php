@@ -12,8 +12,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
 
-#[Route(path: 'register', name: 'users.api.v1.register', methods: [Request::METHOD_POST], format: 'json')]
+#[Route(path: 'register', name: 'users.api.v1.register', methods: [Request::METHOD_POST], format: JsonEncoder::FORMAT)]
 class UserRegisterController
 {
     public function __invoke(

@@ -13,28 +13,28 @@ use App\IdentityAccess\Application\Exceptions\InvalidClientException;
 use App\IdentityAccess\Application\Exceptions\TokenGenerateException;
 use App\IdentityAccess\Application\Security\TokenGeneratorInterface;
 use App\IdentityAccess\Domain\Entity\ModuleAccount;
-use App\IdentityAccess\Domain\Enum\AccountTypeEnum;
 use App\IdentityAccess\Domain\Enum\GrantTypeEnum;
 use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountClientIdException;
 use App\IdentityAccess\Domain\Repository\ModuleAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientId;
+use App\Shared\Domain\Enum\IdentityTypeEnum;
 
 readonly class ClientCredentialsGrantHandler implements GrantHandlerInterface
 {
-    private AccountTypeEnum $accountType;
+    private IdentityTypeEnum $accountType;
 
     public function __construct(
         private ModuleAccountReadRepositoryInterface $moduleAccountReadRepository,
         private PasswordHasherInterface $passwordHasher,
         private TokenGeneratorInterface $tokenGenerator,
     ) {
-        $this->accountType = AccountTypeEnum::Module;
+        $this->accountType = IdentityTypeEnum::Module;
     }
 
-    public function supports(GrantTypeEnum $grantType): bool
+    public static function getDefaultIndexName(): string
     {
-        return GrantTypeEnum::ClientCredentials === $grantType;
+        return GrantTypeEnum::ClientCredentials->value;
     }
 
     /**
@@ -54,7 +54,7 @@ readonly class ClientCredentialsGrantHandler implements GrantHandlerInterface
                     plainPassword: $data->getClientSecret()
                 )
             ) {
-                throw new InvalidClientException();
+                throw new InvalidClientException('Invalid client credentials');
             }
 
             return new TokenResponseData(accessTokenData: $this->getAccessTokenData($module));

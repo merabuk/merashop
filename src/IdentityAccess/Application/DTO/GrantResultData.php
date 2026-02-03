@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Application\DTO;
 
-use App\IdentityAccess\Domain\Enum\AccountTypeEnum;
+use App\Shared\Domain\Enum\IdentityTypeEnum;
 
 final readonly class GrantResultData
 {
@@ -14,7 +14,7 @@ final readonly class GrantResultData
      */
     public function __construct(
         public string $subjectUlid,
-        public AccountTypeEnum $subjectType,
+        public IdentityTypeEnum $subjectType,
         public array $roles,
         public array $scopes = [],
         public bool $allowRefreshToken = false,

@@ -8,4 +8,8 @@ enum ErrorCodeEnum: string
 {
     case UnexpectedError = 'UNEXPECTED_ERROR';
     case ValidationFailed = 'VALIDATION_FAILED';
+    case AccessDenied = 'ACCESS_DENIED';
+    case Unauthorized = 'UNAUTHORIZED';
+    case NotFound = 'NOT_FOUND';
+    case BadRequest = 'BAD_REQUEST';
 }

@@ -4,6 +4,9 @@ app_shared_api:
 users_api:
   resource: '../src/Users/Presentation/Http/config/routes.yaml'
 
+customer_api:
+  resource: '../src/Customer/Presentation/Http/config/routes.yaml'
+
 identity_access_api:
   resource: '../src/IdentityAccess/Presentation/Http/config/routes.yaml'
 
