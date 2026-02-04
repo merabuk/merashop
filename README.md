@@ -21,9 +21,10 @@ Online store on Symfony.
 ## Project structure
 
 The project is organized using modular architecture (Modular Monolith) in the directory `src/`:
-- `IdentityAccess` - user management, registration, and authorization.
+- `Customer` - customer profiles and related domain logic.
+- `IdentityAccess` - user and modules management, registration, and authorization.
 - `EmailSender` - module for sending notifications.
-- `Users` - user management for specific context (if distinct from IdentityAccess).
+- `Users` - (deprecated module), scheduled for removal (do not add new work here).
 - `Shared` - common components used between modules (Domain, Infrastructure, Application).
 
 ### Domain Structure
@@ -34,12 +35,13 @@ Each module follows the principles of DDD (Domain-Driven Design) and has a clear
         - Model-specific VOs are grouped in subfolders named after their entities (e.g., `ValueObject/UserAccount/EmailAddress.php`).
         - Every VO must have a specific domain exception.
     - **Exceptions**: Each module follows a strict exception hierarchy:
+        - `AppExceptionInterface` (interface, in `Shared`) - base interface for all application exceptions.
         - `ServerException` (abstract class, in `Shared`) - base exception with `getErrorCode()` method.
-        - `Throwable{Module}Exception` (interface) - module marker.
-        - `{Module}DomainException` (abstract class) - base domain exception, inherits from `ServerException`.
+        - `{Module}ExceptionInterface` (interface) - module marker.
+        - `{Module}DomainException` (abstract class) - base domain exception, inherits from `LogicException` or `ServerException`.
         - `Invalid{Module}ValueObjectException` (abstract class) - base exception for all VOs in the module.
         - Specific VO exceptions (e.g., `InvalidUserAccountEmailException`) must inherit from the base VO exception.
-    - **Exception Handling**: Each module contains its own exception handler (e.g., `src/IdentityAccess/Presentation/Http/EventListener/IdentityExceptionListener.php`) to manage module-specific error responses and maintain independence.
+    - **Exception Handling**: Each module contains its own exception handler (e.g., `src/IdentityAccess/Presentation/Http/EventListener/ApiIdentityAccessExceptionListener.php`) to manage module-specific error responses and maintain independence.
 - `Application` - services and commands.
 - `Infrastructure` - implementation of interfaces, databases, external APIs.
 - `Presentation` - entry points to the module.
@@ -78,7 +80,7 @@ php bin/console doctrine:migrations:migrate --em=identity_access --configuration
 php bin/console doctrine:migrations:migrate --em=email_sender --configuration=config/migrations/email_sender.php --no-interaction
 ```
 
-**Users:**
+**Users (deprecated):**
 ```bash
 php bin/console doctrine:migrations:migrate --em=users --configuration=config/migrations/users.php --no-interaction
 ```
@@ -102,7 +104,7 @@ php bin/console doctrine:migrations:diff --em=identity_access --configuration=co
 php bin/console doctrine:migrations:diff --em=email_sender --configuration=config/migrations/email_sender.php --no-interaction
 ```
 
-**Users:**
+**Users (deprecated):**
 ```bash
 php bin/console doctrine:migrations:diff --em=users --configuration=config/migrations/users.php --no-interaction
 ```
@@ -186,7 +188,7 @@ The project uses PHPUnit for testing. Tests are organized by module to support t
 **Automatic Database Preparation:**
 The project is configured to automatically migrate all module databases before running tests. This is handled by `tests/bootstrap.php`. When you run `phpunit`, it will:
 1. Load the test environment.
-2. Run migrations for all entity managers (`identity_access`, `email_sender`, `users`).
+2. Run migrations for all entity managers currently configured in `tests/bootstrap.php` (`customer`, `email_sender`, `identity_access`, `users`). Note: `users` is deprecated and will be removed.
 3. Ensure the databases are ready for testing.
 
 **Run all tests:**

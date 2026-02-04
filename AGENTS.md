@@ -5,31 +5,71 @@ This document serves as the primary system instruction for AI Agents (like Junie
 ## 1. Project Philosophy
 
 ### Modular Monolith & DDD
-The project is built as a **Modular Monolith** following **Domain-Driven Design (DDD)** principles. The system is divided into high-level modules (e.g., `IdentityAccess`, `EmailSender`) located in `src/`.
+The project is built as a **Modular Monolith** following **Domain-Driven Design (DDD)** principles.
 
-- **Isolation**: Each module must be self-contained. Direct calls between modules are strictly forbidden. This isolation extends to the database level: each module must have its own database schema (or a separate database) and its own entity manager.
-- **Communication**: Inter-module communication is handled exclusively via the `Shared` module or through **Events** (Asynchronous or Synchronous via Symfony Messenger).
-- **Enforcement**: **Deptrac** is used to monitor and enforce layer boundaries and dependency rules.
-- **Module Independence**: Every module must be independent. The `Shared` layer is the only exception, providing reusable components. However, `Shared` must only contain primitive logic, base interfaces, and cross-cutting concerns (e.g., `TraceId`, `ValueObjects` used by multiple modules) to maintain strict decoupling.
+The system is divided into high-level modules located in `src/`:
+- `Customer` - customer profiles and related domain logic.
+- `IdentityAccess` - user and modules management, registration, and authorization.
+- `EmailSender` - module for sending notifications.
+- `Users` - (deprecated module), scheduled for removal (do not add new work here).
+- `Shared` - common components used between modules (Domain, Infrastructure, Application).
+
+- **Isolation**:
+  - Each module must be self-contained.
+  - Direct calls between modules are strictly forbidden.
+  - This isolation extends to the database level: each module must have its own database schema (or a separate database) and its own entity manager.
+- **Communication**:
+  - Inter-module communication is handled exclusively via the `Shared` module or through **Events** (Asynchronous or Synchronous via Symfony Messenger).
+- **Enforcement**:
+  - **Deptrac** is used to monitor and enforce layer boundaries and dependency rules.
+- **Module Independence**:
+  - Every module must be independent.
+  - The `Shared` layer is the only exception, providing reusable components. However, `Shared` must only contain primitive logic, base interfaces, and cross-cutting concerns (e.g., `TraceId`, `ValueObjects` used by multiple modules) to maintain strict decoupling.
 
 ## 2. Directory Structure
 
 Every module within `src/` must follow this standardized structure:
 
-- **Domain/**: Contains the core business logic.
-    - `Entities`, `Value Objects`, `Domain Events`.
-    - `Repository Interfaces` (definitions only).
-- **Application/**: Contains use cases and orchestration.
-    - `Commands` / `Queries`.
-    - `Handlers` (Command/Query Handlers).
-    - `DTOs` (Data Transfer Objects).
-- **Infrastructure/**: External concerns and technical implementations.
-    - `Persistence/Doctrine/Mapping`: Explicit field definitions (ORM Mapping).
-    - `Repository Implementations`.
+- **Domain**: Contains the core business logic.
+    - `Entity` - domain entities with business logic.
+    - `Enum` - common enumerations
+    - `Event` - domain events.
+    - `Exception` - domain exceptions and marker-interfaces.
+    - `Repository` - interfaces (definitions only).
+    - `Service` - domain services (simple implementations without external dependencies, interfaces).
+    - `ValueObject` - value objects (primitives).
+- **Application**: Contains use cases and orchestration.
+    - `Command` - application commands and their handlers.
+    - `DTO` (Data Transfer Objects).
+    - `EventHandler` - application event listeners.
+    - `Query` - application queries and their handlers.
+    - `Scheduler` - application schedulers (cron tasks).
+    - `Exceptions` - application exceptions.
+    - `Service` - application services (simple implementations without external dependencies)
+- **Infrastructure**: External concerns and technical implementations.
+    - `Persistence` - database access.
+        - `Doctrine` - ORM implementation.
+            - `Entity` - ORM entities.
+            - `Mapper` - ORM <=> Domain mappers. Explicit field definitions
+            - `Migrations` - database migrations.
+            - `Repository` - implementations of domain repository interfaces.
+            - `Type` - custom DB datatypes.
+    - `Sheduler` - scheduler provider with configuration.
+    - `Service` - infrastructure services (complex implementations with external dependencies).
     - `Adapters` for external services.
-- **Presentation/**: Entry points to the module.
-    - `Http/`: Web API controllers, requests, resources, and HTTP-specific event listeners.
-    - `Console/`: CLI commands, and Console-specific event listeners.
+- **Presentation**: Entry points to the module.
+    - `Console` - CLI commands, and Console-specific event listeners.
+        - `EventListener` - specific event listeners (Console command/response)
+    - `Http` - Web API controllers, requests, resources, and HTTP-specific event listeners.
+        - `ApiVersion<N>` - API versioning.
+            - `Controller` - API controllers.
+            - `Request` - API requests and validation. 
+            - `Resource` - API resources and normalizers.
+        - `Web` - Http pages and views.
+        - `config` - API routing configuration.
+        - `EventListener` - specific event listeners (API request/response, KernelExceptions etc.).
+
+The translation folder can be located in various places (but correct ones) and named `translations`.
 
 ## 3. Coding Standards & Constraints
 
@@ -40,12 +80,13 @@ Every module within `src/` must follow this standardized structure:
     - Collection properties must be wrapped in a Collection VO (e.g., `ScopeCollection`).
     - **VO Exceptions**: Every VO must have a specific domain exception.
     - **Exception Hierarchy**: Each module must implement the following structure:
-        1. `ServerException` (abstract class, in `Shared`): Base exception with `getErrorCode(): string` method.
-        2. `ErrorCodeEnum` (enum, in `Shared`): Standardized error codes (e.g., `UnexpectedError`, `ValidationFailed`).
-        3. `Throwable{Module}Exception` (interface): Module marker.
-        4. `{Module}DomainException` (abstract class): Base module exception, inherits from `ServerException`.
-        5. `Invalid{Module}ValueObjectException` (abstract class): Base exception for all VOs, inherits from base module exception and implements `ThrowableValueObjectException`.
-        6. Specific VO exceptions (e.g., `InvalidUserAccountEmailException`) must inherit from `Invalid{Module}ValueObjectException`.
+        1. `AppExceptionInterface` (interface, in `Shared`): Base interface for all application exceptions.
+        2. `ServerException` (abstract class, in `Shared`): Base exception with `getErrorCode(): string` method.
+        3. `ErrorCodeEnum` (enum, in `Shared/Domain/Enum`): Standardized error codes (e.g., `UnexpectedError`, `ValidationFailed`).
+        4. `{Module}ExceptionInterface` (interface): Module marker, inherits from `DomainExceptionInterface`.
+        5. `{Module}DomainException` (abstract class): Base module exception, inherits from `LogicException` or `ServerException` and implements `{Module}ExceptionInterface`.
+        6. `Invalid{Module}ValueObjectException` (abstract class): Base exception for all VOs, inherits from base module exception and implements `ThrowableValueObjectException`.
+        7. Specific VO exceptions (e.g., `InvalidUserAccountEmailException`) must inherit from `Invalid{Module}ValueObjectException`.
     - **VO Location**: 
         - Model-specific VO must be placed in a subfolder named after the entity (e.g., `src/IdentityAccess/Domain/ValueObject/UserAccount/EmailAddress.php`).
         - Module-shared VO must be placed in the root `ValueObject` folder of the module.
@@ -63,7 +104,7 @@ Every module within `src/` must follow this standardized structure:
 - **Explicit Definitions**: Avoid using attributes or XML inside the Domain layer. Attributes are permitted only in the Infrastructure layer for ORM entities.
 - **Migrations**: Each module has its own migration configuration in `config/migrations/<module_name>.php`. Migrations must be run separately for each module using the `--em` and `--configuration` options.
 - **Testing Isolation**: For testing, all module databases are automatically migrated and prepared by `tests/bootstrap.php` when running PHPUnit. This ensures a clean and isolated state for each module's database during joint testing.
-- **Exception Handling**: Each module should contain its own exception handler (like `src/IdentityAccess/Presentation/Http/EventListener/IdentityExceptionListener.php`). The structure in such handlers might be module-specific (e.g., to comply with OAuth2 requirements).
+- **Exception Handling**: Each module should contain its own exception handler (like `src/IdentityAccess/Presentation/Http/EventListener/ApiIdentityAccessExceptionListener.php`). The structure in such handlers might be module-specific (e.g., to comply with OAuth2 requirements).
 
 ### Modern PHP
 - **Strict Typing**: `declare(strict_types=1);` is mandatory in every file.

@@ -11,7 +11,6 @@ readonly class UserRegisteredSharedEvent implements AsyncMessageInterface
     public function __construct(
         public string $id,
         public string $email,
-        public string $name,
     ) {
     }
 

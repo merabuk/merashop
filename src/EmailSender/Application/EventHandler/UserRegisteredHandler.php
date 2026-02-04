@@ -58,7 +58,7 @@ class UserRegisteredHandler implements EventHandlerInterface
                 domain: 'emails'.MessageCatalogueInterface::INTL_DOMAIN_SUFFIX
             ),
             template: 'emails/signup.html.twig',
-            context: ['userName' => $event->name],
+            context: ['userName' => 'Customer'], // TODO: Refactor getting customer name or remove this parameter
             traceId: $traceId
         );
 

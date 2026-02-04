@@ -65,7 +65,6 @@ readonly class CreateUserAccountHandler implements CommandHandlerInterface
             $this->eventBus->dispatch(new UserRegisteredSharedEvent(
                 id: $user->getUlid()->value(),
                 email: $user->getEmail()->value(),
-                name: 'Customer' // TODO[user_account]: refactor receiving name in future
             ));
         } catch (InvalidIdentityAccessValueObjectException|ExceptionInterface $e) {
             throw new CreateUserAccountException(message: 'Error during creating user account', previous: $e);
