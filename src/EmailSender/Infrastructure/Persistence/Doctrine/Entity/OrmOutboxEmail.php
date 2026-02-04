@@ -9,6 +9,7 @@ use App\EmailSender\Domain\Enum\OutboxEmail\StatusEnum;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Attempts;
 use App\EmailSender\Infrastructure\Persistence\Doctrine\Type\OutboxEmail\DriverType;
 use App\EmailSender\Infrastructure\Persistence\Doctrine\Type\OutboxEmail\StatusType;
+use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -60,10 +61,10 @@ class OrmOutboxEmail
     public int $attempts = Attempts::DEFAULT;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    public ?\DateTimeImmutable $scheduledAt = null;
+    public ?DateTimeImmutable $scheduledAt = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    public ?\DateTimeImmutable $lockedAt = null;
+    public ?DateTimeImmutable $lockedAt = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     public ?string $errorMessage = null;

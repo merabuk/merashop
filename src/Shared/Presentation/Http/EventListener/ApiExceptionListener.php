@@ -25,6 +25,7 @@ use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 use Symfony\Component\Translation\MessageCatalogueInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Throwable;
 
 class ApiExceptionListener
 {
@@ -51,7 +52,7 @@ class ApiExceptionListener
         $event->setResponse($response);
     }
 
-    private function determineResponse(\Throwable $exception): JsonResponse
+    private function determineResponse(Throwable $exception): JsonResponse
     {
         return match (true) {
             $exception instanceof AccessDeniedException => $this->handleAccessException($exception),
@@ -178,7 +179,7 @@ class ApiExceptionListener
         ], $statusCode);
     }
 
-    private function logAndResponseWithBaseUnexpectedError(\Throwable $exception): JsonResponse
+    private function logAndResponseWithBaseUnexpectedError(Throwable $exception): JsonResponse
     {
         $this->logger->error($exception->getMessage(), [
             'exception_class' => get_class($exception),
@@ -197,7 +198,7 @@ class ApiExceptionListener
         );
     }
 
-    private function getStatusCode(\Throwable $exception): int
+    private function getStatusCode(Throwable $exception): int
     {
         return match (true) {
             $exception instanceof UnauthorizedExceptionInterface => Response::HTTP_UNAUTHORIZED,

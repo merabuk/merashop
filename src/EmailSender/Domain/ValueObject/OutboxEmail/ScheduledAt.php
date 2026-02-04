@@ -5,34 +5,36 @@ declare(strict_types=1);
 namespace App\EmailSender\Domain\ValueObject\OutboxEmail;
 
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use DateTimeImmutable;
+use Stringable;
 
-final class ScheduledAt implements \Stringable
+final class ScheduledAt implements Stringable
 {
     use ValueObjectEqualityTrait;
 
-    private \DateTimeImmutable $date;
+    private DateTimeImmutable $date;
 
-    public function __construct(\DateTimeImmutable $date)
+    public function __construct(DateTimeImmutable $date)
     {
         $this->date = $date;
     }
 
-    public static function fromDate(\DateTimeImmutable $date): self
+    public static function fromDate(DateTimeImmutable $date): self
     {
         return new self($date);
     }
 
     public static function now(): self
     {
-        return new self(new \DateTimeImmutable());
+        return new self(new DateTimeImmutable());
     }
 
     public function isInPast(): bool
     {
-        return $this->date < new \DateTimeImmutable();
+        return $this->date < new DateTimeImmutable();
     }
 
-    public function value(): \DateTimeImmutable
+    public function value(): DateTimeImmutable
     {
         return $this->date;
     }
@@ -44,6 +46,6 @@ final class ScheduledAt implements \Stringable
 
     protected function getPrimitiveValue(): string
     {
-        return $this->value()->format(\DateTimeImmutable::ATOM);
+        return $this->value()->format(DateTimeImmutable::ATOM);
     }
 }

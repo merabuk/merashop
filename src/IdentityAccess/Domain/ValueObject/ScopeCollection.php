@@ -5,8 +5,13 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Domain\ValueObject;
 
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use ArrayIterator;
+use Countable;
+use IteratorAggregate;
+use Stringable;
+use Traversable;
 
-final readonly class ScopeCollection implements \Stringable, \Countable, \IteratorAggregate
+final readonly class ScopeCollection implements Stringable, Countable, IteratorAggregate
 {
     use ValueObjectEqualityTrait;
 
@@ -52,9 +57,9 @@ final readonly class ScopeCollection implements \Stringable, \Countable, \Iterat
         return count($this->scopes);
     }
 
-    public function getIterator(): \Traversable
+    public function getIterator(): Traversable
     {
-        return new \ArrayIterator($this->scopes);
+        return new ArrayIterator($this->scopes);
     }
 
     public function __toString(): string

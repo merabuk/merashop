@@ -7,8 +7,9 @@ namespace App\IdentityAccess\Domain\ValueObject\RefreshToken;
 use App\IdentityAccess\Domain\Exception\RefreshToken\InvalidRefreshTokenAccountTypeException;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use Stringable;
 
-final class AccountType implements \Stringable
+final class AccountType implements Stringable
 {
     use ValueObjectEqualityTrait;
 

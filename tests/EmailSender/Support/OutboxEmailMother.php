@@ -11,6 +11,8 @@ use App\EmailSender\Domain\Exception\OutboxEmailAlreadyInProcessException;
 use App\EmailSender\Domain\Service\OutboxEmailFactoryInterface;
 use App\Shared\Domain\Service\TraceIdFactoryInterface;
 use App\Shared\Domain\ValueObject\TraceId;
+use DateMalformedStringException;
+use DateTimeImmutable;
 use Symfony\Component\Clock\ClockInterface;
 
 final readonly class OutboxEmailMother
@@ -44,7 +46,7 @@ final readonly class OutboxEmailMother
     /**
      * @throws OutboxEmailAlreadyInProcessException
      */
-    public function createLockedEmail(?\DateTimeImmutable $lockedAt = null): OutboxEmail
+    public function createLockedEmail(?DateTimeImmutable $lockedAt = null): OutboxEmail
     {
         $email = $this->createBaseEmail();
         $email->lock($lockedAt ?? $this->clock->now());
@@ -54,7 +56,7 @@ final readonly class OutboxEmailMother
 
     /**
      * @throws InvalidEmailSenderValueObjectException
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     public function createFailedEmail(): OutboxEmail
     {

@@ -8,6 +8,7 @@ use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use RuntimeException;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 
 readonly class MailerFactory
@@ -30,7 +31,7 @@ readonly class MailerFactory
         $id = $driver->value;
 
         if (!$this->mailers->has($id)) {
-            throw new \RuntimeException(sprintf('Mailer driver "%s" not found', $driver->value));
+            throw new RuntimeException(sprintf('Mailer driver "%s" not found', $driver->value));
         }
 
         $mailer = $this->mailers->get($id);
@@ -39,6 +40,6 @@ readonly class MailerFactory
             return $mailer;
         }
 
-        throw new \RuntimeException(sprintf('Mailer driver "%s" is not an instance of %s', $driver->value, MailerInterface::class));
+        throw new RuntimeException(sprintf('Mailer driver "%s" is not an instance of %s', $driver->value, MailerInterface::class));
     }
 }

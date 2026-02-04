@@ -12,6 +12,8 @@ use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidTraceIdException;
 use App\Shared\Domain\Service\TraceIdFactoryInterface;
 use App\Tests\EmailSender\Support\OutboxEmailMother;
+use ReflectionProperty;
+use stdClass;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class OutboxEmailMapperTest extends KernelTestCase
@@ -57,7 +59,7 @@ class OutboxEmailMapperTest extends KernelTestCase
         self::assertEquals($domain->getErrorMessage()?->value(), $orm->errorMessage);
 
         // emulating ID from the database
-        $reflection = new \ReflectionProperty(OrmOutboxEmail::class, 'id');
+        $reflection = new ReflectionProperty(OrmOutboxEmail::class, 'id');
         $reflection->setValue($orm, $fakeId);
 
         $restoredDomain = $this->mapper->fromDoctrineOrm($orm);
@@ -99,10 +101,10 @@ class OutboxEmailMapperTest extends KernelTestCase
     public function testThrowExceptionOnInvalidEntity(): void
     {
         $this->expectException(IncompatibleMappedEntityException::class);
-        $this->mapper->fromDoctrineOrm(new \stdClass());
+        $this->mapper->fromDoctrineOrm(new stdClass());
 
         $this->expectException(IncompatibleMappedEntityException::class);
-        $this->mapper->toDoctrineOrm(new \stdClass());
+        $this->mapper->toDoctrineOrm(new stdClass());
     }
 
     /**

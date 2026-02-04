@@ -6,8 +6,9 @@ use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailToException;
 use App\Shared\Domain\Exception\InvalidEmailAddressException;
 use App\Shared\Domain\Service\EmailValidator;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use Stringable;
 
-final class To implements \Stringable
+final class To implements Stringable
 {
     use ValueObjectEqualityTrait;
 

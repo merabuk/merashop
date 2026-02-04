@@ -6,6 +6,7 @@ namespace App\EmailSender\Presentation\Console;
 
 use App\EmailSender\Application\Service\OutboxEmailRelayService;
 use App\Shared\Presentation\Console\BaseConsoleCommand;
+use DateMalformedStringException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Command\LockableTrait;
@@ -31,7 +32,7 @@ final class OutboxRelayCommand extends BaseConsoleCommand
 
     /**
      * @throws ExceptionInterface
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {

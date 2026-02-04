@@ -13,8 +13,10 @@ use App\Shared\Domain\Enum\IdentityTypeEnum;
 use App\Shared\Domain\Exception\ValueObject\InvalidUlidException;
 use App\Shared\Domain\ValueObject\Ulid;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Throwable;
 
 /**
  * @implements UserProviderInterface<AuthSubject>
@@ -45,13 +47,13 @@ final readonly class AuthEntityProvider implements UserProviderInterface
             $authSubject = match (IdentityTypeEnum::tryFrom($type)) {
                 IdentityTypeEnum::User => $this->processUserAccount($ulidString),
                 IdentityTypeEnum::Module => $this->processModuleAccount($ulidString),
-                default => throw new \RuntimeException(sprintf('Invalid auth entity type: %s', $type)),
+                default => throw new RuntimeException(sprintf('Invalid auth entity type: %s', $type)),
             };
 
             if ($authSubject) {
                 return $authSubject;
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('Error to authenticate entity from identifier', [
                 'error_message' => $e->getMessage(),
                 'identifier' => $identifier,
@@ -100,6 +102,6 @@ final readonly class AuthEntityProvider implements UserProviderInterface
 
     private function fallbackLoad(string $identifier): AuthSubject
     {
-        throw new \RuntimeException(sprintf("Given identifier '%s' does not contain a type prefix", $identifier));
+        throw new RuntimeException(sprintf("Given identifier '%s' does not contain a type prefix", $identifier));
     }
 }

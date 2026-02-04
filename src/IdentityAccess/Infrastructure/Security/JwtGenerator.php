@@ -11,6 +11,7 @@ use App\IdentityAccess\Application\Security\TokenGeneratorInterface;
 use Lcobucci\JWT\Configuration;
 use Random\RandomException;
 use Symfony\Component\Clock\ClockInterface;
+use Throwable;
 
 class JwtGenerator implements TokenGeneratorInterface
 {
@@ -45,7 +46,7 @@ class JwtGenerator implements TokenGeneratorInterface
             $token = $builder->getToken($this->jwtConfiguration->signer(), $this->jwtConfiguration->signingKey());
 
             return new AccessTokenData(token: $token->toString(), expiresIn: $this->ttl);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw new TokenGenerateException('Failed to generate access token', previous: $e);
         }
     }

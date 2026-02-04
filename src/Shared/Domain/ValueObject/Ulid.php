@@ -7,8 +7,9 @@ namespace App\Shared\Domain\ValueObject;
 use App\Shared\Domain\Exception\InvalidUlidException as BaseInvalidUlidException;
 use App\Shared\Domain\Exception\ValueObject\InvalidUlidException;
 use App\Shared\Domain\Service\UlidValidator;
+use Stringable;
 
-class Ulid implements \Stringable
+class Ulid implements Stringable
 {
     use ValueObjectEqualityTrait;
 

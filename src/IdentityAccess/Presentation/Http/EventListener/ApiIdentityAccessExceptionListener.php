@@ -17,6 +17,7 @@ use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
+use Throwable;
 
 final class ApiIdentityAccessExceptionListener
 {
@@ -48,7 +49,7 @@ final class ApiIdentityAccessExceptionListener
         }
     }
 
-    private function handleIdentityException(\Throwable $exception): ?JsonResponse
+    private function handleIdentityException(Throwable $exception): ?JsonResponse
     {
         $previousException = $exception->getPrevious();
 

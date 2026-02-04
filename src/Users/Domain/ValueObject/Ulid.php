@@ -8,8 +8,9 @@ use App\Shared\Domain\Exception\InvalidUlidException;
 use App\Shared\Domain\Service\UlidValidator;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use App\Users\Domain\Exception\InvalidUserUlidException;
+use Stringable;
 
-final class Ulid implements \Stringable
+final class Ulid implements Stringable
 {
     use ValueObjectEqualityTrait;
 

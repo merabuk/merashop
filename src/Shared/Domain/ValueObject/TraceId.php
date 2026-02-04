@@ -7,8 +7,9 @@ namespace App\Shared\Domain\ValueObject;
 use App\Shared\Domain\Exception\InvalidUuidException;
 use App\Shared\Domain\Exception\ValueObject\InvalidTraceIdException;
 use App\Shared\Domain\Service\UuidValidator;
+use Stringable;
 
-final readonly class TraceId implements \Stringable
+final readonly class TraceId implements Stringable
 {
     use ValueObjectEqualityTrait;
 

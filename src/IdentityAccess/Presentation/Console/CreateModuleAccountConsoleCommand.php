@@ -17,6 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Throwable;
 
 #[AsCommand(
     name: 'app:identity-access:create-module',
@@ -83,7 +84,7 @@ final class CreateModuleAccountConsoleCommand extends BaseConsoleCommand
             $this->io->info("Secret: {$plainSecret}");
 
             return self::SUCCESS;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->io->error($e->getMessage());
 
             return self::FAILURE;

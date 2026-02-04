@@ -5,8 +5,13 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Domain\ValueObject;
 
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use ArrayIterator;
+use Countable;
+use IteratorAggregate;
+use Stringable;
+use Traversable;
 
-final readonly class RoleCollection implements \Stringable, \Countable, \IteratorAggregate
+final readonly class RoleCollection implements Stringable, Countable, IteratorAggregate
 {
     use ValueObjectEqualityTrait;
 
@@ -52,9 +57,9 @@ final readonly class RoleCollection implements \Stringable, \Countable, \Iterato
         return count($this->roles);
     }
 
-    public function getIterator(): \Traversable
+    public function getIterator(): Traversable
     {
-        return new \ArrayIterator($this->roles);
+        return new ArrayIterator($this->roles);
     }
 
     public function __toString(): string

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\EmailSender\Application\Scheduler;
 
 use App\EmailSender\Application\Service\OutboxEmailRelayService;
+use DateMalformedStringException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\ExceptionInterface;
 
@@ -17,7 +18,7 @@ readonly class OutboxEmailRelayHandler
     }
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      * @throws ExceptionInterface
      */
     public function __invoke(OutboxEmailRelayMessage $event): void

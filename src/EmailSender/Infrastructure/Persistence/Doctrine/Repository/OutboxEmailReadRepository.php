@@ -15,6 +15,7 @@ use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidTraceIdException;
 use App\Shared\Domain\ValueObject\TraceId;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\ReadRepositoryTrait;
+use DateTimeImmutable;
 
 class OutboxEmailReadRepository extends BaseOutgoingEmailRepository implements OutboxEmailReadRepositoryInterface
 {
@@ -54,7 +55,7 @@ class OutboxEmailReadRepository extends BaseOutgoingEmailRepository implements O
      * @throws InvalidEmailSenderValueObjectException
      * @throws InvalidTraceIdException
      */
-    public function findReadyToProcess(int $limit, \DateTimeImmutable $now, \DateTimeImmutable $staleTime): array
+    public function findReadyToProcess(int $limit, DateTimeImmutable $now, DateTimeImmutable $staleTime): array
     {
         /**
          * @var array<int, OrmOutboxEmail> $ormEmails

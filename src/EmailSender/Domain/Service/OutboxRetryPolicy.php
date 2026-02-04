@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\EmailSender\Domain\Service;
 
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Attempts;
+use DateMalformedStringException;
+use DateTimeImmutable;
 
 final readonly class OutboxRetryPolicy
 {
@@ -19,9 +21,9 @@ final readonly class OutboxRetryPolicy
     }
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      */
-    public function calculateNextAttemptAt(Attempts $attempts, \DateTimeImmutable $now): \DateTimeImmutable
+    public function calculateNextAttemptAt(Attempts $attempts, DateTimeImmutable $now): DateTimeImmutable
     {
         $delay = ($attempts->value() + 1) ** 2;
 

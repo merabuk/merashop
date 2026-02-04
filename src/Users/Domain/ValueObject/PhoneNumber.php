@@ -6,8 +6,9 @@ use App\Shared\Domain\Exception\InvalidPhoneNumberException;
 use App\Shared\Domain\Service\PhoneNumberValidator;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use App\Users\Domain\Exception\InvalidUserPhoneNumberException;
+use Stringable;
 
-final class PhoneNumber implements \Stringable
+final class PhoneNumber implements Stringable
 {
     use ValueObjectEqualityTrait;
 

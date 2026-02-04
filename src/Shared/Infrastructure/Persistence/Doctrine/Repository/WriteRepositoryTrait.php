@@ -6,6 +6,7 @@ use App\Shared\Domain\Exception\EntityIdMissingException;
 use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObjectExceptionInterface;
 use Doctrine\ORM\Exception\ORMException;
+use RuntimeException;
 
 trait WriteRepositoryTrait
 {
@@ -29,7 +30,7 @@ trait WriteRepositoryTrait
             }
 
             if (!$orm) {
-                throw new \RuntimeException(sprintf('Entity %s with ID %s not found', self::getEntityClass(), $stringId));
+                throw new RuntimeException(sprintf('Entity %s with ID %s not found', self::getEntityClass(), $stringId));
             }
 
             $this->mapper->mapToExistingOrm($domain, $orm);

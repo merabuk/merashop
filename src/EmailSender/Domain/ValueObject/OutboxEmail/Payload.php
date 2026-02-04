@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\EmailSender\Domain\ValueObject\OutboxEmail;
 
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use JsonException;
+use Stringable;
 
-final class Payload implements \Stringable
+final class Payload implements Stringable
 {
     use ValueObjectEqualityTrait;
 
@@ -45,7 +47,7 @@ final class Payload implements \Stringable
     }
 
     /**
-     * @throws \JsonException
+     * @throws JsonException
      */
     protected function getPrimitiveValue(): string
     {

@@ -6,8 +6,9 @@ namespace App\IdentityAccess\Domain\ValueObject\ModuleAccount;
 
 use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountClientIdException;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use Stringable;
 
-final readonly class ClientId implements \Stringable
+final readonly class ClientId implements Stringable
 {
     use ValueObjectEqualityTrait;
 

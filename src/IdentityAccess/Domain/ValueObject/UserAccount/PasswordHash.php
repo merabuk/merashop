@@ -6,8 +6,9 @@ namespace App\IdentityAccess\Domain\ValueObject\UserAccount;
 
 use App\IdentityAccess\Domain\Exception\UserAccount\InvalidUserAccountPasswordHashException;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use Stringable;
 
-final readonly class PasswordHash implements \Stringable
+final readonly class PasswordHash implements Stringable
 {
     use ValueObjectEqualityTrait;
 

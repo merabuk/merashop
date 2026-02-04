@@ -8,8 +8,9 @@ use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailSubjectExcept
 use App\Shared\Domain\Exception\InvalidStringException;
 use App\Shared\Domain\Service\StringValidator;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use Stringable;
 
-final class ExternalId implements \Stringable
+final class ExternalId implements Stringable
 {
     use ValueObjectEqualityTrait;
 

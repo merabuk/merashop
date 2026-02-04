@@ -8,8 +8,9 @@ use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailFromNameExcep
 use App\Shared\Domain\Exception\InvalidStringException;
 use App\Shared\Domain\Service\StringValidator;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use Stringable;
 
-final class FromName implements \Stringable
+final class FromName implements Stringable
 {
     use ValueObjectEqualityTrait;
 

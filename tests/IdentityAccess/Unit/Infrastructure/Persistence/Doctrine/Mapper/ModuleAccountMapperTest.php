@@ -16,6 +16,7 @@ use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Mapper\ModuleAccountM
 use App\Shared\Domain\Exception\EntityIdMissingException;
 use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 final class ModuleAccountMapperTest extends TestCase
 {
@@ -88,10 +89,10 @@ final class ModuleAccountMapperTest extends TestCase
     public function testThrowExceptionOnInvalidEntity(): void
     {
         $this->expectException(IncompatibleMappedEntityException::class);
-        $this->mapper->fromDoctrineOrm(new \stdClass());
+        $this->mapper->fromDoctrineOrm(new stdClass());
 
         $this->expectException(IncompatibleMappedEntityException::class);
-        $this->mapper->toDoctrineOrm(new \stdClass());
+        $this->mapper->toDoctrineOrm(new stdClass());
     }
 
     /**

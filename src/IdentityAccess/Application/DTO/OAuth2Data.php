@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Application\DTO;
 
 use App\IdentityAccess\Domain\Enum\GrantTypeEnum;
+use InvalidArgumentException;
 
 readonly class OAuth2Data implements UserCredentialsInterface, ClientCredentialsInterface, RefreshTokenInterface
 {
@@ -48,9 +49,9 @@ readonly class OAuth2Data implements UserCredentialsInterface, ClientCredentials
         return $this->refreshToken ?? throw $this->prepareException('refreshToken', GrantTypeEnum::RefreshToken);
     }
 
-    private function prepareException(string $field, GrantTypeEnum $grantTypeEnum): \InvalidArgumentException
+    private function prepareException(string $field, GrantTypeEnum $grantTypeEnum): InvalidArgumentException
     {
-        return new \InvalidArgumentException(sprintf(
+        return new InvalidArgumentException(sprintf(
             "%s is required for '%s' grant",
             $field,
             $grantTypeEnum->value

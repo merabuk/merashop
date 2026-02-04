@@ -6,8 +6,9 @@ namespace App\EmailSender\Domain\ValueObject\OutboxEmail;
 
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailErrorMessageException;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use Stringable;
 
-final class ErrorMessage implements \Stringable
+final class ErrorMessage implements Stringable
 {
     use ValueObjectEqualityTrait;
 

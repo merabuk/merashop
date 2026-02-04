@@ -14,6 +14,7 @@ use App\Shared\Domain\Event\EventHandlerInterface;
 use App\Shared\Domain\Event\UserRegisteredSharedEvent;
 use App\Shared\Domain\Service\TraceIdContextInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -63,7 +64,7 @@ class UserRegisteredHandler implements EventHandlerInterface
 
         $email = $this->outboxEmailWriteRepository->save($email);
 
-        $id = $email->getId()?->value() ?? throw new \RuntimeException('Outbox email does not have an ID');
+        $id = $email->getId()?->value() ?? throw new RuntimeException('Outbox email does not have an ID');
 
         $this->commandBus->dispatch(
             message: new SendOutboxEmailCommand($id),

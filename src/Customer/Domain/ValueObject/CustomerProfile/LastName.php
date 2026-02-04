@@ -8,8 +8,9 @@ use App\Customer\Domain\Exception\CustomerProfile\InvalidCustomerProfileLastName
 use App\Shared\Domain\Exception\InvalidStringException;
 use App\Shared\Domain\Service\StringValidator;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use Stringable;
 
-final readonly class LastName implements \Stringable
+final readonly class LastName implements Stringable
 {
     use ValueObjectEqualityTrait;
 

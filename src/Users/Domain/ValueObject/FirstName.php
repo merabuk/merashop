@@ -8,8 +8,9 @@ use App\Shared\Domain\Exception\InvalidStringException;
 use App\Shared\Domain\Service\StringValidator;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use App\Users\Domain\Exception\InvalidUserFirstNameException;
+use Stringable;
 
-final class FirstName implements \Stringable
+final class FirstName implements Stringable
 {
     use ValueObjectEqualityTrait;
 

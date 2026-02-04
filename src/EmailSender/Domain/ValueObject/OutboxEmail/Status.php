@@ -7,8 +7,9 @@ namespace App\EmailSender\Domain\ValueObject\OutboxEmail;
 use App\EmailSender\Domain\Enum\OutboxEmail\StatusEnum;
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailStatusException;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use Stringable;
 
-final class Status implements \Stringable
+final class Status implements Stringable
 {
     use ValueObjectEqualityTrait;
 

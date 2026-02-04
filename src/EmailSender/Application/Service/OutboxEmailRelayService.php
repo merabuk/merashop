@@ -6,6 +6,7 @@ namespace App\EmailSender\Application\Service;
 
 use App\EmailSender\Application\Command\SendOutboxEmail\SendOutboxEmailCommand;
 use App\EmailSender\Domain\Repository\OutboxEmailReadRepositoryInterface;
+use DateMalformedStringException;
 use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -20,7 +21,7 @@ readonly class OutboxEmailRelayService
     }
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      * @throws ExceptionInterface
      */
     public function execute(): int

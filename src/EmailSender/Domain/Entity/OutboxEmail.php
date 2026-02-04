@@ -21,6 +21,7 @@ use App\EmailSender\Domain\ValueObject\OutboxEmail\Status;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Subject;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\To;
 use App\Shared\Domain\ValueObject\TraceId;
+use DateTimeImmutable;
 
 class OutboxEmail
 {
@@ -73,7 +74,7 @@ class OutboxEmail
     /**
      * @throws OutboxEmailAlreadyInProcessException
      */
-    public function lock(\DateTimeImmutable $now): void
+    public function lock(DateTimeImmutable $now): void
     {
         if ($this->status->isProcessing() && null !== $this->lockedAt) {
             throw new OutboxEmailAlreadyInProcessException('Email is already being processed');
@@ -95,7 +96,7 @@ class OutboxEmail
      * @throws InvalidOutboxEmailAttemptsException
      * @throws InvalidOutboxEmailErrorMessageException
      */
-    public function markAsFailed(string $error, \DateTimeImmutable $nextAttemptAt): void
+    public function markAsFailed(string $error, DateTimeImmutable $nextAttemptAt): void
     {
         $this->status = Status::failed();
         $this->attempts = $this->attempts->increment();

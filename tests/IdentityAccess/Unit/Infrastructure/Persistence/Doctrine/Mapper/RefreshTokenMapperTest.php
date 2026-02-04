@@ -17,7 +17,9 @@ use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmRefreshToke
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Mapper\RefreshTokenMapper;
 use App\Shared\Domain\Exception\EntityIdMissingException;
 use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
+use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 final class RefreshTokenMapperTest extends TestCase
 {
@@ -91,10 +93,10 @@ final class RefreshTokenMapperTest extends TestCase
     public function testThrowExceptionOnInvalidEntity(): void
     {
         $this->expectException(IncompatibleMappedEntityException::class);
-        $this->mapper->fromDoctrineOrm(new \stdClass());
+        $this->mapper->fromDoctrineOrm(new stdClass());
 
         $this->expectException(IncompatibleMappedEntityException::class);
-        $this->mapper->toDoctrineOrm(new \stdClass());
+        $this->mapper->toDoctrineOrm(new stdClass());
     }
 
     /**
@@ -115,7 +117,7 @@ final class RefreshTokenMapperTest extends TestCase
         $fakeId = 123;
         $fakeToken = 'test-token';
         $fakeAccountUlid = '01ARZ3NDEKTSV4RRFFQ6KHNQZY';
-        $fakeExpiresAt = new \DateTimeImmutable('+30 days');
+        $fakeExpiresAt = new DateTimeImmutable('+30 days');
 
         return new RefreshToken(
             tokenHash: TokenHash::fromString($fakeToken),
@@ -132,7 +134,7 @@ final class RefreshTokenMapperTest extends TestCase
         $fakeToken = 'test-token'; // hash isn't needed for this test'
         $fakeAccountUlid = '01ARZ3NDEKTSV4RRFFQ6KHNQZY';
         $fakeAccountType = AccountType::user()->value();
-        $fakeExpiresAt = new \DateTimeImmutable('+30 days');
+        $fakeExpiresAt = new DateTimeImmutable('+30 days');
 
         $orm = new OrmRefreshToken();
         $orm->setId($fakeId);

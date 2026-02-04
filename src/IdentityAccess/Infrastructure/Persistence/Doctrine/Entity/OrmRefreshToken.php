@@ -7,6 +7,7 @@ namespace App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\TokenHash;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Type\RefreshToken\AccountType;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
+use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UlidType;
@@ -31,7 +32,7 @@ class OrmRefreshToken
     public ?IdentityTypeEnum $accountType = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    public ?\DateTimeImmutable $expiresAt = null;
+    public ?DateTimeImmutable $expiresAt = null;
 
     public function setId(?int $id): void
     {

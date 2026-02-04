@@ -15,6 +15,7 @@ use App\IdentityAccess\Domain\ValueObject\RefreshToken\ExpiresAt;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\TokenHash;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\Ulid;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
+use DateMalformedStringException;
 use Random\RandomException;
 use Symfony\Component\Clock\ClockInterface;
 
@@ -48,7 +49,7 @@ final readonly class RefreshTokenService
             $this->writeRepository->save($refreshToken);
 
             return new RefreshTokenData(token: $plainToken, expiresIn: $this->ttl);
-        } catch (\DateMalformedStringException|InvalidIdentityAccessValueObjectException|RandomException $e) {
+        } catch (DateMalformedStringException|InvalidIdentityAccessValueObjectException|RandomException $e) {
             throw new CreateRefreshTokenException('Error while creating refresh token', previous: $e);
         }
     }

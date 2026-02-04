@@ -18,6 +18,7 @@ use App\EmailSender\Domain\ValueObject\OutboxEmail\Status;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Subject;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\To;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Symfony\Component\Clock\MockClock;
 
 class OutboxEmailTest extends TestCase
@@ -205,7 +206,7 @@ class OutboxEmailTest extends TestCase
                 errorMessage: null,
             );
         } catch (InvalidEmailSenderValueObjectException $e) {
-            throw new \RuntimeException(sprintf('Invalid email sender value object. Error: %s', $e->getMessage()));
+            throw new RuntimeException(sprintf('Invalid email sender value object. Error: %s', $e->getMessage()));
         }
     }
 }

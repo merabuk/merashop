@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Persistence\Doctrine\Type;
 
+use BackedEnum;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 
 abstract class AbstractPostgresEnumType extends Type
 {
     /**
-     * @return class-string<\BackedEnum>
+     * @return class-string<BackedEnum>
      */
     abstract protected function getEnumClass(): string;
 
@@ -27,14 +28,14 @@ abstract class AbstractPostgresEnumType extends Type
             return null;
         }
 
-        if ($value instanceof \BackedEnum) {
+        if ($value instanceof BackedEnum) {
             return (string) $value->value;
         }
 
         return (string) $value;
     }
 
-    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?\BackedEnum
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?BackedEnum
     {
         if (null === $value) {
             return null;

@@ -11,6 +11,7 @@ use Lcobucci\JWT\Token\Plain;
 use Lcobucci\JWT\Token\RegisteredClaims;
 use Symfony\Component\Security\Http\AccessToken\AccessTokenHandlerInterface;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
+use Throwable;
 
 final readonly class JwtAccessTokenHandler implements AccessTokenHandlerInterface
 {
@@ -26,7 +27,7 @@ final readonly class JwtAccessTokenHandler implements AccessTokenHandlerInterfac
     {
         try {
             $token = $this->jwtConfiguration->parser()->parse($accessToken);
-        } catch (\Throwable) {
+        } catch (Throwable) {
             throw new InvalidCredentialsException('Invalid JWT token');
         }
 

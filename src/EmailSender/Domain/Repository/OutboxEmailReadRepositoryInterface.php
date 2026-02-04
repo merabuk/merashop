@@ -7,6 +7,7 @@ namespace App\EmailSender\Domain\Repository;
 use App\EmailSender\Domain\Entity\OutboxEmail;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Id;
 use App\Shared\Domain\ValueObject\TraceId;
+use DateTimeImmutable;
 
 interface OutboxEmailReadRepositoryInterface
 {
@@ -17,7 +18,7 @@ interface OutboxEmailReadRepositoryInterface
     /**
      * @return array<int, OutboxEmail>
      */
-    public function findReadyToProcess(int $limit, \DateTimeImmutable $now, \DateTimeImmutable $staleTime): array;
+    public function findReadyToProcess(int $limit, DateTimeImmutable $now, DateTimeImmutable $staleTime): array;
 
     public function existsByTraceId(TraceId $traceId): bool;
 }

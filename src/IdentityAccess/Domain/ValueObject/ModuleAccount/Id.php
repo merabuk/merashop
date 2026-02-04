@@ -8,8 +8,9 @@ use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountIdExce
 use App\Shared\Domain\Exception\IntegerIsNotUnsignedException;
 use App\Shared\Domain\Service\IntegerValidator;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use Stringable;
 
-final class Id implements \Stringable
+final class Id implements Stringable
 {
     use ValueObjectEqualityTrait;
 

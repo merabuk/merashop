@@ -10,6 +10,7 @@ use App\EmailSender\Domain\Repository\OutboxEmailReadRepositoryInterface;
 use App\EmailSender\Domain\Repository\OutboxEmailWriteRepositoryInterface;
 use App\EmailSender\Domain\Service\MailerServiceInterface;
 use App\Tests\EmailSender\Support\OutboxEmailMother;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 final class SendOutboxEmailCommandHandlerTest extends KernelTestCase
@@ -33,7 +34,7 @@ final class SendOutboxEmailCommandHandlerTest extends KernelTestCase
         $container = self::getContainer();
 
         $mailer = $this->createMock(MailerServiceInterface::class);
-        $mailer->method('process')->willThrowException(new \Exception('SMTP Timeout'));
+        $mailer->method('process')->willThrowException(new Exception('SMTP Timeout'));
         $container->set(MailerServiceInterface::class, $mailer);
 
         $email = $this->writeRepository->save($this->mother->createBaseEmail());

@@ -3,6 +3,7 @@
 namespace App\Shared\Infrastructure\Persistence\Doctrine\Repository;
 
 use Doctrine\DBAL\LockMode;
+use InvalidArgumentException;
 
 trait ReadRepositoryTrait
 {
@@ -14,8 +15,8 @@ trait ReadRepositoryTrait
         $qb = $this->createQueryBuilder('e')->select('1');
 
         foreach ($criteria as $index => $criteriaItem) {
-            $field = $criteriaItem['field'] ?? throw new \InvalidArgumentException('Criteria item must have a field');
-            $value = $criteriaItem['value'] ?? throw new \InvalidArgumentException('Criteria item must have a value');
+            $field = $criteriaItem['field'] ?? throw new InvalidArgumentException('Criteria item must have a field');
+            $value = $criteriaItem['value'] ?? throw new InvalidArgumentException('Criteria item must have a value');
             $type = $criteriaItem['type'] ?? null;
             $paramName = $field.$index;
 

@@ -12,9 +12,11 @@ use App\EmailSender\Domain\Service\OutboxRetryPolicy;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Id;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
+use DateMalformedStringException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Throwable;
 
 #[AsMessageHandler(bus: BusNameEnum::Command->value)]
 readonly class SendOutboxEmailCommandHandler implements CommandHandlerInterface
@@ -30,7 +32,7 @@ readonly class SendOutboxEmailCommandHandler implements CommandHandlerInterface
     }
 
     /**
-     * @throws \DateMalformedStringException
+     * @throws DateMalformedStringException
      * @throws InvalidEmailSenderValueObjectException
      */
     public function __invoke(SendOutboxEmailCommand $command): void
@@ -54,7 +56,7 @@ readonly class SendOutboxEmailCommandHandler implements CommandHandlerInterface
             $this->mailer->process($email);
 
             $email->markAsSent();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             if ($this->retryPolicy->shouldRetry($email->getAttempts())) {
                 $nextAttemptAt = $this->retryPolicy->calculateNextAttemptAt(
                     attempts: $email->getAttempts(),
