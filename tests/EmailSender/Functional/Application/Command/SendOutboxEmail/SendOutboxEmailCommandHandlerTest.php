@@ -10,11 +10,14 @@ use App\EmailSender\Domain\Repository\OutboxEmailReadRepositoryInterface;
 use App\EmailSender\Domain\Repository\OutboxEmailWriteRepositoryInterface;
 use App\EmailSender\Domain\Service\MailerServiceInterface;
 use App\Tests\EmailSender\Support\OutboxEmailMother;
+use App\Tests\EmailSender\Support\TransactionalTrait;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 final class SendOutboxEmailCommandHandlerTest extends KernelTestCase
 {
+    use TransactionalTrait;
+
     private OutboxEmailMother $mother;
     private OutboxEmailReadRepositoryInterface $readRepository;
     private OutboxEmailWriteRepositoryInterface $writeRepository;
@@ -40,9 +43,13 @@ final class SendOutboxEmailCommandHandlerTest extends KernelTestCase
         $email = $this->writeRepository->save($this->mother->createBaseEmail());
 
         $handler = $container->get(SendOutboxEmailCommandHandler::class);
-        $handler(new SendOutboxEmailCommand($email->getId()->value()));
+        $em = $container->get('doctrine.orm.email_sender_entity_manager');
 
-        $updatedEmail = $this->readRepository->findById($email->getId()->value());
+        $this->executeInTransaction($em, function () use ($handler, $email) {
+            $handler(new SendOutboxEmailCommand($email->getId()->value()));
+        });
+
+        $updatedEmail = $this->readRepository->findById($email->getId());
 
         self::assertEquals(1, $updatedEmail->getAttempts()->value());
         self::assertTrue($updatedEmail->getStatus()->isFailed());

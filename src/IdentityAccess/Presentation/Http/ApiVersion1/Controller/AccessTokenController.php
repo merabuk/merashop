@@ -9,6 +9,8 @@ use App\IdentityAccess\Application\Exceptions\GrantHandlerException;
 use App\IdentityAccess\Application\Exceptions\UnsupportedGrantTypeException;
 use App\IdentityAccess\Application\Service\OAuth2TokenService;
 use App\IdentityAccess\Presentation\Http\ApiVersion1\Request\AccessTokenRequest;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +26,9 @@ final class AccessTokenController extends AbstractController
     }
 
     /**
+     * @throws ContainerExceptionInterface
      * @throws GrantHandlerException
+     * @throws NotFoundExceptionInterface
      * @throws UnsupportedGrantTypeException
      */
     #[Route(

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Shared\Unit\Infrastructure\Presentation\ApiVersion1\Controller;
+namespace App\Tests\Shared\Functional\Presentation\ApiVersion1\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
