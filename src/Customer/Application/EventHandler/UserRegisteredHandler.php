@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Customer\Application\EventListener;
+namespace App\Customer\Application\EventHandler;
 
 use App\Customer\Application\Command\CreateCustomerProfile\CreateCustomerProfileCommand;
 use App\Customer\Domain\Repository\CustomerProfileReadRepositoryInterface;
