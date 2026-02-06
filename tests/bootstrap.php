@@ -20,7 +20,6 @@ $managers = [
     'customer' => 'config/migrations/customer.php',
     'email_sender' => 'config/migrations/email_sender.php',
     'identity_access' => 'config/migrations/identity_access.php',
-    'users' => 'config/migrations/users.php',
 ];
 
 echo 'Preparing test databases...'.PHP_EOL;

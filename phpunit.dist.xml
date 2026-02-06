@@ -26,9 +26,6 @@
         <testsuite name="shared">
             <directory>tests/Shared</directory>
         </testsuite>
-        <testsuite name="users">
-            <directory>tests/Users</directory>
-        </testsuite>
     </testsuites>
 
     <source ignoreSuppressionOfDeprecations="true"

@@ -1,5 +1,0 @@
-parameters:
-
-services:
-  App\Users\Domain\Repository\UserReadRepositoryInterface: '@App\Users\Infrastructure\Persistence\Doctrine\Repository\UserReadRepository'
-  App\Users\Domain\Repository\UserWriteRepositoryInterface: '@App\Users\Infrastructure\Persistence\Doctrine\Repository\UserWriteRepository'

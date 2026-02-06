@@ -1,6 +1,0 @@
-users_api_v1:
-  resource:
-    path: ../ApiVersion1/Controller/
-    namespace: App\Users\Presentation\Http\ApiVersion1\Controller
-  type: attribute
-  prefix: /api/v1/users

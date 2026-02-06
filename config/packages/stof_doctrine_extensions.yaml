@@ -12,6 +12,3 @@ stof_doctrine_extensions:
 
     email_sender:
       <<: *default_sts
-
-    users:
-      <<: *default_sts

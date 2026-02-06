@@ -24,7 +24,6 @@ The project is organized using modular architecture (Modular Monolith) in the di
 - `Customer` - customer profiles and related domain logic.
 - `IdentityAccess` - user and modules management, registration, and authorization.
 - `EmailSender` - module for sending notifications.
-- `Users` - (deprecated module), scheduled for removal (do not add new work here).
 - `Shared` - common components used between modules (Domain, Infrastructure, Application).
 
 ### Domain Structure
@@ -80,11 +79,6 @@ php bin/console doctrine:migrations:migrate --em=identity_access --configuration
 php bin/console doctrine:migrations:migrate --em=email_sender --configuration=config/migrations/email_sender.php --no-interaction
 ```
 
-**Users (deprecated):**
-```bash
-php bin/console doctrine:migrations:migrate --em=users --configuration=config/migrations/users.php --no-interaction
-```
-
 ### Making Migrations
 
 Make migration files for each module using their respective entity managers and configurations:
@@ -102,11 +96,6 @@ php bin/console doctrine:migrations:diff --em=identity_access --configuration=co
 **EmailSender:**
 ```bash
 php bin/console doctrine:migrations:diff --em=email_sender --configuration=config/migrations/email_sender.php --no-interaction
-```
-
-**Users (deprecated):**
-```bash
-php bin/console doctrine:migrations:diff --em=users --configuration=config/migrations/users.php --no-interaction
 ```
 
 Use lowercase human-friendly indexes.
@@ -188,7 +177,7 @@ The project uses PHPUnit for testing. Tests are organized by module to support t
 **Automatic Database Preparation:**
 The project is configured to automatically migrate all module databases before running tests. This is handled by `tests/bootstrap.php`. When you run `phpunit`, it will:
 1. Load the test environment.
-2. Run migrations for all entity managers currently configured in `tests/bootstrap.php` (`customer`, `email_sender`, `identity_access`, `users`). Note: `users` is deprecated and will be removed.
+2. Run migrations for all entity managers currently configured in `tests/bootstrap.php` (`customer`, `email_sender`, `identity_access`).
 3. Ensure the databases are ready for testing.
 
 **Run all tests:**

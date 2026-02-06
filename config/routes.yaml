@@ -1,9 +1,6 @@
 app_shared_api:
   resource: '../src/Shared/Presentation/Http/config/routes.yaml'
 
-users_api:
-  resource: '../src/Users/Presentation/Http/config/routes.yaml'
-
 customer_api:
   resource: '../src/Customer/Presentation/Http/config/routes.yaml'
 

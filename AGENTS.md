@@ -11,7 +11,6 @@ The system is divided into high-level modules located in `src/`:
 - `Customer` - customer profiles and related domain logic.
 - `IdentityAccess` - user and modules management, registration, and authorization.
 - `EmailSender` - module for sending notifications.
-- `Users` - (deprecated module), scheduled for removal (do not add new work here).
 - `Shared` - common components used between modules (Domain, Infrastructure, Application).
 
 - **Isolation**:

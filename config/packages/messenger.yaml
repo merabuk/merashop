@@ -82,7 +82,6 @@ framework:
     buses:
       command.bus:
         middleware:
-          - doctrine_transaction: [users]
           - doctrine_transaction: [customer]
           - doctrine_transaction: [identity_access]
           - doctrine_transaction: [email_sender]

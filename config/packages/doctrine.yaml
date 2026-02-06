@@ -6,9 +6,6 @@ doctrine:
       refresh_token_account_type: App\IdentityAccess\Infrastructure\Persistence\Doctrine\Type\RefreshToken\AccountType
     default_connection: identity_access
     connections:
-      users:
-        url: '%env(resolve:DATABASE_URL_USERS)%'
-        profiling_collect_backtrace: '%kernel.debug%'
       customer:
         url: '%env(resolve:DATABASE_URL_CUSTOMER)%'
         profiling_collect_backtrace: '%kernel.debug%'
@@ -27,16 +24,6 @@ doctrine:
     controller_resolver:
       auto_mapping: false
     entity_managers:
-      users:
-        connection: users
-        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
-        mappings:
-          Users:
-            type: attribute
-            is_bundle: false
-            dir: '%kernel.project_dir%/src/Users/Infrastructure/Persistence/Doctrine/Entity'
-            prefix: 'App\Users\Infrastructure\Persistence\Doctrine\Entity'
-            alias: Users
       customer:
         connection: customer
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware

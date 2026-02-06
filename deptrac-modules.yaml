@@ -11,12 +11,6 @@ parameters:
           type: directory
           value: /src/Shared/.*
     -
-      name: Users
-      collectors:
-        -
-          type: directory
-          value: /src/Users/.*
-    -
       name: Customer
       collectors:
         -
@@ -40,7 +34,5 @@ parameters:
     EmailSender:
       - Shared
     IdentityAccess:
-      - Shared
-    Users:
       - Shared
     Shared: ~
