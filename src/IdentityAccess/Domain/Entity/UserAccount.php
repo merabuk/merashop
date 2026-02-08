@@ -8,7 +8,7 @@ use App\IdentityAccess\Domain\ValueObject\RoleCollection;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\Id;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\PasswordHash;
-use App\Shared\Domain\ValueObject\Ulid;
+use App\IdentityAccess\Domain\ValueObject\UserAccount\Ulid;
 
 class UserAccount
 {

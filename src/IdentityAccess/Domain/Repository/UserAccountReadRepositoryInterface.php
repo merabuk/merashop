@@ -6,7 +6,7 @@ namespace App\IdentityAccess\Domain\Repository;
 
 use App\IdentityAccess\Domain\Entity\UserAccount;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
-use App\Shared\Domain\ValueObject\Ulid;
+use App\IdentityAccess\Domain\ValueObject\UserAccount\Ulid;
 
 interface UserAccountReadRepositoryInterface
 {

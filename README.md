@@ -24,6 +24,7 @@ The project is organized using modular architecture (Modular Monolith) in the di
 - `Customer` - customer profiles and related domain logic.
 - `IdentityAccess` - user and modules management, registration, and authorization.
 - `EmailSender` - module for sending notifications.
+- `Catalog` - products, categories and attributes in the store.
 - `Shared` - common components used between modules (Domain, Infrastructure, Application).
 
 ### Domain Structure
@@ -79,6 +80,11 @@ php bin/console doctrine:migrations:migrate --em=identity_access --configuration
 php bin/console doctrine:migrations:migrate --em=email_sender --configuration=config/migrations/email_sender.php --no-interaction
 ```
 
+**Catalog:**
+```bash
+php bin/console doctrine:migrations:migrate --em=catalog --configuration=config/migrations/catalog.php --no-interaction
+```
+
 ### Making Migrations
 
 Make migration files for each module using their respective entity managers and configurations:
@@ -98,7 +104,10 @@ php bin/console doctrine:migrations:diff --em=identity_access --configuration=co
 php bin/console doctrine:migrations:diff --em=email_sender --configuration=config/migrations/email_sender.php --no-interaction
 ```
 
-Use lowercase human-friendly indexes.
+**Catalog:**
+```bash
+php bin/console doctrine:migrations:diff --em=catalog --configuration=config/migrations/catalog.php --no-interaction
+```
 
 ## Quick Start
 
@@ -134,6 +143,18 @@ This command:
 
 
 ## Development Workflow
+### ORM & Mapping Standards
+
+- **Unique Constraints**: Always use explicit `UniqueConstraint` names at the class level instead of the `unique: true` property on columns. Use lowercase, human-friendly index names (e.g., `uniq_user_email`). This ensures consistent naming and better migration generation.
+- **Field Lengths**: Define length limits in Value Objects as `MAX_LENGTH` constants and use them in ORM column definitions (e.g., `length: Sku::MAX_LENGTH`). This ensures a single source of truth for business constraints and database schema.
+
+### Repository Standards
+
+- **Read/Write Separation**: Repository interfaces are split into **Read** and **Write** interfaces (CQRS at the persistence level).
+- **Read Repositories**: Must implement a private `checkAndMapToDomain` method to handle ORM-to-Domain mapping with proper type checking and null handling.
+- **Write Repositories**: Must use `WriteRepositoryTrait` for standard `save` and `delete` operations to ensure consistency and reduce boilerplate.
+- **Base Classes**: All repository implementations must inherit from an entity-specific base class (e.g., `BaseProductRepository`) that encapsulates the `Mapper` and `ManagerRegistry`.
+
 ### Code Quality Tools
 
 **Enabled GrumPHP tasks:**
@@ -177,7 +198,7 @@ The project uses PHPUnit for testing. Tests are organized by module to support t
 **Automatic Database Preparation:**
 The project is configured to automatically migrate all module databases before running tests. This is handled by `tests/bootstrap.php`. When you run `phpunit`, it will:
 1. Load the test environment.
-2. Run migrations for all entity managers currently configured in `tests/bootstrap.php` (`customer`, `email_sender`, `identity_access`).
+2. Run migrations for all entity managers currently configured in `tests/bootstrap.php` (`customer`, `email_sender`, `identity_access`, `catalog`).
 3. Ensure the databases are ready for testing.
 
 **Run all tests:**
@@ -221,6 +242,6 @@ To test the production-like logging locally:
 3. Check logs in Kibana. By default, Symfony logs to `var/log/dev.log`, and Filebeat reads it.
 
 ### Features
-- **TraceId**: Each request is assigned a unique `TraceId`, which is automatically added to all log entries via `TraceIdProcessor`. This allows tracing the entire lifecycle of a request across different modules.
+- **TraceId**: Each request is assigned a unique `TraceId` (**UUID v7**), which is automatically added to all log entries via `TraceIdProcessor`. This allows tracing the entire lifecycle of a request across different modules.
 - **JSON Logging**: In the `prod` environment, logs are formatted as JSON for easy ingestion by Filebeat.
 - **Dedicated Channels**: Modules use separate logging channels (e.g., `email_sender`) to simplify filtering.

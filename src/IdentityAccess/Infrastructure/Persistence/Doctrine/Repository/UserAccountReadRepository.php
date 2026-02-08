@@ -8,10 +8,10 @@ use App\IdentityAccess\Domain\Entity\UserAccount;
 use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
 use App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
+use App\IdentityAccess\Domain\ValueObject\UserAccount\Ulid;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmUserAccount;
 use App\Shared\Domain\Exception\EntityIdMissingException;
 use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
-use App\Shared\Domain\ValueObject\Ulid;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\ReadRepositoryTrait;
 
 class UserAccountReadRepository extends BaseUserAccountRepository implements UserAccountReadRepositoryInterface

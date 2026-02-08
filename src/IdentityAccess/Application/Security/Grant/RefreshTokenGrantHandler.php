@@ -18,10 +18,10 @@ use App\IdentityAccess\Domain\Exception\RefreshToken\InvalidRefreshTokenTokenHas
 use App\IdentityAccess\Domain\Repository\RefreshTokenReadRepositoryInterface;
 use App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\Service\TokenHasherInterface;
+use App\IdentityAccess\Domain\Exception\UserAccount\InvalidUserAccountUlidException;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\TokenHash;
+use App\IdentityAccess\Domain\ValueObject\UserAccount\Ulid;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
-use App\Shared\Domain\Exception\ValueObject\InvalidUlidException;
-use App\Shared\Domain\ValueObject\Ulid;
 
 readonly class RefreshTokenGrantHandler implements GrantHandlerInterface
 {
@@ -65,7 +65,7 @@ readonly class RefreshTokenGrantHandler implements GrantHandlerInterface
             };
         } catch (
             CreateRefreshTokenException
-            |InvalidUlidException
+            |InvalidUserAccountUlidException
             |InvalidRefreshTokenTokenHashException
             |TokenGenerateException $e
         ) {
@@ -76,7 +76,7 @@ readonly class RefreshTokenGrantHandler implements GrantHandlerInterface
     /**
      * @throws CreateRefreshTokenException
      * @throws InvalidRefreshTokenException
-     * @throws InvalidUlidException
+     * @throws InvalidUserAccountUlidException
      * @throws TokenGenerateException
      */
     private function processUserAccount(string $accountUlid): TokenResponseData

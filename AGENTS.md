@@ -23,7 +23,7 @@ The system is divided into high-level modules located in `src/`:
   - **Deptrac** is used to monitor and enforce layer boundaries and dependency rules.
 - **Module Independence**:
   - Every module must be independent.
-  - The `Shared` layer is the only exception, providing reusable components. However, `Shared` must only contain primitive logic, base interfaces, and cross-cutting concerns (e.g., `TraceId`, `ValueObjects` used by multiple modules) to maintain strict decoupling.
+  - The `Shared` layer is the only exception, providing reusable components. However, `Shared` must only contain primitive logic, base interfaces, and cross-cutting concerns (e.g., `TraceId` which is a **UUID v7**, `ValueObjects` used by multiple modules) to maintain strict decoupling.
 
 ## 2. Directory Structure
 
@@ -78,19 +78,21 @@ The translation folder can be located in various places (but correct ones) and n
     - Every property should ideally be a VO (e.g., `EmailAddress`, `ClientId`, `RoleCollection`).
     - Collection properties must be wrapped in a Collection VO (e.g., `ScopeCollection`).
     - **VO Exceptions**: Every VO must have a specific domain exception.
+    - **MAX_LENGTH**: For string-based VOs, always define a `public const int MAX_LENGTH` and use it both for validation and in ORM mapping (e.g., `#[ORM\Column(type: Types::STRING, length: Sku::MAX_LENGTH)]`). This ensures a single source of truth for field limits.
     - **Exception Hierarchy**: Each module must implement the following structure:
         1. `AppExceptionInterface` (interface, in `Shared`): Base interface for all application exceptions.
         2. `ServerException` (abstract class, in `Shared`): Base exception with `getErrorCode(): string` method.
         3. `ErrorCodeEnum` (enum, in `Shared/Domain/Enum`): Standardized error codes (e.g., `UnexpectedError`, `ValidationFailed`).
         4. `{Module}ExceptionInterface` (interface): Module marker, inherits from `DomainExceptionInterface`.
         5. `{Module}DomainException` (abstract class): Base module exception, inherits from `LogicException` or `ServerException` and implements `{Module}ExceptionInterface`.
-        6. `Invalid{Module}ValueObjectException` (abstract class): Base exception for all VOs, inherits from base module exception and implements `ThrowableValueObjectException`.
+        6. `Invalid{Module}ValueObjectException` (abstract class): Base exception for all VOs, inherits from base module exception and implements `ValueObjectExceptionInterface`.
         7. Specific VO exceptions (e.g., `InvalidUserAccountEmailException`) must inherit from `Invalid{Module}ValueObjectException`.
     - **VO Location**: 
         - Model-specific VO must be placed in a subfolder named after the entity (e.g., `src/IdentityAccess/Domain/ValueObject/UserAccount/EmailAddress.php`).
         - Module-shared VO must be placed in the root `ValueObject` folder of the module.
         - Cross-module VO must be placed in `src/Shared/Domain/ValueObject/`.
     - **VO Validation**: VO must ensure their own validity upon creation. Use existing validators from `Shared` or `Domain` if available.
+    - **Strongly Typed ULIDs**: Every entity that uses a ULID MUST have its own specific ULID class inheriting from `App\Shared\Domain\ValueObject\Ulid`. This ensures strong typing and entity-specific validation/exceptions. `App\Shared\Domain\ValueObject\Ulid` remains the base class and is primarily used for cross-module identifiers like User Account IDs.
 - **Independence**: The domain must remain agnostic of how it is persisted or triggered.
 - **Service Interfaces**:
     - Any service that interacts with infrastructure (API, DB, Mailer, etc.) must have an interface in the `Domain` layer and its implementation in the `Infrastructure` layer.
@@ -101,6 +103,15 @@ The translation folder can be located in various places (but correct ones) and n
 - **Database Isolation**: Each module MUST use its own dedicated connection and entity manager. Cross-module database queries are strictly forbidden.
 - **Mapping Location**: Doctrine mapping must reside strictly within `src/<ModuleName>/Infrastructure/Persistence/Doctrine/Mapping` (XML/PHP) OR within Infrastructure-specific entities (e.g., `Orm*` classes) using PHP attributes.
 - **Explicit Definitions**: Avoid using attributes or XML inside the Domain layer. Attributes are permitted only in the Infrastructure layer for ORM entities.
+    - **Unique Constraints**: Always use `#[ORM\UniqueConstraint]` with an explicit name at the class level instead of setting `unique: true` in `#[ORM\Column]`. This ensures consistent index naming and better migration generation. Example: `#[ORM\UniqueConstraint(name: 'uniq_user_email', columns: ['email'])]`.
+- **Repository Pattern**:
+    - Each module should split repository interfaces into **Read** and **Write** repositories (e.g., `ProductReadRepositoryInterface` and `ProductWriteRepositoryInterface`).
+    - Read repositories should contain methods for data retrieval (`findById`, `findByUlid`, `findReadyToProcess`, etc.).
+    - Read repositories MUST implement a private `checkAndMapToDomain(?object $orm): ?DomainEntity` method to ensure type safety and centralized mapping from ORM entities to domain objects.
+    - Write repositories should contain methods for persistence (`save`, `delete`).
+    - This ensures a cleaner separation of concerns and follows the CQRS principle within the module.
+    - **Base Classes**: Implementations of these interfaces MUST inherit from an entity-specific base repository class (e.g., `BaseProductRepository`) which extends `BaseEntityRepository`. This base class should handle common dependencies like the `Mapper` and `ManagerRegistry` to ensure consistency.
+    - **Write Trait**: Implementations of write repositories MUST use `App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait` to handle standard `save` and `delete` operations, avoiding code duplication.
 - **Migrations**: Each module has its own migration configuration in `config/migrations/<module_name>.php`. Migrations must be run separately for each module using the `--em` and `--configuration` options.
 - **Testing Isolation**: For testing, all module databases are automatically migrated and prepared by `tests/bootstrap.php` when running PHPUnit. This ensures a clean and isolated state for each module's database during joint testing.
 - **Exception Handling**: Each module should contain its own exception handler (like `src/IdentityAccess/Presentation/Http/EventListener/ApiIdentityAccessExceptionListener.php`). The structure in such handlers might be module-specific (e.g., to comply with OAuth2 requirements).
@@ -117,7 +128,7 @@ The translation folder can be located in various places (but correct ones) and n
 
 - **Transactional Outbox**: Guaranteed message delivery. Domain events or messages are saved to the database within the same transaction as business changes and then dispatched by a separate process.
 - **Config Collection**: The `Kernel.php` is configured to automatically collect configurations from modules. Each module should place its configuration files in the root `config/modules/` directory (e.g., `config/modules/identity_access.yaml`). This ensures module-specific settings are organized while maintaining a unified application configuration.
-- **Observability**: A `TraceId` must be present in all messages and log entries to enable end-to-end request tracking. All logs must be output in JSON format (using `monolog.formatter.json` in production) to ensure compatibility with log collectors like Filebeat.
+- **Observability**: A `TraceId` (standardized as **UUID v7**) must be present in all messages and log entries to enable end-to-end request tracking. All logs must be output in JSON format (using `monolog.formatter.json` in production) to ensure compatibility with log collectors like Filebeat.
 - **Logging Channels**: Each module should use its own dedicated logging channel (e.g., `email_sender`) to facilitate filtering and analysis in Elasticsearch/Kibana.
 - **Idempotency**: Use `TraceId` as an idempotency key to prevent duplicate processing of messages in RabbitMQ/Messenger.
 

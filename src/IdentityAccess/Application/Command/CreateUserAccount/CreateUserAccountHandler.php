@@ -11,10 +11,10 @@ use App\IdentityAccess\Domain\Exception\UserAccount\UserAccountAlreadyExistsExce
 use App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\Repository\UserAccountWriteRepositoryInterface;
 use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
-use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Ulid;
 use App\IdentityAccess\Domain\ValueObject\RoleCollection;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\PasswordHash;
+use App\IdentityAccess\Domain\ValueObject\UserAccount\Ulid;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
 use App\Shared\Domain\Enum\RoleEnum;

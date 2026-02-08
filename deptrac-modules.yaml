@@ -23,6 +23,12 @@ parameters:
           type: directory
           value: /src/EmailSender/.*
     -
+      name: Catalog
+      collectors:
+        -
+          type: directory
+          value: /src/Catalog/.*
+    -
       name: IdentityAccess
       collectors:
         -
@@ -32,6 +38,8 @@ parameters:
     Customer:
       - Shared
     EmailSender:
+      - Shared
+    Catalog:
       - Shared
     IdentityAccess:
       - Shared

@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Infrastructure\Security;
 
 use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountUlidException;
+use App\IdentityAccess\Domain\Exception\UserAccount\InvalidUserAccountUlidException;
 use App\IdentityAccess\Domain\Repository\ModuleAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Ulid as ModuleAccountUlid;
+use App\IdentityAccess\Domain\ValueObject\UserAccount\Ulid as UserAccountUlid;
 use App\IdentityAccess\Infrastructure\Exception\InvalidAuthEntityException;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
-use App\Shared\Domain\Exception\ValueObject\InvalidUlidException;
-use App\Shared\Domain\ValueObject\Ulid;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -81,11 +81,11 @@ final readonly class AuthEntityProvider implements UserProviderInterface
     }
 
     /**
-     * @throws InvalidUlidException
+     * @throws InvalidUserAccountUlidException
      */
     private function processUserAccount(string $ulidString): ?AuthSubject
     {
-        $user = $this->userAccountRepository->findByUlid(Ulid::fromString($ulidString));
+        $user = $this->userAccountRepository->findByUlid(UserAccountUlid::fromString($ulidString));
 
         return $user ? AuthSubject::fromUserAccount($user) : null;
     }

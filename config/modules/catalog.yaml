@@ -1,0 +1,10 @@
+services:
+
+  App\Catalog\Domain\Repository\AttributeReadRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\AttributeReadRepository'
+  App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\AttributeWriteRepository'
+
+  App\Catalog\Domain\Repository\CategoryReadRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\CategoryReadRepository'
+  App\Catalog\Domain\Repository\CategoryWriteRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\CategoryWriteRepository'
+
+  App\Catalog\Domain\Repository\ProductReadRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\ProductReadRepository'
+  App\Catalog\Domain\Repository\ProductWriteRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\ProductWriteRepository'

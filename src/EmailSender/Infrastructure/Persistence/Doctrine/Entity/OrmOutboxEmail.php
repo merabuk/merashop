@@ -7,6 +7,10 @@ namespace App\EmailSender\Infrastructure\Persistence\Doctrine\Entity;
 use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;
 use App\EmailSender\Domain\Enum\OutboxEmail\StatusEnum;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Attempts;
+use App\EmailSender\Domain\ValueObject\OutboxEmail\From;
+use App\EmailSender\Domain\ValueObject\OutboxEmail\FromName;
+use App\EmailSender\Domain\ValueObject\OutboxEmail\Subject;
+use App\EmailSender\Domain\ValueObject\OutboxEmail\To;
 use App\EmailSender\Infrastructure\Persistence\Doctrine\Type\OutboxEmail\DriverType;
 use App\EmailSender\Infrastructure\Persistence\Doctrine\Type\OutboxEmail\StatusType;
 use DateTimeImmutable;
@@ -37,16 +41,16 @@ class OrmOutboxEmail
     #[ORM\Column(type: DriverType::NAME)]
     public DriverEnum $driver = DriverEnum::Log;
 
-    #[ORM\Column(name: '`from`', type: Types::STRING, length: 255)]
+    #[ORM\Column(name: '`from`', type: Types::STRING, length: From::MAX_LENGTH)]
     public string $from;
 
-    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
+    #[ORM\Column(type: Types::STRING, length: FromName::MAX_LENGTH, nullable: true)]
     public ?string $fromName = null;
 
-    #[ORM\Column(name: '`to`', type: Types::STRING, length: 255)]
+    #[ORM\Column(name: '`to`', type: Types::STRING, length: To::MAX_LENGTH)]
     public string $to;
 
-    #[ORM\Column(type: Types::STRING, length: 255)]
+    #[ORM\Column(type: Types::STRING, length: Subject::MAX_LENGTH)]
     public string $subject;
     #[ORM\Column(type: Types::TEXT)]
     public string $body;

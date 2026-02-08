@@ -4,6 +4,9 @@ doctrine:
       outbox_email_status: App\EmailSender\Infrastructure\Persistence\Doctrine\Type\OutboxEmail\StatusType
       outbox_email_driver: App\EmailSender\Infrastructure\Persistence\Doctrine\Type\OutboxEmail\DriverType
       refresh_token_account_type: App\IdentityAccess\Infrastructure\Persistence\Doctrine\Type\RefreshToken\AccountType
+      category_status: App\Catalog\Infrastructure\Persistence\Doctrine\Type\Category\StatusType
+      product_status: App\Catalog\Infrastructure\Persistence\Doctrine\Type\Product\StatusType
+      attribute_type: App\Catalog\Infrastructure\Persistence\Doctrine\Type\Attribute\TypeType
     default_connection: identity_access
     connections:
       customer:
@@ -20,6 +23,13 @@ doctrine:
         mapping_types:
           outbox_email_status: outbox_email_status
           outbox_email_driver: outbox_email_driver
+      catalog:
+        url: '%env(resolve:DATABASE_URL_CATALOG)%'
+        profiling_collect_backtrace: '%kernel.debug%'
+        mapping_types:
+          category_status: category_status
+          product_status: product_status
+          attribute_type: attribute_type
   orm:
     controller_resolver:
       auto_mapping: false
@@ -54,6 +64,16 @@ doctrine:
             dir: '%kernel.project_dir%/src/EmailSender/Infrastructure/Persistence/Doctrine/Entity'
             prefix: 'App\EmailSender\Infrastructure\Persistence\Doctrine\Entity'
             alias: EmailSender
+      catalog:
+        connection: catalog
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+        mappings:
+          Catalog:
+            type: attribute
+            is_bundle: false
+            dir: '%kernel.project_dir%/src/Catalog/Infrastructure/Persistence/Doctrine/Entity'
+            prefix: 'App\Catalog\Infrastructure\Persistence\Doctrine\Entity'
+            alias: Catalog
 
 when@test:
 
