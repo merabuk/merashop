@@ -8,6 +8,8 @@ use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeCodeException;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeUlidException;
+use App\Catalog\Domain\ValueObject\Attribute\Type;
+use App\Catalog\Domain\ValueObject\Attribute\Translations;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Id;
 use App\Catalog\Domain\ValueObject\Attribute\Ulid;
@@ -39,13 +41,6 @@ class AttributeMapper implements MapperInterface
         return $orm;
     }
 
-    /**
-     * @throws EntityIdMissingException
-     * @throws InvalidAttributeIdException
-     * @throws InvalidAttributeUlidException
-     * @throws IncompatibleMappedEntityException
-     * @throws InvalidAttributeCodeException
-     */
     public function fromDoctrineOrm(object $orm): Attribute
     {
         $this->assertIsType(OrmAttribute::class, $orm);
@@ -53,15 +48,15 @@ class AttributeMapper implements MapperInterface
 
         $translations = [];
         foreach ($orm->translations as $translation) {
-            $translations[$translation->locale] = $translation->name;
+            $translations[$translation->locale] = ['name' => $translation->name];
         }
 
         return new Attribute(
             id: Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class)),
             ulid: Ulid::fromString($orm->ulid),
             code: Code::fromString($orm->code),
-            type: $orm->type,
-            translations: $translations
+            type: Type::fromEnum($orm->type),
+            translations: Translations::fromArray($translations)
         );
     }
 
@@ -77,7 +72,7 @@ class AttributeMapper implements MapperInterface
 
         $orm->ulid = $domain->getUlid()->value();
         $orm->code = $domain->getCode()->value();
-        $orm->type = $domain->getType();
+        $orm->type = $domain->getType()->value();
 
         // Map translations
         $currentTranslations = [];
@@ -85,15 +80,15 @@ class AttributeMapper implements MapperInterface
             $currentTranslations[$translation->locale] = $translation;
         }
 
-        foreach ($domain->getTranslations() as $locale => $name) {
+        foreach ($domain->getTranslations() as $locale => $vo) {
             if (isset($currentTranslations[$locale])) {
-                $currentTranslations[$locale]->name = $name;
+                $currentTranslations[$locale]->name = $vo->name;
                 unset($currentTranslations[$locale]);
             } else {
                 $translation = new OrmAttributeTranslation();
                 $translation->attribute = $orm;
                 $translation->locale = $locale;
-                $translation->name = $name;
+                $translation->name = $vo->name;
                 $orm->translations->add($translation);
             }
         }

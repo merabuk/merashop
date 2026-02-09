@@ -11,6 +11,9 @@ use IteratorAggregate;
 use Stringable;
 use Traversable;
 
+/**
+ * @implements IteratorAggregate<int, Scope>
+ */
 final readonly class ScopeCollection implements Stringable, Countable, IteratorAggregate
 {
     use ValueObjectEqualityTrait;

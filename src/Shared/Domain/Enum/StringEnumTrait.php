@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\Enum;
 
+use StringBackedEnum;
+
 /**
- * @mixin \StringBackedEnum
+ * @mixin StringBackedEnum
  */
 trait StringEnumTrait
 {

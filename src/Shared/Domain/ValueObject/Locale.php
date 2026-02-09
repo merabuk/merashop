@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Catalog\Domain\ValueObject;
+namespace App\Shared\Domain\ValueObject;
 
-use App\Catalog\Domain\Exception\InvalidLocaleException;
-use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use App\Shared\Domain\Enum\LocaleEnum;
+use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use Stringable;
 
 final class Locale implements Stringable
@@ -16,15 +16,23 @@ final class Locale implements Stringable
 
     private string $value;
 
+    /**
+     * @throws InvalidLocaleException
+     */
     public function __construct(string $value)
     {
         $value = mb_trim($value);
+
         if ('' === $value) {
             throw InvalidLocaleException::becauseItIsEmpty();
         }
 
-        if (strlen($value) > self::MAX_LENGTH) {
+        if (mb_strlen($value) > self::MAX_LENGTH) {
             throw InvalidLocaleException::becauseItIsTooLong(self::MAX_LENGTH);
+        }
+
+        if (!LocaleEnum::tryFrom($value)) {
+            throw InvalidLocaleException::becauseItIsNotValid();
         }
 
         $this->value = $value;
@@ -35,6 +43,9 @@ final class Locale implements Stringable
         return $this->value;
     }
 
+    /**
+     * @throws InvalidLocaleException
+     */
     public static function fromString(string $value): self
     {
         return new self($value);

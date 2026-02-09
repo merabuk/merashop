@@ -11,6 +11,9 @@ use IteratorAggregate;
 use Stringable;
 use Traversable;
 
+/**
+ * @implements IteratorAggregate<int, Role>
+ */
 final readonly class RoleCollection implements Stringable, Countable, IteratorAggregate
 {
     use ValueObjectEqualityTrait;

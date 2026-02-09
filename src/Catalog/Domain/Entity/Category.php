@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\Entity;
 
-use App\Catalog\Domain\Enum\Category\StatusEnum;
+use App\Catalog\Domain\ValueObject\Category\Status;
 use App\Catalog\Domain\ValueObject\Category\Id;
 use App\Catalog\Domain\ValueObject\Category\Path;
 use App\Catalog\Domain\ValueObject\Category\Slug;
 use App\Catalog\Domain\ValueObject\Category\SortOrder;
+use App\Catalog\Domain\ValueObject\Category\Translations;
 use App\Catalog\Domain\ValueObject\Category\Ulid;
 
 class Category
@@ -23,22 +24,19 @@ class Category
         private Path $path,
         private Slug $slug,
         private SortOrder $sortOrder,
-        private StatusEnum $status,
-        private array $translations = [],
+        private Status $status,
+        private Translations $translations,
     ) {
     }
 
-    /**
-     * @param array<string, array{name: string, description?: string}> $translations
-     */
     public static function create(
         Ulid $ulid,
         ?Id $parentId,
         Path $path,
         Slug $slug,
         SortOrder $sortOrder,
-        StatusEnum $status,
-        array $translations = [],
+        Status $status,
+        Translations $translations,
     ): self {
         return new self(
             id: null,
@@ -82,29 +80,23 @@ class Category
         return $this->sortOrder;
     }
 
-    public function getStatus(): StatusEnum
+    public function getStatus(): Status
     {
         return $this->status;
     }
 
-    /**
-     * @return array<string, array{name: string, description?: string}>
-     */
-    public function getTranslations(): array
+    public function getTranslations(): Translations
     {
         return $this->translations;
     }
 
-    /**
-     * @param array<string, array{name: string, description?: string}> $translations
-     */
     public function update(
         ?Id $parentId,
         Path $path,
         Slug $slug,
         SortOrder $sortOrder,
-        StatusEnum $status,
-        array $translations
+        Status $status,
+        Translations $translations
     ): void {
         $this->parentId = $parentId;
         $this->path = $path;

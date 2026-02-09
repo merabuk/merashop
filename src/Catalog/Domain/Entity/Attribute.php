@@ -4,33 +4,28 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\Entity;
 
-use App\Catalog\Domain\Enum\Attribute\TypeEnum;
+use App\Catalog\Domain\ValueObject\Attribute\Type;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Id;
+use App\Catalog\Domain\ValueObject\Attribute\Translations;
 use App\Catalog\Domain\ValueObject\Attribute\Ulid;
 
 class Attribute
 {
-    /**
-     * @param array<string, string> $translations [locale => name]
-     */
     public function __construct(
         private readonly ?Id $id,
         private readonly Ulid $ulid,
         private Code $code,
-        private TypeEnum $type,
-        private array $translations = [],
+        private Type $type,
+        private Translations $translations,
     ) {
     }
 
-    /**
-     * @param array<string, string> $translations
-     */
     public static function create(
         Ulid $ulid,
         Code $code,
-        TypeEnum $type,
-        array $translations = [],
+        Type $type,
+        Translations $translations,
     ): self {
         return new self(
             id: null,
@@ -56,23 +51,17 @@ class Attribute
         return $this->code;
     }
 
-    public function getType(): TypeEnum
+    public function getType(): Type
     {
         return $this->type;
     }
 
-    /**
-     * @return array<string, string>
-     */
-    public function getTranslations(): array
+    public function getTranslations(): Translations
     {
         return $this->translations;
     }
 
-    /**
-     * @param array<string, string> $translations
-     */
-    public function update(Code $code, TypeEnum $type, array $translations): void
+    public function update(Code $code, Type $type, Translations $translations): void
     {
         $this->code = $code;
         $this->type = $type;

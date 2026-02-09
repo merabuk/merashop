@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Catalog\Infrastructure\Persistence\Doctrine\Entity;
 
-use App\Catalog\Domain\ValueObject\Locale;
-use App\Catalog\Domain\ValueObject\Name;
+use App\Catalog\Domain\ValueObject\Attribute\Translation;
+use App\Shared\Domain\ValueObject\Locale;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -26,6 +26,6 @@ class OrmAttributeTranslation
     #[ORM\Column(type: Types::STRING, length: Locale::MAX_LENGTH)]
     public string $locale;
 
-    #[ORM\Column(type: Types::STRING, length: Name::MAX_LENGTH)]
+    #[ORM\Column(type: Types::STRING, length: Translation::NAME_MAX_LENGTH)]
     public string $name;
 }

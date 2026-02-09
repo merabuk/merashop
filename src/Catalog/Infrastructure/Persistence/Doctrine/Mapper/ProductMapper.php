@@ -7,7 +7,7 @@ namespace App\Catalog\Infrastructure\Persistence\Doctrine\Mapper;
 use App\Catalog\Domain\Entity\Product;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
-use App\Catalog\Domain\Enum\Product\StatusEnum;
+use App\Catalog\Domain\ValueObject\Product\Status;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
 use App\Catalog\Domain\Exception\Category\InvalidCategoryIdException;
 use App\Catalog\Domain\Exception\Product\InvalidProductIdException;
@@ -112,7 +112,7 @@ class ProductMapper implements MapperInterface
             ulid: Ulid::fromString($orm->ulid),
             sku: Sku::fromString($orm->sku),
             price: new Price($orm->priceAmount, $orm->priceCurrency),
-            status: $orm->status,
+            status: Status::fromEnum($orm->status),
             translations: $translations,
             categoryIds: $categoryIds,
             attributeValues: $attributeValues
@@ -134,7 +134,7 @@ class ProductMapper implements MapperInterface
         $orm->sku = $domain->getSku()->value();
         $orm->priceAmount = $domain->getPrice()->getAmount();
         $orm->priceCurrency = $domain->getPrice()->getCurrency();
-        $orm->status = $domain->getStatus();
+        $orm->status = $domain->getStatus()->value();
 
         // Map categories
         $orm->categories->clear();

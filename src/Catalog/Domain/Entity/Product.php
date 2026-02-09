@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\Entity;
 
-use App\Catalog\Domain\Enum\Product\StatusEnum;
+use App\Catalog\Domain\ValueObject\Product\Status;
 use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
 use App\Catalog\Domain\ValueObject\Product\Id;
 use App\Catalog\Domain\ValueObject\Product\Price;
 use App\Catalog\Domain\ValueObject\Product\Sku;
+use App\Catalog\Domain\ValueObject\Product\Translations;
 use App\Catalog\Domain\ValueObject\Product\Ulid;
 
 class Product
 {
     /**
-     * @param array<string, array{name: string, description?: string}> $translations
      * @param CategoryId[] $categoryIds
      * @param ProductAttributeValue[] $attributeValues
      */
@@ -23,19 +23,14 @@ class Product
         private readonly Ulid $ulid,
         private Sku $sku,
         private Price $price,
-        private StatusEnum $status,
-        private array $translations = [],
+        private Status $status,
+        private Translations $translations,
         private array $categoryIds = [],
         private array $attributeValues = [],
     ) {
     }
 
     /**
-     * @param Ulid $ulid
-     * @param Sku $sku
-     * @param Price $price
-     * @param StatusEnum $status
-     * @param array<string, array{name: string, description?: string}> $translations
      * @param CategoryId[] $categoryIds
      * @param ProductAttributeValue[] $attributeValues
      */
@@ -43,8 +38,8 @@ class Product
         Ulid $ulid,
         Sku $sku,
         Price $price,
-        StatusEnum $status,
-        array $translations = [],
+        Status $status,
+        Translations $translations,
         array $categoryIds = [],
         array $attributeValues = [],
     ): self {
@@ -80,15 +75,12 @@ class Product
         return $this->price;
     }
 
-    public function getStatus(): StatusEnum
+    public function getStatus(): Status
     {
         return $this->status;
     }
 
-    /**
-     * @return array<string, array{name: string, description?: string}>
-     */
-    public function getTranslations(): array
+    public function getTranslations(): Translations
     {
         return $this->translations;
     }
@@ -110,17 +102,13 @@ class Product
     }
 
     /**
-     * @param Sku $sku
-     * @param Price $price
-     * @param StatusEnum $status
-     * @param array<string, array{name: string, description?: string}> $translations
      * @param CategoryId[] $categoryIds
      */
     public function update(
         Sku $sku,
         Price $price,
-        StatusEnum $status,
-        array $translations,
+        Status $status,
+        Translations $translations,
         array $categoryIds
     ): void {
         $this->sku = $sku;
