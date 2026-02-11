@@ -45,11 +45,12 @@ class CategoryMapper
     {
         $this->assertIsType(OrmCategory::class, $orm);
         /** @var OrmCategory $orm */
+
         $translations = [];
-        foreach ($orm->translations as $translation) {
-            $translations[$translation->locale] = [
-                'name' => $translation->name,
-                'description' => $translation->description,
+        foreach ($orm->translations as $ormTranslation) {
+            $translations[$ormTranslation->locale] = [
+                'name' => $ormTranslation->name,
+                'description' => $ormTranslation->description,
             ];
         }
 
@@ -86,6 +87,11 @@ class CategoryMapper
         $orm->status = $domain->getStatus()->value();
         $orm->parent = $ormParent;
 
+        $this->mapTranslations($domain, $orm);
+    }
+
+    private function mapTranslations(Category $domain, OrmCategory $orm): void
+    {
         $domainTranslations = $domain->getTranslations();
 
         foreach ($orm->translations as $ormTranslation) {

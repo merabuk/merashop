@@ -21,6 +21,9 @@ abstract class BaseAttributeRepository extends BaseEntityRepository
         parent::__construct(registry: $registry, entityClass: static::getEntityClass());
     }
 
+    /**
+     * @return class-string<OrmAttribute>
+     */
     protected function getEntityClass(): string
     {
         return OrmAttribute::class;

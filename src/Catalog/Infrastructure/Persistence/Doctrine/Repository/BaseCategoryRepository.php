@@ -21,6 +21,9 @@ abstract class BaseCategoryRepository extends BaseEntityRepository
         parent::__construct(registry: $registry, entityClass: static::getEntityClass());
     }
 
+    /**
+     * @return class-string<OrmCategory>
+     */
     protected function getEntityClass(): string
     {
         return OrmCategory::class;

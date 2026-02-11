@@ -6,13 +6,16 @@ namespace App\Catalog\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
+use App\Catalog\Domain\Exception\Attribute\OneOfAttributesNotFoundException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\ValueObject\Attribute\Id;
 use App\Catalog\Domain\ValueObject\Attribute\Ulid;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttribute;
+use App\Shared\Domain\Exception\Database\OneOfEntitiesNotFoundException;
 use App\Shared\Domain\Exception\EntityIdMissingException;
 use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
+use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 
 final class AttributeReadRepository extends BaseAttributeRepository implements AttributeReadRepositoryInterface
 {
@@ -21,6 +24,7 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCatalogValueObjectException
+     * @throws InvalidLocaleException
      */
     public function getById(Id $id, bool $withTranslations = true): Attribute
     {
@@ -31,6 +35,7 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCatalogValueObjectException
+     * @throws InvalidLocaleException
      */
     public function findById(Id $id, bool $withTranslations = true): ?Attribute
     {
@@ -53,6 +58,7 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCatalogValueObjectException
+     * @throws InvalidLocaleException
      */
     public function findByUlid(Ulid $ulid): ?Attribute
     {
@@ -62,9 +68,24 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
     }
 
     /**
+     * @param Id[] $ids
+     * @throws OneOfAttributesNotFoundException
+     */
+    public function assertAllExistByIds(array $ids): void
+    {
+        try {
+            $this->_assertAllExistByIds($ids);
+        } catch (OneOfEntitiesNotFoundException $e) {
+            throw new OneOfAttributesNotFoundException(previous: $e);
+        }
+    }
+
+
+    /**
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCatalogValueObjectException
+     * @throws InvalidLocaleException
      */
     private function checkAndMapToDomain(?object $orm): ?Attribute
     {

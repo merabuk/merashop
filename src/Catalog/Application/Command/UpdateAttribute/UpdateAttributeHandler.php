@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Catalog\Application\Command\UpdateAttribute;
 
-use App\Catalog\Application\Exception\Attribute\CreateAttributeException;
+use App\Catalog\Application\Exception\Attribute\UpdateAttributeException;
 use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
@@ -29,7 +29,7 @@ readonly class UpdateAttributeHandler implements CommandHandlerInterface
 
     /**
      * @throws AttributeNotFoundException
-     * @throws CreateAttributeException
+     * @throws UpdateAttributeException
      */
     public function __invoke(UpdateAttributeCommand $command): int
     {
@@ -46,7 +46,7 @@ readonly class UpdateAttributeHandler implements CommandHandlerInterface
 
             return $attribute->getId()->value();
         } catch (InvalidCatalogValueObjectException|InvalidLocaleException $e) {
-            throw new CreateAttributeException(message: 'Error during updating attribute', previous: $e);
+            throw new UpdateAttributeException(message: 'Error during updating attribute', previous: $e);
         }
     }
 }

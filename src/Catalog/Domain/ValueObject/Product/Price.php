@@ -6,6 +6,7 @@ namespace App\Catalog\Domain\ValueObject\Product;
 
 use App\Catalog\Domain\Exception\Product\InvalidProductPriceAmountException;
 use App\Catalog\Domain\Exception\Product\InvalidProductPriceCurrencyException;
+use App\Shared\Domain\Enum\CurrencyEnum;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 
 final class Price
@@ -15,7 +16,7 @@ final class Price
     public const int CURRENCY_LENGTH = 3;
 
     private int $amount;
-    private string $currency;
+    private CurrencyEnum $currency;
 
     /**
      * @throws InvalidProductPriceAmountException
@@ -27,12 +28,13 @@ final class Price
             throw InvalidProductPriceAmountException::becauseItMustBePositive();
         }
 
-        if (1 !== preg_match('/^[A-Z]{3}$/', $currency)) {
+        $currencyEnum = CurrencyEnum::tryFrom(mb_strtoupper($currency));
+        if (null === $currencyEnum) {
             throw InvalidProductPriceCurrencyException::becauseItIsNotAValidCurrencyCode();
         }
 
         $this->amount = $amount;
-        $this->currency = $currency;
+        $this->currency = $currencyEnum;
     }
 
     public function getAmount(): int
@@ -40,13 +42,13 @@ final class Price
         return $this->amount;
     }
 
-    public function getCurrency(): string
+    public function getCurrency(): CurrencyEnum
     {
         return $this->currency;
     }
 
     protected function getPrimitiveValue(): string
     {
-        return sprintf('%d %s', $this->amount, $this->currency);
+        return sprintf('%d %s', $this->amount, $this->currency->value);
     }
 }

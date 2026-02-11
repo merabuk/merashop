@@ -8,8 +8,10 @@ use App\Catalog\Domain\Enum\Product\StatusEnum;
 use App\Catalog\Domain\ValueObject\Product\Price;
 use App\Catalog\Domain\ValueObject\Product\Sku;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Type\Product\StatusType;
+use App\Shared\Domain\Enum\CurrencyEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Schema\ForeignKeyConstraint\ReferentialAction;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -47,8 +49,8 @@ class OrmProduct
      * @var Collection<int, OrmProductTranslation>
      */
     #[ORM\OneToMany(
-        mappedBy: 'product',
         targetEntity: OrmProductTranslation::class,
+        mappedBy: 'product',
         cascade: ['persist', 'remove'],
         orphanRemoval: true
     )]
@@ -58,9 +60,17 @@ class OrmProduct
      * @var Collection<int, OrmCategory>
      */
     #[ORM\ManyToMany(targetEntity: OrmCategory::class, inversedBy: 'products')]
-    #[ORM\JoinTable(name: 'catalog_product_categories')]
-    #[ORM\JoinColumn(name: 'product_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    #[ORM\InverseJoinColumn(name: 'category_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[ORM\JoinTable(name: 'product_categories')]
+    #[ORM\JoinColumn(
+        name: 'product_id',
+        referencedColumnName: 'id',
+        onDelete: ReferentialAction::CASCADE->value
+    )]
+    #[ORM\InverseJoinColumn(
+        name: 'category_id',
+        referencedColumnName: 'id',
+        onDelete: ReferentialAction::CASCADE->value
+    )]
     public Collection $categories;
 
     /**

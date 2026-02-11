@@ -7,13 +7,7 @@ namespace App\Catalog\Infrastructure\Persistence\Doctrine\Mapper;
 use App\Catalog\Domain\Entity\Product;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
-use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
-use App\Catalog\Domain\Exception\Category\InvalidCategoryIdException;
-use App\Catalog\Domain\Exception\Product\InvalidProductIdException;
-use App\Catalog\Domain\Exception\Product\InvalidProductPriceAmountException;
-use App\Catalog\Domain\Exception\Product\InvalidProductPriceCurrencyException;
-use App\Catalog\Domain\Exception\Product\InvalidProductSkuException;
-use App\Catalog\Domain\Exception\Product\InvalidProductUlidException;
+use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
 use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
 use App\Catalog\Domain\ValueObject\Product\Id;
@@ -22,6 +16,10 @@ use App\Catalog\Domain\ValueObject\Product\Sku;
 use App\Catalog\Domain\ValueObject\Product\Status;
 use App\Catalog\Domain\ValueObject\Product\Translations;
 use App\Catalog\Domain\ValueObject\Product\Ulid;
+use App\Catalog\Domain\ValueObject\ProductAttribute\ArrayValue;
+use App\Catalog\Domain\ValueObject\ProductAttribute\BooleanValue;
+use App\Catalog\Domain\ValueObject\ProductAttribute\IntegerValue;
+use App\Catalog\Domain\ValueObject\ProductAttribute\StringValue;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttribute;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmCategory;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProduct;
@@ -29,31 +27,20 @@ use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductAttributeVa
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductTranslation;
 use App\Shared\Domain\Exception\EntityIdMissingException;
 use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
-use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\MapperInterface;
+use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Exception\ORMException;
+use App\Catalog\Domain\ValueObject\ProductAttribute\Id as ProductAttributeValueId;
+use InvalidArgumentException;
 
-/**
- * @implements MapperInterface<Product, OrmProduct>
- */
-class ProductMapper implements MapperInterface
+class ProductMapper
 {
     use TypeCheckTrait;
 
-    public function __construct(
-        private readonly EntityManagerInterface $entityManager,
-    ) {
-    }
-
     /**
      * @throws IncompatibleMappedEntityException
-     * @throws ORMException
      */
     public function toDoctrineOrm(object $domain): OrmProduct
     {
-        $this->assertIsType(Product::class, $domain);
-        /** @var Product $domain */
         $orm = new OrmProduct();
         $this->mapToExistingOrm($domain, $orm);
 
@@ -62,30 +49,26 @@ class ProductMapper implements MapperInterface
 
     /**
      * @throws EntityIdMissingException
-     * @throws InvalidProductPriceAmountException
-     * @throws InvalidProductIdException
-     * @throws InvalidAttributeIdException
-     * @throws InvalidProductUlidException
+     * @throws InvalidCatalogValueObjectException
      * @throws IncompatibleMappedEntityException
-     * @throws InvalidProductPriceCurrencyException
-     * @throws InvalidCategoryIdException
-     * @throws InvalidProductSkuException
+     * @throws InvalidLocaleException
      */
     public function fromDoctrineOrm(object $orm): Product
     {
         $this->assertIsType(OrmProduct::class, $orm);
         /** @var OrmProduct $orm */
+
         $translations = [];
-        foreach ($orm->translations as $translation) {
-            $translations[$translation->locale] = [
-                'name' => $translation->name,
-                'description' => $translation->description,
+        foreach ($orm->translations as $ormTranslation) {
+            $translations[$ormTranslation->locale] = [
+                'name' => $ormTranslation->name,
+                'description' => $ormTranslation->description,
             ];
         }
 
         $categoryIds = [];
-        foreach ($orm->categories as $category) {
-            $categoryIds[] = CategoryId::fromInt($category->id);
+        foreach ($orm->categories as $ormCategory) {
+            $categoryIds[] = CategoryId::fromInt($ormCategory->id);
         }
 
         $productId = Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class));
@@ -93,13 +76,13 @@ class ProductMapper implements MapperInterface
         $attributeValues = [];
         foreach ($orm->attributeValues as $ormValue) {
             $value = match ($ormValue->attribute->type) {
-                TypeEnum::String, TypeEnum::Select => $ormValue->valueString,
-                TypeEnum::Int => $ormValue->valueInt,
-                TypeEnum::Boolean => $ormValue->valueBoolean,
+                TypeEnum::String, TypeEnum::Select => StringValue::fromString($ormValue->valueString),
+                TypeEnum::Int => IntegerValue::fromInt($ormValue->valueInt),
+                TypeEnum::Boolean => BooleanValue::fromBool($ormValue->valueBoolean),
             };
 
             $attributeValues[] = new ProductAttributeValue(
-                id: $ormValue->id,
+                id: ProductAttributeValueId::fromInt($ormValue->id),
                 productId: $productId,
                 attributeId: AttributeId::fromInt($ormValue->attribute->id),
                 value: $value
@@ -120,7 +103,6 @@ class ProductMapper implements MapperInterface
 
     /**
      * @throws IncompatibleMappedEntityException
-     * @throws ORMException
      */
     public function mapToExistingOrm(object $domain, object $orm): void
     {
@@ -132,81 +114,108 @@ class ProductMapper implements MapperInterface
         $orm->ulid = $domain->getUlid()->value();
         $orm->sku = $domain->getSku()->value();
         $orm->priceAmount = $domain->getPrice()->getAmount();
-        $orm->priceCurrency = $domain->getPrice()->getCurrency();
+        $orm->priceCurrency = $domain->getPrice()->getCurrency()->value;
         $orm->status = $domain->getStatus()->value();
 
-        // Map categories
-        $orm->categories->clear();
-        foreach ($domain->getCategoryIds() as $categoryId) {
-            $orm->categories->add($this->entityManager->getReference(OrmCategory::class, $categoryId->value()));
+        $this->mapCategories($domain, $orm);
+        $this->mapTranslations($domain, $orm);
+        $this->mapAttributes($domain, $orm);
+    }
+
+    private function mapCategories(Product $domain, OrmProduct $orm): void
+    {
+        $domainIds = array_map(fn($id) => $id->value(), $domain->getCategoryIds());
+
+        foreach ($orm->categories as $ormCategory) {
+            if (!in_array($ormCategory->id, $domainIds, true)) {
+                $orm->categories->removeElement($ormCategory);
+            }
         }
 
-        // Map translations
-        $currentTranslations = [];
+        foreach ($domainIds as $id) {
+            $exists = $orm->categories->exists(fn(mixed $key, OrmCategory $c) => $c->id === $id);
+            if (!$exists) {
+                // TODO: avoid use entity reference here
+                $orm->categories->add($this->entityManager->getReference(OrmCategory::class, $id));
+            }
+        }
+    }
+
+    private function mapTranslations(Product $domain, OrmProduct $orm): void
+    {
+        $domainTranslations = $domain->getTranslations();
+
         foreach ($orm->translations as $ormTranslation) {
-            $currentTranslations[$ormTranslation->locale] = $ormTranslation;
+            if (null === $domainTranslations->get($ormTranslation->locale)) {
+                $orm->translations->removeElement($ormTranslation);
+            }
         }
 
-        foreach ($domain->getTranslations() as $locale => $translation) {
-            if (isset($currentTranslations[$locale])) {
-                $currentTranslations[$locale]->name = $translation->name;
-                $currentTranslations[$locale]->description = $translation->description;
-                unset($currentTranslations[$locale]);
+        foreach ($domainTranslations as $locale => $translation) {
+            $existing = $orm->translations->filter(fn (OrmProductTranslation $t) => $t->locale === $locale)->first();
+
+            if ($existing) {
+                $existing->name = $translation->name;
+                $existing->description = $translation->description;
             } else {
                 $ormTranslation = new OrmProductTranslation();
                 $ormTranslation->product = $orm;
                 $ormTranslation->locale = $locale;
                 $ormTranslation->name = $translation->name;
                 $ormTranslation->description = $translation->description;
+
                 $orm->translations->add($ormTranslation);
             }
         }
+    }
 
-        foreach ($currentTranslations as $ormTranslation) {
-            $orm->translations->removeElement($ormTranslation);
-        }
+    private function mapAttributes(Product $domain, OrmProduct $orm): void
+    {
+        $domainValues = $domain->getAttributeValues();
 
-        // Map attribute values
-        $currentValues = [];
         foreach ($orm->attributeValues as $ormValue) {
-            $currentValues[$ormValue->attribute->id] = $ormValue;
+            $found = false;
+            foreach ($domainValues as $dv) {
+                if ($dv->getAttributeId()->value() === $ormValue->attribute->id) {
+                    $found = true; break;
+                }
+            }
+            if (!$found) $orm->attributeValues->removeElement($ormValue);
         }
 
-        foreach ($domain->getAttributeValues() as $domainValue) {
-            $attributeId = $domainValue->getAttributeId()->value();
-            if (isset($currentValues[$attributeId])) {
-                $ormValue = $currentValues[$attributeId];
-                $this->setOrmAttributeValue($ormValue, $domainValue->getValue());
-                unset($currentValues[$attributeId]);
-            } else {
+        foreach ($domainValues as $dv) {
+            $ormValue = $orm->attributeValues->filter(
+                fn(OrmProductAttributeValue $o) => $o->attribute->id === $dv->getAttributeId()->value()
+            )->first() ?: null;
+
+            if (!$ormValue) {
                 $ormValue = new OrmProductAttributeValue();
                 $ormValue->product = $orm;
-                $ormValue->attribute = $this->entityManager->getReference(OrmAttribute::class, $attributeId);
-                $this->setOrmAttributeValue($ormValue, $domainValue->getValue());
+                // TODO: avoid use entity reference here
+                $ormValue->attribute = $this->entityManager->getReference(OrmAttribute::class, $dv->getAttributeId()->value());
+
                 $orm->attributeValues->add($ormValue);
             }
-        }
 
-        foreach ($currentValues as $ormValue) {
-            $orm->attributeValues->removeElement($ormValue);
+            $this->mapAttributeValue($dv, $ormValue);
         }
     }
 
-    private function setOrmAttributeValue(OrmProductAttributeValue $ormValue, mixed $value): void
+    private function mapAttributeValue(ProductAttributeValue $domain, OrmProductAttributeValue $orm): void
     {
-        $ormValue->valueString = null;
-        $ormValue->valueInt = null;
-        $ormValue->valueBoolean = null;
-        $ormValue->valueJson = null;
+        $vo = $domain->getValue();
 
-        if (is_string($value)) {
-            $ormValue->valueString = $value;
-        } elseif (is_int($value)) {
-            $ormValue->valueInt = $value;
-        } elseif (is_bool($value)) {
-            $ormValue->valueBoolean = $value;
-        } elseif (is_array($value)) {
-            $ormValue->valueJson = $value;
-        }
+        $orm->valueString = null;
+        $orm->valueInt = null;
+        $orm->valueBoolean = null;
+        $orm->valueJson = null;
+
+        match (true) {
+            $vo instanceof StringValue => $orm->valueString = $vo->value(),
+            $vo instanceof IntegerValue => $orm->valueInt = $vo->value(),
+            $vo instanceof BooleanValue => $orm->valueBoolean = $vo->value(),
+            $vo instanceof ArrayValue => $orm->valueJson = $vo->value(),
+            default => throw new InvalidArgumentException("Unknown attribute value type")
+        };
     }
 }

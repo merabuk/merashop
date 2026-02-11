@@ -77,6 +77,11 @@ class AttributeMapper implements MapperInterface
         $orm->code = $domain->getCode()->value();
         $orm->type = $domain->getType()->value();
 
+        $this->mapTranslations($domain, $orm);
+    }
+
+    private function mapTranslations(Attribute $domain, OrmAttribute $orm): void
+    {
         $domainTranslations = $domain->getTranslations();
 
         foreach ($orm->translations as $ormTranslation) {

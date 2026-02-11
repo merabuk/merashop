@@ -6,6 +6,7 @@ namespace App\Catalog\Infrastructure\Persistence\Doctrine\Entity;
 
 use App\Catalog\Domain\ValueObject\Product\Translation;
 use App\Shared\Domain\ValueObject\Locale;
+use Doctrine\DBAL\Schema\ForeignKeyConstraint\ReferentialAction;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -20,7 +21,12 @@ class OrmProductTranslation
     public private(set) ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: OrmProduct::class, inversedBy: 'translations')]
-    #[ORM\JoinColumn(name: 'product_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(
+        name: 'product_id',
+        referencedColumnName: 'id',
+        nullable: false,
+        onDelete: ReferentialAction::CASCADE->value
+    )]
     public OrmProduct $product;
 
     #[ORM\Column(type: Types::STRING, length: Locale::MAX_LENGTH)]

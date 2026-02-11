@@ -21,6 +21,9 @@ abstract class BaseProductRepository extends BaseEntityRepository
         parent::__construct(registry: $registry, entityClass: static::getEntityClass());
     }
 
+    /**
+     * @return class-string<OrmProduct>
+     */
     protected function getEntityClass(): string
     {
         return OrmProduct::class;

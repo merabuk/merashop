@@ -21,7 +21,7 @@ final class Sku implements Stringable
      */
     public function __construct(string $sku)
     {
-        $sku = trim($sku);
+        $sku = mb_trim($sku);
         if ('' === $sku) {
             throw InvalidProductSkuException::becauseItIsEmpty();
         }

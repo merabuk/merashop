@@ -2,6 +2,8 @@
 
 namespace App\Shared\Infrastructure\Persistence\Doctrine\Repository;
 
+use App\Shared\Domain\Exception\Database\OneOfEntitiesNotFoundException;
+use App\Shared\Domain\ValueObject\IdInterface;
 use Doctrine\DBAL\LockMode;
 use InvalidArgumentException;
 
@@ -27,7 +29,25 @@ trait ReadRepositoryTrait
         return null !== $qb->setMaxResults(1)->getQuery()->getOneOrNullResult();
     }
 
-    public function _findByIdForUpdate(int $id): ?object
+    /**
+     * @param IdInterface[] $ids
+     * @throws OneOfEntitiesNotFoundException
+     */
+    protected function _assertAllExistByIds(array $ids): void
+    {
+        $count = $this->createQueryBuilder('e')
+            ->select('COUNT(e.id)')
+            ->where('e.id IN (:ids)')
+            ->setParameter('ids', array_map(fn(IdInterface $id) => $id->value(), $ids))
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        if ((int) $count !== count($ids)) {
+            throw new OneOfEntitiesNotFoundException('One or more entities not found');
+        }
+    }
+
+    protected function _findByIdForUpdate(int $id): ?object
     {
         return $this->createQueryBuilder('e')
             ->where('e.id = :id')

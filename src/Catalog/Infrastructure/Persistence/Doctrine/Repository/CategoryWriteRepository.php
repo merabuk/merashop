@@ -43,7 +43,7 @@ final class CategoryWriteRepository extends BaseCategoryRepository implements Ca
             $ormCategory = $this->mapper->toDoctrineOrm($category, $ormParent);
         }
 
-        $ormCategory ??= $em->find(self::getEntityClass(), $id);
+        $ormCategory ??= $this->findOrmForUpdateFallback($id);
 
         if (!$ormCategory) {
             throw $this->makeRuntimeException($id);

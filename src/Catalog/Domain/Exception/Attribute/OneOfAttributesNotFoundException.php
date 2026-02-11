@@ -1,0 +1,15 @@
+<?php
+
+namespace App\Catalog\Domain\Exception\Attribute;
+
+use App\Catalog\Domain\Enum\ErrorCodeEnum;
+use App\Catalog\Domain\Exception\CatalogDomainException;
+use App\Shared\Domain\Exception\NotFoundExceptionInterface;
+
+class OneOfAttributesNotFoundException extends CatalogDomainException implements NotFoundExceptionInterface
+{
+    public function getErrorCode(): string
+    {
+        return ErrorCodeEnum::OneOfAttributesNotFound->value;
+    }
+}

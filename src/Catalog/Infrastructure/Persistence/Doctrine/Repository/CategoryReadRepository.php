@@ -6,18 +6,23 @@ namespace App\Catalog\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Catalog\Domain\Entity\Category;
 use App\Catalog\Domain\Exception\Category\CategoryNotFoundException;
+use App\Catalog\Domain\Exception\Category\OneOfCategoriesNotFoundException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Repository\CategoryReadRepositoryInterface;
 use App\Catalog\Domain\ValueObject\Category\Id;
 use App\Catalog\Domain\ValueObject\Category\Ulid;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmCategory;
+use App\Shared\Domain\Exception\Database\OneOfEntitiesNotFoundException;
 use App\Shared\Domain\Exception\EntityIdMissingException;
 use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
+use App\Shared\Infrastructure\Persistence\Doctrine\Repository\ReadRepositoryTrait;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 
 final class CategoryReadRepository extends BaseCategoryRepository implements CategoryReadRepositoryInterface
 {
+    use ReadRepositoryTrait;
+
     /**
      * @throws EntityIdMissingException
      * @throws CategoryNotFoundException
@@ -99,6 +104,19 @@ final class CategoryReadRepository extends BaseCategoryRepository implements Cat
         }
 
         return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * @param Id[] $ids
+     * @throws OneOfCategoriesNotFoundException
+     */
+    public function assertAllExistByIds(array $ids): void
+    {
+        try {
+            $this->_assertAllExistByIds($ids);
+        } catch (OneOfEntitiesNotFoundException $e) {
+            throw new OneOfCategoriesNotFoundException(previous: $e);
+        }
     }
 
     /**
