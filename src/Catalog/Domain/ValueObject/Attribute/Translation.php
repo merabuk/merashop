@@ -21,7 +21,8 @@ final class Translation
      * @throws InvalidAttributeNameException
      * @throws InvalidLocaleException
      */
-    public function __construct(string $locale, string $name) {
+    public function __construct(string $locale, string $name)
+    {
         $this->locale = Locale::fromString($locale);
         try {
             $this->name = StringValidator::validate($name, self::NAME_MAX_LENGTH);

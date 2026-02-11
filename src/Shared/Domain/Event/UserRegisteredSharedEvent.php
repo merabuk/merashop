@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Shared\Domain\Event;
 
 use App\Shared\Domain\Bus\AsyncMessageInterface;
+use App\Shared\Domain\Enum\SharedEventNameEnum;
 
 readonly class UserRegisteredSharedEvent implements AsyncMessageInterface
 {

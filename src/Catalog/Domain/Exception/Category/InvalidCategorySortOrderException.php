@@ -10,7 +10,7 @@ final class InvalidCategorySortOrderException extends InvalidCatalogValueObjectE
 {
     public static function becauseItIsNotAValidSortOrder(): self
     {
-        return new self('Category sort order must be an integer.');
+        return new self('Category sort order must be an integer');
     }
 
     public function getErrorCode(): string

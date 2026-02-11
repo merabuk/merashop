@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Catalog\Infrastructure\Persistence\Doctrine\Entity;
 
+use Doctrine\DBAL\Schema\ForeignKeyConstraint\ReferentialAction;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'catalog_product_attribute_value')]
+#[ORM\Table(name: 'product_attribute_values')]
 class OrmProductAttributeValue
 {
     #[ORM\Id]
@@ -17,11 +18,21 @@ class OrmProductAttributeValue
     public private(set) ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: OrmProduct::class, inversedBy: 'attributeValues')]
-    #[ORM\JoinColumn(name: 'product_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(
+        name: 'product_id',
+        referencedColumnName: 'id',
+        nullable: false,
+        onDelete: ReferentialAction::CASCADE->value
+    )]
     public OrmProduct $product;
 
     #[ORM\ManyToOne(targetEntity: OrmAttribute::class)]
-    #[ORM\JoinColumn(name: 'attribute_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(
+        name: 'attribute_id',
+        referencedColumnName: 'id',
+        nullable: false,
+        onDelete: ReferentialAction::CASCADE->value
+    )]
     public OrmAttribute $attribute;
 
     #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]

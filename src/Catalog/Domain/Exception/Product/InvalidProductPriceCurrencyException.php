@@ -10,7 +10,7 @@ final class InvalidProductPriceCurrencyException extends InvalidCatalogValueObje
 {
     public static function becauseItIsNotAValidCurrencyCode(): self
     {
-        return new self('Product price currency must be a 3-letter ISO code.');
+        return new self('Product price currency must be a 3-letter ISO code');
     }
 
     public function getErrorCode(): string

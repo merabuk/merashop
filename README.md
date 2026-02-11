@@ -65,14 +65,14 @@ docker compose exec -T pgsql bash /docker-entrypoint-initdb.d/init-db.sh
 
 Migrations are run separately for each module using their respective entity managers and configurations:
 
+**Catalog:**
+```bash
+php bin/console doctrine:migrations:migrate --em=catalog --configuration=config/migrations/catalog.php --no-interaction
+```
+
 **Customer:**
 ```bash
 php bin/console doctrine:migrations:migrate --em=customer --configuration=config/migrations/customer.php --no-interaction
-```
-
-**IdentityAccess:**
-```bash
-php bin/console doctrine:migrations:migrate --em=identity_access --configuration=config/migrations/identity_access.php --no-interaction
 ```
 
 **EmailSender:**
@@ -80,23 +80,23 @@ php bin/console doctrine:migrations:migrate --em=identity_access --configuration
 php bin/console doctrine:migrations:migrate --em=email_sender --configuration=config/migrations/email_sender.php --no-interaction
 ```
 
-**Catalog:**
+**IdentityAccess:**
 ```bash
-php bin/console doctrine:migrations:migrate --em=catalog --configuration=config/migrations/catalog.php --no-interaction
+php bin/console doctrine:migrations:migrate --em=identity_access --configuration=config/migrations/identity_access.php --no-interaction
 ```
 
 ### Making Migrations
 
 Make migration files for each module using their respective entity managers and configurations:
 
+**Catalog:**
+```bash
+php bin/console doctrine:migrations:diff --em=catalog --configuration=config/migrations/catalog.php --no-interaction
+```
+
 **Customer:**
 ```bash
 php bin/console doctrine:migrations:diff --em=customer --configuration=config/migrations/customer.php --no-interaction
-```
-
-**IdentityAccess:**
-```bash
-php bin/console doctrine:migrations:diff --em=identity_access --configuration=config/migrations/identity_access.php --no-interaction
 ```
 
 **EmailSender:**
@@ -104,9 +104,9 @@ php bin/console doctrine:migrations:diff --em=identity_access --configuration=co
 php bin/console doctrine:migrations:diff --em=email_sender --configuration=config/migrations/email_sender.php --no-interaction
 ```
 
-**Catalog:**
+**IdentityAccess:**
 ```bash
-php bin/console doctrine:migrations:diff --em=catalog --configuration=config/migrations/catalog.php --no-interaction
+php bin/console doctrine:migrations:diff --em=identity_access --configuration=config/migrations/identity_access.php --no-interaction
 ```
 
 ## Quick Start

@@ -7,7 +7,6 @@ namespace App\Catalog\Infrastructure\Persistence\Doctrine\Mapper;
 use App\Catalog\Domain\Entity\Product;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
-use App\Catalog\Domain\ValueObject\Product\Status;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
 use App\Catalog\Domain\Exception\Category\InvalidCategoryIdException;
 use App\Catalog\Domain\Exception\Product\InvalidProductIdException;
@@ -20,6 +19,8 @@ use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
 use App\Catalog\Domain\ValueObject\Product\Id;
 use App\Catalog\Domain\ValueObject\Product\Price;
 use App\Catalog\Domain\ValueObject\Product\Sku;
+use App\Catalog\Domain\ValueObject\Product\Status;
+use App\Catalog\Domain\ValueObject\Product\Translations;
 use App\Catalog\Domain\ValueObject\Product\Ulid;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttribute;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmCategory;
@@ -41,7 +42,7 @@ class ProductMapper implements MapperInterface
     use TypeCheckTrait;
 
     public function __construct(
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -53,7 +54,6 @@ class ProductMapper implements MapperInterface
     {
         $this->assertIsType(Product::class, $domain);
         /** @var Product $domain */
-
         $orm = new OrmProduct();
         $this->mapToExistingOrm($domain, $orm);
 
@@ -75,7 +75,6 @@ class ProductMapper implements MapperInterface
     {
         $this->assertIsType(OrmProduct::class, $orm);
         /** @var OrmProduct $orm */
-
         $translations = [];
         foreach ($orm->translations as $translation) {
             $translations[$translation->locale] = [
@@ -113,7 +112,7 @@ class ProductMapper implements MapperInterface
             sku: Sku::fromString($orm->sku),
             price: new Price($orm->priceAmount, $orm->priceCurrency),
             status: Status::fromEnum($orm->status),
-            translations: $translations,
+            translations: Translations::fromArray($translations),
             categoryIds: $categoryIds,
             attributeValues: $attributeValues
         );
@@ -127,8 +126,8 @@ class ProductMapper implements MapperInterface
     {
         $this->assertIsType(Product::class, $domain);
         $this->assertIsType(OrmProduct::class, $orm);
-        /** @var Product $domain */
-        /** @var OrmProduct $orm */
+        /* @var Product $domain */
+        /* @var OrmProduct $orm */
 
         $orm->ulid = $domain->getUlid()->value();
         $orm->sku = $domain->getSku()->value();
@@ -144,27 +143,27 @@ class ProductMapper implements MapperInterface
 
         // Map translations
         $currentTranslations = [];
-        foreach ($orm->translations as $translation) {
-            $currentTranslations[$translation->locale] = $translation;
+        foreach ($orm->translations as $ormTranslation) {
+            $currentTranslations[$ormTranslation->locale] = $ormTranslation;
         }
 
-        foreach ($domain->getTranslations() as $locale => $data) {
+        foreach ($domain->getTranslations() as $locale => $translation) {
             if (isset($currentTranslations[$locale])) {
-                $currentTranslations[$locale]->name = $data['name'];
-                $currentTranslations[$locale]->description = $data['description'] ?? null;
+                $currentTranslations[$locale]->name = $translation->name;
+                $currentTranslations[$locale]->description = $translation->description;
                 unset($currentTranslations[$locale]);
             } else {
-                $translation = new OrmProductTranslation();
-                $translation->product = $orm;
-                $translation->locale = $locale;
-                $translation->name = $data['name'];
-                $translation->description = $data['description'] ?? null;
-                $orm->translations->add($translation);
+                $ormTranslation = new OrmProductTranslation();
+                $ormTranslation->product = $orm;
+                $ormTranslation->locale = $locale;
+                $ormTranslation->name = $translation->name;
+                $ormTranslation->description = $translation->description;
+                $orm->translations->add($ormTranslation);
             }
         }
 
-        foreach ($currentTranslations as $translation) {
-            $orm->translations->removeElement($translation);
+        foreach ($currentTranslations as $ormTranslation) {
+            $orm->translations->removeElement($ormTranslation);
         }
 
         // Map attribute values

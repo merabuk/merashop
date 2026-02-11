@@ -28,7 +28,7 @@ final class Translation
     public function __construct(
         string $locale,
         string $name,
-        ?string $description = null
+        ?string $description = null,
     ) {
         $this->locale = Locale::fromString($locale);
         try {

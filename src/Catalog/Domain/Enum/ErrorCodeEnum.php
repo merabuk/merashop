@@ -1,0 +1,15 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Catalog\Domain\Enum;
+
+enum ErrorCodeEnum: string
+{
+    case CatalogDomainError = 'CATALOG_DOMAIN_ERROR';
+    case CategoryNotFound = 'CATEGORY_NOT_FOUND';
+    case CategoryParentNotFound = 'CATEGORY_PARENT_NOT_FOUND';
+    case CategoryAlreadyExists = 'CATEGORY_ALREADY_EXISTS';
+    case CategoryOwnParentConflict = 'CATEGORY_OWN_PARENT_CONFLICT';
+    case CategoryOwnDescendantConflict = 'CATEGORY_OWN_DESCENDANTS_CONFLICT';
+}

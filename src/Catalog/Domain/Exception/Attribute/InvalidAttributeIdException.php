@@ -10,7 +10,7 @@ final class InvalidAttributeIdException extends InvalidCatalogValueObjectExcepti
 {
     public static function becauseItIsNotAValidId(): self
     {
-        return new self('Attribute ID must be a positive integer.');
+        return new self('Attribute ID must be a positive integer');
     }
 
     public function getErrorCode(): string

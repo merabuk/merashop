@@ -10,15 +10,16 @@ use App\Catalog\Domain\ValueObject\Category\Slug;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Type\Category\StatusType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Schema\ForeignKeyConstraint\ReferentialAction;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'catalog_category')]
-#[ORM\UniqueConstraint(name: 'uniq_catalog_category_ulid', columns: ['ulid'])]
-#[ORM\UniqueConstraint(name: 'uniq_catalog_category_slug', columns: ['slug'])]
+#[ORM\Table(name: 'categories')]
+#[ORM\UniqueConstraint(name: 'uniq_category_ulid', columns: ['ulid'])]
+#[ORM\UniqueConstraint(name: 'uniq_category_slug', columns: ['slug'])]
 class OrmCategory
 {
     use TimestampableEntity;
@@ -32,7 +33,12 @@ class OrmCategory
     public string $ulid;
 
     #[ORM\ManyToOne(targetEntity: self::class)]
-    #[ORM\JoinColumn(name: 'parent_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    #[ORM\JoinColumn(
+        name: 'parent_id',
+        referencedColumnName: 'id',
+        nullable: true,
+        onDelete: ReferentialAction::SET_NULL->value
+    )]
     public ?self $parent = null;
 
     #[ORM\Column(type: Types::STRING, length: Path::MAX_LENGTH)]

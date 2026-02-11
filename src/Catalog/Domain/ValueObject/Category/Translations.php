@@ -7,10 +7,10 @@ namespace App\Catalog\Domain\ValueObject\Category;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
-use JsonException;
 use ArrayIterator;
 use Countable;
 use IteratorAggregate;
+use JsonException;
 use Stringable;
 use Traversable;
 
@@ -44,6 +44,7 @@ final class Translations implements Stringable, Countable, IteratorAggregate
 
     /**
      * @param array<string, array{name: string, description?: string}> $data
+     *
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
      */

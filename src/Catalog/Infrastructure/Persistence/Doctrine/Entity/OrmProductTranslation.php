@@ -10,7 +10,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'catalog_product_translation')]
+#[ORM\Table(name: 'product_translations')]
 #[ORM\UniqueConstraint(name: 'uniq_product_translation_locale', columns: ['product_id', 'locale'])]
 class OrmProductTranslation
 {

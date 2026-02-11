@@ -10,7 +10,7 @@ final class InvalidProductIdException extends InvalidCatalogValueObjectException
 {
     public static function becauseItIsNotAValidId(): self
     {
-        return new self('Product ID must be a positive integer.');
+        return new self('Product ID must be a positive integer');
     }
 
     public function getErrorCode(): string

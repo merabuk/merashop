@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\EmailSender\Application\Command\SendOutboxEmail;
 
-use App\EmailSender\Domain\Enum\EmailSenderQueueEnum;
+use App\EmailSender\Domain\Enum\EmailSenderEventNameEnum;
 use App\Shared\Application\Command\CommandInterface;
 use App\Shared\Domain\Bus\AsyncMessageInterface;
 
@@ -17,6 +17,6 @@ readonly class SendOutboxEmailCommand implements CommandInterface, AsyncMessageI
 
     public function getRoutingKey(): string
     {
-        return EmailSenderQueueEnum::EmailProcessor->value;
+        return EmailSenderEventNameEnum::EmailProcessor->value;
     }
 }

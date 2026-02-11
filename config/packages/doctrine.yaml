@@ -9,20 +9,6 @@ doctrine:
       attribute_type: App\Catalog\Infrastructure\Persistence\Doctrine\Type\Attribute\TypeType
     default_connection: identity_access
     connections:
-      customer:
-        url: '%env(resolve:DATABASE_URL_CUSTOMER)%'
-        profiling_collect_backtrace: '%kernel.debug%'
-      identity_access:
-        url: '%env(resolve:DATABASE_URL_IDENTITY_ACCESS)%'
-        profiling_collect_backtrace: '%kernel.debug%'
-        mapping_types:
-          refresh_token_account_type: refresh_token_account_type
-      email_sender:
-        url: '%env(resolve:DATABASE_URL_EMAIL_SENDER)%'
-        profiling_collect_backtrace: '%kernel.debug%'
-        mapping_types:
-          outbox_email_status: outbox_email_status
-          outbox_email_driver: outbox_email_driver
       catalog:
         url: '%env(resolve:DATABASE_URL_CATALOG)%'
         profiling_collect_backtrace: '%kernel.debug%'
@@ -30,40 +16,24 @@ doctrine:
           category_status: category_status
           product_status: product_status
           attribute_type: attribute_type
+      customer:
+        url: '%env(resolve:DATABASE_URL_CUSTOMER)%'
+        profiling_collect_backtrace: '%kernel.debug%'
+      email_sender:
+        url: '%env(resolve:DATABASE_URL_EMAIL_SENDER)%'
+        profiling_collect_backtrace: '%kernel.debug%'
+        mapping_types:
+          outbox_email_status: outbox_email_status
+          outbox_email_driver: outbox_email_driver
+      identity_access:
+        url: '%env(resolve:DATABASE_URL_IDENTITY_ACCESS)%'
+        profiling_collect_backtrace: '%kernel.debug%'
+        mapping_types:
+          refresh_token_account_type: refresh_token_account_type
   orm:
     controller_resolver:
       auto_mapping: false
     entity_managers:
-      customer:
-        connection: customer
-        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
-        mappings:
-          Customer:
-            type: attribute
-            is_bundle: false
-            dir: '%kernel.project_dir%/src/Customer/Infrastructure/Persistence/Doctrine/Entity'
-            prefix: 'App\Customer\Infrastructure\Persistence\Doctrine\Entity'
-            alias: Customer
-      identity_access:
-        connection: identity_access
-        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
-        mappings:
-          IdentityAccess:
-            type: attribute
-            is_bundle: false
-            dir: '%kernel.project_dir%/src/IdentityAccess/Infrastructure/Persistence/Doctrine/Entity'
-            prefix: 'App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity'
-            alias: IdentityAccess
-      email_sender:
-        connection: email_sender
-        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
-        mappings:
-          EmailSender:
-            type: attribute
-            is_bundle: false
-            dir: '%kernel.project_dir%/src/EmailSender/Infrastructure/Persistence/Doctrine/Entity'
-            prefix: 'App\EmailSender\Infrastructure\Persistence\Doctrine\Entity'
-            alias: EmailSender
       catalog:
         connection: catalog
         naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
@@ -74,6 +44,36 @@ doctrine:
             dir: '%kernel.project_dir%/src/Catalog/Infrastructure/Persistence/Doctrine/Entity'
             prefix: 'App\Catalog\Infrastructure\Persistence\Doctrine\Entity'
             alias: Catalog
+      customer:
+        connection: customer
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+        mappings:
+          Customer:
+            type: attribute
+            is_bundle: false
+            dir: '%kernel.project_dir%/src/Customer/Infrastructure/Persistence/Doctrine/Entity'
+            prefix: 'App\Customer\Infrastructure\Persistence\Doctrine\Entity'
+            alias: Customer
+      email_sender:
+        connection: email_sender
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+        mappings:
+          EmailSender:
+            type: attribute
+            is_bundle: false
+            dir: '%kernel.project_dir%/src/EmailSender/Infrastructure/Persistence/Doctrine/Entity'
+            prefix: 'App\EmailSender\Infrastructure\Persistence\Doctrine\Entity'
+            alias: EmailSender
+      identity_access:
+        connection: identity_access
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+        mappings:
+          IdentityAccess:
+            type: attribute
+            is_bundle: false
+            dir: '%kernel.project_dir%/src/IdentityAccess/Infrastructure/Persistence/Doctrine/Entity'
+            prefix: 'App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity'
+            alias: IdentityAccess
 
 when@test:
 

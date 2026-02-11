@@ -4,19 +4,16 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\Entity;
 
-use App\Catalog\Domain\ValueObject\Category\Status;
 use App\Catalog\Domain\ValueObject\Category\Id;
 use App\Catalog\Domain\ValueObject\Category\Path;
 use App\Catalog\Domain\ValueObject\Category\Slug;
 use App\Catalog\Domain\ValueObject\Category\SortOrder;
+use App\Catalog\Domain\ValueObject\Category\Status;
 use App\Catalog\Domain\ValueObject\Category\Translations;
 use App\Catalog\Domain\ValueObject\Category\Ulid;
 
 class Category
 {
-    /**
-     * @param array<string, array{name: string, description?: string}> $translations
-     */
     public function __construct(
         private readonly ?Id $id,
         private readonly Ulid $ulid,
@@ -96,7 +93,7 @@ class Category
         Slug $slug,
         SortOrder $sortOrder,
         Status $status,
-        Translations $translations
+        Translations $translations,
     ): void {
         $this->parentId = $parentId;
         $this->path = $path;

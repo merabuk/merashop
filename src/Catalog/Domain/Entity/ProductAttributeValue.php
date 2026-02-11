@@ -20,7 +20,7 @@ class ProductAttributeValue
     public static function create(
         ProductId $productId,
         AttributeId $attributeId,
-        mixed $value
+        mixed $value,
     ): self {
         return new self(
             id: null,

@@ -28,6 +28,11 @@ final class SortOrder implements Stringable
         return new self($sortOrder);
     }
 
+    public function next(): self
+    {
+        return new self($this->sortOrder + 1);
+    }
+
     protected function getPrimitiveValue(): int
     {
         return $this->value();

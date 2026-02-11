@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\EmailSender\Functional\Infrastructure;
 
 use App\EmailSender\Application\Command\SendOutboxEmail\SendOutboxEmailCommand;
-use App\EmailSender\Domain\Enum\EmailSenderQueueEnum;
+use App\EmailSender\Domain\Enum\EmailSenderEventNameEnum;
 use App\Shared\Infrastructure\Bus\Middleware\EventRoutingKeyMiddleware;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Messenger\Bridge\Amqp\Transport\AmqpStamp;
@@ -32,7 +32,7 @@ final class MessengerRoutingTest extends KernelTestCase
 
         self::assertNotNull($stamp);
         self::assertEquals(
-            expected: EmailSenderQueueEnum::EmailProcessor->value,
+            expected: EmailSenderEventNameEnum::EmailProcessor->value,
             actual: $stamp->getRoutingKey()
         );
     }

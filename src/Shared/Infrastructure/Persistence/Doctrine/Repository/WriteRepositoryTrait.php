@@ -5,6 +5,7 @@ namespace App\Shared\Infrastructure\Persistence\Doctrine\Repository;
 use App\Shared\Domain\Exception\EntityIdMissingException;
 use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObjectExceptionInterface;
+use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\MapperInterface;
 use Doctrine\ORM\Exception\ORMException;
 use RuntimeException;
 
@@ -18,6 +19,8 @@ trait WriteRepositoryTrait
      */
     protected function _save(object $domain, ?int $id): object
     {
+        $this->checkMapper(__METHOD__);
+
         $em = $this->getEntityManager();
 
         if (null !== $id) {
@@ -30,7 +33,7 @@ trait WriteRepositoryTrait
             }
 
             if (!$orm) {
-                throw new RuntimeException(sprintf('Entity %s with ID %s not found', self::getEntityClass(), $stringId));
+                throw $this->makeRuntimeException($stringId);
             }
 
             $this->mapper->mapToExistingOrm($domain, $orm);
@@ -49,9 +52,23 @@ trait WriteRepositoryTrait
      */
     protected function _delete(object $domain): void
     {
+        $this->checkMapper(__METHOD__);
+
         $this->getEntityManager()->remove(
             $this->mapper->toDoctrineOrm($domain)
         );
         $this->getEntityManager()->flush();
+    }
+
+    protected function makeRuntimeException(string $stringId): RuntimeException
+    {
+        return new RuntimeException(sprintf('Entity %s with ID %s not found', self::getEntityClass(), $stringId));
+    }
+
+    protected function checkMapper(string $method): void
+    {
+        if (false === $this->mapper instanceof MapperInterface) { // @phpstan-ignore-line
+            throw new RuntimeException(sprintf('Mapper instance must implement %s to use this method %s or implement custom method manually in repository', MapperInterface::class, $method));
+        }
     }
 }

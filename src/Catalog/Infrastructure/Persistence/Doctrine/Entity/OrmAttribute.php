@@ -14,9 +14,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'catalog_attribute')]
-#[ORM\UniqueConstraint(name: 'uniq_catalog_attribute_ulid', columns: ['ulid'])]
-#[ORM\UniqueConstraint(name: 'uniq_catalog_attribute_code', columns: ['code'])]
+#[ORM\Table(name: 'attributes')]
+#[ORM\UniqueConstraint(name: 'uniq_attribute_ulid', columns: ['ulid'])]
+#[ORM\UniqueConstraint(name: 'uniq_attribute_code', columns: ['code'])]
 class OrmAttribute
 {
     #[ORM\Id]

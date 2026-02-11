@@ -10,7 +10,7 @@ final class InvalidCategorySlugException extends InvalidCatalogValueObjectExcept
 {
     public static function becauseItIsEmpty(): self
     {
-        return new self('Category slug cannot be empty.');
+        return new self('Category slug cannot be empty');
     }
 
     public function getErrorCode(): string

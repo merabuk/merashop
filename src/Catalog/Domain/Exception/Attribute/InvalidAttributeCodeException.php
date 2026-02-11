@@ -10,7 +10,7 @@ final class InvalidAttributeCodeException extends InvalidCatalogValueObjectExcep
 {
     public static function becauseItIsEmpty(): self
     {
-        return new self('Attribute code cannot be empty.');
+        return new self('Attribute code cannot be empty');
     }
 
     public function getErrorCode(): string

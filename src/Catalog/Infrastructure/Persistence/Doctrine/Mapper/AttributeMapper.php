@@ -5,13 +5,10 @@ declare(strict_types=1);
 namespace App\Catalog\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\Catalog\Domain\Entity\Attribute;
-use App\Catalog\Domain\Exception\Attribute\InvalidAttributeCodeException;
-use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
-use App\Catalog\Domain\Exception\Attribute\InvalidAttributeUlidException;
-use App\Catalog\Domain\ValueObject\Attribute\Type;
-use App\Catalog\Domain\ValueObject\Attribute\Translations;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Id;
+use App\Catalog\Domain\ValueObject\Attribute\Translations;
+use App\Catalog\Domain\ValueObject\Attribute\Type;
 use App\Catalog\Domain\ValueObject\Attribute\Ulid;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttribute;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttributeTranslation;
@@ -34,7 +31,6 @@ class AttributeMapper implements MapperInterface
     {
         $this->assertIsType(Attribute::class, $domain);
         /** @var Attribute $domain */
-
         $orm = new OrmAttribute();
         $this->mapToExistingOrm($domain, $orm);
 
@@ -45,7 +41,6 @@ class AttributeMapper implements MapperInterface
     {
         $this->assertIsType(OrmAttribute::class, $orm);
         /** @var OrmAttribute $orm */
-
         $translations = [];
         foreach ($orm->translations as $translation) {
             $translations[$translation->locale] = ['name' => $translation->name];
@@ -67,8 +62,8 @@ class AttributeMapper implements MapperInterface
     {
         $this->assertIsType(Attribute::class, $domain);
         $this->assertIsType(OrmAttribute::class, $orm);
-        /** @var Attribute $domain */
-        /** @var OrmAttribute $orm */
+        /* @var Attribute $domain */
+        /* @var OrmAttribute $orm */
 
         $orm->ulid = $domain->getUlid()->value();
         $orm->code = $domain->getCode()->value();

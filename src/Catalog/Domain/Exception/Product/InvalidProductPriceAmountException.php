@@ -10,7 +10,7 @@ final class InvalidProductPriceAmountException extends InvalidCatalogValueObject
 {
     public static function becauseItMustBePositive(): self
     {
-        return new self('Product price amount must be a positive integer.');
+        return new self('Product price amount must be a positive integer');
     }
 
     public function getErrorCode(): string

@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\Entity;
 
-use App\Catalog\Domain\ValueObject\Product\Status;
 use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
 use App\Catalog\Domain\ValueObject\Product\Id;
 use App\Catalog\Domain\ValueObject\Product\Price;
 use App\Catalog\Domain\ValueObject\Product\Sku;
+use App\Catalog\Domain\ValueObject\Product\Status;
 use App\Catalog\Domain\ValueObject\Product\Translations;
 use App\Catalog\Domain\ValueObject\Product\Ulid;
 
 class Product
 {
     /**
-     * @param CategoryId[] $categoryIds
+     * @param CategoryId[]            $categoryIds
      * @param ProductAttributeValue[] $attributeValues
      */
     public function __construct(
@@ -31,7 +31,7 @@ class Product
     }
 
     /**
-     * @param CategoryId[] $categoryIds
+     * @param CategoryId[]            $categoryIds
      * @param ProductAttributeValue[] $attributeValues
      */
     public static function create(
@@ -109,7 +109,7 @@ class Product
         Price $price,
         Status $status,
         Translations $translations,
-        array $categoryIds
+        array $categoryIds,
     ): void {
         $this->sku = $sku;
         $this->price = $price;

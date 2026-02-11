@@ -10,7 +10,7 @@ final class InvalidProductSkuException extends InvalidCatalogValueObjectExceptio
 {
     public static function becauseItIsEmpty(): self
     {
-        return new self('Product SKU cannot be empty.');
+        return new self('Product SKU cannot be empty');
     }
 
     public function getErrorCode(): string

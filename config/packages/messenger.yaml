@@ -5,6 +5,30 @@ framework:
 
     transports:
       # https://symfony.com/doc/current/messenger.html#transport-configuration
+      # Catalog Module
+      catalog_outbox:
+        dsn: 'doctrine://catalog'
+        failure_transport: catalog_failed
+        options: &catalog_options
+          table_name: 'catalog_messages'
+          queue_name: !php/enum App\Catalog\Domain\Enum\MessengerQueueEnum::Outbox->value
+          auto_setup: false
+      catalog_failed:
+        dsn: 'doctrine://catalog'
+        options:
+          <<: *catalog_options
+          queue_name: !php/enum App\Catalog\Domain\Enum\MessengerQueueEnum::Failed->value
+      catalog_internal:
+        dsn: '%env(AMQP_MESSENGER_TRANSPORT_DSN)%'
+        failure_transport: amqp_failed
+        options:
+          exchange:
+            name: 'catalog.internal'
+            type: 'direct'
+          queues:
+            email_processor:
+              binding_keys:
+                - !php/enum App\Catalog\Domain\Enum\CatalogEventNameEnum::CategoryMoved->value
       # Identity Access Module
       identity_access_outbox:
         dsn: 'doctrine://identity_access'
@@ -42,7 +66,7 @@ framework:
           queues:
             email_processor:
               binding_keys:
-                - !php/enum App\EmailSender\Domain\Enum\EmailSenderQueueEnum::EmailProcessor->value
+                - !php/enum App\EmailSender\Domain\Enum\EmailSenderEventNameEnum::EmailProcessor->value
       # Customer Module
       customer_external:
         dsn: '%env(AMQP_MESSENGER_TRANSPORT_DSN)%'
@@ -82,6 +106,7 @@ framework:
     buses:
       command.bus:
         middleware:
+          - doctrine_transaction: [catalog]
           - doctrine_transaction: [customer]
           - doctrine_transaction: [identity_access]
           - doctrine_transaction: [email_sender]
@@ -95,7 +120,9 @@ framework:
       messenger.bus.default: [ ]
 
     routing:
-      # Route your messages to the transports
+      # Shared
       App\Shared\Domain\Event\UserRegisteredSharedEvent: identity_access_outbox
-
+      # Catalog Module
+      App\Catalog\Domain\Event\CategoryMovedDomainEvent: catalog_outbox
+      # EmailSender Module
       App\EmailSender\Application\Command\SendOutboxEmail\SendOutboxEmailCommand: email_sender_internal

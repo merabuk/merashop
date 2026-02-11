@@ -16,9 +16,9 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'catalog_product')]
-#[ORM\UniqueConstraint(name: 'uniq_catalog_product_ulid', columns: ['ulid'])]
-#[ORM\UniqueConstraint(name: 'uniq_catalog_product_sku', columns: ['sku'])]
+#[ORM\Table(name: 'products')]
+#[ORM\UniqueConstraint(name: 'uniq_product_ulid', columns: ['ulid'])]
+#[ORM\UniqueConstraint(name: 'uniq_product_sku', columns: ['sku'])]
 class OrmProduct
 {
     use TimestampableEntity;
