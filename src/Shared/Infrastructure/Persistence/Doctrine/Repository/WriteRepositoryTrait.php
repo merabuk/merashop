@@ -7,6 +7,7 @@ use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObjectExceptionInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\MapperInterface;
 use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use RuntimeException;
 
 trait WriteRepositoryTrait
@@ -26,11 +27,8 @@ trait WriteRepositoryTrait
         if (null !== $id) {
             $stringId = (string) $id;
 
-            $orm = $em->getUnitOfWork()->tryGetById($stringId, self::getEntityClass());
-
-            if (!$orm) {
-                $orm = $em->find(self::getEntityClass(), $stringId);
-            }
+            $orm = $em->getUnitOfWork()->tryGetById($stringId, self::getEntityClass()) ?: null;
+            $orm ??= $this->findOrmForUpdateFallback($stringId);
 
             if (!$orm) {
                 throw $this->makeRuntimeException($stringId);
@@ -58,6 +56,15 @@ trait WriteRepositoryTrait
             $this->mapper->toDoctrineOrm($domain)
         );
         $this->getEntityManager()->flush();
+    }
+
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
+    protected function findOrmForUpdateFallback(string $stringId): ?object
+    {
+        return $this->getEntityManager()->find(self::getEntityClass(), $stringId);
     }
 
     protected function makeRuntimeException(string $stringId): RuntimeException

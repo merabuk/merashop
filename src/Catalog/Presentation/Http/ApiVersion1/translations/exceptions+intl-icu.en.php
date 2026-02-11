@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Catalog\Domain\Enum\ErrorCodeEnum;
 
 return [
+    ErrorCodeEnum::AttributeNotFound->value => 'Attribute not found',
     ErrorCodeEnum::CategoryNotFound->value => 'Category not found',
     ErrorCodeEnum::CategoryParentNotFound->value => 'Category parent not found',
     ErrorCodeEnum::CategoryAlreadyExists->value => 'Category already exists',

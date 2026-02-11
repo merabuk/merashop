@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Catalog\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\Catalog\Domain\Entity\Attribute;
+use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Id;
 use App\Catalog\Domain\ValueObject\Attribute\Translations;
@@ -14,6 +15,7 @@ use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttribute;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttributeTranslation;
 use App\Shared\Domain\Exception\EntityIdMissingException;
 use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
+use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\MapperInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
 
@@ -29,25 +31,31 @@ class AttributeMapper implements MapperInterface
      */
     public function toDoctrineOrm(object $domain): OrmAttribute
     {
-        $this->assertIsType(Attribute::class, $domain);
-        /** @var Attribute $domain */
         $orm = new OrmAttribute();
         $this->mapToExistingOrm($domain, $orm);
 
         return $orm;
     }
 
+    /**
+     * @throws EntityIdMissingException
+     * @throws InvalidCatalogValueObjectException
+     * @throws IncompatibleMappedEntityException
+     * @throws InvalidLocaleException
+     */
     public function fromDoctrineOrm(object $orm): Attribute
     {
         $this->assertIsType(OrmAttribute::class, $orm);
         /** @var OrmAttribute $orm */
+        $id = Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class));
+
         $translations = [];
-        foreach ($orm->translations as $translation) {
-            $translations[$translation->locale] = ['name' => $translation->name];
+        foreach ($orm->translations as $ormTranslation) {
+            $translations[$ormTranslation->locale] = ['name' => $ormTranslation->name];
         }
 
         return new Attribute(
-            id: Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class)),
+            id: $id,
             ulid: Ulid::fromString($orm->ulid),
             code: Code::fromString($orm->code),
             type: Type::fromEnum($orm->type),
@@ -69,27 +77,27 @@ class AttributeMapper implements MapperInterface
         $orm->code = $domain->getCode()->value();
         $orm->type = $domain->getType()->value();
 
-        // Map translations
-        $currentTranslations = [];
-        foreach ($orm->translations as $translation) {
-            $currentTranslations[$translation->locale] = $translation;
-        }
+        $domainTranslations = $domain->getTranslations();
 
-        foreach ($domain->getTranslations() as $locale => $vo) {
-            if (isset($currentTranslations[$locale])) {
-                $currentTranslations[$locale]->name = $vo->name;
-                unset($currentTranslations[$locale]);
-            } else {
-                $translation = new OrmAttributeTranslation();
-                $translation->attribute = $orm;
-                $translation->locale = $locale;
-                $translation->name = $vo->name;
-                $orm->translations->add($translation);
+        foreach ($orm->translations as $ormTranslation) {
+            if (null === $domainTranslations->get($ormTranslation->locale)) {
+                $orm->translations->removeElement($ormTranslation);
             }
         }
 
-        foreach ($currentTranslations as $translation) {
-            $orm->translations->removeElement($translation);
+        foreach ($domainTranslations as $locale => $translation) {
+            $existing = $orm->translations->filter(fn (OrmAttributeTranslation $t) => $t->locale === $locale)->first();
+
+            if ($existing) {
+                $existing->name = $translation->name;
+            } else {
+                $newOrmTranslation = new OrmAttributeTranslation();
+                $newOrmTranslation->attribute = $orm;
+                $newOrmTranslation->locale = $locale;
+                $newOrmTranslation->name = $translation->name;
+
+                $orm->translations->add($newOrmTranslation);
+            }
         }
     }
 }

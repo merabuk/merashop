@@ -86,28 +86,28 @@ class CategoryMapper
         $orm->status = $domain->getStatus()->value();
         $orm->parent = $ormParent;
 
-        $domainTrans = $domain->getTranslations();
+        $domainTranslations = $domain->getTranslations();
 
-        foreach ($orm->translations as $ormTrans) {
-            if (null === $domainTrans->get($ormTrans->locale)) {
-                $orm->translations->removeElement($ormTrans);
+        foreach ($orm->translations as $ormTranslation) {
+            if (null === $domainTranslations->get($ormTranslation->locale)) {
+                $orm->translations->removeElement($ormTranslation);
             }
         }
 
-        foreach ($domainTrans as $locale => $vo) {
+        foreach ($domainTranslations as $locale => $translation) {
             $existing = $orm->translations->filter(fn (OrmCategoryTranslation $t) => $t->locale === $locale)->first();
 
             if ($existing) {
-                $existing->name = $vo->name;
-                $existing->description = $vo->description;
+                $existing->name = $translation->name;
+                $existing->description = $translation->description;
             } else {
-                $newTrans = new OrmCategoryTranslation();
-                $newTrans->category = $orm;
-                $newTrans->locale = $locale;
-                $newTrans->name = $vo->name;
-                $newTrans->description = $vo->description;
+                $newOrmTranslation = new OrmCategoryTranslation();
+                $newOrmTranslation->category = $orm;
+                $newOrmTranslation->locale = $locale;
+                $newOrmTranslation->name = $translation->name;
+                $newOrmTranslation->description = $translation->description;
 
-                $orm->translations->add($newTrans);
+                $orm->translations->add($newOrmTranslation);
             }
         }
     }

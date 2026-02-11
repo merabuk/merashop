@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Catalog\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Catalog\Domain\Entity\Attribute;
+use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\ValueObject\Attribute\Id;
@@ -16,13 +17,34 @@ use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
 final class AttributeReadRepository extends BaseAttributeRepository implements AttributeReadRepositoryInterface
 {
     /**
+     * @throws AttributeNotFoundException
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCatalogValueObjectException
      */
-    public function findById(Id $id): ?Attribute
+    public function getById(Id $id, bool $withTranslations = true): Attribute
     {
-        $orm = $this->find($id->value());
+        return $this->findById($id) ?? throw new AttributeNotFoundException();
+    }
+
+    /**
+     * @throws EntityIdMissingException
+     * @throws IncompatibleMappedEntityException
+     * @throws InvalidCatalogValueObjectException
+     */
+    public function findById(Id $id, bool $withTranslations = true): ?Attribute
+    {
+        $qb = $this->createQueryBuilder('a');
+
+        if ($withTranslations) {
+            $qb->leftJoin('a.translations', 't')
+                ->addSelect('t');
+        }
+
+        $orm = $qb->where('a.id = :id')
+            ->setParameter('id', $id->value())
+            ->getQuery()
+            ->getOneOrNullResult();
 
         return $this->checkAndMapToDomain($orm);
     }
