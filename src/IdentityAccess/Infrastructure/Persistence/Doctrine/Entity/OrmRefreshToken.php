@@ -14,7 +14,7 @@ use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'refresh_tokens')]
-#[ORM\UniqueConstraint(name: 'uniq_refresh_token', columns: ['token'])]
+#[ORM\UniqueConstraint(name: 'uniq_refresh_tokens_token', columns: ['token'])]
 class OrmRefreshToken
 {
     #[ORM\Id]

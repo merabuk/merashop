@@ -15,4 +15,5 @@ enum ErrorCodeEnum: string
     case CategoryAlreadyExists = 'CATEGORY_ALREADY_EXISTS';
     case CategoryOwnParentConflict = 'CATEGORY_OWN_PARENT_CONFLICT';
     case CategoryOwnDescendantConflict = 'CATEGORY_OWN_DESCENDANTS_CONFLICT';
+    case ProductNotFound = 'PRODUCT_NOT_FOUND';
 }

@@ -15,8 +15,8 @@ use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'attributes')]
-#[ORM\UniqueConstraint(name: 'uniq_attribute_ulid', columns: ['ulid'])]
-#[ORM\UniqueConstraint(name: 'uniq_attribute_code', columns: ['code'])]
+#[ORM\UniqueConstraint(name: 'uniq_attributes_ulid', columns: ['ulid'])]
+#[ORM\UniqueConstraint(name: 'uniq_attributes_code', columns: ['code'])]
 class OrmAttribute
 {
     #[ORM\Id]

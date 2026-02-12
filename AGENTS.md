@@ -103,7 +103,22 @@ The translation folder can be located in various places (but correct ones) and n
 - **Database Isolation**: Each module MUST use its own dedicated connection and entity manager. Cross-module database queries are strictly forbidden.
 - **Mapping Location**: Doctrine mapping must reside strictly within `src/<ModuleName>/Infrastructure/Persistence/Doctrine/Mapping` (XML/PHP) OR within Infrastructure-specific entities (e.g., `Orm*` classes) using PHP attributes.
 - **Explicit Definitions**: Avoid using attributes or XML inside the Domain layer. Attributes are permitted only in the Infrastructure layer for ORM entities.
-    - **Unique Constraints**: Always use `#[ORM\UniqueConstraint]` with an explicit name at the class level instead of setting `unique: true` in `#[ORM\Column]`. This ensures consistent index naming and better migration generation. Example: `#[ORM\UniqueConstraint(name: 'uniq_user_email', columns: ['email'])]`.
+    - **Table Names**: Table names should not include module prefixes. Since each module uses its own database schema or separate database, prefixing is redundant.
+    - **Naming Convention for Constraints**:
+        - **Indexes**: `idx_{table}_{column}` (e.g., `idx_products_sku`).
+        - **Unique Indexes**: `uniq_{table}_{column}` (e.g., `uniq_products_ulid`).
+        - **Foreign Keys (FK)**: `fk_{table}_{column}` (e.g., `fk_product_translations_product_id`).
+        - **63 Characters Limit**: PostgreSQL has a limit of 63 characters for identifier names. If a constraint name exceeds this limit:
+            1. Use table abbreviations. For example:
+                - `identity_access_messages` -> `ia_msg`
+                - `messages` -> `msg`
+                - `translations` -> `trans`
+                - `attribute` -> `attr`
+            2. If the name is still too long, truncate the longest parts (table or column names) while maintaining uniqueness and readability.
+    - **Explicit Names**: Always provide explicit names for all indexes, unique constraints, and foreign keys. 
+        - For unique constraints: `#[ORM\UniqueConstraint(name: 'uniq_...', columns: [...])]`.
+        - For indexes: `#[ORM\Index(name: 'idx_...', columns: [...])]`.
+        - **NOTE**: Foreign key names in ORM attributes (e.g., `options: ['foreignKey' => ['name' => 'fk_...']]`) are currently ignored by Doctrine migrations. You MUST manually set the desired FK name in the migration file.
 - **Complex vs. Simple Entities**:
     - **Complex entities** (many relations, collections, translations, or special mapping rules) MUST have fully custom mapping and persistence logic (custom Mapper, repositories, and explicit field handling).
     - **Simple entities** should reuse existing infrastructure helpers (e.g., `App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait`) to avoid duplication.

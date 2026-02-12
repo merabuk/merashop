@@ -13,4 +13,5 @@ return [
     ErrorCodeEnum::CategoryAlreadyExists->value => 'Category already exists',
     ErrorCodeEnum::CategoryOwnParentConflict->value => 'Category cannot be its own parent',
     ErrorCodeEnum::CategoryOwnDescendantConflict->value => 'Category cannot be its own descendant',
+    ErrorCodeEnum::ProductNotFound->value => 'Product not found',
 ];

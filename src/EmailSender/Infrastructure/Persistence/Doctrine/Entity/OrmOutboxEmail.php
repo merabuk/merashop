@@ -19,13 +19,13 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity]
-#[ORM\Table(name: 'outbox_email')]
+#[ORM\Table(name: 'outbox_emails')]
 #[ORM\Index(
-    name: 'idx_outbox_process',
+    name: 'idx_outbox_emails_status_scheduled_at',
     columns: ['status', 'scheduled_at'],
     options: ['where' => "((status = '".StatusEnum::Created->value."'::".StatusType::NAME.") OR (status = '".StatusEnum::Failed->value."'::".StatusType::NAME.'))']
 )]
-#[ORM\Index(name: 'idx_outbox_trace', columns: ['trace_id'])]
+#[ORM\Index(name: 'idx_outbox_emails_trace_id', columns: ['trace_id'])]
 class OrmOutboxEmail
 {
     use TimestampableEntity;

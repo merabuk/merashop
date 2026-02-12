@@ -110,12 +110,14 @@ class Product
         Status $status,
         Translations $translations,
         array $categoryIds,
+        array $attributeValues = [],
     ): void {
         $this->sku = $sku;
         $this->price = $price;
         $this->status = $status;
         $this->translations = $translations;
         $this->categoryIds = $categoryIds;
+        $this->attributeValues = $attributeValues;
     }
 
     public function addAttributeValue(ProductAttributeValue $attributeValue): void

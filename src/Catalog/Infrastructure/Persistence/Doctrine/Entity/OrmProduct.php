@@ -18,8 +18,8 @@ use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'products')]
-#[ORM\UniqueConstraint(name: 'uniq_product_ulid', columns: ['ulid'])]
-#[ORM\UniqueConstraint(name: 'uniq_product_sku', columns: ['sku'])]
+#[ORM\UniqueConstraint(name: 'uniq_products_ulid', columns: ['ulid'])]
+#[ORM\UniqueConstraint(name: 'uniq_products_sku', columns: ['sku'])]
 class OrmProduct
 {
     use TimestampableEntity;

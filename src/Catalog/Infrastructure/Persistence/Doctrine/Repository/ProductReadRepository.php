@@ -6,6 +6,7 @@ namespace App\Catalog\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Catalog\Domain\Entity\Product;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
+use App\Catalog\Domain\Exception\Product\ProductNotFoundException;
 use App\Catalog\Domain\Repository\ProductReadRepositoryInterface;
 use App\Catalog\Domain\ValueObject\Product\Id;
 use App\Catalog\Domain\ValueObject\Product\Ulid;
@@ -15,6 +16,17 @@ use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
 
 final class ProductReadRepository extends BaseProductRepository implements ProductReadRepositoryInterface
 {
+    /**
+     * @throws EntityIdMissingException
+     * @throws IncompatibleMappedEntityException
+     * @throws ProductNotFoundException
+     * @throws InvalidCatalogValueObjectException
+     */
+    public function getById(Id $id): Product
+    {
+        return $this->findById($id) ?? throw new ProductNotFoundException();
+    }
+
     /**
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException

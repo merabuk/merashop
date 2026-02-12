@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'attribute_translations')]
-#[ORM\UniqueConstraint(name: 'uniq_attribute_translation_locale', columns: ['attribute_id', 'locale'])]
+#[ORM\UniqueConstraint(name: 'uniq_attribute_translations_attribute_id_locale', columns: ['attribute_id', 'locale'])]
 class OrmAttributeTranslation
 {
     #[ORM\Id]

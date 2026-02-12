@@ -10,6 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'product_attribute_values')]
+#[ORM\Index(name: 'idx_product_attribute_values_product_id', columns: ['product_id'])]
+#[ORM\Index(name: 'idx_product_attribute_values_attribute_id', columns: ['attribute_id'])]
 class OrmProductAttributeValue
 {
     #[ORM\Id]
@@ -22,7 +24,8 @@ class OrmProductAttributeValue
         name: 'product_id',
         referencedColumnName: 'id',
         nullable: false,
-        onDelete: ReferentialAction::CASCADE->value
+        onDelete: ReferentialAction::CASCADE->value,
+        options: ['foreignKey' => ['name' => 'fk_product_attribute_values_product_id']]
     )]
     public OrmProduct $product;
 
@@ -31,7 +34,8 @@ class OrmProductAttributeValue
         name: 'attribute_id',
         referencedColumnName: 'id',
         nullable: false,
-        onDelete: ReferentialAction::CASCADE->value
+        onDelete: ReferentialAction::CASCADE->value,
+        options: ['foreignKey' => ['name' => 'fk_product_attribute_values_attribute_id']]
     )]
     public OrmAttribute $attribute;
 

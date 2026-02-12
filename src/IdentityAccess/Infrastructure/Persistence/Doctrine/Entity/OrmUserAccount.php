@@ -14,8 +14,8 @@ use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'user_accounts')]
-#[ORM\UniqueConstraint(name: 'uniq_user_ulid', columns: ['ulid'])]
-#[ORM\UniqueConstraint(name: 'uniq_user_email', columns: ['email'])]
+#[ORM\UniqueConstraint(name: 'uniq_user_accounts_ulid', columns: ['ulid'])]
+#[ORM\UniqueConstraint(name: 'uniq_user_accounts_email', columns: ['email'])]
 class OrmUserAccount
 {
     use TimestampableEntity;

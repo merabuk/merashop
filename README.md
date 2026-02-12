@@ -175,7 +175,18 @@ This command:
 ## Development Workflow
 ### ORM & Mapping Standards
 
-- **Unique Constraints**: Always use explicit `UniqueConstraint` names at the class level instead of the `unique: true` property on columns. Use lowercase, human-friendly index names (e.g., `uniq_user_email`). This ensures consistent naming and better migration generation.
+- **Table Names**: Table names should not include module prefixes (e.g., use `products` instead of `catalog_products`).
+  - **Naming Convention for Constraints**:
+    - **Indexes**: `idx_{table}_{column}` (e.g., `idx_products_sku`).
+    - **Unique Indexes**: `uniq_{table}_{column}` (e.g., `uniq_products_ulid`).
+    - **Foreign Keys (FK)**: `fk_{table}_{column}` (e.g., `fk_product_translations_product_id`).
+    - **63 Characters Limit**: PostgreSQL has a limit of 63 characters for identifier names. If a constraint name exceeds this limit:
+      1. Use table abbreviations (e.g., `identity_access_messages` -> `ia_msg`, `messages` -> `msg`, `translations` -> `trans`, `attribute` -> `attr`).
+      2. If still too long, truncate longest parts while maintaining uniqueness.
+- **Explicit Names**: Always provide explicit names for all indexes, unique constraints, and foreign keys.
+  - For unique constraints: `#[ORM\UniqueConstraint(name: 'uniq_...', columns: [...])]`.
+  - For indexes: `#[ORM\Index(name: 'idx_...', columns: [...])]`.
+  - **NOTE**: Foreign key names in ORM attributes are currently ignored by Doctrine migrations. You MUST manually set the desired FK name in the migration file.
 - **Field Lengths**: Define length limits in Value Objects as `MAX_LENGTH` constants and use them in ORM column definitions (e.g., `length: Sku::MAX_LENGTH`). This ensures a single source of truth for business constraints and database schema.
 
 ### Repository Standards

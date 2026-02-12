@@ -18,8 +18,9 @@ use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'categories')]
-#[ORM\UniqueConstraint(name: 'uniq_category_ulid', columns: ['ulid'])]
-#[ORM\UniqueConstraint(name: 'uniq_category_slug', columns: ['slug'])]
+#[ORM\UniqueConstraint(name: 'uniq_categories_ulid', columns: ['ulid'])]
+#[ORM\UniqueConstraint(name: 'uniq_categories_slug', columns: ['slug'])]
+#[ORM\Index(name: 'idx_categories_parent_id', columns: ['parent_id'])]
 class OrmCategory
 {
     use TimestampableEntity;

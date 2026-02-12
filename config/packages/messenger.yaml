@@ -29,19 +29,20 @@ framework:
             email_processor:
               binding_keys:
                 - !php/enum App\Catalog\Domain\Enum\CatalogEventNameEnum::CategoryMoved->value
-      # Identity Access Module
-      identity_access_outbox:
-        dsn: 'doctrine://identity_access'
-        failure_transport: identity_access_failed
-        options: &identity_access_options
-          table_name: 'identity_access_messages'
-          queue_name: !php/enum App\IdentityAccess\Domain\Enum\MessengerQueueEnum::Outbox->value
-          auto_setup: false
-      identity_access_failed:
-        dsn: 'doctrine://identity_access'
+      # Customer Module
+      customer_external:
+        dsn: '%env(AMQP_MESSENGER_TRANSPORT_DSN)%'
+        failure_transport: amqp_failed
         options:
-          <<: *identity_access_options
-          queue_name: !php/enum App\IdentityAccess\Domain\Enum\MessengerQueueEnum::Failed->value
+          auto_setup: true
+          confirm_timeout: 5
+          exchange:
+            name: 'domain_events'
+            type: 'topic'
+          queues:
+            customer_module:
+              binding_keys:
+                - !php/enum App\Shared\Domain\Enum\SharedEventNameEnum::UserRegistered->value
       # EmailSender Module
       email_sender_external:
         dsn: '%env(AMQP_MESSENGER_TRANSPORT_DSN)%'
@@ -67,20 +68,19 @@ framework:
             email_processor:
               binding_keys:
                 - !php/enum App\EmailSender\Domain\Enum\EmailSenderEventNameEnum::EmailProcessor->value
-      # Customer Module
-      customer_external:
-        dsn: '%env(AMQP_MESSENGER_TRANSPORT_DSN)%'
-        failure_transport: amqp_failed
+      # Identity Access Module
+      identity_access_outbox:
+        dsn: 'doctrine://identity_access'
+        failure_transport: identity_access_failed
+        options: &identity_access_options
+          table_name: 'identity_access_messages'
+          queue_name: !php/enum App\IdentityAccess\Domain\Enum\MessengerQueueEnum::Outbox->value
+          auto_setup: false
+      identity_access_failed:
+        dsn: 'doctrine://identity_access'
         options:
-          auto_setup: true
-          confirm_timeout: 5
-          exchange:
-            name: 'domain_events'
-            type: 'topic'
-          queues:
-            customer_module:
-              binding_keys:
-                - !php/enum App\Shared\Domain\Enum\SharedEventNameEnum::UserRegistered->value
+          <<: *identity_access_options
+          queue_name: !php/enum App\IdentityAccess\Domain\Enum\MessengerQueueEnum::Failed->value
       # Base
       amqp_events:
         dsn: '%env(AMQP_MESSENGER_TRANSPORT_DSN)%'

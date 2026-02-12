@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'category_translations')]
-#[ORM\UniqueConstraint(name: 'uniq_translation_locale', columns: ['category_id', 'locale'])]
+#[ORM\UniqueConstraint(name: 'uniq_category_translations_category_id_locale', columns: ['category_id', 'locale'])]
 class OrmCategoryTranslation
 {
     #[ORM\Id]

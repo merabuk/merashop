@@ -2,51 +2,51 @@
 
 declare(strict_types=1);
 
-namespace App\Catalog\Application\Command\CreateProduct;
+namespace App\Catalog\Application\Command\UpdateProduct;
 
-use App\Catalog\Application\Exception\Product\CreateProductException;
+use App\Catalog\Application\Exception\Product\UpdateProductException;
 use App\Catalog\Application\Service\ProductDataFactory;
-use App\Catalog\Domain\Entity\Product;
 use App\Catalog\Domain\Exception\Attribute\OneOfAttributesNotFoundException;
 use App\Catalog\Domain\Exception\Category\OneOfCategoriesNotFoundException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
+use App\Catalog\Domain\Exception\Product\ProductNotFoundException;
+use App\Catalog\Domain\Repository\ProductReadRepositoryInterface;
 use App\Catalog\Domain\Repository\ProductWriteRepositoryInterface;
+use App\Catalog\Domain\ValueObject\Product\Id;
 use App\Catalog\Domain\ValueObject\Product\Price;
 use App\Catalog\Domain\ValueObject\Product\Sku;
 use App\Catalog\Domain\ValueObject\Product\Status;
 use App\Catalog\Domain\ValueObject\Product\Translations;
-use App\Catalog\Domain\ValueObject\Product\Ulid;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
-use App\Shared\Domain\Service\UlidGeneratorInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler(bus: BusNameEnum::Command->value)]
-readonly class CreateProductHandler implements CommandHandlerInterface
+readonly class UpdateProductHandler implements CommandHandlerInterface
 {
     public function __construct(
-        private UlidGeneratorInterface $ulidGenerator,
+        private ProductReadRepositoryInterface $readRepository,
         private ProductDataFactory $productDataFactory,
         private ProductWriteRepositoryInterface $writeRepository,
     ) {
     }
 
     /**
-     * @throws CreateProductException
      * @throws OneOfAttributesNotFoundException
      * @throws OneOfCategoriesNotFoundException
+     * @throws ProductNotFoundException
+     * @throws UpdateProductException
      */
-    public function __invoke(CreateProductCommand $command): int
+    public function __invoke(UpdateProductCommand $command): int
     {
         try {
-            $ulid = $this->ulidGenerator->next();
+            $product = $this->readRepository->getById(Id::fromInt($command->id));
 
             $categoryIds = $this->productDataFactory->prepareCategories($command->categoryIds);
             $attributeValues = $this->productDataFactory->prepareAttributes($command->attributeValues);
 
-            $product = Product::create(
-                ulid: Ulid::fromString($ulid),
+            $product->update(
                 sku: Sku::fromString($command->sku),
                 price: new Price($command->priceAmount, $command->priceCurrency),
                 status: Status::fromString($command->status),
@@ -59,7 +59,7 @@ readonly class CreateProductHandler implements CommandHandlerInterface
 
             return $product->getId()->value();
         } catch (InvalidCatalogValueObjectException|InvalidLocaleException $e) {
-            throw new CreateProductException(message: 'Error during creating product', previous: $e);
+            throw new UpdateProductException(message: 'Error during updating product', previous: $e);
         }
     }
 }

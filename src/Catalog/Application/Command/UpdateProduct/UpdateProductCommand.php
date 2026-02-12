@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Catalog\Application\Command\CreateProduct;
+namespace App\Catalog\Application\Command\UpdateProduct;
 
 use App\Shared\Application\Command\CommandInterface;
 
-final readonly class CreateProductCommand implements CommandInterface
+class UpdateProductCommand implements CommandInterface
 {
     public function __construct(
+        public int $id,
         public string $sku,
         public string $status,
         public int $priceAmount,

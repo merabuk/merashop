@@ -28,11 +28,12 @@ final class Version20260118124301 extends AbstractMigration
             PRIMARY KEY (id)
         )'
         );
-        $this->addSql('CREATE UNIQUE INDEX uniq_refresh_token ON refresh_tokens (token)');
+        $this->addSql('CREATE UNIQUE INDEX uniq_refresh_tokens_token ON refresh_tokens (token)');
     }
 
     public function down(Schema $schema): void
     {
         $this->addSql('DROP TABLE refresh_tokens');
+        $this->addSql('DROP TYPE refresh_token_account_type');
     }
 }
