@@ -239,13 +239,21 @@ services:
     depends_on:
       - elasticsearch
 
-  identity-access-queue-worker:
+  catalog-outbox-queue-worker:
     <<: *queue-worker-defaults
     environment:
       APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
       WAIT_RABBITMQ: true
       WORKER_TYPE: queue
-      MESSENGER_TRANSPORT: identity_access_outbox
+      MESSENGER_TRANSPORT: catalog_outbox
+
+  catalog-internal-queue-worker:
+    <<: *queue-worker-defaults
+    environment:
+      APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
+      WAIT_RABBITMQ: true
+      WORKER_TYPE: queue
+      MESSENGER_TRANSPORT: catalog_internal
 
   customer-external-queue-worker:
     <<: *queue-worker-defaults
@@ -281,6 +289,14 @@ services:
       WAIT_RABBITMQ: true
       WORKER_TYPE: scheduler
       MESSENGER_TRANSPORT: scheduler_email_sender
+
+  identity-access-outbox-queue-worker:
+    <<: *queue-worker-defaults
+    environment:
+      APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
+      WAIT_RABBITMQ: true
+      WORKER_TYPE: queue
+      MESSENGER_TRANSPORT: identity_access_outbox
 
 networks:
   merashop-network:

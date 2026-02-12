@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Catalog\Domain\Entity;
 
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
-use App\Catalog\Domain\ValueObject\Product\Id as ProductId;
 use App\Catalog\Domain\ValueObject\ProductAttribute\ArrayValue;
 use App\Catalog\Domain\ValueObject\ProductAttribute\AttributeValueInterface;
 use App\Catalog\Domain\ValueObject\ProductAttribute\BooleanValue;
@@ -18,7 +17,6 @@ class ProductAttributeValue
 {
     public function __construct(
         private readonly ?Id $id,
-        private readonly ?ProductId $productId,
         private readonly AttributeId $attributeId,
         private AttributeValueInterface $value,
     ) {
@@ -27,16 +25,15 @@ class ProductAttributeValue
     public static function createWithRawValue(AttributeId $attributeId, mixed $value): self
     {
         $valueObject = match (gettype($value)) {
-            'string'  => new StringValue($value),
+            'string' => new StringValue($value),
             'integer' => new IntegerValue($value),
             'boolean' => new BooleanValue($value),
-            'array'   => new ArrayValue($value),
-            default   => throw new RuntimeException("Unsupported type")
+            'array' => new ArrayValue($value),
+            default => throw new RuntimeException('Unsupported type'),
         };
 
         return new self(
             id: null,
-            productId: null,
             attributeId: $attributeId,
             value: $valueObject
         );
@@ -48,7 +45,6 @@ class ProductAttributeValue
     ): self {
         return new self(
             id: null,
-            productId: null,
             attributeId: $attributeId,
             value: $value
         );
@@ -57,11 +53,6 @@ class ProductAttributeValue
     public function getId(): ?Id
     {
         return $this->id;
-    }
-
-    public function getProductId(): ProductId
-    {
-        return $this->productId;
     }
 
     public function getAttributeId(): AttributeId

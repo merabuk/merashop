@@ -18,6 +18,7 @@ use App\Catalog\Domain\ValueObject\Product\Translations;
 use App\Catalog\Domain\ValueObject\Product\Ulid;
 use App\Catalog\Domain\ValueObject\ProductAttribute\ArrayValue;
 use App\Catalog\Domain\ValueObject\ProductAttribute\BooleanValue;
+use App\Catalog\Domain\ValueObject\ProductAttribute\Id as ProductAttributeValueId;
 use App\Catalog\Domain\ValueObject\ProductAttribute\IntegerValue;
 use App\Catalog\Domain\ValueObject\ProductAttribute\StringValue;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttribute;
@@ -28,13 +29,18 @@ use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductTranslation
 use App\Shared\Domain\Exception\EntityIdMissingException;
 use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
+use App\Shared\Infrastructure\Persistence\Doctrine\Interface\ProxyReferenceProviderInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
-use App\Catalog\Domain\ValueObject\ProductAttribute\Id as ProductAttributeValueId;
 use InvalidArgumentException;
 
 class ProductMapper
 {
     use TypeCheckTrait;
+
+    public function __construct(
+        private readonly ProxyReferenceProviderInterface $referenceProvider,
+    ) {
+    }
 
     /**
      * @throws IncompatibleMappedEntityException
@@ -57,7 +63,6 @@ class ProductMapper
     {
         $this->assertIsType(OrmProduct::class, $orm);
         /** @var OrmProduct $orm */
-
         $translations = [];
         foreach ($orm->translations as $ormTranslation) {
             $translations[$ormTranslation->locale] = [
@@ -83,7 +88,6 @@ class ProductMapper
 
             $attributeValues[] = new ProductAttributeValue(
                 id: ProductAttributeValueId::fromInt($ormValue->id),
-                productId: $productId,
                 attributeId: AttributeId::fromInt($ormValue->attribute->id),
                 value: $value
             );
@@ -124,7 +128,7 @@ class ProductMapper
 
     private function mapCategories(Product $domain, OrmProduct $orm): void
     {
-        $domainIds = array_map(fn($id) => $id->value(), $domain->getCategoryIds());
+        $domainIds = array_map(fn ($id) => $id->value(), $domain->getCategoryIds());
 
         foreach ($orm->categories as $ormCategory) {
             if (!in_array($ormCategory->id, $domainIds, true)) {
@@ -133,10 +137,9 @@ class ProductMapper
         }
 
         foreach ($domainIds as $id) {
-            $exists = $orm->categories->exists(fn(mixed $key, OrmCategory $c) => $c->id === $id);
+            $exists = $orm->categories->exists(fn (mixed $key, OrmCategory $c) => $c->id === $id);
             if (!$exists) {
-                // TODO: avoid use entity reference here
-                $orm->categories->add($this->entityManager->getReference(OrmCategory::class, $id));
+                $orm->categories->add($this->referenceProvider->getReference(className: OrmCategory::class, id: $id));
             }
         }
     }
@@ -177,22 +180,27 @@ class ProductMapper
             $found = false;
             foreach ($domainValues as $dv) {
                 if ($dv->getAttributeId()->value() === $ormValue->attribute->id) {
-                    $found = true; break;
+                    $found = true;
+                    break;
                 }
             }
-            if (!$found) $orm->attributeValues->removeElement($ormValue);
+            if (!$found) {
+                $orm->attributeValues->removeElement($ormValue);
+            }
         }
 
         foreach ($domainValues as $dv) {
             $ormValue = $orm->attributeValues->filter(
-                fn(OrmProductAttributeValue $o) => $o->attribute->id === $dv->getAttributeId()->value()
+                fn (OrmProductAttributeValue $o) => $o->attribute->id === $dv->getAttributeId()->value()
             )->first() ?: null;
 
             if (!$ormValue) {
                 $ormValue = new OrmProductAttributeValue();
                 $ormValue->product = $orm;
-                // TODO: avoid use entity reference here
-                $ormValue->attribute = $this->entityManager->getReference(OrmAttribute::class, $dv->getAttributeId()->value());
+                $ormValue->attribute = $this->referenceProvider->getReference(
+                    className: OrmAttribute::class,
+                    id: $dv->getAttributeId()->value()
+                );
 
                 $orm->attributeValues->add($ormValue);
             }
@@ -215,7 +223,7 @@ class ProductMapper
             $vo instanceof IntegerValue => $orm->valueInt = $vo->value(),
             $vo instanceof BooleanValue => $orm->valueBoolean = $vo->value(),
             $vo instanceof ArrayValue => $orm->valueJson = $vo->value(),
-            default => throw new InvalidArgumentException("Unknown attribute value type")
+            default => throw new InvalidArgumentException('Unknown attribute value type'),
         };
     }
 }

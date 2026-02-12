@@ -104,6 +104,9 @@ The translation folder can be located in various places (but correct ones) and n
 - **Mapping Location**: Doctrine mapping must reside strictly within `src/<ModuleName>/Infrastructure/Persistence/Doctrine/Mapping` (XML/PHP) OR within Infrastructure-specific entities (e.g., `Orm*` classes) using PHP attributes.
 - **Explicit Definitions**: Avoid using attributes or XML inside the Domain layer. Attributes are permitted only in the Infrastructure layer for ORM entities.
     - **Unique Constraints**: Always use `#[ORM\UniqueConstraint]` with an explicit name at the class level instead of setting `unique: true` in `#[ORM\Column]`. This ensures consistent index naming and better migration generation. Example: `#[ORM\UniqueConstraint(name: 'uniq_user_email', columns: ['email'])]`.
+- **Complex vs. Simple Entities**:
+    - **Complex entities** (many relations, collections, translations, or special mapping rules) MUST have fully custom mapping and persistence logic (custom Mapper, repositories, and explicit field handling).
+    - **Simple entities** should reuse existing infrastructure helpers (e.g., `App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait`) to avoid duplication.
 - **Repository Pattern**:
     - Each module should split repository interfaces into **Read** and **Write** repositories (e.g., `ProductReadRepositoryInterface` and `ProductWriteRepositoryInterface`).
     - Read repositories should contain methods for data retrieval (`findById`, `findByUlid`, `findReadyToProcess`, etc.).

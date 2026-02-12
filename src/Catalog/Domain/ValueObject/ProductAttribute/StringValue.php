@@ -11,8 +11,9 @@ final readonly class StringValue implements AttributeValueInterface
     use ValueObjectEqualityTrait;
 
     public function __construct(
-        private string $value
-    ) {}
+        private string $value,
+    ) {
+    }
 
     public static function fromString(string $value): self
     {

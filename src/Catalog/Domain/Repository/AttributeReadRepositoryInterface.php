@@ -23,6 +23,7 @@ interface AttributeReadRepositoryInterface
 
     /**
      * @param Id[] $ids
+     *
      * @throws OneOfAttributesNotFoundException
      */
     public function assertAllExistByIds(array $ids): void;

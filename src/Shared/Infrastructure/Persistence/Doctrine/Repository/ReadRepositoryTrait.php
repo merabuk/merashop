@@ -26,11 +26,14 @@ trait ReadRepositoryTrait
                 ->setParameter(key: $paramName, value: $value, type: $type);
         }
 
-        return null !== $qb->setMaxResults(1)->getQuery()->getOneOrNullResult();
+        $result = $qb->setMaxResults(1)->getQuery()->getScalarResult();
+
+        return count($result) > 0;
     }
 
     /**
      * @param IdInterface[] $ids
+     *
      * @throws OneOfEntitiesNotFoundException
      */
     protected function _assertAllExistByIds(array $ids): void
@@ -38,7 +41,7 @@ trait ReadRepositoryTrait
         $count = $this->createQueryBuilder('e')
             ->select('COUNT(e.id)')
             ->where('e.id IN (:ids)')
-            ->setParameter('ids', array_map(fn(IdInterface $id) => $id->value(), $ids))
+            ->setParameter('ids', array_map(fn (IdInterface $id) => $id->value(), $ids))
             ->getQuery()
             ->getSingleScalarResult();
 

@@ -15,8 +15,9 @@ final readonly class ArrayValue implements AttributeValueInterface
      * @param array<string, mixed> $values
      */
     public function __construct(
-        private array $values
-    ) {}
+        private array $values,
+    ) {
+    }
 
     /**
      * @param array<string, mixed> $values
@@ -36,7 +37,7 @@ final readonly class ArrayValue implements AttributeValueInterface
 
     public function get(string $key, mixed $default = null): mixed
     {
-        return $this->data[$key] ?? $default;
+        return $this->values[$key] ?? $default;
     }
 
     /**

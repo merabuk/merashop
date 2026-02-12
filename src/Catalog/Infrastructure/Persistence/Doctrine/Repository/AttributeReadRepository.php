@@ -16,9 +16,12 @@ use App\Shared\Domain\Exception\Database\OneOfEntitiesNotFoundException;
 use App\Shared\Domain\Exception\EntityIdMissingException;
 use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
+use App\Shared\Infrastructure\Persistence\Doctrine\Repository\ReadRepositoryTrait;
 
 final class AttributeReadRepository extends BaseAttributeRepository implements AttributeReadRepositoryInterface
 {
+    use ReadRepositoryTrait;
+
     /**
      * @throws AttributeNotFoundException
      * @throws EntityIdMissingException
@@ -69,17 +72,18 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
 
     /**
      * @param Id[] $ids
+     *
      * @throws OneOfAttributesNotFoundException
      */
     public function assertAllExistByIds(array $ids): void
     {
         try {
+            // some
             $this->_assertAllExistByIds($ids);
         } catch (OneOfEntitiesNotFoundException $e) {
             throw new OneOfAttributesNotFoundException(previous: $e);
         }
     }
-
 
     /**
      * @throws EntityIdMissingException

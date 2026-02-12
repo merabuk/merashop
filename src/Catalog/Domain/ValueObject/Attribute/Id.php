@@ -7,10 +7,10 @@ namespace App\Catalog\Domain\ValueObject\Attribute;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
 use App\Shared\Domain\Exception\IntegerIsNotUnsignedException;
 use App\Shared\Domain\Service\IntegerValidator;
+use App\Shared\Domain\ValueObject\IdInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
-use Stringable;
 
-final class Id implements Stringable
+final class Id implements IdInterface
 {
     use ValueObjectEqualityTrait;
 

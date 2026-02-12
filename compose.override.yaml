@@ -40,7 +40,10 @@ services:
       tags:
         - merashop/filebeat:latest
 
-  identity-access-queue-worker:
+  catalog-outbox-queue-worker:
+    <<: *queue-worker-defaults-override
+
+  catalog-internal-queue-worker:
     <<: *queue-worker-defaults-override
 
   customer-external-queue-worker:
@@ -53,4 +56,7 @@ services:
     <<: *queue-worker-defaults-override
 
   email-sender-sheduler-worker:
+    <<: *queue-worker-defaults-override
+
+  identity-access-outbox-queue-worker:
     <<: *queue-worker-defaults-override

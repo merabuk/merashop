@@ -9,8 +9,9 @@ final readonly class BooleanValue implements AttributeValueInterface
     use ValueObjectEqualityTrait;
 
     public function __construct(
-        private bool $value
-    ) {}
+        private bool $value,
+    ) {
+    }
 
     public static function fromBool(bool $value): self
     {

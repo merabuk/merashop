@@ -25,6 +25,7 @@ interface CategoryReadRepositoryInterface
 
     /**
      * @param Id[] $ids
+     *
      * @throws OneOfCategoriesNotFoundException
      */
     public function assertAllExistByIds(array $ids): void;

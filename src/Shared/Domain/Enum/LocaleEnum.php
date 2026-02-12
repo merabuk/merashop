@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Shared\Domain\Enum;
 
 /**
- * ISO 639-1
+ * ISO 639-1.
  */
 enum LocaleEnum: string
 {

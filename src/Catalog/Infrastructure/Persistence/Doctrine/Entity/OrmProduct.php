@@ -8,7 +8,6 @@ use App\Catalog\Domain\Enum\Product\StatusEnum;
 use App\Catalog\Domain\ValueObject\Product\Price;
 use App\Catalog\Domain\ValueObject\Product\Sku;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Type\Product\StatusType;
-use App\Shared\Domain\Enum\CurrencyEnum;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint\ReferentialAction;

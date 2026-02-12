@@ -61,6 +61,36 @@ When a new module database is added and the PostgreSQL data volume already exist
 docker compose exec -T pgsql bash /docker-entrypoint-initdb.d/init-db.sh
 ```
 
+### Remove old module databases
+
+If a module was removed (e.g., `Users`) and its database still exists in the PostgreSQL volume, drop it manually.
+
+1. Check existing databases:
+    ```bash
+    docker compose exec -T pgsql bash -lc 'psql -U "$POSTGRES_USER" -d postgres -c "\\l"'
+    ```
+
+2. Terminate active connections to the target database (replace `users_db` with the real name):
+    ```bash
+    docker compose exec -T pgsql bash -lc 'psql -U "$POSTGRES_USER" -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = users_db;"'
+    ```
+
+3. Drop the database:
+    ```bash
+    docker compose exec -T pgsql bash -lc 'psql -U "$POSTGRES_USER" -d postgres -c "DROP DATABASE users_db;"'
+    ```
+
+**Windows (PowerShell) note:** `$POSTGRES_USER` is inside the container, so PowerShell will not expand it. Either pass the user explicitly:
+```powershell
+docker compose exec -T pgsql psql -U merashop_u -d postgres -c "DROP DATABASE users_db;"
+```
+or use PowerShell verbatim mode to avoid quote parsing:
+```powershell
+docker compose exec -T pgsql --% bash -lc "psql -U "$POSTGRES_USER" -d postgres -c 'DROP DATABASE users_db;'"
+```
+
+If you also removed the module’s configuration, ensure the related `POSTGRES_DB_*` env variable is deleted from `.env` / `.env.local` and from `docker/pgsql/shell/init-db.sh` to prevent recreation.
+
 ### Running Migrations
 
 Migrations are run separately for each module using their respective entity managers and configurations:
@@ -154,6 +184,9 @@ This command:
 - **Read Repositories**: Must implement a private `checkAndMapToDomain` method to handle ORM-to-Domain mapping with proper type checking and null handling.
 - **Write Repositories**: Must use `WriteRepositoryTrait` for standard `save` and `delete` operations to ensure consistency and reduce boilerplate.
 - **Base Classes**: All repository implementations must inherit from an entity-specific base class (e.g., `BaseProductRepository`) that encapsulates the `Mapper` and `ManagerRegistry`.
+- **Complex vs. Simple Entities**:
+  - **Complex entities** (many relations, collections, translations, or special mapping rules) must be implemented fully custom (custom Mapper, repositories, explicit field mapping).
+  - **Simple entities** should reuse existing infrastructure helpers like `App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait` to avoid duplication.
 
 ### Code Quality Tools
 

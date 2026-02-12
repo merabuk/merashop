@@ -108,6 +108,7 @@ final class CategoryReadRepository extends BaseCategoryRepository implements Cat
 
     /**
      * @param Id[] $ids
+     *
      * @throws OneOfCategoriesNotFoundException
      */
     public function assertAllExistByIds(array $ids): void

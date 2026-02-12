@@ -11,8 +11,9 @@ final readonly class IntegerValue implements AttributeValueInterface
     use ValueObjectEqualityTrait;
 
     public function __construct(
-        private int $value
-    ) {}
+        private int $value,
+    ) {
+    }
 
     public static function fromInt(int $value): self
     {

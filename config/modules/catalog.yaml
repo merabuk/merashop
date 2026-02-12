@@ -1,4 +1,12 @@
 services:
+  catalog.proxy_reference_provider:
+    class: App\Shared\Infrastructure\Persistence\Doctrine\Provider\DoctrineProxyReferenceProvider
+    arguments:
+      $em: '@doctrine.orm.catalog_entity_manager'
+
+  App\Catalog\Infrastructure\Persistence\Doctrine\Mapper\ProductMapper:
+    arguments:
+      $referenceProvider: '@catalog.proxy_reference_provider'
 
   App\Catalog\Domain\Repository\AttributeReadRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\AttributeReadRepository'
   App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\AttributeWriteRepository'

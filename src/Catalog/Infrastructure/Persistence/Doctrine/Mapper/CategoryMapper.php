@@ -45,7 +45,6 @@ class CategoryMapper
     {
         $this->assertIsType(OrmCategory::class, $orm);
         /** @var OrmCategory $orm */
-
         $translations = [];
         foreach ($orm->translations as $ormTranslation) {
             $translations[$ormTranslation->locale] = [
