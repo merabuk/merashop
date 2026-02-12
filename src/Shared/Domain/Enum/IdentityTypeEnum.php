@@ -10,4 +10,5 @@ enum IdentityTypeEnum: string
 
     case User = 'user';
     case Module = 'module';
+    case Admin = 'admin';
 }

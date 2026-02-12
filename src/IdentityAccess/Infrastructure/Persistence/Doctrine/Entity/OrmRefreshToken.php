@@ -18,8 +18,8 @@ use Symfony\Bridge\Doctrine\Types\UlidType;
 class OrmRefreshToken
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::BIGINT)]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[ORM\Column(type: Types::BIGINT, options: ['unsigned' => true])]
     public private(set) ?int $id = null;
 
     #[ORM\Column(type: Types::STRING, length: TokenHash::MAX_LENGTH)]

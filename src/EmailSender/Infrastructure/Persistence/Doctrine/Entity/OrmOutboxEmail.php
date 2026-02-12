@@ -32,7 +32,7 @@ class OrmOutboxEmail
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    #[ORM\Column(type: Types::BIGINT)]
+    #[ORM\Column(type: Types::BIGINT, options: ['unsigned' => true])]
     public private(set) ?int $id = null;
 
     #[ORM\Column(type: StatusType::NAME, options: ['default' => StatusEnum::Created->value])]

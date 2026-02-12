@@ -22,8 +22,8 @@ class OrmUserAccount
     use SoftDeleteableEntity;
 
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::BIGINT)]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[ORM\Column(type: Types::BIGINT, options: ['unsigned' => true])]
     public private(set) ?int $id = null;
 
     #[ORM\Column(type: UlidType::NAME)]
