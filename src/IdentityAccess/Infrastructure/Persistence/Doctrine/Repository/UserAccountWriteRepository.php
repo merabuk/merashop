@@ -24,12 +24,11 @@ final class UserAccountWriteRepository extends BaseUserAccountRepository impleme
      */
     public function save(UserAccount $userAccount): UserAccount
     {
-        return $this->_save(domain: $userAccount, id: $userAccount->getId()?->value());
+        $orm = $this->_save(domain: $userAccount, id: $userAccount->getId()?->value());
+
+        return $this->mapper->fromDoctrineOrm($orm);
     }
 
-    /**
-     * @throws IncompatibleMappedEntityException
-     */
     public function delete(UserAccount $userAccount): void
     {
         $this->_delete($userAccount);

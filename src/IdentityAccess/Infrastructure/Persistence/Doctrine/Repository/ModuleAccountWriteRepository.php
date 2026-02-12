@@ -24,12 +24,11 @@ final class ModuleAccountWriteRepository extends BaseModuleAccountRepository imp
      */
     public function save(ModuleAccount $moduleAccount): ModuleAccount
     {
-        return $this->_save(domain: $moduleAccount, id: $moduleAccount->getId()?->value());
+        $orm = $this->_save(domain: $moduleAccount, id: $moduleAccount->getId()?->value());
+
+        return $this->mapper->fromDoctrineOrm($orm);
     }
 
-    /**
-     * @throws IncompatibleMappedEntityException
-     */
     public function delete(ModuleAccount $moduleAccount): void
     {
         $this->_delete($moduleAccount);

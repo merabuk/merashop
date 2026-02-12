@@ -55,7 +55,7 @@ framework:
           queues:
             email_sender_module:
               binding_keys:
-                - !php/enum App\Shared\Domain\Event\SharedEventNameEnum::UserRegistered->value
+                - !php/enum App\Shared\Domain\Enum\SharedEventNameEnum::UserRegistered->value
       email_sender_internal:
         dsn: '%env(AMQP_MESSENGER_TRANSPORT_DSN)%'
         failure_transport: amqp_failed
@@ -80,7 +80,7 @@ framework:
           queues:
             customer_module:
               binding_keys:
-                - !php/enum App\Shared\Domain\Event\SharedEventNameEnum::UserRegistered->value
+                - !php/enum App\Shared\Domain\Enum\SharedEventNameEnum::UserRegistered->value
       # Base
       amqp_events:
         dsn: '%env(AMQP_MESSENGER_TRANSPORT_DSN)%'

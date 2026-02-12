@@ -5,3 +5,13 @@ parameters:
 	        identifier: method.alreadyNarrowedType
 	        paths:
 	            - src/*/Infrastructure/Persistence/Doctrine/Mapper/*Mapper.php
+	    -
+	        message: '#Instanceof between .* and App\\Shared\\Infrastructure\\Persistence\\Doctrine\\Mapper\\MapperInterface will always evaluate to true#'
+	        identifier: instanceof.alwaysTrue
+	        paths:
+	            - src/Shared/Infrastructure/Persistence/Doctrine/Repository/WriteRepositoryTrait.php
+	    -
+	        message: '#Strict comparison using === between false and true will always evaluate to false#'
+	        identifier: identical.alwaysFalse
+	        paths:
+	            - src/Shared/Infrastructure/Persistence/Doctrine/Repository/WriteRepositoryTrait.php

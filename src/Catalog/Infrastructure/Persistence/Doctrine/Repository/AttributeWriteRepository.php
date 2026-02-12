@@ -24,12 +24,11 @@ final class AttributeWriteRepository extends BaseAttributeRepository implements 
      */
     public function save(Attribute $attribute): Attribute
     {
-        return $this->_save(domain: $attribute, id: $attribute->getId()?->value());
+        $orm = $this->_save(domain: $attribute, id: $attribute->getId()?->value());
+
+        return $this->mapper->fromDoctrineOrm($orm);
     }
 
-    /**
-     * @throws IncompatibleMappedEntityException
-     */
     public function delete(Attribute $attribute): void
     {
         $this->_delete($attribute);

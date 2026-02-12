@@ -24,12 +24,11 @@ class CustomerProfileWriteRepository extends BaseCustomerProfileRepository imple
      */
     public function save(CustomerProfile $customerProfile): CustomerProfile
     {
-        return $this->_save(domain: $customerProfile, id: $customerProfile->getId()?->value());
+        $orm = $this->_save(domain: $customerProfile, id: $customerProfile->getId()?->value());
+
+        return $this->mapper->fromDoctrineOrm($orm);
     }
 
-    /**
-     * @throws IncompatibleMappedEntityException
-     */
     public function delete(CustomerProfile $customerProfile): void
     {
         $this->_delete($customerProfile);

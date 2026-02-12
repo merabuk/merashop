@@ -24,7 +24,9 @@ class OutboxEmailWriteRepository extends BaseOutgoingEmailRepository implements 
      */
     public function save(OutboxEmail $outgoingEmail): OutboxEmail
     {
-        return $this->_save(domain: $outgoingEmail, id: $outgoingEmail->getId()?->value());
+        $orm = $this->_save(domain: $outgoingEmail, id: $outgoingEmail->getId()?->value());
+
+        return $this->mapper->fromDoctrineOrm($orm);
     }
 
     /**
