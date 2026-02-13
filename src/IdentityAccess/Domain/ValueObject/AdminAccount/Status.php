@@ -52,7 +52,7 @@ final class Status implements Stringable
 
     public static function vacation(): self
     {
-        return self::fromEnum(StatusEnum::Vacation);
+        return self::fromEnum(StatusEnum::OnVacation);
     }
 
     /**
@@ -99,9 +99,9 @@ final class Status implements Stringable
         return StatusEnum::Deleted === $this->status;
     }
 
-    public function onVacation(): bool
+    public function isOnVacation(): bool
     {
-        return StatusEnum::Vacation === $this->status;
+        return StatusEnum::OnVacation === $this->status;
     }
 
     public function __toString(): string

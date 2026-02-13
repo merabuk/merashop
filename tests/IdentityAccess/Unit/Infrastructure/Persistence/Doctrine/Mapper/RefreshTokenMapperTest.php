@@ -123,7 +123,7 @@ final class RefreshTokenMapperTest extends TestCase
             tokenHash: TokenHash::fromString($fakeToken),
             accountUlid: Ulid::fromString($fakeAccountUlid),
             accountType: AccountType::user(),
-            expiresAt: ExpiresAt::fromDate($fakeExpiresAt),
+            expiresAt: ExpiresAt::fromDateTime($fakeExpiresAt),
             id: Id::fromInt($fakeId)
         );
     }

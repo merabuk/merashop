@@ -1,12 +1,16 @@
 doctrine:
   dbal:
     types:
-      outbox_email_status: App\EmailSender\Infrastructure\Persistence\Doctrine\Type\OutboxEmail\StatusType
-      outbox_email_driver: App\EmailSender\Infrastructure\Persistence\Doctrine\Type\OutboxEmail\DriverType
-      refresh_token_account_type: App\IdentityAccess\Infrastructure\Persistence\Doctrine\Type\RefreshToken\AccountType
+      # Catalog Module
       category_status: App\Catalog\Infrastructure\Persistence\Doctrine\Type\Category\StatusType
       product_status: App\Catalog\Infrastructure\Persistence\Doctrine\Type\Product\StatusType
       attribute_type: App\Catalog\Infrastructure\Persistence\Doctrine\Type\Attribute\TypeType
+      # Email Sender Module
+      outbox_email_status: App\EmailSender\Infrastructure\Persistence\Doctrine\Type\OutboxEmail\StatusType
+      outbox_email_driver: App\EmailSender\Infrastructure\Persistence\Doctrine\Type\OutboxEmail\DriverType
+      # Identity Access Module
+      refresh_token_account_type: App\IdentityAccess\Infrastructure\Persistence\Doctrine\Type\RefreshToken\AccountType
+      admin_account_status: App\IdentityAccess\Infrastructure\Persistence\Doctrine\Type\AdminAccount\StatusType
     default_connection: identity_access
     connections:
       catalog:
@@ -30,6 +34,7 @@ doctrine:
         profiling_collect_backtrace: '%kernel.debug%'
         mapping_types:
           refresh_token_account_type: refresh_token_account_type
+          admin_account_status: admin_account_status
   orm:
     controller_resolver:
       auto_mapping: false

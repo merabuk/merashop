@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Customer\Infrastructure\Persistence\Doctrine\Repository;
+namespace App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository;
 
-use App\Customer\Domain\Entity\CustomerProfile;
-use App\Customer\Domain\Repository\CustomerProfileWriteRepositoryInterface;
+use App\IdentityAccess\Domain\Entity\AdminAccount;
+use App\IdentityAccess\Domain\Repository\AdminAccountWriteRepositoryInterface;
 use App\Shared\Domain\Exception\EntityIdMissingException;
 use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObjectExceptionInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait;
 use Doctrine\ORM\Exception\ORMException;
 
-class CustomerProfileWriteRepository extends BaseCustomerProfileRepository implements CustomerProfileWriteRepositoryInterface
+final class AdminAccountWriteRepository extends BaseAdminAccountRepository implements AdminAccountWriteRepositoryInterface
 {
     use WriteRepositoryTrait;
 
@@ -22,9 +22,9 @@ class CustomerProfileWriteRepository extends BaseCustomerProfileRepository imple
      * @throws ORMException
      * @throws ValueObjectExceptionInterface
      */
-    public function save(CustomerProfile $customerProfile): CustomerProfile
+    public function save(AdminAccount $adminAccount): AdminAccount
     {
-        $orm = $this->_save(domain: $customerProfile, id: $customerProfile->getId()?->value());
+        $orm = $this->_save(domain: $adminAccount, id: $adminAccount->getId()?->value());
 
         return $this->mapper->fromDoctrineOrm($orm);
     }
@@ -32,8 +32,8 @@ class CustomerProfileWriteRepository extends BaseCustomerProfileRepository imple
     /**
      * @throws IncompatibleMappedEntityException
      */
-    public function delete(CustomerProfile $customerProfile): void
+    public function delete(AdminAccount $adminAccount): void
     {
-        $this->_delete($customerProfile);
+        $this->_delete($adminAccount);
     }
 }

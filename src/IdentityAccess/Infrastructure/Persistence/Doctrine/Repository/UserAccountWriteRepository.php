@@ -18,9 +18,9 @@ final class UserAccountWriteRepository extends BaseUserAccountRepository impleme
 
     /**
      * @throws EntityIdMissingException
-     * @throws ValueObjectExceptionInterface
      * @throws IncompatibleMappedEntityException
      * @throws ORMException
+     * @throws ValueObjectExceptionInterface
      */
     public function save(UserAccount $userAccount): UserAccount
     {
@@ -29,6 +29,9 @@ final class UserAccountWriteRepository extends BaseUserAccountRepository impleme
         return $this->mapper->fromDoctrineOrm($orm);
     }
 
+    /**
+     * @throws IncompatibleMappedEntityException
+     */
     public function delete(UserAccount $userAccount): void
     {
         $this->_delete($userAccount);

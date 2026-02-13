@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\IdentityAccess\Application\Exceptions;
+namespace App\IdentityAccess\Application\Exceptions\RefreshToken;
 
 use App\IdentityAccess\Domain\Exception\IdentityAccessDomainException;
 

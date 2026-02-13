@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Application\Command\CreateModuleAccount;
 
-use App\IdentityAccess\Application\Exceptions\CreateModuleAccountException;
+use App\IdentityAccess\Application\Exceptions\ModuleAccount\CreateModuleAccountException;
 use App\IdentityAccess\Domain\Entity\ModuleAccount;
 use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
+use App\IdentityAccess\Domain\Exception\PasswordGenerateException;
 use App\IdentityAccess\Domain\Repository\ModuleAccountWriteRepositoryInterface;
+use App\IdentityAccess\Domain\Service\PasswordGenerator;
 use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientId;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientSecretHash;
@@ -16,13 +18,13 @@ use App\IdentityAccess\Domain\ValueObject\ScopeCollection;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
 use App\Shared\Domain\Service\UlidGeneratorInterface;
-use Random\RandomException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler(bus: BusNameEnum::Command->value)]
 readonly class CreateModuleAccountHandler implements CommandHandlerInterface
 {
     public function __construct(
+        private PasswordGenerator $passwordGenerator,
         private ModuleAccountWriteRepositoryInterface $writeRepository,
         private PasswordHasherInterface $passwordHasher,
         private UlidGeneratorInterface $ulidGenerator,
@@ -35,7 +37,7 @@ readonly class CreateModuleAccountHandler implements CommandHandlerInterface
     public function __invoke(CreateModuleAccountCommand $command): string
     {
         try {
-            $plainSecret = $this->generatePlainSecret();
+            $plainSecret = $this->passwordGenerator->generateClientSecret();
             $secretHash = $this->passwordHasher->hash($plainSecret);
             $ulid = $this->ulidGenerator->next();
 
@@ -49,16 +51,8 @@ readonly class CreateModuleAccountHandler implements CommandHandlerInterface
             $this->writeRepository->save($module);
 
             return $plainSecret;
-        } catch (RandomException|InvalidIdentityAccessValueObjectException $e) {
+        } catch (PasswordGenerateException|InvalidIdentityAccessValueObjectException $e) {
             throw new CreateModuleAccountException(message: 'Error during creating module account', previous: $e);
         }
-    }
-
-    /**
-     * @throws RandomException
-     */
-    private function generatePlainSecret(): string
-    {
-        return bin2hex(random_bytes(20));
     }
 }

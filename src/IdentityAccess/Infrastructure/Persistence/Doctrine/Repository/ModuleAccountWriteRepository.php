@@ -29,6 +29,9 @@ final class ModuleAccountWriteRepository extends BaseModuleAccountRepository imp
         return $this->mapper->fromDoctrineOrm($orm);
     }
 
+    /**
+     * @throws IncompatibleMappedEntityException
+     */
     public function delete(ModuleAccount $moduleAccount): void
     {
         $this->_delete($moduleAccount);

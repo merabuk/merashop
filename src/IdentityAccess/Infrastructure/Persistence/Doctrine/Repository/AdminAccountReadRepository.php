@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository;
 
-use App\IdentityAccess\Domain\Entity\UserAccount;
+use App\IdentityAccess\Domain\Entity\AdminAccount;
 use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
-use App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface;
-use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
-use App\IdentityAccess\Domain\ValueObject\UserAccount\Id;
-use App\IdentityAccess\Domain\ValueObject\UserAccount\Ulid;
-use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmUserAccount;
+use App\IdentityAccess\Domain\Repository\AdminAccountReadRepositoryInterface;
+use App\IdentityAccess\Domain\ValueObject\AdminAccount\EmailAddress;
+use App\IdentityAccess\Domain\ValueObject\AdminAccount\Id;
+use App\IdentityAccess\Domain\ValueObject\AdminAccount\Ulid;
+use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmAdminAccount;
 use App\Shared\Domain\Exception\EntityIdMissingException;
 use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\ReadRepositoryTrait;
 
-class UserAccountReadRepository extends BaseUserAccountRepository implements UserAccountReadRepositoryInterface
+class AdminAccountReadRepository extends BaseAdminAccountRepository implements AdminAccountReadRepositoryInterface
 {
     use ReadRepositoryTrait;
 
@@ -24,7 +24,7 @@ class UserAccountReadRepository extends BaseUserAccountRepository implements Use
      * @throws InvalidIdentityAccessValueObjectException
      * @throws IncompatibleMappedEntityException
      */
-    public function findById(Id $id): ?UserAccount
+    public function findById(Id $id): ?AdminAccount
     {
         $ormUser = $this->find($id->value());
 
@@ -36,7 +36,7 @@ class UserAccountReadRepository extends BaseUserAccountRepository implements Use
      * @throws InvalidIdentityAccessValueObjectException
      * @throws IncompatibleMappedEntityException
      */
-    public function findByEmail(EmailAddress $email): ?UserAccount
+    public function findByEmail(EmailAddress $email): ?AdminAccount
     {
         $ormUser = $this->findOneBy(['email' => $email->value()]);
 
@@ -48,7 +48,7 @@ class UserAccountReadRepository extends BaseUserAccountRepository implements Use
      * @throws InvalidIdentityAccessValueObjectException
      * @throws IncompatibleMappedEntityException
      */
-    public function findByUlid(Ulid $ulid): ?UserAccount
+    public function findByUlid(Ulid $ulid): ?AdminAccount
     {
         $ormUser = $this->findOneBy(['ulid' => $ulid->value()]);
 
@@ -70,9 +70,9 @@ class UserAccountReadRepository extends BaseUserAccountRepository implements Use
      * @throws InvalidIdentityAccessValueObjectException
      * @throws IncompatibleMappedEntityException
      */
-    private function checkAndMapToDomain(?object $ormUser): ?UserAccount
+    private function checkAndMapToDomain(?object $ormUser): ?AdminAccount
     {
-        if (false === $ormUser instanceof OrmUserAccount) {
+        if (false === $ormUser instanceof OrmAdminAccount) {
             return null;
         }
 

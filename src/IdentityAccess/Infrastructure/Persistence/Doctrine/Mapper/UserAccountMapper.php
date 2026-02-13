@@ -30,7 +30,6 @@ class UserAccountMapper implements MapperInterface
     public function toDoctrineOrm(object $domain): OrmUserAccount
     {
         $this->assertIsType(UserAccount::class, $domain);
-
         /** @var UserAccount $domain */
         $orm = new OrmUserAccount();
 
@@ -51,8 +50,8 @@ class UserAccountMapper implements MapperInterface
     public function fromDoctrineOrm(object $orm): UserAccount
     {
         $this->assertIsType(OrmUserAccount::class, $orm);
-
         /* @var OrmUserAccount $orm */
+
         $id = Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class));
 
         return new UserAccount(
@@ -71,7 +70,6 @@ class UserAccountMapper implements MapperInterface
     {
         $this->assertIsType(UserAccount::class, $domain);
         $this->assertIsType(OrmUserAccount::class, $orm);
-
         /* @var UserAccount $domain */
         /* @var OrmUserAccount $orm */
 

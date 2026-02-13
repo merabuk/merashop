@@ -81,7 +81,7 @@ class OutboxEmail
         }
 
         $this->status = Status::processing();
-        $this->lockedAt = LockedAt::fromDate($now);
+        $this->lockedAt = LockedAt::fromDateTime($now);
     }
 
     public function markAsSent(): void
@@ -101,7 +101,7 @@ class OutboxEmail
         $this->status = Status::failed();
         $this->attempts = $this->attempts->increment();
         $this->errorMessage = ErrorMessage::fromString($error);
-        $this->scheduledAt = ScheduledAt::fromDate($nextAttemptAt);
+        $this->scheduledAt = ScheduledAt::fromDateTime($nextAttemptAt);
         $this->lockedAt = null;
     }
 

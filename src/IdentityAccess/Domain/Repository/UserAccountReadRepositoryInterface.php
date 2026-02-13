@@ -6,11 +6,12 @@ namespace App\IdentityAccess\Domain\Repository;
 
 use App\IdentityAccess\Domain\Entity\UserAccount;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
+use App\IdentityAccess\Domain\ValueObject\UserAccount\Id;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\Ulid;
 
 interface UserAccountReadRepositoryInterface
 {
-    public function findById(int $id): ?UserAccount;
+    public function findById(Id $id): ?UserAccount;
 
     public function findByEmail(EmailAddress $email): ?UserAccount;
 

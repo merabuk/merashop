@@ -31,6 +31,9 @@ final class RefreshTokenWriteRepository extends BaseRefreshTokenRepository imple
         return $this->mapper->fromDoctrineOrm($orm);
     }
 
+    /**
+     * @throws IncompatibleMappedEntityException
+     */
     public function delete(RefreshToken $refreshToken): void
     {
         $this->_delete($refreshToken);

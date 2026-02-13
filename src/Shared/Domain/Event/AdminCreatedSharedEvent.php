@@ -7,16 +7,17 @@ namespace App\Shared\Domain\Event;
 use App\Shared\Domain\Bus\ExternalIntegrationEvent;
 use App\Shared\Domain\Enum\SharedEventNameEnum;
 
-readonly class UserRegisteredSharedEvent implements ExternalIntegrationEvent
+readonly class AdminCreatedSharedEvent implements ExternalIntegrationEvent
 {
     public function __construct(
         public string $id,
         public string $email,
+        public string $temporaryPassword,
     ) {
     }
 
     public function getRoutingKey(): string
     {
-        return SharedEventNameEnum::UserRegistered->value;
+        return SharedEventNameEnum::AdminCreated->value;
     }
 }

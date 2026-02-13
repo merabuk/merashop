@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity;
 
 use App\IdentityAccess\Domain\Enum\AdminAccount\StatusEnum;
+use App\IdentityAccess\Domain\ValueObject\AdminAccount\EmailAddress;
+use App\IdentityAccess\Domain\ValueObject\AdminAccount\PasswordHash;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Type\AdminAccount\StatusType;
+use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UlidType;
@@ -21,20 +24,14 @@ class OrmAdminAccount
     #[ORM\Column(type: Types::BIGINT, options: ['unsigned' => true])]
     public private(set) ?int $id = null;
 
-    #[ORM\Column(type: UlidType::NAME, unique: true)]
+    #[ORM\Column(type: UlidType::NAME)]
     public string $ulid;
 
-    #[ORM\Column(type: Types::STRING, length: 180)]
+    #[ORM\Column(type: Types::STRING, length: EmailAddress::MAX_LENGTH)]
     public string $email;
 
-    #[ORM\Column(type: Types::STRING)]
-    public string $password;
-
-    #[ORM\Column(type: Types::STRING, length: 100)]
-    public string $firstName;
-
-    #[ORM\Column(type: Types::STRING, length: 100)]
-    public string $lastName;
+    #[ORM\Column(type: Types::STRING, length: PasswordHash::MAX_LENGTH)]
+    public string $passwordHash;
 
     /**
      * @var array<int, string>
@@ -44,6 +41,9 @@ class OrmAdminAccount
 
     #[ORM\Column(type: StatusType::NAME, enumType: StatusEnum::class)]
     public StatusEnum $status;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    public ?DateTimeImmutable $passwordChangedAt = null;
 
     public function setId(?int $value): void
     {

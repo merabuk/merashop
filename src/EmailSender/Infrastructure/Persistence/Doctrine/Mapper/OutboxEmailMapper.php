@@ -85,8 +85,8 @@ class OutboxEmailMapper implements MapperInterface
             payload: null !== $orm->payload ? Payload::fromArray($orm->payload) : null,
             attempts: Attempts::fromInt($orm->attempts),
             traceId: null !== $orm->traceId ? TraceId::fromString($orm->traceId) : null,
-            scheduledAt: null !== $orm->scheduledAt ? ScheduledAt::fromDate($orm->scheduledAt) : null,
-            lockedAt: null !== $orm->lockedAt ? LockedAt::fromDate($orm->lockedAt) : null,
+            scheduledAt: null !== $orm->scheduledAt ? ScheduledAt::fromDateTime($orm->scheduledAt) : null,
+            lockedAt: null !== $orm->lockedAt ? LockedAt::fromDateTime($orm->lockedAt) : null,
             errorMessage: null !== $orm->errorMessage ? ErrorMessage::fromString($orm->errorMessage) : null,
         );
     }

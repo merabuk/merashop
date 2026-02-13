@@ -57,6 +57,7 @@ framework:
             email_sender_module:
               binding_keys:
                 - !php/enum App\Shared\Domain\Enum\SharedEventNameEnum::UserRegistered->value
+                - !php/enum App\Shared\Domain\Enum\SharedEventNameEnum::AdminCreated->value
       email_sender_internal:
         dsn: '%env(AMQP_MESSENGER_TRANSPORT_DSN)%'
         failure_transport: amqp_failed
@@ -122,6 +123,7 @@ framework:
     routing:
       # Shared
       App\Shared\Domain\Event\UserRegisteredSharedEvent: identity_access_outbox
+      App\Shared\Domain\Event\AdminCreatedSharedEvent: identity_access_outbox
       # Catalog Module
       App\Catalog\Domain\Event\CategoryMovedDomainEvent: catalog_outbox
       # EmailSender Module

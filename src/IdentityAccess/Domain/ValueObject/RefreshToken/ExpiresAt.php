@@ -16,7 +16,7 @@ final readonly class ExpiresAt
     {
     }
 
-    public static function fromDate(DateTimeImmutable $date): self
+    public static function fromDateTime(DateTimeImmutable $date): self
     {
         return new self($date);
     }

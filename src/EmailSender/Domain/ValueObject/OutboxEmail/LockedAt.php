@@ -19,7 +19,7 @@ final class LockedAt implements Stringable
         $this->date = $date;
     }
 
-    public static function fromDate(DateTimeImmutable $date): self
+    public static function fromDateTime(DateTimeImmutable $date): self
     {
         return new self($date);
     }

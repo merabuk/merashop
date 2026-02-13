@@ -31,11 +31,11 @@ final readonly class JwtAccessTokenHandler implements AccessTokenHandlerInterfac
             throw new InvalidCredentialsException('Invalid JWT token');
         }
 
-        if (!$token instanceof Plain) {
+        if (false === $token instanceof Plain) {
             throw new InvalidCredentialsException('Invalid JWT token type');
         }
 
-        if (!$this->jwtConfiguration->validator()->validate($token, ...$this->jwtConfiguration->validationConstraints())) {
+        if (false === $this->jwtConfiguration->validator()->validate($token, ...$this->jwtConfiguration->validationConstraints())) {
             throw new InvalidCredentialsException('JWT token validation failed');
         }
 
@@ -51,6 +51,6 @@ final readonly class JwtAccessTokenHandler implements AccessTokenHandlerInterfac
             throw new InvalidCredentialsException('JWT token does not contain a subject type');
         }
 
-        return new UserBadge(userIdentifier: $type->value.':'.$ulid);
+        return new UserBadge(userIdentifier: $type->value.AuthEntityProvider::SEPARATOR.$ulid);
     }
 }

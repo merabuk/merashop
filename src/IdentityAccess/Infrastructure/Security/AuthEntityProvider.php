@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Infrastructure\Security;
 
+use App\IdentityAccess\Domain\Exception\AdminAccount\InvalidAdminAccountUlidException;
 use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountUlidException;
 use App\IdentityAccess\Domain\Exception\UserAccount\InvalidUserAccountUlidException;
+use App\IdentityAccess\Domain\Repository\AdminAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\Repository\ModuleAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface;
+use App\IdentityAccess\Domain\ValueObject\AdminAccount\Ulid as AdminAccountUlid;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Ulid as ModuleAccountUlid;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\Ulid as UserAccountUlid;
 use App\IdentityAccess\Infrastructure\Exception\InvalidAuthEntityException;
@@ -23,9 +26,12 @@ use Throwable;
  */
 final readonly class AuthEntityProvider implements UserProviderInterface
 {
+    public const string SEPARATOR = ':';
+
     public function __construct(
-        private UserAccountReadRepositoryInterface $userAccountRepository,
-        private ModuleAccountReadRepositoryInterface $moduleAccountRepository,
+        private UserAccountReadRepositoryInterface $userAccountReadRepository,
+        private ModuleAccountReadRepositoryInterface $moduleAccountReadRepository,
+        private AdminAccountReadRepositoryInterface $adminAccountReadRepository,
         private LoggerInterface $logger,
     ) {
     }
@@ -35,18 +41,17 @@ final readonly class AuthEntityProvider implements UserProviderInterface
      */
     public function loadUserByIdentifier(string $identifier): AuthSubject
     {
-        $separator = ':';
-
-        if (!str_contains($identifier, $separator)) {
+        if (!str_contains($identifier, self::SEPARATOR)) {
             return $this->fallbackLoad($identifier);
         }
 
-        [$type, $ulidString] = explode($separator, $identifier, 2);
+        [$type, $ulidString] = explode(self::SEPARATOR, $identifier, 2);
 
         try {
             $authSubject = match (IdentityTypeEnum::tryFrom($type)) {
                 IdentityTypeEnum::User => $this->processUserAccount($ulidString),
                 IdentityTypeEnum::Module => $this->processModuleAccount($ulidString),
+                IdentityTypeEnum::Admin => $this->processAdminAccount($ulidString),
                 default => throw new RuntimeException(sprintf('Invalid auth entity type: %s', $type)),
             };
 
@@ -57,6 +62,7 @@ final readonly class AuthEntityProvider implements UserProviderInterface
             $this->logger->error('Error to authenticate entity from identifier', [
                 'error_message' => $e->getMessage(),
                 'identifier' => $identifier,
+                'type' => $type,
             ]);
         }
 
@@ -85,7 +91,7 @@ final readonly class AuthEntityProvider implements UserProviderInterface
      */
     private function processUserAccount(string $ulidString): ?AuthSubject
     {
-        $user = $this->userAccountRepository->findByUlid(UserAccountUlid::fromString($ulidString));
+        $user = $this->userAccountReadRepository->findByUlid(UserAccountUlid::fromString($ulidString));
 
         return $user ? AuthSubject::fromUserAccount($user) : null;
     }
@@ -95,9 +101,19 @@ final readonly class AuthEntityProvider implements UserProviderInterface
      */
     private function processModuleAccount(string $ulidString): ?AuthSubject
     {
-        $module = $this->moduleAccountRepository->findByUlid(ModuleAccountUlid::fromString($ulidString));
+        $module = $this->moduleAccountReadRepository->findByUlid(ModuleAccountUlid::fromString($ulidString));
 
         return $module ? AuthSubject::fromModuleAccount($module) : null;
+    }
+
+    /**
+     * @throws InvalidAdminAccountUlidException
+     */
+    private function processAdminAccount(string $ulidString): ?AuthSubject
+    {
+        $admin = $this->adminAccountReadRepository->findByUlid(AdminAccountUlid::fromString($ulidString));
+
+        return $admin ? AuthSubject::fromAdminAccount($admin) : null;
     }
 
     private function fallbackLoad(string $identifier): AuthSubject

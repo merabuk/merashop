@@ -30,7 +30,6 @@ class RefreshTokenMapper implements MapperInterface
     public function toDoctrineOrm(object $domain): OrmRefreshToken
     {
         $this->assertIsType(RefreshToken::class, $domain);
-
         /** @var RefreshToken $domain */
         $orm = new OrmRefreshToken();
 
@@ -53,8 +52,8 @@ class RefreshTokenMapper implements MapperInterface
         $this->assertIsType(OrmRefreshToken::class, $orm);
 
         $id = Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class));
-
         /* @var OrmRefreshToken $orm */
+
         return new RefreshToken(
             tokenHash: TokenHash::fromString($orm->token),
             accountUlid: Ulid::fromString($orm->accountUlid),
@@ -71,7 +70,6 @@ class RefreshTokenMapper implements MapperInterface
     {
         $this->assertIsType(RefreshToken::class, $domain);
         $this->assertIsType(OrmRefreshToken::class, $orm);
-
         /* @var RefreshToken $domain */
         /* @var OrmRefreshToken $orm */
         // no editable fields

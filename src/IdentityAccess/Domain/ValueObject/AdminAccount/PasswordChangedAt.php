@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\EmailSender\Domain\ValueObject\OutboxEmail;
+namespace App\IdentityAccess\Domain\ValueObject\AdminAccount;
 
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use DateTimeImmutable;
 use Stringable;
 
-final class ScheduledAt implements Stringable
+final class PasswordChangedAt implements Stringable
 {
     use ValueObjectEqualityTrait;
 
@@ -27,11 +27,6 @@ final class ScheduledAt implements Stringable
     public static function now(): self
     {
         return new self(new DateTimeImmutable());
-    }
-
-    public function isInPast(): bool
-    {
-        return $this->date < new DateTimeImmutable();
     }
 
     public function value(): DateTimeImmutable

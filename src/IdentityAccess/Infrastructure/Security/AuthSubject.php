@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Infrastructure\Security;
 
+use App\IdentityAccess\Domain\Entity\AdminAccount;
 use App\IdentityAccess\Domain\Entity\ModuleAccount;
 use App\IdentityAccess\Domain\Entity\UserAccount;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
@@ -49,6 +50,17 @@ final readonly class AuthSubject implements UserInterface, PasswordAuthenticated
             identifier: $moduleAccount->getClientId()->value(),
             passwordHash: $moduleAccount->getClientSecret()->value(),
             roles: array_unique([...$roles, RoleEnum::Module->value]),
+        );
+    }
+
+    public static function fromAdminAccount(AdminAccount $adminAccount): self
+    {
+        return new self(
+            type: IdentityTypeEnum::Admin,
+            ulid: $adminAccount->getUlid()->value(),
+            identifier: $adminAccount->getEmail()->value(),
+            passwordHash: $adminAccount->getPasswordHash()->value(),
+            roles: $adminAccount->getRoles()->toStrings(),
         );
     }
 

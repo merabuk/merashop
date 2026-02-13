@@ -29,6 +29,9 @@ final class AttributeWriteRepository extends BaseAttributeRepository implements 
         return $this->mapper->fromDoctrineOrm($orm);
     }
 
+    /**
+     * @throws IncompatibleMappedEntityException
+     */
     public function delete(Attribute $attribute): void
     {
         $this->_delete($attribute);

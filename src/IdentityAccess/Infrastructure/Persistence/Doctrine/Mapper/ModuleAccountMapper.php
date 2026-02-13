@@ -30,7 +30,6 @@ class ModuleAccountMapper implements MapperInterface
     public function toDoctrineOrm(object $domain): OrmModuleAccount
     {
         $this->assertIsType(ModuleAccount::class, $domain);
-
         /** @var ModuleAccount $domain */
         $orm = new OrmModuleAccount();
 
@@ -51,8 +50,8 @@ class ModuleAccountMapper implements MapperInterface
     public function fromDoctrineOrm(object $orm): ModuleAccount
     {
         $this->assertIsType(OrmModuleAccount::class, $orm);
-
         /* @var OrmModuleAccount $orm */
+
         $id = Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class));
 
         return new ModuleAccount(
@@ -71,7 +70,6 @@ class ModuleAccountMapper implements MapperInterface
     {
         $this->assertIsType(ModuleAccount::class, $domain);
         $this->assertIsType(OrmModuleAccount::class, $orm);
-
         /* @var ModuleAccount $domain */
         /* @var OrmModuleAccount $orm */
 
