@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\IdentityAccess\Presentation\Http\ApiVersion1\Controller;
+namespace App\IdentityAccess\Presentation\Http\AdminApiVersion1\Controller;
 
 use App\IdentityAccess\Application\DTO\OAuth2Data;
 use App\IdentityAccess\Application\Exceptions\GrantHandlerException;
 use App\IdentityAccess\Application\Exceptions\UnsupportedGrantTypeException;
 use App\IdentityAccess\Application\Service\OAuth2TokenService;
 use App\IdentityAccess\Domain\Enum\GrantTypeEnum;
-use App\IdentityAccess\Presentation\Http\ApiVersion1\Request\AccessTokenRequest;
+use App\IdentityAccess\Presentation\Http\AdminApiVersion1\Request\AccessTokenRequest;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -35,16 +35,16 @@ final class AccessTokenController extends AbstractController
      */
     #[Route(
         path: '/auth/token',
-        name: 'identity_access.api.v1.auth.token',
+        name: 'identity_access.admin.api.v1.auth.token',
         methods: [Request::METHOD_POST],
         format: JsonEncoder::FORMAT
     )]
     public function __invoke(#[MapRequestPayload] AccessTokenRequest $request): JsonResponse
     {
         $accountType = match (GrantTypeEnum::tryFrom((string) $request->grant_type)) {
-            GrantTypeEnum::Password => IdentityTypeEnum::User,
-            GrantTypeEnum::ClientCredentials => IdentityTypeEnum::Module,
-            default => null,
+            GrantTypeEnum::Password => IdentityTypeEnum::Admin,
+            GrantTypeEnum::RefreshToken => null,
+            default => throw new UnsupportedGrantTypeException("Admins can only use password or refresh_token"),
         };
 
         $authData = new OAuth2Data(
@@ -52,8 +52,8 @@ final class AccessTokenController extends AbstractController
             username: $request->username,
             password: $request->password,
             accountType: $accountType,
-            clientId: $request->client_id,
-            clientSecret: $request->client_secret,
+            clientId: null,
+            clientSecret: null,
             refreshToken: $request->refresh_token,
         );
 

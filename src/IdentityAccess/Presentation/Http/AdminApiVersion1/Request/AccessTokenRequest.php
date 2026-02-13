@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\IdentityAccess\Presentation\Http\ApiVersion1\Request;
+namespace App\IdentityAccess\Presentation\Http\AdminApiVersion1\Request;
 
 use App\IdentityAccess\Domain\Enum\GrantTypeEnum;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -15,26 +15,19 @@ final readonly class AccessTokenRequest implements GroupSequenceProviderInterfac
         #[Assert\NotBlank]
         #[Assert\Choice(
             callback: 'getGrantTypes',
-            message: 'api.v1.auth.grant_type.invalid'
+            message: 'admin.api.v1.auth.grant_type.invalid'
         )]
         public ?string $grant_type,
 
         #[Assert\NotBlank(groups: [GrantTypeEnum::Password->value])]
-        #[Assert\Blank(groups: [GrantTypeEnum::ClientCredentials->value, GrantTypeEnum::RefreshToken->value])]
+        #[Assert\Blank(groups: [GrantTypeEnum::RefreshToken->value])]
         public ?string $username = null,
         #[Assert\NotBlank(groups: [GrantTypeEnum::Password->value])]
-        #[Assert\Blank(groups: [GrantTypeEnum::ClientCredentials->value, GrantTypeEnum::RefreshToken->value])]
+        #[Assert\Blank(groups: [GrantTypeEnum::RefreshToken->value])]
         public ?string $password = null,
 
-        #[Assert\NotBlank(groups: [GrantTypeEnum::ClientCredentials->value])]
-        #[Assert\Blank(groups: [GrantTypeEnum::Password->value, GrantTypeEnum::RefreshToken->value])]
-        public ?string $client_id = null,
-        #[Assert\NotBlank(groups: [GrantTypeEnum::ClientCredentials->value])]
-        #[Assert\Blank(groups: [GrantTypeEnum::Password->value, GrantTypeEnum::RefreshToken->value])]
-        public ?string $client_secret = null,
-
         #[Assert\NotBlank(groups: [GrantTypeEnum::RefreshToken->value])]
-        #[Assert\Blank(groups: [GrantTypeEnum::Password->value, GrantTypeEnum::ClientCredentials->value])]
+        #[Assert\Blank(groups: [GrantTypeEnum::Password->value])]
         public ?string $refresh_token = null,
     ) {
     }
@@ -57,7 +50,6 @@ final readonly class AccessTokenRequest implements GroupSequenceProviderInterfac
     {
         return [
             GrantTypeEnum::Password->value,
-            GrantTypeEnum::ClientCredentials->value,
             GrantTypeEnum::RefreshToken->value,
         ];
     }

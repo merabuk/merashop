@@ -1,13 +1,13 @@
-identity_access_api_v1:
+identity_access.api.v1:
   resource:
     path: ../ApiVersion1/Controller/
     namespace: App\IdentityAccess\Presentation\Http\ApiVersion1\Controller
   type: attribute
   prefix: /api/v1/identity-access
 
-#identity_access_admin_api_v1:
-#  resource:
-#    path: ../AdminApiVersion1/Controller
-#    namespace: App\IdentityAccess\Presentation\Http\AdminApiVersion1\Controller
-#    type: attribute
-#    prefix: /admin-api/v1/identity-access
+identity_access.admin_api.v1:
+  resource:
+    path: ../AdminApiVersion1/Controller
+    namespace: App\IdentityAccess\Presentation\Http\AdminApiVersion1\Controller
+    type: attribute
+    prefix: /admin/api/v1/identity-access

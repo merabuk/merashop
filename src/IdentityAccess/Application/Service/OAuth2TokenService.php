@@ -36,7 +36,7 @@ final readonly class OAuth2TokenService
         $id = $data->getGrantType()->value;
 
         if (!$this->handlers->has($id)) {
-            throw new UnsupportedGrantTypeException(sprintf('Container does not have a handler for "%s" grant type', $id));
+            throw new UnsupportedGrantTypeException(sprintf("Container does not have a handler for '%s' grant type", $id));
         }
 
         $handler = $this->handlers->get($id);

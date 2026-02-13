@@ -13,27 +13,27 @@ use App\IdentityAccess\Application\Exceptions\GrantHandlerException;
 use App\IdentityAccess\Application\Exceptions\InvalidCredentialsException;
 use App\IdentityAccess\Application\Exceptions\RefreshToken\CreateRefreshTokenException;
 use App\IdentityAccess\Application\Exceptions\TokenGenerateException;
+use App\IdentityAccess\Application\Exceptions\UnsupportedAccountProviderException;
+use App\IdentityAccess\Application\Security\Provider\AccountProviderInterface;
 use App\IdentityAccess\Application\Security\TokenGeneratorInterface;
 use App\IdentityAccess\Application\Service\RefreshTokenService;
-use App\IdentityAccess\Domain\Entity\UserAccount;
 use App\IdentityAccess\Domain\Enum\GrantTypeEnum;
-use App\IdentityAccess\Domain\Exception\UserAccount\InvalidUserAccountEmailException;
-use App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface;
-use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
-use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
-use App\Shared\Domain\Enum\IdentityTypeEnum;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 
 readonly class PasswordGrantHandler implements GrantHandlerInterface
 {
-    private IdentityTypeEnum $accountType;
-
     public function __construct(
-        private UserAccountReadRepositoryInterface $userAccountReadRepository,
-        private PasswordHasherInterface $passwordHasher,
+        #[AutowireLocator(
+            services: 'identity_access.account_provider',
+            defaultIndexMethod: 'getDefaultIndexName',
+        )]
+        private ContainerInterface $providers,
         private TokenGeneratorInterface $tokenGenerator,
         private RefreshTokenService $refreshTokenService,
     ) {
-        $this->accountType = IdentityTypeEnum::User;
     }
 
     public static function getDefaultIndexName(): string
@@ -42,30 +42,33 @@ readonly class PasswordGrantHandler implements GrantHandlerInterface
     }
 
     /**
+     * @throws ContainerExceptionInterface
      * @throws GrantHandlerException
+     * @throws NotFoundExceptionInterface
+     * @throws UnsupportedAccountProviderException
      */
     public function handle(UserCredentialsInterface $data): TokenResponseData
     {
         try {
-            $user = $this->userAccountReadRepository->findByEmail(
-                EmailAddress::fromString($data->getUsername())
-            );
+            $id = $data->getAccountType()->value;
 
-            if (
-                null === $user
-                || !$this->passwordHasher->verify(
-                    hashedPassword: $user->getPasswordHash()->value(),
-                    plainPassword: $data->getPassword()
-                )
-            ) {
-                throw new InvalidCredentialsException('Invalid credentials');
+            if (!$this->providers->has($id)) {
+                throw new UnsupportedAccountProviderException(sprintf("Container does not have account provider for '%s'", $id));
             }
 
-            return new TokenResponseData(
-                accessTokenData: $this->getAccessTokenData($user),
-                refreshTokenData: $this->getRefreshTokenData($user),
-            );
-        } catch (InvalidUserAccountEmailException|CreateRefreshTokenException|TokenGenerateException $e) {
+            $provider = $this->providers->get($id);
+
+            if ($provider instanceof AccountProviderInterface) {
+                $grandData = $provider->handle($data->getUsername(), $data->getPassword());
+
+                return new TokenResponseData(
+                    accessTokenData: $this->getAccessTokenData($grandData),
+                    refreshTokenData: $this->getRefreshTokenData($grandData),
+                );
+            }
+
+            throw new UnsupportedAccountProviderException(sprintf('Account provider %s is not an instance of %s', is_object($provider) ? get_class($provider) : (string) $provider, GrantHandlerInterface::class));
+        } catch (CreateRefreshTokenException|TokenGenerateException $e) {
             throw new InvalidCredentialsException('Failed to process user credentials', previous: $e);
         }
     }
@@ -73,23 +76,16 @@ readonly class PasswordGrantHandler implements GrantHandlerInterface
     /**
      * @throws TokenGenerateException
      */
-    private function getAccessTokenData(UserAccount $user): AccessTokenData
+    private function getAccessTokenData(GrantResultData $grantResult): AccessTokenData
     {
-        $grantResult = new GrantResultData(
-            subjectUlid: $user->getUlid()->value(),
-            subjectType: $this->accountType,
-            roles: $user->getRoles()->toStrings(),
-            scopes: [],
-        );
-
         return $this->tokenGenerator->generateAccessToken($grantResult);
     }
 
     /**
      * @throws CreateRefreshTokenException
      */
-    private function getRefreshTokenData(UserAccount $user): RefreshTokenData
+    private function getRefreshTokenData(GrantResultData $grantResult): RefreshTokenData
     {
-        return $this->refreshTokenService->create($user->getUlid()->value(), $this->accountType);
+        return $this->refreshTokenService->create($grantResult->subjectUlid, $grantResult->subjectType);
     }
 }
