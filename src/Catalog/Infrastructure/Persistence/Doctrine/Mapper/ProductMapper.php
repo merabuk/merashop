@@ -30,10 +30,14 @@ use App\Shared\Domain\Exception\EntityIdMissingException;
 use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Interface\ProxyReferenceProviderInterface;
+use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\MapperInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
 use InvalidArgumentException;
 
-class ProductMapper
+/**
+ * @implements MapperInterface<Product, OrmProduct>
+ */
+class ProductMapper implements MapperInterface
 {
     use TypeCheckTrait;
 

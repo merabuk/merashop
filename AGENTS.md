@@ -8,9 +8,10 @@ This document serves as the primary system instruction for AI Agents (like Junie
 The project is built as a **Modular Monolith** following **Domain-Driven Design (DDD)** principles.
 
 The system is divided into high-level modules located in `src/`:
+- `Catalog` - products, categories, and attributes in the store.
 - `Customer` - customer profiles and related domain logic.
-- `IdentityAccess` - user and modules management, registration, and authorization.
 - `EmailSender` - module for sending notifications.
+- `IdentityAccess` - user and modules management, registration, and authorization.
 - `Shared` - common components used between modules (Domain, Infrastructure, Application).
 
 - **Isolation**:
@@ -119,9 +120,14 @@ The translation folder can be located in various places (but correct ones) and n
         - For unique constraints: `#[ORM\UniqueConstraint(name: 'uniq_...', columns: [...])]`.
         - For indexes: `#[ORM\Index(name: 'idx_...', columns: [...])]`.
         - **NOTE**: Foreign key names in ORM attributes (e.g., `options: ['foreignKey' => ['name' => 'fk_...']]`) are currently ignored by Doctrine migrations. You MUST manually set the desired FK name in the migration file.
-- **Complex vs. Simple Entities**:
-    - **Complex entities** (many relations, collections, translations, or special mapping rules) MUST have fully custom mapping and persistence logic (custom Mapper, repositories, and explicit field handling).
-    - **Simple entities** should reuse existing infrastructure helpers (e.g., `App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait`) to avoid duplication.
+- **Entities**:
+    - **Every entity**
+        - must have a mapper class implementing `App\Shared\Infrastructure\Persistence\Doctrine\Mapping\EntityMapperInterface`.
+        - should reuse existing infrastructure helpers (e.g., `App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait`) to avoid duplication.
+    - **Complex entities**
+        - (many relations, collections, translations, or special mapping rules)
+        - MUST use dependency injection of `App\Shared\Infrastructure\Persistence\Doctrine\Interface\ProxyReferenceProviderInterface`
+        - register interface implementation in a config file (e.g. `config/modules/catalog.yaml`).
 - **Repository Pattern**:
     - Each module should split repository interfaces into **Read** and **Write** repositories (e.g., `ProductReadRepositoryInterface` and `ProductWriteRepositoryInterface`).
     - Read repositories should contain methods for data retrieval (`findById`, `findByUlid`, `findReadyToProcess`, etc.).

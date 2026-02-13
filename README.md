@@ -21,10 +21,10 @@ Online store on Symfony.
 ## Project structure
 
 The project is organized using modular architecture (Modular Monolith) in the directory `src/`:
+- `Catalog` - products, categories, and attributes in the store.
 - `Customer` - customer profiles and related domain logic.
-- `IdentityAccess` - user and modules management, registration, and authorization.
 - `EmailSender` - module for sending notifications.
-- `Catalog` - products, categories and attributes in the store.
+- `IdentityAccess` - user and modules management, registration, and authorization.
 - `Shared` - common components used between modules (Domain, Infrastructure, Application).
 
 ### Domain Structure
@@ -186,7 +186,7 @@ This command:
 - **Explicit Names**: Always provide explicit names for all indexes, unique constraints, and foreign keys.
   - For unique constraints: `#[ORM\UniqueConstraint(name: 'uniq_...', columns: [...])]`.
   - For indexes: `#[ORM\Index(name: 'idx_...', columns: [...])]`.
-  - **NOTE**: Foreign key names in ORM attributes are currently ignored by Doctrine migrations. You MUST manually set the desired FK name in the migration file.
+  - **NOTE**: Doctrine migrations currently ignore foreign key names in ORM attributes. You MUST manually set the desired FK name in the migration file.
 - **Field Lengths**: Define length limits in Value Objects as `MAX_LENGTH` constants and use them in ORM column definitions (e.g., `length: Sku::MAX_LENGTH`). This ensures a single source of truth for business constraints and database schema.
 
 ### Repository Standards
@@ -195,9 +195,14 @@ This command:
 - **Read Repositories**: Must implement a private `checkAndMapToDomain` method to handle ORM-to-Domain mapping with proper type checking and null handling.
 - **Write Repositories**: Must use `WriteRepositoryTrait` for standard `save` and `delete` operations to ensure consistency and reduce boilerplate.
 - **Base Classes**: All repository implementations must inherit from an entity-specific base class (e.g., `BaseProductRepository`) that encapsulates the `Mapper` and `ManagerRegistry`.
-- **Complex vs. Simple Entities**:
-  - **Complex entities** (many relations, collections, translations, or special mapping rules) must be implemented fully custom (custom Mapper, repositories, explicit field mapping).
-  - **Simple entities** should reuse existing infrastructure helpers like `App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait` to avoid duplication.
+- **Entities**:
+    - **Every entity**
+        - must have a mapper class implementing `App\Shared\Infrastructure\Persistence\Doctrine\Mapping\EntityMapperInterface`.
+        - should reuse existing infrastructure helpers (e.g., `App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait`) to avoid duplication.
+    - **Complex entities**
+        - (many relations, collections, translations, or special mapping rules)
+        - MUST use dependency injection of `App\Shared\Infrastructure\Persistence\Doctrine\Interface\ProxyReferenceProviderInterface`
+        - register interface implementation in a config file (e.g. `config/modules/catalog.yaml`).
 
 ### Code Quality Tools
 

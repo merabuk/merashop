@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Persistence\Doctrine\Mapper;
 
+use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
+
 /**
  * @template TDomain of object
  * @template TOrm of object
@@ -14,6 +16,8 @@ interface MapperInterface
      * @param TDomain $domain
      *
      * @return TOrm
+     *
+     * @throws IncompatibleMappedEntityException
      */
     public function toDoctrineOrm(object $domain): object;
 
@@ -21,12 +25,16 @@ interface MapperInterface
      * @param TOrm $orm
      *
      * @return TDomain
+     *
+     * @throws IncompatibleMappedEntityException
      */
     public function fromDoctrineOrm(object $orm): object;
 
     /**
      * @param TDomain $domain
      * @param TOrm    $orm
+     *
+     * @throws IncompatibleMappedEntityException
      */
     public function mapToExistingOrm(object $domain, object $orm): void;
 }

@@ -19,17 +19,20 @@ final readonly class ProductDataFactory
     public function __construct(
         private CategoryReadRepositoryInterface $categoryReadRepository,
         private AttributeReadRepositoryInterface $attributeReadRepository,
-    ) {}
+    ) {
+    }
 
     /**
      * @param int[] $rawCategoryIds
+     *
      * @return CategoryId[]
+     *
      * @throws InvalidCategoryIdException
      * @throws OneOfCategoriesNotFoundException
      */
     public function prepareCategories(array $rawCategoryIds): array
     {
-        $categoryIds = array_map(fn(int $id) => CategoryId::fromInt($id), $rawCategoryIds);
+        $categoryIds = array_map(fn (int $id) => CategoryId::fromInt($id), $rawCategoryIds);
         $this->categoryReadRepository->assertAllExistByIds($categoryIds);
 
         return $categoryIds;
@@ -37,7 +40,9 @@ final readonly class ProductDataFactory
 
     /**
      * @param array<int, array{attributeId: int, value: mixed}> $rawAttributes
+     *
      * @return ProductAttributeValue[]
+     *
      * @throws InvalidAttributeIdException
      * @throws OneOfAttributesNotFoundException
      */

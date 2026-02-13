@@ -2,6 +2,7 @@
 
 namespace App\Shared\Infrastructure\Persistence\Doctrine\Repository;
 
+use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\MapperInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
@@ -10,6 +11,7 @@ use RuntimeException;
 trait WriteRepositoryTrait
 {
     /**
+     * @throws IncompatibleMappedEntityException
      * @throws OptimisticLockException
      * @throws ORMException
      */
@@ -40,6 +42,9 @@ trait WriteRepositoryTrait
         return $orm;
     }
 
+    /**
+     * @throws IncompatibleMappedEntityException
+     */
     protected function _delete(object $domain): void
     {
         $mapper = $this->requireMapper(__METHOD__);
@@ -78,7 +83,7 @@ trait WriteRepositoryTrait
     protected function makeMapperException(object $mapper, string $method): RuntimeException
     {
         return new RuntimeException(sprintf(
-            'Mapper %s instance must implement %s to use this method %s or implement custom method manually in repository',
+            'Mapper %s instance must implement %s to use this method %s',
             get_class($mapper),
             MapperInterface::class,
             $method

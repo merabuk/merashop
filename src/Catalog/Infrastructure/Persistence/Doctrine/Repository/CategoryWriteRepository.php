@@ -8,6 +8,7 @@ use App\Catalog\Domain\Entity\Category;
 use App\Catalog\Domain\Repository\CategoryWriteRepositoryInterface;
 use App\Catalog\Domain\Service\CategoryPathGenerator;
 use App\Catalog\Domain\ValueObject\Category\Path;
+use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmCategory;
 use App\Shared\Domain\Exception\EntityIdMissingException;
 use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObjectExceptionInterface;
@@ -26,38 +27,9 @@ final class CategoryWriteRepository extends BaseCategoryRepository implements Ca
      */
     public function save(Category $category): Category
     {
-        $em = $this->getEntityManager();
+        $orm = $this->_save(domain: $category, id: $category->getId()?->value());
 
-        $parentId = (string) $category->getParentId()?->value();
-        $ormParent = null;
-        if ($parentId) {
-            $ormParent = $em->getUnitOfWork()->tryGetById($parentId, self::getEntityClass()) ?: null;
-            $ormParent ??= $em->find(self::getEntityClass(), $parentId);
-        }
-
-        $id = (string) $category->getId()?->value();
-
-        if ($id) {
-            $ormCategory = $em->getUnitOfWork()->tryGetById($id, self::getEntityClass()) ?: null;
-        } else {
-            $ormCategory = $this->mapper->toDoctrineOrm($category, $ormParent);
-        }
-
-        $ormCategory ??= $this->findOrmForUpdateFallback($id);
-
-        if (!$ormCategory) {
-            throw $this->makeRuntimeException($id);
-        }
-
-        $this->mapper->mapToExistingOrm($category, $ormCategory, $ormParent);
-
-        if (!$id) {
-            $em->persist($ormCategory);
-        }
-
-        $em->flush();
-
-        return $this->mapper->fromDoctrineOrm($ormCategory);
+        return $this->mapper->fromDoctrineOrm($orm);
     }
 
     /**
@@ -79,5 +51,24 @@ final class CategoryWriteRepository extends BaseCategoryRepository implements Ca
             ->setParameter('oldPathPrefix', $oldPath->value().CategoryPathGenerator::PATH_SEPARATOR.'%')
             ->getQuery()
             ->execute();
+    }
+
+    protected function findOrmForUpdateFallback(string $stringId): ?OrmCategory
+    {
+        $orm = $this->getEntityManager()->createQueryBuilder()
+            ->select('c', 't', 'p')
+            ->from(OrmCategory::class, 'c')
+            ->leftJoin('c.translations', 't')
+            ->leftJoin('c.parent', 'p')
+            ->where('c.id = :id')
+            ->setParameter('id', $stringId)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        if ($orm instanceof OrmCategory) {
+            return $orm;
+        }
+
+        return null;
     }
 }

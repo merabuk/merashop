@@ -4,6 +4,10 @@ services:
     arguments:
       $em: '@doctrine.orm.catalog_entity_manager'
 
+  App\Catalog\Infrastructure\Persistence\Doctrine\Mapper\CategoryMapper:
+    arguments:
+      $referenceProvider: '@catalog.proxy_reference_provider'
+
   App\Catalog\Infrastructure\Persistence\Doctrine\Mapper\ProductMapper:
     arguments:
       $referenceProvider: '@catalog.proxy_reference_provider'

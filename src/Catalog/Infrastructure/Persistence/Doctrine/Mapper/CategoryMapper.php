@@ -18,19 +18,29 @@ use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmCategoryTranslatio
 use App\Shared\Domain\Exception\EntityIdMissingException;
 use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
+use App\Shared\Infrastructure\Persistence\Doctrine\Interface\ProxyReferenceProviderInterface;
+use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\MapperInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
 
-class CategoryMapper
+/**
+ * @implements MapperInterface<Category, OrmCategory>
+ */
+class CategoryMapper implements MapperInterface
 {
     use TypeCheckTrait;
+
+    public function __construct(
+        private readonly ProxyReferenceProviderInterface $referenceProvider,
+    ) {
+    }
 
     /**
      * @throws IncompatibleMappedEntityException
      */
-    public function toDoctrineOrm(object $domain, ?object $ormParent): OrmCategory
+    public function toDoctrineOrm(object $domain): OrmCategory
     {
         $orm = new OrmCategory();
-        $this->mapToExistingOrm($domain, $orm, $ormParent);
+        $this->mapToExistingOrm($domain, $orm);
 
         return $orm;
     }
@@ -68,23 +78,27 @@ class CategoryMapper
     /**
      * @throws IncompatibleMappedEntityException
      */
-    public function mapToExistingOrm(object $domain, object $orm, ?object $ormParent): void
+    public function mapToExistingOrm(object $domain, object $orm): void
     {
         $this->assertIsType(Category::class, $domain);
         $this->assertIsType(OrmCategory::class, $orm);
-        if (null !== $ormParent) {
-            $this->assertIsType(OrmCategory::class, $ormParent);
-        }
         /* @var Category $domain */
         /* @var OrmCategory $orm */
-        /* @var ?OrmCategory $ormParent */
 
         $orm->ulid = $domain->getUlid()->value();
         $orm->path = $domain->getPath()->value();
         $orm->slug = $domain->getSlug()->value();
         $orm->sortOrder = $domain->getSortOrder()->value();
         $orm->status = $domain->getStatus()->value();
-        $orm->parent = $ormParent;
+
+        if (null !== $domain->getParentId()) {
+            $orm->parent = $this->referenceProvider->getReference(
+                className: OrmCategory::class,
+                id: $domain->getParentId()->value()
+            );
+        } else {
+            $orm->parent = null;
+        }
 
         $this->mapTranslations($domain, $orm);
     }

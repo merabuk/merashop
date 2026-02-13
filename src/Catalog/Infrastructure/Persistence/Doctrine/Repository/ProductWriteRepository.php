@@ -25,30 +25,9 @@ final class ProductWriteRepository extends BaseProductRepository implements Prod
      */
     public function save(Product $product): Product
     {
-        $em = $this->getEntityManager();
-        $id = (string) $product->getId()?->value();
+        $orm = $this->_save(domain: $product, id: $product->getId()?->value());
 
-        if (!$id) {
-            $ormProduct = $em->getUnitOfWork()->tryGetById($id, self::getEntityClass()) ?: null;
-        } else {
-            $ormProduct = $this->mapper->fromDoctrineOrm($product);
-        }
-
-        $ormProduct ??= $this->findOrmForUpdateFallback($id);
-
-        if (!$ormProduct) {
-            throw $this->makeRuntimeException($id);
-        }
-
-        $this->mapper->mapToExistingOrm($product, $ormProduct);
-
-        if (!$id) {
-            $em->persist($ormProduct);
-        }
-
-        $em->flush();
-
-        return $this->mapper->fromDoctrineOrm($ormProduct);
+        return $this->mapper->fromDoctrineOrm($orm);
     }
 
     /**
@@ -63,7 +42,7 @@ final class ProductWriteRepository extends BaseProductRepository implements Prod
     {
         $orm = $this->getEntityManager()->createQueryBuilder()
             ->select('p', 't', 'c', 'av', 'a')
-            ->from(self::getEntityClass(), 'p')
+            ->from(OrmProduct::class, 'p')
             ->leftJoin('p.translations', 't')
             ->leftJoin('p.categories', 'c')
             ->leftJoin('p.attributeValues', 'av')

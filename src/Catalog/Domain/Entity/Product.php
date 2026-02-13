@@ -102,7 +102,8 @@ class Product
     }
 
     /**
-     * @param CategoryId[] $categoryIds
+     * @param CategoryId[]            $categoryIds
+     * @param ProductAttributeValue[] $attributeValues
      */
     public function update(
         Sku $sku,
