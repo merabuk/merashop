@@ -12,6 +12,7 @@ readonly class AdminCreatedSharedEvent implements ExternalIntegrationEvent
     public function __construct(
         public string $id,
         public string $email,
+        // TODO: rework on direct api call for better security
         public string $temporaryPassword,
     ) {
     }

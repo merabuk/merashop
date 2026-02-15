@@ -7,13 +7,13 @@ namespace App\EmailSender\Application\EventHandler;
 use App\EmailSender\Application\Service\EmailQueueService;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Bus\TransportNameEnum;
+use App\Shared\Domain\Event\AdminCreatedSharedEvent;
 use App\Shared\Domain\Event\EventHandlerInterface;
-use App\Shared\Domain\Event\UserRegisteredSharedEvent;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\ExceptionInterface;
 
 #[AsMessageHandler(bus: BusNameEnum::Event->value, fromTransport: TransportNameEnum::EmailSenderExternal->value)]
-readonly class UserRegisteredHandler implements EventHandlerInterface
+readonly class AdminCreatedHandler implements EventHandlerInterface
 {
     public function __construct(
         private EmailQueueService $notificationService,
@@ -24,14 +24,15 @@ readonly class UserRegisteredHandler implements EventHandlerInterface
     /**
      * @throws ExceptionInterface
      */
-    public function __invoke(UserRegisteredSharedEvent $event): void
+    public function __invoke(AdminCreatedSharedEvent $event): void
     {
         $this->notificationService->queueEmail(
             emailType: $event->getRoutingKey(),
             to: $event->email,
             context: [
                 'appName' => $this->appName,
-                'userName' => 'Customer', // TODO: Refactor getting customer name or remove this parameter
+                'adminName' => 'Admin', // TODO: Refactor getting admin name or remove this parameter
+                'temporaryPassword' => $event->temporaryPassword,
             ],
         );
     }

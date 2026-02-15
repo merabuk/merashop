@@ -1,6 +1,7 @@
 parameters:
 
 services:
+  App\Shared\Domain\Service\TranslationDomainResolverInterface: '@App\Shared\Infrastructure\Service\TranslationDomainResolver'
   App\Shared\Domain\Service\UlidGeneratorInterface: '@App\Shared\Infrastructure\Service\SymfonyUlidGenerator'
   App\Shared\Domain\Service\UuidGeneratorInterface: '@App\Shared\Infrastructure\Service\SymfonyUuidGenerator'
   App\Shared\Domain\Service\TraceIdFactoryInterface: '@App\Shared\Infrastructure\Service\TraceIdFactory'
