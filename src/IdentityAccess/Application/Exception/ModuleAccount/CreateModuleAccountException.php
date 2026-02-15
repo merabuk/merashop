@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\IdentityAccess\Application\Exceptions\ModuleAccount;
+namespace App\IdentityAccess\Application\Exception\ModuleAccount;
 
 use App\IdentityAccess\Domain\Exception\IdentityAccessDomainException;
 

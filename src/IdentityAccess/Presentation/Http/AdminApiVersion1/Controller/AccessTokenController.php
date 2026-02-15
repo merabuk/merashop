@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Presentation\Http\AdminApiVersion1\Controller;
 
 use App\IdentityAccess\Application\DTO\OAuth2Data;
-use App\IdentityAccess\Application\Exceptions\GrantHandlerException;
-use App\IdentityAccess\Application\Exceptions\UnsupportedGrantTypeException;
+use App\IdentityAccess\Application\Exception\GrantHandlerException;
+use App\IdentityAccess\Application\Exception\UnsupportedGrantTypeException;
 use App\IdentityAccess\Application\Service\OAuth2TokenService;
 use App\IdentityAccess\Domain\Enum\GrantTypeEnum;
 use App\IdentityAccess\Presentation\Http\AdminApiVersion1\Request\AccessTokenRequest;

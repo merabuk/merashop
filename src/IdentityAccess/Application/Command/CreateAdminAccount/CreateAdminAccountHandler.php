@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Application\Command\CreateAdminAccount;
 
-use App\IdentityAccess\Application\Exceptions\AdminAccount\CreateAdminAccountException;
+use App\IdentityAccess\Application\Exception\AdminAccount\CreateAdminAccountException;
 use App\IdentityAccess\Domain\Entity\AdminAccount;
 use App\IdentityAccess\Domain\Exception\AdminAccount\AdminAccountAlreadyExistsException;
 use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;

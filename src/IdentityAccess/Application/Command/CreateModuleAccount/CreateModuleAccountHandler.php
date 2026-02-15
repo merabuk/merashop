@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Application\Command\CreateModuleAccount;
 
-use App\IdentityAccess\Application\Exceptions\ModuleAccount\CreateModuleAccountException;
+use App\IdentityAccess\Application\Exception\ModuleAccount\CreateModuleAccountException;
 use App\IdentityAccess\Domain\Entity\ModuleAccount;
 use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
 use App\IdentityAccess\Domain\Exception\PasswordGenerateException;

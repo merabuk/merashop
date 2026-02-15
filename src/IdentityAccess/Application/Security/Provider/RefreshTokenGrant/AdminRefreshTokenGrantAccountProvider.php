@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Application\Security\Provider\RefreshTokenGrant;
 
 use App\IdentityAccess\Application\DTO\GrantResultData;
-use App\IdentityAccess\Application\Exceptions\InvalidCredentialsException;
+use App\IdentityAccess\Application\Exception\InvalidCredentialsException;
 use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
 use App\IdentityAccess\Domain\Repository\AdminAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\Ulid;

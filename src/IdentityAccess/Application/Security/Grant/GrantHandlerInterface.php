@@ -6,7 +6,7 @@ namespace App\IdentityAccess\Application\Security\Grant;
 
 use App\IdentityAccess\Application\DTO\OAuth2Data;
 use App\IdentityAccess\Application\DTO\TokenResponseData;
-use App\IdentityAccess\Application\Exceptions\GrantHandlerException;
+use App\IdentityAccess\Application\Exception\GrantHandlerException;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 #[AutoconfigureTag('identity_access.grant_handler')]

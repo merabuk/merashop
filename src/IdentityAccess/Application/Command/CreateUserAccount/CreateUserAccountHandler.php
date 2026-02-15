@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Application\Command\CreateUserAccount;
 
-use App\IdentityAccess\Application\Exceptions\UserAccount\CreateUserAccountException;
+use App\IdentityAccess\Application\Exception\UserAccount\CreateUserAccountException;
 use App\IdentityAccess\Domain\Entity\UserAccount;
 use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
 use App\IdentityAccess\Domain\Exception\UserAccount\UserAccountAlreadyExistsException;

@@ -6,7 +6,7 @@ namespace App\IdentityAccess\Application\Security;
 
 use App\IdentityAccess\Application\DTO\AccessTokenData;
 use App\IdentityAccess\Application\DTO\GrantResultData;
-use App\IdentityAccess\Application\Exceptions\TokenGenerateException;
+use App\IdentityAccess\Application\Exception\TokenGenerateException;
 
 interface TokenGeneratorInterface
 {

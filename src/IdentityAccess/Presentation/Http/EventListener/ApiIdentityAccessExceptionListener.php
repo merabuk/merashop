@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Presentation\Http\EventListener;
 
-use App\IdentityAccess\Application\Exceptions\InvalidClientException;
-use App\IdentityAccess\Application\Exceptions\InvalidCredentialsException;
-use App\IdentityAccess\Application\Exceptions\InvalidRefreshTokenException;
-use App\IdentityAccess\Application\Exceptions\UnsupportedGrantTypeException;
+use App\IdentityAccess\Application\Exception\InvalidClientException;
+use App\IdentityAccess\Application\Exception\InvalidCredentialsException;
+use App\IdentityAccess\Application\Exception\InvalidRefreshTokenException;
+use App\IdentityAccess\Application\Exception\UnsupportedGrantTypeException;
 use App\IdentityAccess\Domain\Exception\IdentityAccessDomainException;
 use App\IdentityAccess\Infrastructure\Security\OAuth2Error;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;

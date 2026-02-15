@@ -6,11 +6,11 @@ namespace App\IdentityAccess\Application\Security\Grant;
 
 use App\IdentityAccess\Application\DTO\RefreshTokenInterface;
 use App\IdentityAccess\Application\DTO\TokenResponseData;
-use App\IdentityAccess\Application\Exceptions\GrantHandlerException;
-use App\IdentityAccess\Application\Exceptions\InvalidRefreshTokenException;
-use App\IdentityAccess\Application\Exceptions\RefreshToken\CreateRefreshTokenException;
-use App\IdentityAccess\Application\Exceptions\TokenGenerateException;
-use App\IdentityAccess\Application\Exceptions\UnsupportedAccountProviderException;
+use App\IdentityAccess\Application\Exception\GrantHandlerException;
+use App\IdentityAccess\Application\Exception\InvalidRefreshTokenException;
+use App\IdentityAccess\Application\Exception\RefreshToken\CreateRefreshTokenException;
+use App\IdentityAccess\Application\Exception\TokenGenerateException;
+use App\IdentityAccess\Application\Exception\UnsupportedAccountProviderException;
 use App\IdentityAccess\Application\Security\Provider\RefreshTokenGrant\RefreshTokenGrantAccountProviderInterface;
 use App\IdentityAccess\Application\Security\TokenGeneratorInterface;
 use App\IdentityAccess\Application\Service\RefreshTokenService;

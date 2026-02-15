@@ -6,8 +6,8 @@ namespace App\IdentityAccess\Application\Service;
 
 use App\IdentityAccess\Application\DTO\OAuth2Data;
 use App\IdentityAccess\Application\DTO\TokenResponseData;
-use App\IdentityAccess\Application\Exceptions\GrantHandlerException;
-use App\IdentityAccess\Application\Exceptions\UnsupportedGrantTypeException;
+use App\IdentityAccess\Application\Exception\GrantHandlerException;
+use App\IdentityAccess\Application\Exception\UnsupportedGrantTypeException;
 use App\IdentityAccess\Application\Security\Grant\GrantHandlerInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;

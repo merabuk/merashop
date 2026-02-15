@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Application\Service;
 
 use App\IdentityAccess\Application\DTO\RefreshTokenData;
-use App\IdentityAccess\Application\Exceptions\RefreshToken\CreateRefreshTokenException;
+use App\IdentityAccess\Application\Exception\RefreshToken\CreateRefreshTokenException;
 use App\IdentityAccess\Domain\Entity\RefreshToken;
 use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
 use App\IdentityAccess\Domain\Repository\RefreshTokenWriteRepositoryInterface;
