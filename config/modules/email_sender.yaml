@@ -17,6 +17,9 @@ services:
       $defaultFromName: '%env(MAIL_FROM_NAME)%'
       $defaultMailDriver: "%env(MAIL_DRIVER)%"
 
+  App\EmailSender\Application\EventHandler\AdminCreatedHandler:
+    arguments:
+      $appName: '%app.name%'
   App\EmailSender\Application\EventHandler\UserRegisteredHandler:
     arguments:
       $appName: '%app.name%'

@@ -1,4 +1,4 @@
-shared_api_v1:
+shared.public.api.v1:
   resource:
     path: ../ApiVersion1/Controller/
     namespace: App\Shared\Presentation\Http\ApiVersion1\Controller

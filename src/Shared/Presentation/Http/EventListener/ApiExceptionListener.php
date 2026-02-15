@@ -30,7 +30,8 @@ use Throwable;
 
 class ApiExceptionListener
 {
-    private const string API_PREFIX = '/api/';
+    private const string PUBLIC_API_PREFIX = '/api/';
+    private const string ADMIN_API_PREFIX = '/admin/api/';
 
     public function __construct(
         private readonly TranslatorInterface $translator,
@@ -44,13 +45,19 @@ class ApiExceptionListener
         $request = $event->getRequest();
         $exception = $event->getThrowable();
 
-        if (!str_starts_with($request->getPathInfo(), self::API_PREFIX)) {
+        if (!$this->isApiRequest($request->getPathInfo())) {
             return;
         }
 
         $response = $this->determineResponse($exception);
 
         $event->setResponse($response);
+    }
+
+    private function isApiRequest(string $path): bool
+    {
+        return str_starts_with($path, self::PUBLIC_API_PREFIX)
+            || str_starts_with($path, self::ADMIN_API_PREFIX);
     }
 
     private function determineResponse(Throwable $exception): JsonResponse

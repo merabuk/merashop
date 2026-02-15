@@ -37,6 +37,7 @@ final readonly class EmailQueueService
 
     /**
      * @param array<string, mixed> $context
+     *
      * @throws ExceptionInterface
      */
     public function queueEmail(

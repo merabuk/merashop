@@ -1,4 +1,4 @@
-customer_api_v1:
+customer.public.api.v1:
   resource:
     path: ../ApiVersion1/Controller/
     namespace: App\Customer\Presentation\Http\ApiVersion1\Controller

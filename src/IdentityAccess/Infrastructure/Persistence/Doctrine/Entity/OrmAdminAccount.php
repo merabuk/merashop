@@ -39,7 +39,7 @@ class OrmAdminAccount
     #[ORM\Column(type: Types::JSONB)]
     public array $roles = [];
 
-    #[ORM\Column(type: StatusType::NAME, enumType: StatusEnum::class)]
+    #[ORM\Column(type: StatusType::NAME)]
     public StatusEnum $status;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]

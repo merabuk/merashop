@@ -1,14 +1,11 @@
-app_shared_api:
-  resource: '../src/Shared/Presentation/Http/config/routes.yaml'
+#app_shared_routes:
+#  resource: '../src/Shared/Presentation/Http/config/routes.yaml'
 
-customer_api:
+customer_routes:
   resource: '../src/Customer/Presentation/Http/config/routes.yaml'
 
-identity_access_api:
+identity_access_routes:
   resource: '../src/IdentityAccess/Presentation/Http/config/routes.yaml'
 
 kernel:
-  resource:
-    path: ../src/Shared/Infrastructure/
-    namespace: App\Shared\Infrastructure
-  type: attribute
+  resource: '../src/Shared/Presentation/Http/config/routes.yaml'

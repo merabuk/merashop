@@ -21,7 +21,8 @@ use Throwable;
 
 final class ApiIdentityAccessExceptionListener
 {
-    private const string OAUTH2_TOKEN_PATH = '/api/v1/identity-access/auth/token';
+    private const string OAUTH2_PUBLIC_TOKEN_PATH = '/api/v1/identity-access/auth/token';
+    private const string OAUTH2_ADMIN_TOKEN_PATH = '/admin/api/v1/identity-access/auth/token';
 
     public function __construct()
     {
@@ -37,7 +38,7 @@ final class ApiIdentityAccessExceptionListener
         $request = $event->getRequest();
         $exception = $event->getThrowable();
 
-        if (self::OAUTH2_TOKEN_PATH !== $request->getPathInfo()) {
+        if (!$this->canBeProcessed($request->getPathInfo())) {
             return;
         }
 
@@ -47,6 +48,11 @@ final class ApiIdentityAccessExceptionListener
             $event->setResponse($response);
             $event->stopPropagation();
         }
+    }
+
+    private function canBeProcessed(string $path): bool
+    {
+        return self::OAUTH2_PUBLIC_TOKEN_PATH === $path || self::OAUTH2_ADMIN_TOKEN_PATH === $path;
     }
 
     private function handleIdentityException(Throwable $exception): ?JsonResponse

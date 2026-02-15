@@ -14,6 +14,12 @@ security:
       provider: auth_entity_provider
       access_token:
         token_handler: App\IdentityAccess\Infrastructure\Security\JwtAccessTokenHandler
+    admin-api:
+      pattern: ^/admin/api
+      stateless: true
+      provider: auth_entity_provider
+      access_token:
+        token_handler: App\IdentityAccess\Infrastructure\Security\JwtAccessTokenHandler
     dev:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
@@ -33,7 +39,9 @@ security:
     - { path: ^/api/v1/health-check, roles: PUBLIC_ACCESS }
     - { path: ^/api/v1/identity-access/auth/token, roles: PUBLIC_ACCESS }
     - { path: ^/api/v1/identity-access/users/register, roles: PUBLIC_ACCESS }
+    - { path: ^/admin/api/v1/identity-access/auth/token, roles: PUBLIC_ACCESS }
     - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+    - { path: ^/admin/api, roles: ROLE_ADMIN }
 
 when@test:
   security:
