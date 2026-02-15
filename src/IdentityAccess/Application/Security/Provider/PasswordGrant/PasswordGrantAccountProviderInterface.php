@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\IdentityAccess\Application\Security\Provider;
+namespace App\IdentityAccess\Application\Security\Provider\PasswordGrant;
 
 use App\IdentityAccess\Application\DTO\GrantResultData;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
-#[AutoconfigureTag('identity_access.account_provider')]
-interface AccountProviderInterface
+#[AutoconfigureTag('identity_access.account_provider.password_grant')]
+interface PasswordGrantAccountProviderInterface
 {
     public static function getDefaultIndexName(): string;
 

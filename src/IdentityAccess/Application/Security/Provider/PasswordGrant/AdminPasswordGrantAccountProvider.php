@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\IdentityAccess\Application\Security\Provider;
+namespace App\IdentityAccess\Application\Security\Provider\PasswordGrant;
 
 use App\IdentityAccess\Application\DTO\GrantResultData;
 use App\IdentityAccess\Application\Exceptions\InvalidCredentialsException;
 use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
-use App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface;
+use App\IdentityAccess\Domain\Repository\AdminAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
-use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
+use App\IdentityAccess\Domain\ValueObject\AdminAccount\EmailAddress;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 
-readonly class UserAccountProvider implements AccountProviderInterface
+readonly class AdminPasswordGrantAccountProvider implements PasswordGrantAccountProviderInterface
 {
     public function __construct(
-        private UserAccountReadRepositoryInterface $readRepository,
+        private AdminAccountReadRepositoryInterface $readRepository,
         private PasswordHasherInterface $passwordHasher,
     ) {
     }
@@ -31,12 +31,12 @@ readonly class UserAccountProvider implements AccountProviderInterface
     public function handle(string $username, string $password): GrantResultData
     {
         try {
-            $user = $this->readRepository->findByEmail(EmailAddress::fromString($username));
+            $admin = $this->readRepository->findByEmail(EmailAddress::fromString($username));
 
             if (
-                null === $user
+                null === $admin
                 || !$this->passwordHasher->verify(
-                    hashedPassword: $user->getPasswordHash()->value(),
+                    hashedPassword: $admin->getPasswordHash()->value(),
                     plainPassword: $password
                 )
             ) {
@@ -44,18 +44,17 @@ readonly class UserAccountProvider implements AccountProviderInterface
             }
 
             return new GrantResultData(
-                subjectUlid: $user->getUlid()->value(),
+                subjectUlid: $admin->getUlid()->value(),
                 subjectType: self::getAccountType(),
-                roles: $user->getRoles()->toStrings(),
-                scopes: [],
+                roles: $admin->getRoles()->toStrings()
             );
         } catch (InvalidIdentityAccessValueObjectException $e) {
-            throw new InvalidCredentialsException('Failed to process user credentials', previous: $e);
+            throw new InvalidCredentialsException(message: 'Failed to process admin credentials', previous: $e);
         }
     }
 
     private static function getAccountType(): IdentityTypeEnum
     {
-        return IdentityTypeEnum::User;
+        return IdentityTypeEnum::Admin;
     }
 }

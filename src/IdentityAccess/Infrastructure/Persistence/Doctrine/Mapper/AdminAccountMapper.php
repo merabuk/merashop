@@ -33,7 +33,6 @@ class AdminAccountMapper implements MapperInterface
     {
         $this->assertIsType(AdminAccount::class, $domain);
         /** @var AdminAccount $domain */
-
         $orm = new OrmAdminAccount();
 
         $orm->setId($domain->getId()?->value());

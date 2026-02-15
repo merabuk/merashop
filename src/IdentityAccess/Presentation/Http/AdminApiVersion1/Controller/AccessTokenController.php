@@ -44,7 +44,7 @@ final class AccessTokenController extends AbstractController
         $accountType = match (GrantTypeEnum::tryFrom((string) $request->grant_type)) {
             GrantTypeEnum::Password => IdentityTypeEnum::Admin,
             GrantTypeEnum::RefreshToken => null,
-            default => throw new UnsupportedGrantTypeException("Admins can only use password or refresh_token"),
+            default => throw new UnsupportedGrantTypeException('Admins can only use password or refresh_token'),
         };
 
         $authData = new OAuth2Data(

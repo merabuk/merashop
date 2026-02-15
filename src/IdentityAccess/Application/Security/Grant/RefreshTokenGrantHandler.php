@@ -4,30 +4,35 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Application\Security\Grant;
 
-use App\IdentityAccess\Application\DTO\GrantResultData;
 use App\IdentityAccess\Application\DTO\RefreshTokenInterface;
 use App\IdentityAccess\Application\DTO\TokenResponseData;
 use App\IdentityAccess\Application\Exceptions\GrantHandlerException;
 use App\IdentityAccess\Application\Exceptions\InvalidRefreshTokenException;
 use App\IdentityAccess\Application\Exceptions\RefreshToken\CreateRefreshTokenException;
 use App\IdentityAccess\Application\Exceptions\TokenGenerateException;
+use App\IdentityAccess\Application\Exceptions\UnsupportedAccountProviderException;
+use App\IdentityAccess\Application\Security\Provider\RefreshTokenGrant\RefreshTokenGrantAccountProviderInterface;
 use App\IdentityAccess\Application\Security\TokenGeneratorInterface;
 use App\IdentityAccess\Application\Service\RefreshTokenService;
 use App\IdentityAccess\Domain\Enum\GrantTypeEnum;
 use App\IdentityAccess\Domain\Exception\RefreshToken\InvalidRefreshTokenTokenHashException;
-use App\IdentityAccess\Domain\Exception\UserAccount\InvalidUserAccountUlidException;
 use App\IdentityAccess\Domain\Repository\RefreshTokenReadRepositoryInterface;
-use App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\Service\TokenHasherInterface;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\TokenHash;
-use App\IdentityAccess\Domain\ValueObject\UserAccount\Ulid;
-use App\Shared\Domain\Enum\IdentityTypeEnum;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 
 readonly class RefreshTokenGrantHandler implements GrantHandlerInterface
 {
     public function __construct(
+        #[AutowireLocator(
+            services: 'identity_access.account_provider.refresh_token_grant',
+            defaultIndexMethod: 'getDefaultIndexName',
+        )]
+        private ContainerInterface $providers,
         private RefreshTokenReadRepositoryInterface $refreshTokenReadRepository,
-        private UserAccountReadRepositoryInterface $userAccountReadRepository,
         private TokenHasherInterface $tokenHasher,
         private TokenGeneratorInterface $tokenGenerator,
         private RefreshTokenService $refreshTokenService,
@@ -40,7 +45,10 @@ readonly class RefreshTokenGrantHandler implements GrantHandlerInterface
     }
 
     /**
+     * @throws ContainerExceptionInterface
      * @throws GrantHandlerException
+     * @throws NotFoundExceptionInterface
+     * @throws UnsupportedAccountProviderException
      */
     public function handle(RefreshTokenInterface $data): TokenResponseData
     {
@@ -56,48 +64,37 @@ readonly class RefreshTokenGrantHandler implements GrantHandlerInterface
             if ($refreshToken->getExpiresAt()->isExpired()) {
                 $this->refreshTokenService->revoke($refreshToken);
 
-                throw new InvalidRefreshTokenException();
+                throw new InvalidRefreshTokenException('Refresh token expired');
             }
 
-            return match ($refreshToken->getAccountType()->value()) {
-                IdentityTypeEnum::User => $this->processUserAccount($refreshToken->getAccountUlid()->value()),
-                default => throw new InvalidRefreshTokenException(),
-            };
+            $providerId = $refreshToken->getAccountType()->value()->value;
+
+            if (!$this->providers->has($providerId)) {
+                throw new UnsupportedAccountProviderException(sprintf("Container does not have '%s' account provider for '%s' grant type handler", $providerId, self::getDefaultIndexName()));
+            }
+
+            $provider = $this->providers->get($providerId);
+
+            if ($provider instanceof RefreshTokenGrantAccountProviderInterface) {
+                $grantResult = $provider->handle($refreshToken->getAccountUlid()->value())
+                    ?? throw new InvalidRefreshTokenException('Account not found');
+
+                $accessTokenData = $this->tokenGenerator->generateAccessToken($grantResult);
+                $refreshTokenData = $this->refreshTokenService->create(
+                    accountUlid: $grantResult->subjectUlid,
+                    accountType: $grantResult->subjectType
+                );
+
+                return new TokenResponseData(accessTokenData: $accessTokenData, refreshTokenData: $refreshTokenData);
+            }
+
+            throw new UnsupportedAccountProviderException(sprintf('Account provider %s is not an instance of %s', is_object($provider) ? get_class($provider) : (string) $provider, RefreshTokenGrantAccountProviderInterface::class));
         } catch (
             CreateRefreshTokenException
-            |InvalidUserAccountUlidException
             |InvalidRefreshTokenTokenHashException
             |TokenGenerateException $e
         ) {
-            throw new InvalidRefreshTokenException('Failed to process refresh token', previous: $e);
+            throw new InvalidRefreshTokenException(message: 'Failed to process refresh token', previous: $e);
         }
-    }
-
-    /**
-     * @throws CreateRefreshTokenException
-     * @throws InvalidRefreshTokenException
-     * @throws InvalidUserAccountUlidException
-     * @throws TokenGenerateException
-     */
-    private function processUserAccount(string $accountUlid): TokenResponseData
-    {
-        $accountType = IdentityTypeEnum::User;
-        $user = $this->userAccountReadRepository->findByUlid(Ulid::fromString($accountUlid));
-
-        if (null === $user) {
-            throw new InvalidRefreshTokenException();
-        }
-
-        $grantResult = new GrantResultData(
-            subjectUlid: $user->getUlid()->value(),
-            subjectType: $accountType,
-            roles: $user->getRoles()->toStrings(),
-            scopes: [],
-        );
-
-        $accessTokenData = $this->tokenGenerator->generateAccessToken($grantResult);
-        $refreshTokenData = $this->refreshTokenService->create($user->getUlid()->value(), $accountType);
-
-        return new TokenResponseData(accessTokenData: $accessTokenData, refreshTokenData: $refreshTokenData);
     }
 }
