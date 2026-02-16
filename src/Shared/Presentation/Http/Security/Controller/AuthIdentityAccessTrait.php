@@ -16,4 +16,11 @@ trait AuthIdentityAccessTrait
             throw new AccessDeniedException(sprintf("Auth entity type is not user. Auth type: '%s'", $identity->type->value));
         }
     }
+
+    protected function denyAccessUnlessNotAdmin(AuthIdentity $identity): void
+    {
+        if (false === $identity->isAdmin()) {
+            throw new AccessDeniedException(sprintf("Auth entity type is not admin. Auth type: '%s'", $identity->type->value));
+        }
+    }
 }

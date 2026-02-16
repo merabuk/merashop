@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Entity]
@@ -19,6 +20,8 @@ use Symfony\Bridge\Doctrine\Types\UlidType;
 #[ORM\UniqueConstraint(name: 'uniq_attributes_code', columns: ['code'])]
 class OrmAttribute
 {
+    use TimestampableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column(type: Types::BIGINT, options: ['unsigned' => true])]
@@ -43,6 +46,16 @@ class OrmAttribute
         orphanRemoval: true
     )]
     public Collection $translations;
+
+    #[ORM\Version]
+    #[ORM\Column(type: Types::INTEGER)]
+    public int $version;
+
+    #[ORM\Column(type: UlidType::NAME)]
+    public string $createdBy;
+
+    #[ORM\Column(type: UlidType::NAME)]
+    public ?string $updatedBy = null;
 
     public function __construct()
     {

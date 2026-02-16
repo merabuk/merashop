@@ -7,6 +7,9 @@ stof_doctrine_extensions:
       timestampable: true
       softdeleteable: true
 
+    catalog:
+      <<: *default_sts
+
     customer:
       <<: *default_sts
 

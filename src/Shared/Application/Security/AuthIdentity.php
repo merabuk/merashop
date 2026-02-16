@@ -26,6 +26,11 @@ final readonly class AuthIdentity
         return IdentityTypeEnum::Module === $this->type;
     }
 
+    public function isAdmin(): bool
+    {
+        return IdentityTypeEnum::Admin === $this->type;
+    }
+
     public function hasRole(string $role): bool
     {
         return in_array($role, $this->roles, true);

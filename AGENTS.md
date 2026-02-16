@@ -44,7 +44,7 @@ Every module within `src/` must follow this standardized structure:
     - `EventHandler` - application event listeners.
     - `Query` - application queries and their handlers.
     - `Scheduler` - application schedulers (cron tasks).
-    - `Exceptions` - application exceptions.
+    - `Exception` - application exceptions.
     - `Service` - application services (simple implementations without external dependencies)
 - **Infrastructure**: External concerns and technical implementations.
     - `Persistence` - database access.
@@ -54,13 +54,14 @@ Every module within `src/` must follow this standardized structure:
             - `Migrations` - database migrations.
             - `Repository` - implementations of domain repository interfaces.
             - `Type` - custom DB datatypes.
-    - `Sheduler` - scheduler provider with configuration.
+    - `Scheduler` - scheduler provider with configuration.
     - `Service` - infrastructure services (complex implementations with external dependencies).
-    - `Adapters` for external services.
+    - `Adapter` for external services.
 - **Presentation**: Entry points to the module.
     - `Console` - CLI commands, and Console-specific event listeners.
         - `EventListener` - specific event listeners (Console command/response)
     - `Http` - Web API controllers, requests, resources, and HTTP-specific event listeners.
+        - `AdminApiVersion<N>` - admin API versioning.
         - `ApiVersion<N>` - API versioning.
             - `Controller` - API controllers.
             - `Request` - API requests and validation. 
@@ -70,6 +71,7 @@ Every module within `src/` must follow this standardized structure:
         - `EventListener` - specific event listeners (API request/response, KernelExceptions etc.).
 
 The translation folder can be located in various places (but correct ones) and named `translations`.
+Also, every module can have its own specific folders which are not listed above. (e.g. `src/EmailSender/Infrastructure/Resources`, `src/EmailSender/Infrastructure/Mailer`)
 
 ## 3. Coding Standards & Constraints
 

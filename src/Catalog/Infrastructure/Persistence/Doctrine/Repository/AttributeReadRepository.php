@@ -9,6 +9,7 @@ use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
 use App\Catalog\Domain\Exception\Attribute\OneOfAttributesNotFoundException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
+use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Id;
 use App\Catalog\Domain\ValueObject\Attribute\Ulid;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttribute;
@@ -70,6 +71,16 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
         return $this->checkAndMapToDomain($orm);
     }
 
+    public function existsByCode(Code $code): bool
+    {
+        return $this->_existsBy([
+            [
+                'field' => 'code',
+                'value' => $code->value(),
+            ],
+        ]);
+    }
+
     /**
      * @param Id[] $ids
      *
@@ -78,7 +89,6 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
     public function assertAllExistByIds(array $ids): void
     {
         try {
-            // some
             $this->_assertAllExistByIds($ids);
         } catch (OneOfEntitiesNotFoundException $e) {
             throw new OneOfAttributesNotFoundException(previous: $e);

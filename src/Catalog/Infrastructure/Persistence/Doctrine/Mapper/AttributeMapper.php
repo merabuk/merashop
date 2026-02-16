@@ -6,11 +6,13 @@ namespace App\Catalog\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
+use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Id;
 use App\Catalog\Domain\ValueObject\Attribute\Translations;
 use App\Catalog\Domain\ValueObject\Attribute\Type;
 use App\Catalog\Domain\ValueObject\Attribute\Ulid;
+use App\Catalog\Domain\ValueObject\Attribute\Version;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttribute;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttributeTranslation;
 use App\Shared\Domain\Exception\EntityIdMissingException;
@@ -32,6 +34,11 @@ class AttributeMapper implements MapperInterface
     public function toDoctrineOrm(object $domain): OrmAttribute
     {
         $orm = new OrmAttribute();
+
+        $orm->ulid = $domain->getUlid()->value();
+        $orm->version = $domain->getVersion()->value();
+        $orm->createdBy = $domain->getCreatedBy()->value();
+
         $this->mapToExistingOrm($domain, $orm);
 
         return $orm;
@@ -59,7 +66,10 @@ class AttributeMapper implements MapperInterface
             ulid: Ulid::fromString($orm->ulid),
             code: Code::fromString($orm->code),
             type: Type::fromEnum($orm->type),
-            translations: Translations::fromArray($translations)
+            translations: Translations::fromArray($translations),
+            version: Version::fromInt($orm->version),
+            createdBy: AdminUlid::fromString($orm->createdBy),
+            updatedBy: $orm->updatedBy ? AdminUlid::fromString($orm->updatedBy) : null,
         );
     }
 
@@ -73,9 +83,9 @@ class AttributeMapper implements MapperInterface
         /* @var Attribute $domain */
         /* @var OrmAttribute $orm */
 
-        $orm->ulid = $domain->getUlid()->value();
         $orm->code = $domain->getCode()->value();
         $orm->type = $domain->getType()->value();
+        $orm->updatedBy = $domain->getUpdatedBy()?->value();
 
         $this->mapTranslations($domain, $orm);
     }

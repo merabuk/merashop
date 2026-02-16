@@ -1,5 +1,5 @@
-#app_shared_routes:
-#  resource: '../src/Shared/Presentation/Http/config/routes.yaml'
+catalog:
+  resource: '../src/Catalog/Presentation/Http/config/routes.yaml'
 
 customer_routes:
   resource: '../src/Customer/Presentation/Http/config/routes.yaml'

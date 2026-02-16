@@ -27,6 +27,9 @@ final class Version20260213132636 extends AbstractMigration
             roles JSONB NOT NULL,
             status admin_account_status NOT NULL,
             password_changed_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL,
+            created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+            updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+            deleted_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL,
             PRIMARY KEY (id)
         )'
         );

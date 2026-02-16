@@ -1,0 +1,10 @@
+admin:
+  api:
+    v1:
+      attribute:
+        type:
+          invalid: "The selected attribute type is invalid. Allowed values are: {choices}"
+        translations:
+          empty: "Translations array cannot be empty"
+        locale:
+          invalid: "The selected locale is invalid"

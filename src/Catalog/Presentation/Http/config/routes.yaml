@@ -1,0 +1,6 @@
+catalog.admin.api.v1:
+  resource:
+    path: ../AdminApiVersion1/Controller/
+    namespace: App\Catalog\Presentation\Http\AdminApiVersion1\Controller
+  type: attribute
+  prefix: /admin/api/v1/catalog

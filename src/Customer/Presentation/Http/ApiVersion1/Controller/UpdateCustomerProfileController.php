@@ -6,6 +6,7 @@ namespace App\Customer\Presentation\Http\ApiVersion1\Controller;
 
 use App\Customer\Application\Command\UpdateCustomerProfile\UpdateCustomerProfileCommand;
 use App\Customer\Presentation\Http\ApiVersion1\Request\UpdateCustomerProfileRequest;
+use App\Customer\Presentation\Http\ApiVersion1\Resource\UpdateCustomerProfileResponse;
 use App\Shared\Application\Command\CommandBusInterface;
 use App\Shared\Application\Security\AuthIdentity;
 use App\Shared\Presentation\Http\Attribute\CurrentAuthEntityIdentity;
@@ -45,6 +46,6 @@ class UpdateCustomerProfileController extends AbstractController
 
         // TODO: decide if needed to return updated profile data
 
-        return new JsonResponse();
+        return new JsonResponse(new UpdateCustomerProfileResponse('Profile was successfully updated'));
     }
 }

@@ -12,4 +12,5 @@ enum ErrorCodeEnum: string
     case Unauthorized = 'UNAUTHORIZED';
     case NotFound = 'NOT_FOUND';
     case BadRequest = 'BAD_REQUEST';
+    case UnsupportedMediaType = 'UNSUPPORTED_MEDIA_TYPE';
 }

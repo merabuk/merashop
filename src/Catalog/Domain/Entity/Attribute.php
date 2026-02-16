@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\Entity;
 
+use App\Catalog\Domain\Exception\Attribute\InvalidAttributeVersionException;
+use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Id;
 use App\Catalog\Domain\ValueObject\Attribute\Translations;
 use App\Catalog\Domain\ValueObject\Attribute\Type;
 use App\Catalog\Domain\ValueObject\Attribute\Ulid;
+use App\Catalog\Domain\ValueObject\Attribute\Version;
 
 class Attribute
 {
@@ -18,14 +21,21 @@ class Attribute
         private Code $code,
         private Type $type,
         private Translations $translations,
+        private Version $version,
+        private readonly AdminUlid $createdBy,
+        private ?AdminUlid $updatedBy = null,
     ) {
     }
 
+    /**
+     * @throws InvalidAttributeVersionException
+     */
     public static function create(
         Ulid $ulid,
         Code $code,
         Type $type,
         Translations $translations,
+        AdminUlid $createdBy,
     ): self {
         return new self(
             id: null,
@@ -33,6 +43,8 @@ class Attribute
             code: $code,
             type: $type,
             translations: $translations,
+            version: Version::initial(),
+            createdBy: $createdBy,
         );
     }
 
@@ -61,10 +73,30 @@ class Attribute
         return $this->translations;
     }
 
-    public function update(Code $code, Type $type, Translations $translations): void
+    public function getVersion(): Version
     {
+        return $this->version;
+    }
+
+    public function getCreatedBy(): AdminUlid
+    {
+        return $this->createdBy;
+    }
+
+    public function getUpdatedBy(): ?AdminUlid
+    {
+        return $this->updatedBy;
+    }
+
+    public function update(
+        Code $code,
+        Type $type,
+        Translations $translations,
+        AdminUlid $updatedBy,
+    ): void {
         $this->code = $code;
         $this->type = $type;
         $this->translations = $translations;
+        $this->updatedBy = $updatedBy;
     }
 }

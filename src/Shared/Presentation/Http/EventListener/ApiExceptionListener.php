@@ -10,6 +10,7 @@ use App\Shared\Domain\Exception\ConflictExceptionInterface;
 use App\Shared\Domain\Exception\ForbiddenExceptionInterface;
 use App\Shared\Domain\Exception\NotFoundExceptionInterface;
 use App\Shared\Domain\Exception\UnauthorizedExceptionInterface;
+use App\Shared\Domain\Service\TranslationDomainResolverInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,12 +19,12 @@ use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Messenger\Exception\HandlerFailedException;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
-use Symfony\Component\Translation\MessageCatalogueInterface;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Throwable;
@@ -35,6 +36,7 @@ class ApiExceptionListener
 
     public function __construct(
         private readonly TranslatorInterface $translator,
+        private readonly TranslationDomainResolverInterface $translationDomainResolver,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -79,7 +81,7 @@ class ApiExceptionListener
             errorCode: $errorCode,
             errorMessage: $this->translator->trans(
                 id: $errorCode,
-                domain: 'exceptions'.MessageCatalogueInterface::INTL_DOMAIN_SUFFIX
+                domain: $this->translationDomainResolver->resolveIcuDomain('exceptions'),
             ),
             statusCode: Response::HTTP_FORBIDDEN,
         );
@@ -103,6 +105,11 @@ class ApiExceptionListener
                 errorMessage: $exception->getMessage(),
                 statusCode: Response::HTTP_NOT_FOUND,
             ),
+            $exception instanceof UnsupportedMediaTypeHttpException => $this->baseResponse(
+                errorCode: ErrorCodeEnum::UnsupportedMediaType->value,
+                errorMessage: $exception->getMessage(),
+                statusCode: Response::HTTP_UNSUPPORTED_MEDIA_TYPE,
+            ),
             default => $this->logAndResponseWithBaseUnexpectedError($exception),
         };
     }
@@ -125,7 +132,7 @@ class ApiExceptionListener
             errorMessage: $this->translator->trans(
                 id: $errorCode,
                 parameters: [],
-                domain: 'exceptions'.MessageCatalogueInterface::INTL_DOMAIN_SUFFIX
+                domain: $this->translationDomainResolver->resolveIcuDomain('exceptions'),
             ),
             statusCode: Response::HTTP_UNPROCESSABLE_ENTITY,
             extraData: ['violations' => $errors],
@@ -154,7 +161,7 @@ class ApiExceptionListener
             errorMessage: $this->translator->trans(
                 id: $errorCode,
                 parameters: $errorMessageData,
-                domain: 'exceptions'.MessageCatalogueInterface::INTL_DOMAIN_SUFFIX
+                domain: $this->translationDomainResolver->resolveIcuDomain('exceptions'),
             ),
             statusCode: $statusCode
         );
@@ -178,6 +185,10 @@ class ApiExceptionListener
 
     private function logAndResponseWithBaseUnexpectedError(Throwable $exception): JsonResponse
     {
+        dd([
+            'exception' => $exception,
+        ]);
+
         $this->logger->error($exception->getMessage(), [
             'exception_class' => get_class($exception),
             'trace' => $exception->getTraceAsString(),
@@ -189,7 +200,7 @@ class ApiExceptionListener
             errorCode: $errorCode,
             errorMessage: $this->translator->trans(
                 id: $errorCode,
-                domain: 'exceptions'.MessageCatalogueInterface::INTL_DOMAIN_SUFFIX
+                domain: $this->translationDomainResolver->resolveIcuDomain('exceptions'),
             ),
             statusCode: Response::HTTP_INTERNAL_SERVER_ERROR,
         );

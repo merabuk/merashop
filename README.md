@@ -49,6 +49,53 @@ Each module follows the principles of DDD (Domain-Driven Design) and has a clear
     - `Console` - CLI commands, and Console-specific event listeners.
 - `/config/modules/*` - module-specific configurations collected by `Kernel.php`.
 
+### Directory Structure
+
+Every module within `src/` must follow this standardized structure:
+
+- **Domain**: Contains the core business logic.
+    - `Entity` - domain entities with business logic.
+    - `Enum` - common enumerations
+    - `Event` - domain events.
+    - `Exception` - domain exceptions and marker-interfaces.
+    - `Repository` - interfaces (definitions only).
+    - `Service` - domain services (simple implementations without external dependencies, interfaces).
+    - `ValueObject` - value objects (primitives).
+- **Application**: Contains use cases and orchestration.
+    - `Command` - application commands and their handlers.
+    - `DTO` (Data Transfer Objects).
+    - `EventHandler` - application event listeners.
+    - `Query` - application queries and their handlers.
+    - `Scheduler` - application schedulers (cron tasks).
+    - `Exception` - application exceptions.
+    - `Service` - application services (simple implementations without external dependencies)
+- **Infrastructure**: External concerns and technical implementations.
+    - `Persistence` - database access.
+        - `Doctrine` - ORM implementation.
+            - `Entity` - ORM entities.
+            - `Mapper` - ORM <=> Domain mappers. Explicit field definitions
+            - `Migrations` - database migrations.
+            - `Repository` - implementations of domain repository interfaces.
+            - `Type` - custom DB datatypes.
+    - `Scheduler` - scheduler provider with configuration.
+    - `Service` - infrastructure services (complex implementations with external dependencies).
+    - `Adapter` for external services.
+- **Presentation**: Entry points to the module.
+    - `Console` - CLI commands, and Console-specific event listeners.
+        - `EventListener` - specific event listeners (Console command/response)
+    - `Http` - Web API controllers, requests, resources, and HTTP-specific event listeners.
+        - `AdminApiVersion<N>` - admin API versioning.
+        - `ApiVersion<N>` - API versioning.
+            - `Controller` - API controllers.
+            - `Request` - API requests and validation.
+            - `Resource` - API resources and normalizers.
+        - `Web` - Http pages and views.
+        - `config` - API routing configuration.
+        - `EventListener` - specific event listeners (API request/response, KernelExceptions etc.).
+
+The translation folder can be located in various places (but correct ones) and named `translations`.
+Also, every module can have its own specific folders which are not listed above. (e.g. `src/EmailSender/Infrastructure/Resources`, `src/EmailSender/Infrastructure/Mailer`)
+
 ## Databases & Migrations
 
 The project uses database isolation at the module level. Each module has its own connection and entity manager.

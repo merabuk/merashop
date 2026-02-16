@@ -11,6 +11,8 @@ use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Type\AdminAccount\Sta
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Entity]
@@ -19,6 +21,9 @@ use Symfony\Bridge\Doctrine\Types\UlidType;
 #[ORM\UniqueConstraint(name: 'uniq_admin_accounts_email', columns: ['email'])]
 class OrmAdminAccount
 {
+    use TimestampableEntity;
+    use SoftDeleteableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column(type: Types::BIGINT, options: ['unsigned' => true])]

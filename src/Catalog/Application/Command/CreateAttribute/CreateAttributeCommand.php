@@ -15,6 +15,7 @@ final readonly class CreateAttributeCommand implements CommandInterface
          * @var array<string, array{name: string}>
          */
         public array $translations,
+        public string $adminUlid,
     ) {
     }
 }

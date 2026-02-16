@@ -24,6 +24,11 @@ final class Version20260212160551 extends AbstractMigration
             ulid UUID NOT NULL,
             code VARCHAR(50) NOT NULL,
             type attribute_type NOT NULL,
+            version INT DEFAULT 1 NOT NULL,
+            created_by UUID NOT NULL,
+            updated_by UUID DEFAULT NULL,
+            created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+            updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
             PRIMARY KEY (id)
         )'
         );
