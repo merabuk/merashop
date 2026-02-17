@@ -9,12 +9,14 @@ use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
+use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Id;
 use App\Catalog\Domain\ValueObject\Attribute\Translations;
 use App\Catalog\Domain\ValueObject\Attribute\Type;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
+use App\Shared\Domain\Exception\Entity\ConcurrencyException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -30,16 +32,22 @@ readonly class UpdateAttributeHandler implements CommandHandlerInterface
     /**
      * @throws AttributeNotFoundException
      * @throws UpdateAttributeException
+     * @throws ConcurrencyException
      */
     public function __invoke(UpdateAttributeCommand $command): int
     {
         try {
             $attribute = $this->readRepository->getById(Id::fromInt($command->id));
 
+            if ($attribute->getVersion()->value() !== $command->version) {
+                throw new ConcurrencyException();
+            }
+
             $attribute->update(
                 code: Code::fromString($command->code),
                 type: Type::fromString($command->type),
                 translations: Translations::fromArray($command->translations),
+                updatedBy: AdminUlid::fromString($command->adminUlid),
             );
 
             $attribute = $this->writeRepository->save($attribute);

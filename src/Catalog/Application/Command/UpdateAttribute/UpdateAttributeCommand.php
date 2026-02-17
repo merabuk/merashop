@@ -16,6 +16,8 @@ final readonly class UpdateAttributeCommand implements CommandInterface
          * @var array<string, array{name: string}>
          */
         public array $translations,
+        public int $version,
+        public string $adminUlid,
     ) {
     }
 }

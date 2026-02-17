@@ -13,4 +13,6 @@ enum ErrorCodeEnum: string
     case NotFound = 'NOT_FOUND';
     case BadRequest = 'BAD_REQUEST';
     case UnsupportedMediaType = 'UNSUPPORTED_MEDIA_TYPE';
+    case Conflict = 'CONFLICT';
+    case ConcurrencyError = 'CONCURRENCY_ERROR';
 }
