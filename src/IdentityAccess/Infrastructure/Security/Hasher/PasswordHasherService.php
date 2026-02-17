@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\IdentityAccess\Infrastructure\Security;
+namespace App\IdentityAccess\Infrastructure\Security\Hasher;
 
 use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;

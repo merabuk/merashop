@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\IdentityAccess\Infrastructure\Security;
+namespace App\IdentityAccess\Infrastructure\Security\Bridge;
 
+use App\IdentityAccess\Infrastructure\Security\Provider\AuthSubject;
 use App\Shared\Application\Security\AuthEntityContextInterface;
 use App\Shared\Application\Security\AuthIdentity;
 use Symfony\Bundle\SecurityBundle\Security;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\IdentityAccess\Infrastructure\Security;
+namespace App\IdentityAccess\Infrastructure\Security\Provider;
 
 use App\IdentityAccess\Domain\Exception\AdminAccount\InvalidAdminAccountUlidException;
 use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountUlidException;

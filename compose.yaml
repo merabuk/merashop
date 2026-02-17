@@ -99,6 +99,52 @@ services:
       - pgsql-test:/var/lib/postgresql/data
       - ./docker/pgsql/shell/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
 
+  redis:
+    image: redis:7.4-alpine
+    command: redis-server --appendonly yes --maxmemory 128mb --maxmemory-policy allkeys-lru
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
+        reservations:
+          cpus: '0.10'
+          memory: 64M
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - merashop-network
+    ports:
+      - "${FORWARD_REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis:/data
+
+  redis-test:
+    image: redis:7.4-alpine
+    command: redis-server --appendonly yes --maxmemory 64mb --maxmemory-policy allkeys-lru
+    deploy:
+      resources:
+        limits:
+          cpus: '0.20'
+          memory: 128M
+        reservations:
+          cpus: '0.10'
+          memory: 32M
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - merashop-network
+    ports:
+      - "${FORWARD_TEST_REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-test:/data
+
   nginx:
     image: merashop/nginx:latest
     deploy:
@@ -305,6 +351,10 @@ volumes:
   pgsql:
     driver: local
   pgsql-test:
+    driver: local
+  redis:
+    driver: local
+  redis-test:
     driver: local
   rabbitmq:
     driver: local

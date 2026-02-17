@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Presentation\Http\AdminApiVersion1\Controller;
 
+use App\IdentityAccess\Application\Command\IssueAccessToken\IssueAccessTokenCommand;
 use App\IdentityAccess\Application\DTO\OAuth2Data;
-use App\IdentityAccess\Application\Exception\GrantHandlerException;
 use App\IdentityAccess\Application\Exception\UnsupportedGrantTypeException;
-use App\IdentityAccess\Application\Service\OAuth2TokenService;
 use App\IdentityAccess\Domain\Enum\GrantTypeEnum;
 use App\IdentityAccess\Presentation\Http\AdminApiVersion1\Request\AccessTokenRequest;
+use App\Shared\Application\Command\CommandBusInterface;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,15 +20,7 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 
 final class AccessTokenController extends AbstractController
 {
-    public function __construct(
-        private readonly OAuth2TokenService $tokenService,
-    ) {
-    }
-
     /**
-     * @throws ContainerExceptionInterface
-     * @throws GrantHandlerException
-     * @throws NotFoundExceptionInterface
      * @throws UnsupportedGrantTypeException
      */
     #[Route(
@@ -39,8 +29,10 @@ final class AccessTokenController extends AbstractController
         methods: [Request::METHOD_POST],
         format: JsonEncoder::FORMAT
     )]
-    public function __invoke(#[MapRequestPayload] AccessTokenRequest $request): JsonResponse
-    {
+    public function __invoke(
+        #[MapRequestPayload] AccessTokenRequest $request,
+        CommandBusInterface $commandBus,
+    ): JsonResponse {
         $accountType = match (GrantTypeEnum::tryFrom((string) $request->grant_type)) {
             GrantTypeEnum::Password => IdentityTypeEnum::Admin,
             GrantTypeEnum::RefreshToken => null,
@@ -57,7 +49,9 @@ final class AccessTokenController extends AbstractController
             refreshToken: $request->refresh_token,
         );
 
-        $response = $this->tokenService->handle($authData);
+        $command = new IssueAccessTokenCommand($authData);
+
+        $response = $commandBus->execute($command);
 
         return $this->json($response);
     }

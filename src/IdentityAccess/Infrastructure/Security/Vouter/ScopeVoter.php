@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\IdentityAccess\Infrastructure\Security;
+namespace App\IdentityAccess\Infrastructure\Security\Vouter;
 
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\IdentityAccess\Infrastructure\Security;
+namespace App\IdentityAccess\Infrastructure\Security\Jwt;
 
 use App\IdentityAccess\Application\DTO\AccessTokenData;
 use App\IdentityAccess\Application\DTO\GrantResultData;
@@ -13,13 +13,13 @@ use Random\RandomException;
 use Symfony\Component\Clock\ClockInterface;
 use Throwable;
 
-class JwtGenerator implements TokenGeneratorInterface
+readonly class JwtGenerator implements TokenGeneratorInterface
 {
     public function __construct(
-        private readonly Configuration $jwtConfiguration,
-        private readonly ClockInterface $clock,
-        private readonly string $appName,
-        private readonly int $ttl,
+        private Configuration $jwtConfiguration,
+        private ClockInterface $clock,
+        private string $appName,
+        private int $ttl,
     ) {
     }
 

@@ -11,25 +11,33 @@ services:
     arguments:
       $ttl: '%identity_access.refresh_token.ttl%'
 
-  App\IdentityAccess\Infrastructure\Security\JwtGenerator:
+  App\IdentityAccess\Infrastructure\Security\Jwt\JwtGenerator:
     arguments:
       $appName: '%app.name%'
       $ttl: '%identity_access.jwt.ttl%'
 
   Lcobucci\JWT\Configuration:
-    factory: [ 'App\IdentityAccess\Infrastructure\Security\JwtConfigFactory', 'create' ]
+    factory: [ 'App\IdentityAccess\Infrastructure\Security\Jwt\JwtConfigFactory', 'create' ]
     arguments:
       $privateKey: '%env(base64:JWT_PRIVATE_KEY_BASE64)%'
       $publicKey: '%env(base64:JWT_PUBLIC_KEY_BASE64)%'
       $passphrase: '%env(JWT_PASSPHRASE)%'
 
-  App\IdentityAccess\Application\Security\TokenGeneratorInterface: '@App\IdentityAccess\Infrastructure\Security\JwtGenerator'
+  App\IdentityAccess\Infrastructure\Security\Blacklist\RedisAccessTokenBlacklist:
+    arguments:
+      $identityAccessTokenBlacklistPool: '@identity_access.token_blacklist'
+
+  App\IdentityAccess\Application\Security\CurrentAccessTokenContextInterface: '@App\IdentityAccess\Infrastructure\Security\Context\CurrentAccessTokenContext'
+  App\IdentityAccess\Infrastructure\Security\Context\CurrentAccessTokenContext:
+      - { name: 'kernel.reset', method: 'reset' }
+
+  App\IdentityAccess\Application\Security\TokenGeneratorInterface: '@App\IdentityAccess\Infrastructure\Security\Jwt\JwtGenerator'
   App\IdentityAccess\Domain\Repository\ModuleAccountReadRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\ModuleAccountReadRepository'
   App\IdentityAccess\Domain\Repository\ModuleAccountWriteRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\ModuleAccountWriteRepository'
   App\IdentityAccess\Domain\Repository\RefreshTokenReadRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\RefreshTokenReadRepository'
   App\IdentityAccess\Domain\Repository\RefreshTokenWriteRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\RefreshTokenWriteRepository'
   App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\UserAccountReadRepository'
-  App\IdentityAccess\Domain\Service\PasswordHasherInterface: '@App\IdentityAccess\Infrastructure\Security\PasswordHasherService'
-  App\IdentityAccess\Domain\Service\TokenHasherInterface: '@App\IdentityAccess\Infrastructure\Security\TokenHasherService'
+  App\IdentityAccess\Domain\Service\PasswordHasherInterface: '@App\IdentityAccess\Infrastructure\Security\Hasher\PasswordHasherService'
+  App\IdentityAccess\Domain\Service\TokenHasherInterface: '@App\IdentityAccess\Infrastructure\Security\Hasher\TokenHasherService'
 
-  App\Shared\Application\Security\AuthEntityContextInterface: '@App\IdentityAccess\Infrastructure\Security\SymfonyAuthEntityContext'
+  App\Shared\Application\Security\AuthEntityContextInterface: '@App\IdentityAccess\Infrastructure\Security\Bridge\SymfonyAuthEntityContext'

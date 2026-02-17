@@ -30,6 +30,7 @@ services:
         - merashop/app:latest
     depends_on:
       - pgsql
+      - redis
     restart: on-failure
 
   filebeat:

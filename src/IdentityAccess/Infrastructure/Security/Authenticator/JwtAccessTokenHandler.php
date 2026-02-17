@@ -2,10 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\IdentityAccess\Infrastructure\Security;
+namespace App\IdentityAccess\Infrastructure\Security\Authenticator;
 
+use App\IdentityAccess\Application\Security\CurrentAccessTokenContextInterface;
+use App\IdentityAccess\Domain\Security\AccessTokenBlacklistInterface;
 use App\IdentityAccess\Infrastructure\Exception\InvalidCredentialsException;
+use App\IdentityAccess\Infrastructure\Security\Provider\AuthEntityProvider;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
+use DateTimeInterface;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Token\Plain;
 use Lcobucci\JWT\Token\RegisteredClaims;
@@ -17,6 +21,8 @@ final readonly class JwtAccessTokenHandler implements AccessTokenHandlerInterfac
 {
     public function __construct(
         private Configuration $jwtConfiguration,
+        private AccessTokenBlacklistInterface $blacklist,
+        private CurrentAccessTokenContextInterface $accessTokenContext,
     ) {
     }
 
@@ -40,6 +46,12 @@ final readonly class JwtAccessTokenHandler implements AccessTokenHandlerInterfac
         }
 
         $claims = $token->claims();
+
+        $jti = $claims->get(RegisteredClaims::ID);
+        if ($jti && $this->blacklist->isRevoked((string) $jti)) {
+            throw new InvalidCredentialsException('Token has been revoked');
+        }
+
         $ulid = $claims->get(RegisteredClaims::SUBJECT);
         $type = IdentityTypeEnum::tryFrom((string) $claims->get('sub_type'));
 
@@ -49,6 +61,14 @@ final readonly class JwtAccessTokenHandler implements AccessTokenHandlerInterfac
 
         if (null === $type) {
             throw new InvalidCredentialsException('JWT token does not contain a subject type');
+        }
+
+        $expiresAt = $claims->get(RegisteredClaims::EXPIRATION_TIME);
+
+        if ($jti && $expiresAt instanceof DateTimeInterface) {
+            $this->accessTokenContext->set((string) $jti, $expiresAt->getTimestamp());
+        } else {
+            throw new InvalidCredentialsException(sprintf('Token missing required claims (%s, %s)', RegisteredClaims::ID, RegisteredClaims::EXPIRATION_TIME));
         }
 
         return new UserBadge(userIdentifier: $type->value.AuthEntityProvider::SEPARATOR.$ulid);

@@ -24,6 +24,9 @@ abstract class BaseAttributeRequest
     )]
     public ?string $type;
 
+    /**
+     * @var ?array<string, array{name: string}> $translations
+     */
     #[Assert\NotBlank]
     #[Assert\Count(min: 1, minMessage: 'admin.api.v1.attribute.translations.empty')]
     #[Assert\All([
@@ -37,15 +40,12 @@ abstract class BaseAttributeRequest
             allowExtraFields: false
         ),
     ])]
-    /**
-     * @var ?array<string, array{name: string}> $translations
-     */
     public ?array $translations;
 
     #[Assert\Callback]
     public function validateLocales(ExecutionContextInterface $context): void
     {
-        if (!isset($this->translations) || !is_array($this->translations)) {
+        if (!isset($this->translations)) {
             return;
         }
 

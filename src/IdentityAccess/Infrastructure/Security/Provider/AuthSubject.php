@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\IdentityAccess\Infrastructure\Security;
+namespace App\IdentityAccess\Infrastructure\Security\Provider;
 
 use App\IdentityAccess\Domain\Entity\AdminAccount;
 use App\IdentityAccess\Domain\Entity\ModuleAccount;

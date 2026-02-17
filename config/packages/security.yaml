@@ -6,20 +6,20 @@ security:
   providers:
     users_in_memory: { memory: null }
     auth_entity_provider:
-      id: App\IdentityAccess\Infrastructure\Security\AuthEntityProvider
+      id: App\IdentityAccess\Infrastructure\Security\Provider\AuthEntityProvider
   firewalls:
     api:
       pattern: ^/api
       stateless: true
       provider: auth_entity_provider
       access_token:
-        token_handler: App\IdentityAccess\Infrastructure\Security\JwtAccessTokenHandler
+        token_handler: App\IdentityAccess\Infrastructure\Security\Authenticator\JwtAccessTokenHandler
     admin-api:
       pattern: ^/admin/api
       stateless: true
       provider: auth_entity_provider
       access_token:
-        token_handler: App\IdentityAccess\Infrastructure\Security\JwtAccessTokenHandler
+        token_handler: App\IdentityAccess\Infrastructure\Security\Authenticator\JwtAccessTokenHandler
     dev:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false

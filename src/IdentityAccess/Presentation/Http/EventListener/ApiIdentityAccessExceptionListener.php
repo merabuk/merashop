@@ -9,7 +9,7 @@ use App\IdentityAccess\Application\Exception\InvalidCredentialsException;
 use App\IdentityAccess\Application\Exception\InvalidRefreshTokenException;
 use App\IdentityAccess\Application\Exception\UnsupportedGrantTypeException;
 use App\IdentityAccess\Domain\Exception\IdentityAccessDomainException;
-use App\IdentityAccess\Infrastructure\Security\OAuth2Error;
+use App\IdentityAccess\Infrastructure\Security\OAuth2\OAuth2Error;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;

@@ -1,6 +1,12 @@
 parameters:
 
 services:
+  App\Shared\Infrastructure\Service\TraceIdContext:
+    arguments:
+      $traceIdFactory: '@App\Shared\Infrastructure\Service\TraceIdFactory'
+    tags:
+      - { name: 'kernel.reset', method: 'reset' }
+
   App\Shared\Domain\Service\TranslationDomainResolverInterface: '@App\Shared\Infrastructure\Service\TranslationDomainResolver'
   App\Shared\Domain\Service\UlidGeneratorInterface: '@App\Shared\Infrastructure\Service\SymfonyUlidGenerator'
   App\Shared\Domain\Service\UuidGeneratorInterface: '@App\Shared\Infrastructure\Service\SymfonyUuidGenerator'
