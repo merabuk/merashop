@@ -39,9 +39,9 @@ readonly class JwtGenerator implements TokenGeneratorInterface
                 ->canOnlyBeUsedAfter($now)
                 ->expiresAt($accessTokenExpiresAt)
                 ->relatedTo($grantResultData->subjectUlid)
-                ->withClaim('roles', $grantResultData->roles)
-                ->withClaim('scopes', $grantResultData->scopes)
-                ->withClaim('sub_type', $grantResultData->subjectType->value);
+                ->withClaim(JwtConfigFactory::CLAIM_ROLES, $grantResultData->roles)
+                ->withClaim(JwtConfigFactory::CLAIM_SCOPES, $grantResultData->scopes)
+                ->withClaim(JwtConfigFactory::CLAIM_SUBJECT_TYPE, $grantResultData->subjectType->value);
 
             $token = $builder->getToken($this->jwtConfiguration->signer(), $this->jwtConfiguration->signingKey());
 

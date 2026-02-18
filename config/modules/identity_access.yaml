@@ -7,6 +7,11 @@ services:
     autowire: true
     autoconfigure: true
 
+  identity_access.token_blacklist.redis_adapter:
+    parent: 'cache.adapter.redis'
+    tags:
+      - { name: 'cache.pool', namespace: 'jwt_bl' }
+
   App\IdentityAccess\Application\Service\RefreshTokenService:
     arguments:
       $ttl: '%identity_access.refresh_token.ttl%'
@@ -29,6 +34,7 @@ services:
 
   App\IdentityAccess\Application\Security\CurrentAccessTokenContextInterface: '@App\IdentityAccess\Infrastructure\Security\Context\CurrentAccessTokenContext'
   App\IdentityAccess\Infrastructure\Security\Context\CurrentAccessTokenContext:
+    tags:
       - { name: 'kernel.reset', method: 'reset' }
 
   App\IdentityAccess\Application\Security\TokenGeneratorInterface: '@App\IdentityAccess\Infrastructure\Security\Jwt\JwtGenerator'

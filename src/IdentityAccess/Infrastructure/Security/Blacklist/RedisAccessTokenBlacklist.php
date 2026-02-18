@@ -11,8 +11,6 @@ use Symfony\Component\Clock\ClockInterface;
 
 final readonly class RedisAccessTokenBlacklist implements AccessTokenBlacklistInterface
 {
-    private const string PREFIX = 'token_bl:';
-
     public function __construct(
         private ClockInterface $clock,
         private CacheItemPoolInterface $identityAccessTokenBlacklistPool,
@@ -28,7 +26,7 @@ final readonly class RedisAccessTokenBlacklist implements AccessTokenBlacklistIn
         $ttl = $expiresAt - $now;
 
         if ($ttl > 0) {
-            $item = $this->identityAccessTokenBlacklistPool->getItem(self::PREFIX.$jti);
+            $item = $this->identityAccessTokenBlacklistPool->getItem($jti);
             $item->set(true);
             $item->expiresAfter($ttl);
 
@@ -41,6 +39,6 @@ final readonly class RedisAccessTokenBlacklist implements AccessTokenBlacklistIn
      */
     public function isRevoked(string $jti): bool
     {
-        return $this->identityAccessTokenBlacklistPool->hasItem(self::PREFIX.$jti);
+        return $this->identityAccessTokenBlacklistPool->hasItem($jti);
     }
 }

@@ -8,13 +8,16 @@ use Lcobucci\Clock\SystemClock;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
-use Lcobucci\JWT\Token\RegisteredClaims;
 use Lcobucci\JWT\Validation\Constraint\HasClaim;
 use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
 
 class JwtConfigFactory
 {
+    public const string CLAIM_ROLES = 'roles';
+    public const string CLAIM_SCOPES = 'scopes';
+    public const string CLAIM_SUBJECT_TYPE = 'sub_type';
+
     public static function create(string $privateKey, string $publicKey, string $passphrase): Configuration
     {
         $signer = new Sha256();
@@ -30,8 +33,9 @@ class JwtConfigFactory
         return $config->withValidationConstraints(
             new SignedWith($signer, $verificationKey),
             new LooseValidAt(SystemClock::fromSystemTimezone()),
-            new HasClaim(RegisteredClaims::ID),
-            new HasClaim(RegisteredClaims::EXPIRATION_TIME)
+            new HasClaim(self::CLAIM_ROLES),
+            new HasClaim(self::CLAIM_SCOPES),
+            new HasClaim(self::CLAIM_SUBJECT_TYPE)
         );
     }
 }

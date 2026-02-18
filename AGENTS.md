@@ -11,7 +11,7 @@ The system is divided into high-level modules located in `src/`:
 - `Catalog` - products, categories, and attributes in the store.
 - `Customer` - customer profiles and related domain logic.
 - `EmailSender` - module for sending notifications.
-- `IdentityAccess` - user and modules management, registration, and authorization.
+- `IdentityAccess` - user and modules management, registration, and authorization. Token-based authentication. Blacklist management.
 - `Shared` - common components used between modules (Domain, Infrastructure, Application).
 
 - **Isolation**:

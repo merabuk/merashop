@@ -7,5 +7,6 @@ framework:
 
     pools:
       identity_access.token_blacklist:
-        adapter: cache.adapter.redis
+        adapter: identity_access.token_blacklist.redis_adapter
+        provider: '%env(resolve:REDIS_URL_BLACKLIST)%'
         default_lifetime: 3600
