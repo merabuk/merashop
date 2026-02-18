@@ -79,10 +79,7 @@ class OutboxEmailReadRepository extends BaseOutgoingEmailRepository implements O
     public function existsByTraceId(TraceId $traceId): bool
     {
         return $this->_existsBy([
-            [
-                'field' => 'traceId',
-                'value' => $traceId->value(),
-            ],
+            $this->_makeCriterion(field: 'traceId', value: $traceId->value()),
         ]);
     }
 

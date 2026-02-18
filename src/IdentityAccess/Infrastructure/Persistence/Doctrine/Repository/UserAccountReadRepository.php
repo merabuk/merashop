@@ -58,10 +58,7 @@ class UserAccountReadRepository extends BaseUserAccountRepository implements Use
     public function existsByEmail(EmailAddress $email): bool
     {
         return $this->_existsBy([
-            [
-                'field' => 'email',
-                'value' => $email->value(),
-            ],
+            $this->_makeCriterion(field: 'email', value: $email->value()),
         ]);
     }
 

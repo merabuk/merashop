@@ -10,6 +10,8 @@ use App\Catalog\Domain\Exception\Attribute\OneOfAttributesNotFoundException;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Id;
 use App\Catalog\Domain\ValueObject\Attribute\Ulid;
+use App\Shared\Domain\Criteria\Listing\Criteria;
+use App\Shared\Domain\Criteria\Listing\PaginatedResult;
 
 interface AttributeReadRepositoryInterface
 {
@@ -30,4 +32,6 @@ interface AttributeReadRepositoryInterface
      * @throws OneOfAttributesNotFoundException
      */
     public function assertAllExistByIds(array $ids): void;
+
+    public function paginate(Criteria $criteria): PaginatedResult;
 }

@@ -73,6 +73,16 @@ Every module within `src/` must follow this standardized structure:
 The translation folder can be located in various places (but correct ones) and named `translations`.
 Also, every module can have its own specific folders which are not listed above. (e.g. `src/EmailSender/Infrastructure/Resources`, `src/EmailSender/Infrastructure/Mailer`)
 
+- **Shared**
+    - **Domain**
+        - **Criteria**: Search & listing abstractions.
+            - `Listing`: Base `Criteria` object.
+            - `Paging`, `Sorting`, `Filtering`: Value objects for specific concerns.
+    - **Presentation**
+        - **Http**
+            - **Attribute**: Custom PHP attributes for controller arguments.
+            - **Resolver**: Symfony Value Resolvers logic.
+
 ## 3. Coding Standards & Constraints
 
 ### Domain Layer
@@ -150,6 +160,31 @@ Also, every module can have its own specific folders which are not listed above.
 - **Symfony Messenger**: All operations must be split into **Commands** (side effects) and **Queries** (data retrieval).
 - **Handlers**: Every Command or Query must have a corresponding Handler.
 
+### Listing, Filtering & Pagination (Criteria Pattern)
+To ensure consistent data retrieval across all modules, the **Criteria Pattern** must be used.
+
+- **Domain Layer (Shared/Domain/Criteria)**:
+    - All listing operations must use the `Criteria` object, which encapsulates:
+        - `Paging\Cursor`: Cursor-based data (`lastSeenIdentifier`, `perPage`).
+        - `Sorting\Sort`: Sorting rules (`field`, `direction`).
+        - `Filtering\Filters`: A collection of filter parameters.
+- **Application Layer**:
+    - Queries for lists (e.g., `GetAttributeListQuery`) must accept a `Criteria` object instead of primitive types.
+- **Infrastructure Layer**:
+    - **Repository**: Use `ReadRepositoryTrait->_paginate()` to implement cursor-based pagination.
+    - **Stability**: For stable sorting, the `_paginate` method must always append a unique field (like `id` or `ulid`) as a secondary sort key if the primary key is not unique.
+    - **Search**: Use `_prepareSearchValue()` for consistent `LIKE` query formatting and protection against special characters.
+    - **Contracts**: Domain entities included in listings should implement `App\Shared\Domain\Entity\HasIdInterface`.
+- **Presentation Layer**:
+    - **Request**: Use `App\Shared\Presentation\Http\Request\PaginationRequest` as a controller argument. It is automatically populated via `PaginationRequestResolver`.
+    - **Query Format**: Flat query parameters only. **JSON in query strings is forbidden.**
+        - Filters: `?filter[field]=value`
+        - Sorting: `?sortField=name&sortDir=ASC`
+        - Pagination: `?lastSeenId=XYZ&perPage=20`
+    - **Response**: Use `PaginatedResponseTrait->createPaginatedResponse()` to standardize:
+        - `Content-Range`: Header in format `<unit> <count>/<totalCount>`.
+        - `X-Next-Cursor`: Header containing the identifier for the next page.
+
 ## 4. Reliability & Patterns
 
 - **Transactional Outbox**: Guaranteed message delivery. Domain events or messages are saved to the database within the same transaction as business changes and then dispatched by a separate process.
@@ -176,8 +211,9 @@ Also, every module can have its own specific folders which are not listed above.
 Before implementing any changes, the AI must:
 1. **Verify Boundaries**: Check if the proposed solution violates module boundaries or Deptrac rules.
 2. **Architecture Check**: Ensure a clear separation between Command and Query.
-3. **Technical Rigor**: Ensure the implementation is compatible with **Symfony 7.3** and follows the strict typing requirements.
+3. **Technical Rigor**: Ensure the implementation is compatible with **Symfony 7.4** and follows the strict typing requirements.
 4. **Traceability**: Always consider how `TraceId` will be propagated in new workflows.
+5. **Listing Standard**: When implementing any list endpoint, verify that it uses the `Criteria` pattern, `PaginationRequest`, and returns correct `Content-Range` headers as defined in the standards.
 
 ## 7. Infrastructure & Docker
 

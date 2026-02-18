@@ -96,6 +96,10 @@ Every module within `src/` must follow this standardized structure:
 The translation folder can be located in various places (but correct ones) and named `translations`.
 Also, every module can have its own specific folders which are not listed above. (e.g. `src/EmailSender/Infrastructure/Resources`, `src/EmailSender/Infrastructure/Mailer`)
 
+- **Shared** module
+    - **Domain** layer
+        - **Criteria**: Logic for filtering, sorting, and pagination (Filtering, Sorting, Paging).
+
 ## Databases & Migrations
 
 The project uses database isolation at the module level. Each module has its own connection and entity manager.

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Catalog\Application\Query\GetAttribute;
+namespace App\Catalog\Application\Query\GetAttributeItem;
 
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
@@ -14,7 +14,7 @@ use App\Shared\Application\Query\QueryHandlerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler(bus: BusNameEnum::Query->value)]
-readonly class GetAttributeHandler implements QueryHandlerInterface
+readonly class GetAttributeItemHandler implements QueryHandlerInterface
 {
     public function __construct(
         private AttributeReadRepositoryInterface $readRepository,
@@ -25,7 +25,7 @@ readonly class GetAttributeHandler implements QueryHandlerInterface
      * @throws AttributeNotFoundException
      * @throws InvalidAttributeIdException
      */
-    public function __invoke(GetAttributeQuery $query): Attribute
+    public function __invoke(GetAttributeItemQuery $query): Attribute
     {
         return $this->readRepository->getById(Id::fromInt($query->id));
     }

@@ -13,6 +13,8 @@ use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Id;
 use App\Catalog\Domain\ValueObject\Attribute\Ulid;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttribute;
+use App\Shared\Domain\Criteria\Listing\Criteria;
+use App\Shared\Domain\Criteria\Listing\PaginatedResult;
 use App\Shared\Domain\Exception\Database\OneOfEntitiesNotFoundException;
 use App\Shared\Domain\Exception\EntityIdMissingException;
 use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
@@ -74,10 +76,7 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
     public function existsByCode(Code $code): bool
     {
         return $this->_existsBy([
-            [
-                'field' => 'code',
-                'value' => $code->value(),
-            ],
+            $this->_makeCriterion(field: 'code', value: $code->value()),
         ]);
     }
 
@@ -93,6 +92,28 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
         } catch (OneOfEntitiesNotFoundException $e) {
             throw new OneOfAttributesNotFoundException(previous: $e);
         }
+    }
+
+    public function paginate(Criteria $criteria): PaginatedResult
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->leftJoin('a.translations', 't')
+            ->addSelect('t');
+
+        if ($criteria->filters->has('search')) {
+            $search = $this->_prepareSearchValue($criteria->filters->get('search'));
+
+            $qb->andWhere('a.code LIKE :code')
+                ->setParameter('code', $search);
+        }
+
+        return $this->_paginate(
+            qb: $qb,
+            cursor: $criteria->cursor,
+            sort: $criteria->sort,
+            mapCallback: fn (object $orm) => $this->checkAndMapToDomain($orm),
+            alias: 'a'
+        );
     }
 
     /**

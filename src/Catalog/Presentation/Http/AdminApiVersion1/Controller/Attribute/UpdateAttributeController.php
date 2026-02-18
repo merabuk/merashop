@@ -29,8 +29,8 @@ class UpdateAttributeController extends AbstractController
      * @throws HandlerFailedException
      */
     #[Route(
-        path: '/attribute/{id}',
-        name: 'catalog.admin.api.v1.attribute.update',
+        path: '/attributes/{id}',
+        name: 'catalog.admin.api.v1.attributes.update',
         requirements: ['id' => Requirement::POSITIVE_INT],
         methods: [Request::METHOD_PUT],
         format: JsonEncoder::FORMAT

@@ -49,11 +49,7 @@ class CustomerProfileReadRepository extends BaseCustomerProfileRepository implem
     public function existsByUlid(Ulid $ulid): bool
     {
         return $this->_existsBy([
-            [
-                'field' => 'userUlid',
-                'value' => $ulid->value(),
-                'type' => UlidType::NAME,
-            ],
+            $this->_makeCriterion(field: 'userUlid', value: $ulid->value(), type: UlidType::NAME),
         ]);
     }
 

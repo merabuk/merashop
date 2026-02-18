@@ -7,7 +7,7 @@ namespace App\Catalog\Presentation\Http\AdminApiVersion1\Resource\Attribute;
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\ValueObject\Attribute\Translation;
 
-final readonly class GetAttributeResponse
+final readonly class GetAttributeItemResponse
 {
     public function __construct(
         public int $id,

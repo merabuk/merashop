@@ -24,8 +24,8 @@ class CreateAttributeController extends AbstractController
     use AuthIdentityAccessTrait;
 
     #[Route(
-        path: '/attribute',
-        name: 'catalog.admin.api.v1.attribute.create',
+        path: '/attributes',
+        name: 'catalog.admin.api.v1.attributes.create',
         methods: [Request::METHOD_POST],
         format: JsonEncoder::FORMAT
     )]
