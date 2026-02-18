@@ -4,16 +4,22 @@ declare(strict_types=1);
 
 namespace App\Shared\Presentation\Http\Resolver;
 
-use App\Shared\Domain\Criteria\Filtering\Filters;
-use App\Shared\Domain\Criteria\Paging\Cursor;
-use App\Shared\Domain\Criteria\Sorting\Sort;
 use App\Shared\Presentation\Http\Request\PaginationRequest;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Validator\Exception\ValidationFailedException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-final class PaginationRequestResolver implements ValueResolverInterface
+final readonly class PaginationRequestResolver implements ValueResolverInterface
 {
+    public function __construct(
+        private ValidatorInterface $validator,
+    ) {
+    }
+
     /**
      * @return iterable<PaginationRequest>
      */
@@ -23,21 +29,21 @@ final class PaginationRequestResolver implements ValueResolverInterface
             return [];
         }
 
-        $cursor = new Cursor(
-            lastSeenIdentifier: $request->query->get('lastSeenId'),
-            perPage: $request->query->getInt('perPage', Cursor::DEFAULT_PER_PAGE)
-        );
+        $dto = new PaginationRequest();
+        $dto->lastSeenId = $request->query->get('lastSeenId');
+        $dto->perPage = $request->query->has('perPage')
+            ? (int) $request->query->get('perPage')
+            : $dto->perPage;
+        $dto->sortField = $request->query->get('sortField');
+        $dto->sortDir = mb_strtoupper((string) $request->query->get('sortDir', $dto->sortDir));
+        $dto->filters = $request->query->all('filter');
 
-        $filters = new Filters($request->query->all('filter'));
+        $violations = $this->validator->validate($dto);
 
-        $sort = null;
-        if ($field = $request->query->get('sortField')) {
-            $sort = new Sort(
-                field: $field,
-                direction: strtoupper($request->query->get('sortDir', Sort::ASC))
-            );
+        if (count($violations) > 0) {
+            throw new HttpException(statusCode: Response::HTTP_UNPROCESSABLE_ENTITY, message: 'Validation failed', previous: new ValidationFailedException($dto, $violations));
         }
 
-        yield new PaginationRequest(cursor: $cursor, filters: $filters, sort: $sort);
+        yield $dto;
     }
 }

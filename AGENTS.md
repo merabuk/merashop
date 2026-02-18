@@ -185,6 +185,13 @@ To ensure consistent data retrieval across all modules, the **Criteria Pattern**
         - `Content-Range`: Header in format `<unit> <count>/<totalCount>`.
         - `X-Next-Cursor`: Header containing the identifier for the next page.
 
+### Value Resolvers
+
+- **Consistency with Symfony Native Resolvers**:
+    - When manual validation is performed within a custom Value Resolver (like `PaginationRequestResolver`), use the same exception pattern as Symfony's `#[MapRequestPayload]`.
+    - Throw an `HttpException` with status **422** and pass a `ValidationFailedException` (containing the violations) as the **previous exception**.
+    - This ensures that the `ApiExceptionListener` provides a unified error response structure across the entire API.
+
 ## 4. Reliability & Patterns
 
 - **Transactional Outbox**: Guaranteed message delivery. Domain events or messages are saved to the database within the same transaction as business changes and then dispatched by a separate process.

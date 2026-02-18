@@ -9,7 +9,6 @@ use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Presentation\Http\AdminApiVersion1\Resource\Attribute\GetAttributeListResponse;
 use App\Shared\Application\Query\QueryBusInterface;
 use App\Shared\Application\Security\AuthIdentity;
-use App\Shared\Domain\Criteria\Listing\Criteria;
 use App\Shared\Domain\Criteria\Listing\PaginatedResult;
 use App\Shared\Presentation\Http\Attribute\CurrentAuthEntityIdentity;
 use App\Shared\Presentation\Http\Request\PaginationRequest;
@@ -41,13 +40,7 @@ class GetAttributeListController extends AbstractController
         #[CurrentAuthEntityIdentity] AuthIdentity $identity,
         QueryBusInterface $queryBus,
     ): JsonResponse {
-        $query = new GetAttributeListQuery(
-            criteria: new Criteria(
-                cursor: $pagination->cursor,
-                filters: $pagination->filters,
-                sort: $pagination->sort
-            )
-        );
+        $query = new GetAttributeListQuery($pagination->toCriteria());
 
         /** @var PaginatedResult $result */
         $result = $queryBus->execute($query);
