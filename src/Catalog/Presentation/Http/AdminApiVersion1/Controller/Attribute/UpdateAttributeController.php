@@ -41,7 +41,7 @@ class UpdateAttributeController extends AbstractController
         #[CurrentAuthEntityIdentity] AuthIdentity $identity,
         CommandBusInterface $commandBus,
     ): JsonResponse {
-        $this->denyAccessUnlessNotAdmin($identity);
+        $this->denyAccessUnlessAdmin($identity);
 
         $command = new UpdateAttributeCommand(
             id: $id,

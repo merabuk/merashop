@@ -38,7 +38,7 @@ class GetAttributeController extends AbstractController
         #[CurrentAuthEntityIdentity] AuthIdentity $identity,
         QueryBusInterface $queryBus,
     ): JsonResponse {
-        $this->denyAccessUnlessNotAdmin($identity);
+        $this->denyAccessUnlessAdmin($identity);
 
         $query = new GetAttributeQuery($id);
 

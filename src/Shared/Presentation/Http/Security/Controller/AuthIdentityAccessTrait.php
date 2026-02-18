@@ -9,18 +9,22 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 trait AuthIdentityAccessTrait
 {
-    protected function denyAccessUnlessNotUser(AuthIdentity $identity): void
+    protected function denyAccessUnlessUser(AuthIdentity $identity): void
     {
         if (false === $identity->isUser()) {
             // TODO: rework on custom exception
-            throw $this->makeAccessDeniedException(sprintf("Auth entity type is not user. Auth type: '%s'", $identity->type->value));
+            throw $this->makeAccessDeniedException(
+                sprintf("Auth entity type is not user. Auth type: '%s'", $identity->type->value)
+            );
         }
     }
 
-    protected function denyAccessUnlessNotAdmin(AuthIdentity $identity): void
+    protected function denyAccessUnlessAdmin(AuthIdentity $identity): void
     {
         if (false === $identity->isAdmin()) {
-            throw $this->makeAccessDeniedException(sprintf("Auth entity type is not admin. Auth type: '%s'", $identity->type->value));
+            throw $this->makeAccessDeniedException(
+                sprintf("Auth entity type is not admin. Auth type: '%s'", $identity->type->value)
+            );
         }
     }
 

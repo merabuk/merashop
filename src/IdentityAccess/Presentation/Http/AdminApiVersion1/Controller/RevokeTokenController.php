@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\IdentityAccess\Presentation\Http\ApiVersion1\Controller;
+namespace App\IdentityAccess\Presentation\Http\AdminApiVersion1\Controller;
 
 use App\IdentityAccess\Application\Command\RevokeAccessToken\RevokeAccessTokenCommand;
 use App\IdentityAccess\Application\Security\CurrentAccessTokenContextInterface;
@@ -23,7 +23,7 @@ final class RevokeTokenController extends AbstractController
 
     #[Route(
         path: '/auth/logout',
-        name: 'identity_access.api.v1.auth.logout',
+        name: 'identity_access.admin.api.v1.auth.logout',
         methods: [Request::METHOD_POST],
         format: JsonEncoder::FORMAT
     )]
@@ -32,7 +32,7 @@ final class RevokeTokenController extends AbstractController
         CurrentAccessTokenContextInterface $accessTokenContext,
         CommandBusInterface $commandBus,
     ): JsonResponse {
-        $this->denyAccessUnlessUser($identity);
+        $this->denyAccessUnlessAdmin($identity);
 
         $command = new RevokeAccessTokenCommand(
             jti: $accessTokenContext->getJti(),

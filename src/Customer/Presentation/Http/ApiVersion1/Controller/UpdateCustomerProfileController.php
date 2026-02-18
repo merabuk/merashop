@@ -33,7 +33,7 @@ class UpdateCustomerProfileController extends AbstractController
         #[CurrentAuthEntityIdentity] AuthIdentity $identity,
         CommandBusInterface $commandBus,
     ): JsonResponse {
-        $this->denyAccessUnlessNotUser($identity);
+        $this->denyAccessUnlessUser($identity);
 
         $command = new UpdateCustomerProfileCommand(
             userUlid: $identity->id,

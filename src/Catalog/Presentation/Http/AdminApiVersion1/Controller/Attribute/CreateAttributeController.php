@@ -34,7 +34,7 @@ class CreateAttributeController extends AbstractController
         #[CurrentAuthEntityIdentity] AuthIdentity $identity,
         CommandBusInterface $commandBus,
     ): JsonResponse {
-        $this->denyAccessUnlessNotAdmin($identity);
+        $this->denyAccessUnlessAdmin($identity);
 
         $command = new CreateAttributeCommand(
             code: $request->code,
