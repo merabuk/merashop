@@ -11,6 +11,7 @@ use App\Shared\Domain\ValueObject\IdInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Criteria\Restrictions\Criterion;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 trait ReadRepositoryTrait
 {
@@ -65,9 +66,6 @@ trait ReadRepositoryTrait
             ->getOneOrNullResult();
     }
 
-    /**
-     * @param callable $mapCallback Callback для checkAndMapToDomain
-     */
     protected function _paginate(
         QueryBuilder $qb,
         Cursor $cursor,
@@ -75,12 +73,6 @@ trait ReadRepositoryTrait
         callable $mapCallback,
         string $alias = 'e',
     ): PaginatedResult {
-        $countCountQb = clone $qb;
-        $totalCount = (int) $countCountQb
-            ->select("COUNT(DISTINCT {$alias}.id)")
-            ->getQuery()
-            ->getSingleScalarResult();
-
         $sortField = $sort->field ?? 'id';
         $direction = $sort->direction ?? Sort::ASC;
 
@@ -91,23 +83,35 @@ trait ReadRepositoryTrait
         }
 
         $qb->orderBy("{$alias}.{$sortField}", $direction);
-
         if ('id' !== $sortField) {
             $qb->addOrderBy("{$alias}.id", $direction);
         }
 
-        $results = $qb->setMaxResults($cursor->perPage)->getQuery()->getResult();
+        $qb->setMaxResults($cursor->perPage);
+
+        $paginator = new Paginator($qb, fetchJoinCollection: true);
+
+        $totalCount = $paginator->count();
+        $results = [];
+        foreach ($paginator as $ormEntity) {
+            $results[] = $ormEntity;
+        }
 
         $items = array_map($mapCallback, $results);
 
         $lastItem = end($items);
         $nextCursor = null;
-        // acceptable only for an admin panel, for a public api need to use ulid
-        if ($lastItem instanceof HasIdInterface) {
+
+        // TODO: solution for admin api, refactor this when pagination will be needed for public api
+        if ($lastItem instanceof HasIdInterface && null !== $lastItem->getId()) {
             $nextCursor = (string) $lastItem->getId()->value();
         }
 
-        return new PaginatedResult(items: $items, totalCount: $totalCount, nextCursor: $nextCursor);
+        return new PaginatedResult(
+            items: $items,
+            totalCount: $totalCount,
+            nextCursor: $nextCursor
+        );
     }
 
     protected function _makeCriterion(string $field, mixed $value, mixed $type = null): Criterion

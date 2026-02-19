@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\EmailSender\Support;
+namespace App\Tests\Shared\Support\Traits;
 
 use Doctrine\ORM\EntityManagerInterface;
 use RuntimeException;

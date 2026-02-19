@@ -12,8 +12,9 @@ use App\Catalog\Domain\ValueObject\Attribute\Translations;
 use App\Catalog\Domain\ValueObject\Attribute\Type;
 use App\Catalog\Domain\ValueObject\Attribute\Ulid;
 use App\Catalog\Domain\ValueObject\Attribute\Version;
+use App\Shared\Domain\Entity\HasIdInterface;
 
-class Attribute
+class Attribute implements HasIdInterface
 {
     public function __construct(
         private readonly ?Id $id,

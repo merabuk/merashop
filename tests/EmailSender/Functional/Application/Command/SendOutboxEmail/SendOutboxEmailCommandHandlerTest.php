@@ -10,7 +10,7 @@ use App\EmailSender\Domain\Repository\OutboxEmailReadRepositoryInterface;
 use App\EmailSender\Domain\Repository\OutboxEmailWriteRepositoryInterface;
 use App\EmailSender\Domain\Service\MailerServiceInterface;
 use App\Tests\EmailSender\Support\OutboxEmailMother;
-use App\Tests\EmailSender\Support\TransactionalTrait;
+use App\Tests\Shared\Support\Traits\TransactionalTrait;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -45,7 +45,7 @@ final class SendOutboxEmailCommandHandlerTest extends KernelTestCase
         $handler = $container->get(SendOutboxEmailCommandHandler::class);
         $em = $container->get('doctrine.orm.email_sender_entity_manager');
 
-        $this->executeInTransaction($em, function () use ($handler, $email) {
+        $this->executeInTransaction(em: $em, callback: function () use ($handler, $email) {
             $handler(new SendOutboxEmailCommand($email->getId()->value()));
         });
 

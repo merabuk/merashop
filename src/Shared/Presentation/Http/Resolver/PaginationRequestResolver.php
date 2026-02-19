@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Presentation\Http\Resolver;
 
+use App\Shared\Presentation\Http\Attribute\MapPagination;
 use App\Shared\Presentation\Http\Request\PaginationRequest;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,13 +30,18 @@ final readonly class PaginationRequestResolver implements ValueResolverInterface
             return [];
         }
 
+        /** @var ?MapPagination $attribute */
+        $attribute = $argument->getAttributes(MapPagination::class, ArgumentMetadata::IS_INSTANCEOF)[0] ?? null;
+
         $dto = new PaginationRequest();
+        $dto->setAllowedSortFields($attribute->allowedSortFields ?? []);
         $dto->lastSeenId = $request->query->get('lastSeenId');
         $dto->perPage = $request->query->has('perPage')
             ? (int) $request->query->get('perPage')
             : $dto->perPage;
         $dto->sortField = $request->query->get('sortField');
-        $dto->sortDir = mb_strtoupper((string) $request->query->get('sortDir', $dto->sortDir));
+        $sortDir = $request->query->get('sortDir');
+        $dto->sortDir = is_string($sortDir) ? mb_strtoupper($sortDir) : $dto->sortDir;
         $dto->filters = $request->query->all('filter');
 
         $violations = $this->validator->validate($dto);

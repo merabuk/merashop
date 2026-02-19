@@ -11,6 +11,7 @@ use App\Shared\Application\Query\QueryBusInterface;
 use App\Shared\Application\Security\AuthIdentity;
 use App\Shared\Domain\Criteria\Listing\PaginatedResult;
 use App\Shared\Presentation\Http\Attribute\CurrentAuthEntityIdentity;
+use App\Shared\Presentation\Http\Attribute\MapPagination;
 use App\Shared\Presentation\Http\Request\PaginationRequest;
 use App\Shared\Presentation\Http\Response\PaginatedResponseTrait;
 use App\Shared\Presentation\Http\Security\Controller\AuthIdentityAccessTrait;
@@ -26,17 +27,19 @@ class GetAttributeListController extends AbstractController
     use AuthIdentityAccessTrait;
     use PaginatedResponseTrait;
 
+    public const string ROUTE_NAME = 'catalog.admin.api.v1.attributes.list';
+
     /**
      * @throws HandlerFailedException
      */
     #[Route(
         path: '/attributes',
-        name: 'catalog.admin.api.v1.attributes.list',
+        name: self::ROUTE_NAME,
         methods: [Request::METHOD_GET],
         format: JsonEncoder::FORMAT
     )]
     public function __invoke(
-        PaginationRequest $pagination,
+        #[MapPagination(allowedSortFields: ['code'])] PaginationRequest $pagination,
         #[CurrentAuthEntityIdentity] AuthIdentity $identity,
         QueryBusInterface $queryBus,
     ): JsonResponse {

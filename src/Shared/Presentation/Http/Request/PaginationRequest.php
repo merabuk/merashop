@@ -19,13 +19,24 @@ final class PaginationRequest
     public int $perPage = Cursor::DEFAULT_PER_PAGE;
 
     #[Assert\Type('string')]
+    #[Assert\Choice(
+        callback: 'getAllowedSortFields',
+        message: 'shared.v1.pagination.sort_field_invalid'
+    )]
     public ?string $sortField = null;
 
-    #[Assert\Choice([Sort::ASC, Sort::DESC])]
+    #[Assert\Choice(choices: [Sort::ASC, Sort::DESC])]
     public string $sortDir = Sort::ASC;
 
-    /** @var array<string, mixed> */
+    /**
+     * @var array<string, mixed>
+     */
     public array $filters = [];
+
+    /**
+     * @var string[]
+     */
+    private array $allowedSortFields = [];
 
     public function toCriteria(): Criteria
     {
@@ -54,5 +65,21 @@ final class PaginationRequest
     public function toFilters(): Filters
     {
         return new Filters($this->filters);
+    }
+
+    /**
+     * @param string[] $fields
+     */
+    public function setAllowedSortFields(array $fields): void
+    {
+        $this->allowedSortFields = $fields;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getAllowedSortFields(): array
+    {
+        return $this->allowedSortFields;
     }
 }

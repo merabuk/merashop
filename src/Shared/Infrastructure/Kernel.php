@@ -18,21 +18,17 @@ class Kernel extends BaseKernel
         LoaderInterface $loader,
         ContainerBuilder $builder,
     ): void {
+        $extension = is_file($this->getConfigDir().'/services.yaml') ? 'yaml' : 'php';
+
         $configDir = preg_replace('{/config$}', '/{config}', $this->getConfigDir());
 
         $container->import($configDir.'/{packages}/*.{php,yaml}');
-        $container->import($configDir.'/{packages}/'.$this->environment.'/*.{php,yaml}');
-
-        if (is_file($this->getConfigDir().'/services.yaml')) {
-            $container->import($configDir.'/services.yaml');
-            $container->import($configDir.'/{services}_'.$this->environment.'.yaml');
-        } else {
-            $container->import($configDir.'/{services}.php');
-            $container->import($configDir.'/{services}_'.$this->environment.'.php');
-        }
-
+        $container->import($configDir.'/services.'.$extension);
         $container->import($configDir.'/{modules}/*.{php,yaml}');
+
+        $container->import($configDir.'/{packages}/'.$this->environment.'/*.{php,yaml}');
         $container->import($configDir.'/{modules}/'.$this->environment.'/*.{php,yaml}');
+        $container->import($configDir.'/{services}_'.$this->environment.'.'.$extension);
     }
 
     protected function build(ContainerBuilder $container): void

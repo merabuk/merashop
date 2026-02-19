@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\ValueObject\Attribute;
 
-use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
+use App\Catalog\Domain\Exception\Attribute\InvalidAttributeNameException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use ArrayIterator;
@@ -45,7 +45,7 @@ final class Translations implements Stringable, Countable, IteratorAggregate
     /**
      * @param array<string, array{name: string}> $data
      *
-     * @throws InvalidCatalogValueObjectException
+     * @throws InvalidAttributeNameException
      * @throws InvalidLocaleException
      */
     public static function fromArray(array $data): self

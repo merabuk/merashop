@@ -4,5 +4,19 @@ services:
     autoconfigure: true
     public: true
 
+  Faker\Factory: ~
+  Faker\Generator:
+    factory: [ 'Faker\Factory', 'create' ]
+    arguments: [ 'en_US' ]
+
+  App\Tests\Catalog\Support\:
+    resource: '../tests/Catalog/Support/'
+
   App\Tests\EmailSender\Support\:
     resource: '../tests/EmailSender/Support/'
+
+  App\Tests\Shared\Support\:
+    resource: '../tests/Shared/Support/'
+
+  App\Shared\Application\Security\AuthEntityContextInterface:
+    class: App\Tests\Shared\Support\Security\TestAuthContext

@@ -8,5 +8,5 @@ use App\Shared\Domain\ValueObject\IdInterface;
 
 interface HasIdInterface
 {
-    public function getId(): IdInterface;
+    public function getId(): ?IdInterface;
 }
