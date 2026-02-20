@@ -31,7 +31,7 @@ trait ApiAuthTrait
         return $identity;
     }
 
-    protected function logout(): void
+    protected function clearIdentity(): void
     {
         $authContext = $this->getAuthContext();
         $authContext->setIdentity(null);

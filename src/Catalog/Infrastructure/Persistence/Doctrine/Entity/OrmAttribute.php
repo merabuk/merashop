@@ -28,13 +28,13 @@ class OrmAttribute
     public private(set) ?int $id = null;
 
     #[ORM\Column(type: UlidType::NAME)]
-    public string $ulid;
+    public ?string $ulid = null;
 
     #[ORM\Column(type: Types::STRING, length: Code::MAX_LENGTH)]
-    public string $code;
+    public ?string $code = null;
 
     #[ORM\Column(type: TypeType::NAME)]
-    public TypeEnum $type;
+    public ?TypeEnum $type = null;
 
     /**
      * @var Collection<int, OrmAttributeTranslation>
@@ -49,10 +49,10 @@ class OrmAttribute
 
     #[ORM\Version]
     #[ORM\Column(type: Types::INTEGER)]
-    public int $version;
+    public ?int $version = null;
 
     #[ORM\Column(type: UlidType::NAME)]
-    public string $createdBy;
+    public ?string $createdBy = null;
 
     #[ORM\Column(type: UlidType::NAME)]
     public ?string $updatedBy = null;
@@ -60,5 +60,10 @@ class OrmAttribute
     public function __construct()
     {
         $this->translations = new ArrayCollection();
+    }
+
+    public function setId(?int $value): void
+    {
+        $this->id = $value;
     }
 }

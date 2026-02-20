@@ -19,14 +19,25 @@
     </php>
 
     <testsuites>
-        <testsuite name="identity_access">
-            <directory>tests/IdentityAccess</directory>
+        <testsuite name="catalog">
+            <directory>tests/Catalog/Unit</directory>
+            <directory>tests/Catalog/Integration</directory>
+            <directory>tests/Catalog/Functional</directory>
         </testsuite>
         <testsuite name="email_sender">
-            <directory>tests/EmailSender</directory>
+            <directory>tests/EmailSender/Unit</directory>
+            <directory>tests/EmailSender/Integration</directory>
+            <directory>tests/EmailSender/Functional</directory>
+        </testsuite>
+        <testsuite name="identity_access">
+            <directory>tests/IdentityAccess/Unit</directory>
+            <directory>tests/IdentityAccess/Integration</directory>
+            <directory>tests/IdentityAccess/Functional</directory>
         </testsuite>
         <testsuite name="shared">
-            <directory>tests/Shared</directory>
+            <directory>tests/Shared/Unit</directory>
+            <directory>tests/Shared/Integration</directory>
+            <directory>tests/Shared/Functional</directory>
         </testsuite>
     </testsuites>
 

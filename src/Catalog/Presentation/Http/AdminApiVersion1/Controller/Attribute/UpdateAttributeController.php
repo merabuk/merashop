@@ -25,12 +25,14 @@ class UpdateAttributeController extends AbstractController
 {
     use AuthIdentityAccessTrait;
 
+    public const ROUTE_NAME = 'catalog.admin.api.v1.attributes.update';
+
     /**
      * @throws HandlerFailedException
      */
     #[Route(
         path: '/attributes/{id}',
-        name: 'catalog.admin.api.v1.attributes.update',
+        name: self::ROUTE_NAME,
         requirements: ['id' => Requirement::POSITIVE_INT],
         methods: [Request::METHOD_PUT],
         format: JsonEncoder::FORMAT

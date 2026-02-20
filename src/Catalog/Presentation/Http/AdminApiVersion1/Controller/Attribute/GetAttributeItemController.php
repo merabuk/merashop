@@ -23,12 +23,14 @@ class GetAttributeItemController extends AbstractController
 {
     use AuthIdentityAccessTrait;
 
+    public const string ROUTE_NAME = 'catalog.admin.api.v1.attributes.get';
+
     /**
      * @throws HandlerFailedException
      */
     #[Route(
         path: '/attributes/{id}',
-        name: 'catalog.admin.api.v1.attributes.get',
+        name: self::ROUTE_NAME,
         requirements: ['id' => Requirement::POSITIVE_INT],
         methods: [Request::METHOD_GET],
         format: JsonEncoder::FORMAT

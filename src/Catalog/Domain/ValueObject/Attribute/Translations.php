@@ -62,6 +62,14 @@ final class Translations implements Stringable, Countable, IteratorAggregate
     }
 
     /**
+     * @return array<string, array{name: string}>
+     */
+    public function toArray(): array
+    {
+        return array_map(fn (Translation $translation) => ['name' => $translation->name], $this->data);
+    }
+
+    /**
      * @throws JsonException
      */
     protected function getPrimitiveValue(): string
