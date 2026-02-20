@@ -75,4 +75,9 @@ class OrmOutboxEmail
 
     #[ORM\Column(type: Types::GUID, nullable: true)]
     public ?string $traceId = null;
+
+    public function setId(?int $value): void
+    {
+        $this->id = $value;
+    }
 }

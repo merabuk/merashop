@@ -18,9 +18,11 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 
 final class RegisterUserAccountController extends AbstractController
 {
+    public const string ROUTE_NAME = 'identity_access.api.v1.users.register';
+
     #[Route(
         path: '/users/register',
-        name: 'identity_access.api.v1.users.register',
+        name: self::ROUTE_NAME,
         methods: [Request::METHOD_POST],
         format: JsonEncoder::FORMAT
     )]

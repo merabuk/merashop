@@ -22,9 +22,11 @@ class UpdateCustomerProfileController extends AbstractController
 {
     use AuthIdentityAccessTrait;
 
+    public const string ROUTE_NAME = 'customer.api.v1.profile.update';
+
     #[Route(
         path: '/profile',
-        name: 'customer.api.v1.profile.update',
+        name: self::ROUTE_NAME,
         methods: [Request::METHOD_PUT],
         format: JsonEncoder::FORMAT
     )]
@@ -43,8 +45,6 @@ class UpdateCustomerProfileController extends AbstractController
         );
 
         $commandBus->execute($command);
-
-        // TODO: decide if needed to return updated profile data
 
         return new JsonResponse(new UpdateCustomerProfileResponse('Profile was successfully updated'));
     }

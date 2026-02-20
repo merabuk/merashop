@@ -39,24 +39,9 @@ class OutboxEmailMapper implements MapperInterface
      */
     public function toDoctrineOrm(object $domain): OrmOutboxEmail
     {
-        $this->assertIsType(OutboxEmail::class, $domain);
-
-        /** @var OutboxEmail $domain */
         $orm = new OrmOutboxEmail();
 
-        $orm->status = $domain->getStatus()->value();
-        $orm->driver = $domain->getDriver()->value();
-        $orm->from = $domain->getFrom()->value();
-        $orm->fromName = $domain->getFromName()->value();
-        $orm->to = $domain->getTo()->value();
-        $orm->subject = $domain->getSubject()->value();
-        $orm->body = $domain->getBody()->value();
-        $orm->payload = $domain->getPayload()?->value();
-        $orm->attempts = $domain->getAttempts()->value();
-        $orm->traceId = $domain->getTraceId()?->value();
-        $orm->scheduledAt = $domain->getScheduledAt()?->value();
-        $orm->lockedAt = $domain->getLockedAt()?->value();
-        $orm->errorMessage = $domain->getErrorMessage()?->value();
+        $this->mapToExistingOrm($domain, $orm);
 
         return $orm;
     }

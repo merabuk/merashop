@@ -21,9 +21,11 @@ final class RevokeTokenController extends AbstractController
 {
     use AuthIdentityAccessTrait;
 
+    public const string ROUTE_NAME = 'identity_access.admin.api.v1.auth.logout';
+
     #[Route(
         path: '/auth/logout',
-        name: 'identity_access.admin.api.v1.auth.logout',
+        name: self::ROUTE_NAME,
         methods: [Request::METHOD_POST],
         format: JsonEncoder::FORMAT
     )]

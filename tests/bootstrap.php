@@ -17,10 +17,10 @@ if ($_SERVER['APP_DEBUG']) {
 
 $indent = '  ';
 $managers = [
+    'catalog' => 'config/migrations/catalog.php',
     'customer' => 'config/migrations/customer.php',
     'email_sender' => 'config/migrations/email_sender.php',
     'identity_access' => 'config/migrations/identity_access.php',
-    'catalog' => 'config/migrations/catalog.php',
 ];
 
 echo 'Preparing test databases...'.PHP_EOL;

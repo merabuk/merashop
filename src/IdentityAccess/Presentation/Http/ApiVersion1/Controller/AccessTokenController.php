@@ -19,9 +19,11 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 
 final class AccessTokenController extends AbstractController
 {
+    public const string ROUTE_NAME = 'identity_access.api.v1.auth.token';
+
     #[Route(
         path: '/auth/token',
-        name: 'identity_access.api.v1.auth.token',
+        name: self::ROUTE_NAME,
         methods: [Request::METHOD_POST],
         format: JsonEncoder::FORMAT
     )]
