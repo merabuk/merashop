@@ -43,7 +43,7 @@ final class Translations implements Stringable, Countable, IteratorAggregate
     }
 
     /**
-     * @param array<string, array{name: string}> $data
+     * @param array<string, array{name?: string}> $data
      *
      * @throws InvalidAttributeNameException
      * @throws InvalidLocaleException
@@ -54,7 +54,7 @@ final class Translations implements Stringable, Countable, IteratorAggregate
         foreach ($data as $locale => $item) {
             $translations[$locale] = new Translation(
                 locale: $locale,
-                name: $item['name']
+                name: $item['name'] ?? throw new InvalidAttributeNameException(sprintf('Attribute name is required for locale: %s', $locale)),
             );
         }
 

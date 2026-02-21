@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Shared\Support\Traits;
 
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bridge\Doctrine\DataCollector\DoctrineDataCollector;
 use PHPUnit\Framework\Assert;
+use Symfony\Bridge\Doctrine\DataCollector\DoctrineDataCollector;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpKernel\HttpKernel;
 
@@ -16,13 +16,13 @@ use Symfony\Component\HttpKernel\HttpKernel;
 trait DbPerformanceTrait
 {
     /**
-     * Checks the number of SELECT queries executed for a specific connection
+     * Checks the number of SELECT queries executed for a specific connection.
      */
     protected function assertSelectCountLessThanOrEqual(
         int $expectedMax,
         KernelBrowser $client,
         string $connectionName = 'default',
-        string $message = ''
+        string $message = '',
     ): void {
         $profile = $client->getProfile();
 

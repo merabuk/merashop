@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Catalog\Integration\Infrastructure\Persistence\Doctrine\Repository;
 
+use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeCodeException;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
+use App\Catalog\Domain\Exception\Attribute\OneOfAttributesNotFoundException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Id;
-use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
-use App\Catalog\Domain\Exception\Attribute\OneOfAttributesNotFoundException;
 use App\Shared\Domain\Criteria\Filtering\Filters;
 use App\Shared\Domain\Criteria\Listing\Criteria;
 use App\Shared\Domain\Criteria\Paging\Cursor;

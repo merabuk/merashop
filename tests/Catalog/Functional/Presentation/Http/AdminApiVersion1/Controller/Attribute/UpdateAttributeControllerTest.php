@@ -4,80 +4,81 @@ declare(strict_types=1);
 
 namespace App\Tests\Catalog\Functional\Presentation\Http\AdminApiVersion1\Controller\Attribute;
 
-use App\Catalog\Domain\Exception\Attribute\InvalidAttributeCodeException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
-use App\Catalog\Domain\ValueObject\Attribute\Code;
-use App\Catalog\Presentation\Http\AdminApiVersion1\Controller\Attribute\CreateAttributeController;
+use App\Catalog\Presentation\Http\AdminApiVersion1\Controller\Attribute\UpdateAttributeController;
+use App\Shared\Domain\Enum\ErrorCodeEnum;
+use App\Tests\Catalog\Support\Traits\AttributeFactoryTrait;
 use App\Tests\Shared\Support\Traits\ApiAuthTrait;
 use App\Tests\Shared\Support\Traits\ApiRequestTrait;
 use App\Tests\Shared\Support\Traits\BaseUriTrait;
-use App\Tests\Shared\Support\Traits\DbPerformanceTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class CreateAttributeControllerTest extends WebTestCase
+final class UpdateAttributeControllerTest extends WebTestCase
 {
     use ApiAuthTrait;
     use ApiRequestTrait;
+    use AttributeFactoryTrait;
     use BaseUriTrait;
-    use DbPerformanceTrait;
 
-    private const string ROUTE_NAME = CreateAttributeController::ROUTE_NAME;
+    private const string ROUTE_NAME = UpdateAttributeController::ROUTE_NAME;
 
-    public function testItReturnsForbiddenForGuests(): void
-    {
-        $client = self::createClient();
-        $this->clearIdentity();
-
-        $client->request(method: Request::METHOD_POST, uri: $this->getUrl());
-
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
-    }
-
-    public function testItForbiddenForRegularUser(): void
-    {
-        $client = self::createClient();
-        $this->loginAsUser();
-
-        $client->request(method: Request::METHOD_POST, uri: $this->getUrl(), content: '{}');
-
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
-    }
-
-    /**
-     * @throws InvalidAttributeCodeException
-     */
-    public function testItSuccessfullyCreatesAttribute(): void
+    public function testItSuccessfullyUpdatesAttribute(): void
     {
         $client = self::createClient();
         $this->loginAsAdmin();
 
+        $attribute = $this->getAttributeFixture()->create(['code' => 'brand']);
+
         $payload = [
-            'code' => 'brand_name',
+            'code' => 'brand_updated',
             'type' => 'string',
-            'translations' => [
-                'en' => ['name' => 'Brand'],
-                'uk' => ['name' => 'Бренд'],
-            ],
+            'version' => $attribute->getVersion()->value(),
+            'translations' => ['en' => ['name' => 'Brand Updated']],
         ];
 
         $this->requestJson(
             client: $client,
-            method: Request::METHOD_POST,
-            uri: $this->getUrl(),
+            method: Request::METHOD_PUT,
+            uri: $this->getUrl(['id' => $attribute->getId()->value()]),
             payload: $payload
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+        $this->assertResponseIsSuccessful();
 
-        $readRepository = self::getContainer()->get(AttributeReadRepositoryInterface::class);
-        $exists = $readRepository->existsByCode(Code::fromString('brand_name'));
-        $this->assertTrue($exists, 'Attribute was not saved to database');
+        $updated = self::getContainer()->get(AttributeReadRepositoryInterface::class)->findById($attribute->getId());
+        $this->assertSame('brand_updated', $updated->getCode()->value());
+    }
 
+    public function testItReturns409OnConcurrencyError(): void
+    {
+        $client = self::createClient();
+        $this->loginAsAdmin();
+
+        $attribute = $this->getAttributeFixture()->create([
+            'code' => 'old',
+            'version' => 2,
+        ]);
+
+        $payload = [
+            'code' => 'new',
+            'type' => 'string',
+            'translations' => ['en' => ['name' => 'Name']],
+            'version' => $attribute->getVersion()->value() - 1,
+        ];
+
+        $this->requestJson(
+            client: $client,
+            method: Request::METHOD_PUT,
+            uri: $this->getUrl(['id' => $attribute->getId()->value()]),
+            payload: $payload
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
         $data = json_decode($client->getResponse()->getContent(), true);
-        $this->assertStringContainsString('successfully created', $data['message']);
+        $this->assertSame(ErrorCodeEnum::ConcurrencyError->value, $data['code']);
     }
 
     #[DataProvider('invalidAttributeProvider')]
@@ -86,11 +87,16 @@ final class CreateAttributeControllerTest extends WebTestCase
         $client = self::createClient();
         $this->loginAsAdmin();
 
+        $attribute = $this->getAttributeFixture()->create();
+
         $this->requestJson(
             client: $client,
-            method: Request::METHOD_POST,
-            uri: $this->getUrl(),
-            payload: $payload
+            method: Request::METHOD_PUT,
+            uri: $this->getUrl(['id' => $attribute->getId()->value()]),
+            payload: [
+                'version' => $attribute->getVersion()->value(),
+                ...$payload,
+            ],
         );
 
         $this->assertResponseIsUnprocessable();
@@ -116,6 +122,10 @@ final class CreateAttributeControllerTest extends WebTestCase
         yield 'invalid locale' => [
             'payload' => ['code' => 'brand', 'type' => 'string', 'translations' => ['xx' => ['name' => 'Name']]],
             'expectedErrorFields' => ['translations[xx]'],
+        ];
+        yield 'invalid version' => [
+            'payload' => ['code' => 'brand', 'type' => 'string', 'version' => -1],
+            'expectedErrorFields' => ['version'],
         ];
     }
 

@@ -28,6 +28,8 @@ final class CreateAttributeHandlerTest extends TestCase
     /**
      * @throws AttributeAlreadyExistsException
      * @throws CreateAttributeException
+     * @throws InvalidCatalogValueObjectException
+     * @throws InvalidLocaleException
      */
     public function testHandleSuccess(): void
     {
@@ -42,15 +44,22 @@ final class CreateAttributeHandlerTest extends TestCase
             adminUlid: '01KHVRCA679BJ6PBXX5N3G6RR5'
         );
 
-        $ulidGenerator->method('next')->willReturn('01KHVRCA0FCCYAQT1P88R317DD');
+        $fakeId = 123;
+        $ulid = '01KHVRCA0FCCYAQT1P88R317DD';
+        $ulidGenerator->method('next')->willReturn($ulid);
         $readRepository->method('existsByCode')->willReturn(false);
 
         $writeRepository->expects($this->once())
             ->method('save')
-            ->willReturn($this->makeSavedAttribute());
+            ->willReturn($this->makeSavedAttribute(id: $fakeId, ulid: $ulid, command: $command));
 
-        $handler = new CreateAttributeHandler($readRepository, $ulidGenerator, $writeRepository);
-        $handler($command);
+        $handler = new CreateAttributeHandler(
+            readRepository: $readRepository,
+            ulidGenerator: $ulidGenerator,
+            writeRepository: $writeRepository
+        );
+        $resultId = $handler($command);
+        self::assertSame($fakeId, $resultId);
     }
 
     /**
@@ -74,7 +83,11 @@ final class CreateAttributeHandlerTest extends TestCase
 
         $this->expectException(AttributeAlreadyExistsException::class);
 
-        $handler = new CreateAttributeHandler($readRepository, $ulidGenerator, $writeRepository);
+        $handler = new CreateAttributeHandler(
+            readRepository: $readRepository,
+            ulidGenerator: $ulidGenerator,
+            writeRepository: $writeRepository
+        );
         $handler($command);
     }
 
@@ -82,16 +95,19 @@ final class CreateAttributeHandlerTest extends TestCase
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
      */
-    private function makeSavedAttribute(): Attribute
-    {
+    private function makeSavedAttribute(
+        int $id,
+        string $ulid,
+        CreateAttributeCommand $command,
+    ): Attribute {
         return new Attribute(
-            id: Id::fromInt(123),
-            ulid: Ulid::fromString('01KHVRCA0FCCYAQT1P88R317DD'),
-            code: Code::fromString('color'),
-            type: Type::fromString('string'),
-            translations: Translations::fromArray(['en' => ['name' => 'Color']]),
+            id: Id::fromInt($id),
+            ulid: Ulid::fromString($ulid),
+            code: Code::fromString($command->code),
+            type: Type::fromString($command->type),
+            translations: Translations::fromArray($command->translations),
             version: Version::initial(),
-            createdBy: AdminUlid::fromString('01KHVRCA679BJ6PBXX5N3G6RR5')
+            createdBy: AdminUlid::fromString($command->adminUlid)
         );
     }
 }

@@ -20,7 +20,7 @@ final class PhoneNumberValidator
         $trimmedPhoneNumber = '+'.$trimmedPhoneNumber;
 
         if (mb_strlen($trimmedPhoneNumber) > $maxLength) {
-            PhoneNumberMaxLengthException::becauseValueIsToLong($maxLength);
+            throw PhoneNumberMaxLengthException::becauseValueIsToLong($maxLength);
         }
 
         // only Ukraine phone numbers support yet

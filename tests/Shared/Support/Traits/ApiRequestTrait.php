@@ -12,7 +12,7 @@ trait ApiRequestTrait
         KernelBrowser $client,
         string $method,
         string $uri,
-        array $payload = []
+        array $payload = [],
     ): void {
         $client->request(
             method: $method,

@@ -19,6 +19,11 @@
     </php>
 
     <testsuites>
+        <testsuite name="shared">
+            <directory>tests/Shared/Unit</directory>
+            <directory>tests/Shared/Integration</directory>
+            <directory>tests/Shared/Functional</directory>
+        </testsuite>
         <testsuite name="catalog">
             <directory>tests/Catalog/Unit</directory>
             <directory>tests/Catalog/Integration</directory>
@@ -33,11 +38,6 @@
             <directory>tests/IdentityAccess/Unit</directory>
             <directory>tests/IdentityAccess/Integration</directory>
             <directory>tests/IdentityAccess/Functional</directory>
-        </testsuite>
-        <testsuite name="shared">
-            <directory>tests/Shared/Unit</directory>
-            <directory>tests/Shared/Integration</directory>
-            <directory>tests/Shared/Functional</directory>
         </testsuite>
     </testsuites>
 

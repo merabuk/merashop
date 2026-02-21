@@ -336,10 +336,19 @@ The project uses ELK stack (Elasticsearch, Logstash/Filebeat, Kibana) for loggin
 - Kibana: [localhost:5601](http://localhost:5601)
 
 ### Local Development and Testing
+
+#### Logging
 To test the production-like logging locally:
 1. Ensure the `config/packages/monolog.yaml` file `when@dev.monolog.handlers.main.formatter` option has `monolog.formatter.json` value.
 2. Ensure the `filebeat` container is running.
 3. Check logs in Kibana. By default, Symfony logs to `var/log/dev.log`, and Filebeat reads it.
+
+#### Writing tests
+
+##### Object Mother Pattern
+To minimize edits when changing domain models, "Mother" classes are used(`tests/{Module}/Support/{Entity}Mother.php`):
+ - `createWithData()` **(static)**: For unit tests. Does not require Kernel, uses hardcoded valid data.
+ - `create()` **(instance)**: For integration/functional tests. Requires DI, uses Faker and factories.
 
 ### Features
 - **TraceId**: Each request is assigned a unique `TraceId` (**UUID v7**), which is automatically added to all log entries via `TraceIdProcessor`. This allows tracing the entire lifecycle of a request across different modules.

@@ -21,9 +21,9 @@ final readonly class TraceId implements Stringable
     public function __construct(string $value)
     {
         try {
-            $this->value = UuidValidator::validateV7($value);
+            $this->value = UuidValidator::validateV7(mb_trim($value));
         } catch (InvalidUuidException $e) {
-            throw new InvalidTraceIdException($e->getMessage(), previous: $e);
+            throw InvalidTraceIdException::fromBase($e);
         }
     }
 

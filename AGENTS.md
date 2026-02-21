@@ -213,6 +213,17 @@ To ensure consistent data retrieval across all modules, the **Criteria Pattern**
 - `fromDoctrineOrm`: Correct restoration of the Domain object (including VO) from the ORM state
 - `mapToExistingOrm`: Correct update of an existing ORM entity without losing data. *Note: These tests should use real data to ensure no field is forgotten.*
 
+### 5.1. Naming Conventions
+
+- **Unit Tests (Logic & Value Objects)**: Use the `testIt` prefix to describe the expected behavior.
+    - **Example**: testItTrimsSpaces(), testItCreatesValidCollection().
+- **Infrastructure Tests (Mappers & Repositories)**: Use the direct name of the method being tested.
+    - **Example**: testToDoctrineOrm(), testFindById().
+- **Functional Tests (API/Handlers)**: Use a narrative style [testIt] + [Action] + [Expected Result/Context].
+    - **Example**: testItSuccessfullyUpdatesAttribute(), testItReturns409OnConcurrencyError().
+- **Exception Testing**: Use the format testThrowsExceptionOn[Condition].
+    - **Example**: testThrowsExceptionOnInvalidLocale().
+
 ## 6. AI Interaction Rules
 
 Before implementing any changes, the AI must:

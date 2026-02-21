@@ -21,7 +21,7 @@ class Ulid implements Stringable
     protected function __construct(string $ulid)
     {
         try {
-            $this->ulid = UlidValidator::validate($ulid);
+            $this->ulid = UlidValidator::validate(mb_trim($ulid));
         } catch (BaseInvalidUlidException $e) {
             throw InvalidUlidException::fromBase($e);
         }

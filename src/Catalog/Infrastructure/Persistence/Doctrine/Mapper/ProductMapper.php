@@ -88,6 +88,7 @@ class ProductMapper implements MapperInterface
                 TypeEnum::String, TypeEnum::Select => StringValue::fromString($ormValue->valueString),
                 TypeEnum::Int => IntegerValue::fromInt($ormValue->valueInt),
                 TypeEnum::Boolean => BooleanValue::fromBool($ormValue->valueBoolean),
+                null => throw new InvalidArgumentException(sprintf('%s with id %d has null type', OrmProductAttributeValue::class, (int) $ormValue->id)),
             };
 
             $attributeValues[] = new ProductAttributeValue(

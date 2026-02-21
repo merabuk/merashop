@@ -23,7 +23,7 @@ class CreateAttributeController extends AbstractController
 {
     use AuthIdentityAccessTrait;
 
-    public const ROUTE_NAME = 'catalog.admin.api.v1.attributes.create';
+    public const string ROUTE_NAME = 'catalog.admin.api.v1.attributes.create';
 
     #[Route(
         path: '/attributes',

@@ -61,7 +61,6 @@ final class AttributeMapperTest extends TestCase
         self::assertSame($domain->getVersion()->value(), $orm->version);
         self::assertSame($domain->getCreatedBy()->value(), $orm->createdBy);
         self::assertSame($domain->getUpdatedBy()->value(), $orm->updatedBy);
-
     }
 
     /**
