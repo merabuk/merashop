@@ -7,20 +7,13 @@ namespace App\Tests\Catalog\Unit\Application\Command\CreateAttribute;
 use App\Catalog\Application\Command\CreateAttribute\CreateAttributeCommand;
 use App\Catalog\Application\Command\CreateAttribute\CreateAttributeHandler;
 use App\Catalog\Application\Exception\Attribute\CreateAttributeException;
-use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Exception\Attribute\AttributeAlreadyExistsException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
-use App\Catalog\Domain\ValueObject\AdminUlid;
-use App\Catalog\Domain\ValueObject\Attribute\Code;
-use App\Catalog\Domain\ValueObject\Attribute\Id;
-use App\Catalog\Domain\ValueObject\Attribute\Translations;
-use App\Catalog\Domain\ValueObject\Attribute\Type;
-use App\Catalog\Domain\ValueObject\Attribute\Ulid;
-use App\Catalog\Domain\ValueObject\Attribute\Version;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Domain\Service\UlidGeneratorInterface;
+use App\Tests\Catalog\Support\AttributeMother;
 use PHPUnit\Framework\TestCase;
 
 final class CreateAttributeHandlerTest extends TestCase
@@ -51,7 +44,14 @@ final class CreateAttributeHandlerTest extends TestCase
 
         $writeRepository->expects($this->once())
             ->method('save')
-            ->willReturn($this->makeSavedAttribute(id: $fakeId, ulid: $ulid, command: $command));
+            ->willReturn(AttributeMother::createWithData([
+                'id' => $fakeId,
+                'ulid' => $ulid,
+                'code' => $command->code,
+                'type' => $command->type,
+                'translations' => $command->translations,
+                'createdBy' => $command->adminUlid,
+            ]));
 
         $handler = new CreateAttributeHandler(
             readRepository: $readRepository,
@@ -89,25 +89,5 @@ final class CreateAttributeHandlerTest extends TestCase
             writeRepository: $writeRepository
         );
         $handler($command);
-    }
-
-    /**
-     * @throws InvalidCatalogValueObjectException
-     * @throws InvalidLocaleException
-     */
-    private function makeSavedAttribute(
-        int $id,
-        string $ulid,
-        CreateAttributeCommand $command,
-    ): Attribute {
-        return new Attribute(
-            id: Id::fromInt($id),
-            ulid: Ulid::fromString($ulid),
-            code: Code::fromString($command->code),
-            type: Type::fromString($command->type),
-            translations: Translations::fromArray($command->translations),
-            version: Version::initial(),
-            createdBy: AdminUlid::fromString($command->adminUlid)
-        );
     }
 }

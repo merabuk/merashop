@@ -8,20 +8,13 @@ use App\Catalog\Application\Command\UpdateAttribute\UpdateAttributeCommand;
 use App\Catalog\Application\Command\UpdateAttribute\UpdateAttributeHandler;
 use App\Catalog\Application\Exception\Attribute\UpdateAttributeException;
 use App\Catalog\Domain\Entity\Attribute;
-use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
-use App\Catalog\Domain\ValueObject\AdminUlid;
-use App\Catalog\Domain\ValueObject\Attribute\Code;
-use App\Catalog\Domain\ValueObject\Attribute\Id;
-use App\Catalog\Domain\ValueObject\Attribute\Translations;
-use App\Catalog\Domain\ValueObject\Attribute\Type;
-use App\Catalog\Domain\ValueObject\Attribute\Ulid;
-use App\Catalog\Domain\ValueObject\Attribute\Version;
 use App\Shared\Domain\Exception\Entity\ConcurrencyException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
+use App\Tests\Catalog\Support\AttributeMother;
 use PHPUnit\Framework\TestCase;
 
 final class UpdateAttributeHandlerTest extends TestCase
@@ -97,23 +90,10 @@ final class UpdateAttributeHandlerTest extends TestCase
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
      */
-    private function makeAttribute(
-        int $fakeId = 123,
-        string $ulid = '01KHVRCA0FCCYAQT1P88R317DD',
-        string $code = 'code',
-        TypeEnum $type = TypeEnum::String,
-        array $translations = ['en' => ['name' => 'Name']],
-        int $version = 1,
-        string $adminUlid = '01KHVRCA679BJ6PBXX5N3G6RR5',
-    ): Attribute {
-        return new Attribute(
-            id: Id::fromInt($fakeId),
-            ulid: Ulid::fromString($ulid),
-            code: Code::fromString($code),
-            type: Type::fromEnum($type),
-            translations: Translations::fromArray($translations),
-            version: Version::fromInt($version),
-            createdBy: AdminUlid::fromString($adminUlid)
-        );
+    private function makeAttribute(int $version = 1): Attribute
+    {
+        return AttributeMother::createWithData([
+            'version' => $version,
+        ]);
     }
 }

@@ -59,14 +59,13 @@ final class UpdateAttributeControllerTest extends WebTestCase
 
         $attribute = $this->getAttributeFixture()->create([
             'code' => 'old',
-            'version' => 2,
         ]);
 
         $payload = [
             'code' => 'new',
             'type' => 'string',
             'translations' => ['en' => ['name' => 'Name']],
-            'version' => $attribute->getVersion()->value() - 1,
+            'version' => $attribute->getVersion()->value() + 1,
         ];
 
         $this->requestJson(

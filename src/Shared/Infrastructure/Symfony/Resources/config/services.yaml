@@ -11,7 +11,7 @@ services:
   App\Shared\Domain\Service\UlidGeneratorInterface: '@App\Shared\Infrastructure\Service\SymfonyUlidGenerator'
   App\Shared\Domain\Service\UuidGeneratorInterface: '@App\Shared\Infrastructure\Service\SymfonyUuidGenerator'
   App\Shared\Domain\Service\TraceIdFactoryInterface: '@App\Shared\Infrastructure\Service\TraceIdFactory'
-  App\Shared\Domain\Service\TraceIdServiceInterface: '@App\Shared\Infrastructure\Service\TraceIdContext'
+  App\Shared\Domain\Service\TraceIdContextInterface: '@App\Shared\Infrastructure\Service\TraceIdContext'
 
   App\Shared\Presentation\Http\Resolver\CurrentAuthEntityIdentityResolver:
     tags: [ 'controller.argument_value_resolver' ]

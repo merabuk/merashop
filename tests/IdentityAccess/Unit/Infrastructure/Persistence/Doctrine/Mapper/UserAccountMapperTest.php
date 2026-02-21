@@ -6,11 +6,11 @@ namespace App\Tests\IdentityAccess\Unit\Infrastructure\Persistence\Doctrine\Mapp
 
 use App\IdentityAccess\Domain\Entity\UserAccount;
 use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
-use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Ulid;
 use App\IdentityAccess\Domain\ValueObject\RoleCollection;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\Id;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\PasswordHash;
+use App\IdentityAccess\Domain\ValueObject\UserAccount\Ulid;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmUserAccount;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Mapper\UserAccountMapper;
 use App\Shared\Domain\Exception\EntityIdMissingException;
