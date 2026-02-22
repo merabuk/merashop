@@ -42,7 +42,7 @@ final class EventRoutingKeyMiddlewareTest extends TestCase
             ->with(self::callback(function (Envelope $envelope) {
                 $stamp = $envelope->last(AmqpStamp::class);
 
-                return $stamp instanceof AmqpStamp && $stamp->getRoutingKey() === 'test.routing.key';
+                return $stamp instanceof AmqpStamp && 'test.routing.key' === $stamp->getRoutingKey();
             }))
             ->willReturnArgument(0);
 
@@ -66,7 +66,7 @@ final class EventRoutingKeyMiddlewareTest extends TestCase
         $nextMiddleware->expects(self::once())
             ->method('handle')
             ->with(self::callback(function (Envelope $envelope) {
-                return $envelope->last(AmqpStamp::class) === null;
+                return null === $envelope->last(AmqpStamp::class);
             }))
             ->willReturnArgument(0);
 

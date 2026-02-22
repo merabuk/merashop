@@ -14,8 +14,8 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 final readonly class ConsoleTraceIdListener
 {
     public function __construct(
-        private TraceIdContextInterface $context,
-        private TraceIdFactoryInterface $traceIdGenerator,
+        private TraceIdContextInterface $traceIdContext,
+        private TraceIdFactoryInterface $traceIdFactory,
     ) {
     }
 
@@ -24,6 +24,6 @@ final readonly class ConsoleTraceIdListener
      */
     public function onConsoleCommand(ConsoleCommandEvent $event): void
     {
-        $this->context->set($this->traceIdGenerator->createNew());
+        $this->traceIdContext->set($this->traceIdFactory->createNew());
     }
 }

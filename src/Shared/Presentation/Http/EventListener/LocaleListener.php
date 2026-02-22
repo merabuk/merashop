@@ -16,6 +16,7 @@ final class LocaleListener
     {
         $request = $event->getRequest();
 
+        // TODO[locale]: check if this is needed in the future
         if ($request->attributes->get('_locale')) {
             return;
         }

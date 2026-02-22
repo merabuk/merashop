@@ -11,15 +11,15 @@ use App\Shared\Domain\Service\TraceIdContextInterface;
 use App\Shared\Domain\Service\TraceIdFactoryInterface;
 use App\Shared\Domain\ValueObject\TraceId;
 use App\Shared\Presentation\Http\EventListener\HttpTraceIdListener;
+use App\Tests\Shared\Support\Traits\AppListenersTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 final class HttpTraceIdListenerTest extends TestCase
 {
+    use AppListenersTrait;
+
     /**
      * @throws InvalidTraceIdException
      * @throws InvalidRequestHeaderValueException
@@ -117,26 +117,10 @@ final class HttpTraceIdListenerTest extends TestCase
 
         $context->expects(self::once())->method('get')->willReturn($traceId);
 
-        $event = new ResponseEvent(
-            kernel: $this->createMock(HttpKernelInterface::class),
-            request: new Request(),
-            requestType: HttpKernelInterface::MAIN_REQUEST,
-            response: new Response()
-        );
+        $event = $this->createResponseEvent();
 
         $listener->onKernelResponse($event);
 
         self::assertSame($traceIdValue, $event->getResponse()->headers->get(HttpTraceIdListener::TRACE_ID_HEADER));
-    }
-
-    private function makeRequestEvent(
-        ?Request $request = null,
-        int $requestType = HttpKernelInterface::MAIN_REQUEST
-    ): RequestEvent {
-        return new RequestEvent(
-            kernel: $this->createMock(HttpKernelInterface::class),
-            request: $request ?? new Request(),
-            requestType: $requestType
-        );
     }
 }

@@ -11,6 +11,7 @@ use App\Shared\Domain\Service\TraceIdFactoryInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
+
 final readonly class HttpTraceIdListener
 {
     public const string TRACE_ID_HEADER = 'Merashop-Trace-Id';
@@ -39,8 +40,7 @@ final readonly class HttpTraceIdListener
                 ? $this->traceIdFactory->createFromString($headerValue)
                 : $this->traceIdFactory->createNew();
         } catch (TraceIdFactoryException $e) {
-            throw new InvalidRequestHeaderValueException($e->getMessage(), previous: $e)
-                ->withHeaderName(self::TRACE_ID_HEADER);
+            throw new InvalidRequestHeaderValueException($e->getMessage(), previous: $e)->withHeaderName(self::TRACE_ID_HEADER);
         }
 
         $this->traceIdContext->set($traceId);
