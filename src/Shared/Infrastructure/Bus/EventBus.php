@@ -18,8 +18,8 @@ class EventBus implements EventBusInterface
         $this->messageBus = $eventBus;
     }
 
-    public function execute(EventInterface $event): mixed
+    public function execute(EventInterface $event): void
     {
-        return $this->handle($event);
+        $this->handle($event);
     }
 }

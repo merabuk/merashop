@@ -4,22 +4,26 @@ declare(strict_types=1);
 
 namespace App\Shared\Presentation\Http\EventListener;
 
+use App\Shared\Domain\Exception\Request\InvalidRequestHeaderValueException;
+use App\Shared\Domain\Exception\Services\TraceIdFactoryException;
 use App\Shared\Domain\Service\TraceIdContextInterface;
 use App\Shared\Domain\Service\TraceIdFactoryInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
-
 final readonly class HttpTraceIdListener
 {
     public const string TRACE_ID_HEADER = 'Merashop-Trace-Id';
 
     public function __construct(
-        private TraceIdContextInterface $context,
+        private TraceIdContextInterface $traceIdContext,
         private TraceIdFactoryInterface $traceIdFactory,
     ) {
     }
 
+    /**
+     * @throws InvalidRequestHeaderValueException
+     */
     #[AsEventListener(event: RequestEvent::class, priority: 255)]
     public function onKernelRequest(RequestEvent $event): void
     {
@@ -30,11 +34,16 @@ final readonly class HttpTraceIdListener
         $request = $event->getRequest();
         $headerValue = $request->headers->get(self::TRACE_ID_HEADER);
 
-        $traceId = $headerValue
-            ? $this->traceIdFactory->createFromString($headerValue)
-            : $this->traceIdFactory->createNew();
+        try {
+            $traceId = $headerValue
+                ? $this->traceIdFactory->createFromString($headerValue)
+                : $this->traceIdFactory->createNew();
+        } catch (TraceIdFactoryException $e) {
+            throw new InvalidRequestHeaderValueException($e->getMessage(), previous: $e)
+                ->withHeaderName(self::TRACE_ID_HEADER);
+        }
 
-        $this->context->set($traceId);
+        $this->traceIdContext->set($traceId);
 
         $request->attributes->set('trace_id', $traceId);
     }
@@ -42,6 +51,6 @@ final readonly class HttpTraceIdListener
     #[AsEventListener(event: ResponseEvent::class)]
     public function onKernelResponse(ResponseEvent $event): void
     {
-        $event->getResponse()->headers->set(self::TRACE_ID_HEADER, $this->context->get()->value());
+        $event->getResponse()->headers->set(self::TRACE_ID_HEADER, $this->traceIdContext->get()->value());
     }
 }

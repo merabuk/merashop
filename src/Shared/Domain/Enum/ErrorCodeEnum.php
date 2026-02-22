@@ -15,4 +15,5 @@ enum ErrorCodeEnum: string
     case UnsupportedMediaType = 'UNSUPPORTED_MEDIA_TYPE';
     case Conflict = 'CONFLICT';
     case ConcurrencyError = 'CONCURRENCY_ERROR';
+    case InvalidRequestHeaderValue = 'INVALID_REQUEST_HEADER_VALUE';
 }

@@ -6,5 +6,5 @@ namespace App\Shared\Domain\Event;
 
 interface EventBusInterface
 {
-    public function execute(EventInterface $event): mixed;
+    public function execute(EventInterface $event): void;
 }
