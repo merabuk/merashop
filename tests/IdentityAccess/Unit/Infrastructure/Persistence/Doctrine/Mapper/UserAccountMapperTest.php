@@ -13,8 +13,8 @@ use App\IdentityAccess\Domain\ValueObject\UserAccount\PasswordHash;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\Ulid;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmUserAccount;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Mapper\UserAccountMapper;
-use App\Shared\Domain\Exception\EntityIdMissingException;
-use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
+use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 

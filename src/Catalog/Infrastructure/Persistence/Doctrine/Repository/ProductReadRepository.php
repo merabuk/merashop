@@ -11,8 +11,8 @@ use App\Catalog\Domain\Repository\ProductReadRepositoryInterface;
 use App\Catalog\Domain\ValueObject\Product\Id;
 use App\Catalog\Domain\ValueObject\Product\Ulid;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProduct;
-use App\Shared\Domain\Exception\EntityIdMissingException;
-use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
+use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 
 final class ProductReadRepository extends BaseProductRepository implements ProductReadRepositoryInterface
 {

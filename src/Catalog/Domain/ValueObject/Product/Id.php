@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Catalog\Domain\ValueObject\Product;
 
 use App\Catalog\Domain\Exception\Product\InvalidProductIdException;
-use App\Shared\Domain\Exception\IntegerIsNotUnsignedException;
+use App\Shared\Domain\Exception\Services\IntegerIsNotUnsignedException;
 use App\Shared\Domain\Service\IntegerValidator;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;

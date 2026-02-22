@@ -9,6 +9,7 @@ use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;
 use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectException;
 use App\EmailSender\Domain\Exception\OutboxEmailAlreadyInProcessException;
 use App\EmailSender\Domain\Service\OutboxEmailFactoryInterface;
+use App\Shared\Domain\Exception\Services\TraceIdFactoryException;
 use App\Shared\Domain\Service\TraceIdFactoryInterface;
 use App\Shared\Domain\ValueObject\TraceId;
 use DateMalformedStringException;
@@ -24,6 +25,9 @@ final readonly class OutboxEmailMother
     ) {
     }
 
+    /**
+     * @throws TraceIdFactoryException
+     */
     public function createBaseEmail(
         string $to = 'test@example.com',
         string $subject = 'Subject',
@@ -45,6 +49,7 @@ final readonly class OutboxEmailMother
 
     /**
      * @throws OutboxEmailAlreadyInProcessException
+     * @throws TraceIdFactoryException
      */
     public function createLockedEmail(?DateTimeImmutable $lockedAt = null): OutboxEmail
     {
@@ -57,6 +62,7 @@ final readonly class OutboxEmailMother
     /**
      * @throws InvalidEmailSenderValueObjectException
      * @throws DateMalformedStringException
+     * @throws TraceIdFactoryException
      */
     public function createFailedEmail(): OutboxEmail
     {

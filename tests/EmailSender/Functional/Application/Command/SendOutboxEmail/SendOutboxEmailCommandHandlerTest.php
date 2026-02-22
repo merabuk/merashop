@@ -9,6 +9,7 @@ use App\EmailSender\Application\Command\SendOutboxEmail\SendOutboxEmailCommandHa
 use App\EmailSender\Domain\Repository\OutboxEmailReadRepositoryInterface;
 use App\EmailSender\Domain\Repository\OutboxEmailWriteRepositoryInterface;
 use App\EmailSender\Domain\Service\MailerServiceInterface;
+use App\Shared\Domain\Exception\Services\TraceIdFactoryException;
 use App\Tests\EmailSender\Support\OutboxEmailMother;
 use App\Tests\Shared\Support\Traits\TransactionalTrait;
 use Exception;
@@ -32,6 +33,9 @@ final class SendOutboxEmailCommandHandlerTest extends KernelTestCase
         $this->writeRepository = $container->get(OutboxEmailWriteRepositoryInterface::class);
     }
 
+    /**
+     * @throws TraceIdFactoryException
+     */
     public function testHandleIncrementsAttemptsOnMailerFailure(): void
     {
         $container = self::getContainer();

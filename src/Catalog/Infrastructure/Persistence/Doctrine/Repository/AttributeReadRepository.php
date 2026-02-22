@@ -16,8 +16,8 @@ use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttribute;
 use App\Shared\Domain\Criteria\Listing\Criteria;
 use App\Shared\Domain\Criteria\Listing\PaginatedResult;
 use App\Shared\Domain\Exception\Database\OneOfEntitiesNotFoundException;
-use App\Shared\Domain\Exception\EntityIdMissingException;
-use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
+use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\ReadRepositoryTrait;
 

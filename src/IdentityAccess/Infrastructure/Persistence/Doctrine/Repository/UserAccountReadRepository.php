@@ -11,8 +11,8 @@ use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\Id;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\Ulid;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmUserAccount;
-use App\Shared\Domain\Exception\EntityIdMissingException;
-use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
+use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\ReadRepositoryTrait;
 
 class UserAccountReadRepository extends BaseUserAccountRepository implements UserAccountReadRepositoryInterface

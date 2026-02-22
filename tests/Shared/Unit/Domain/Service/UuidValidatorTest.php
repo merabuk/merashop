@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Shared\Unit\Domain\Service;
 
-use App\Shared\Domain\Exception\InvalidUuidException;
+use App\Shared\Domain\Exception\Services\InvalidUuidException;
 use App\Shared\Domain\Service\UuidValidator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;

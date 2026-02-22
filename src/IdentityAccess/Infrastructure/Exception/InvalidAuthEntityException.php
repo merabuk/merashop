@@ -6,7 +6,7 @@ namespace App\IdentityAccess\Infrastructure\Exception;
 
 use App\IdentityAccess\Domain\Exception\IdentityAccessDomainException;
 use App\Shared\Domain\Enum\ErrorCodeEnum;
-use App\Shared\Domain\Exception\UnauthorizedExceptionInterface;
+use App\Shared\Domain\Exception\Markers\UnauthorizedExceptionInterface;
 
 class InvalidAuthEntityException extends IdentityAccessDomainException implements UnauthorizedExceptionInterface
 {

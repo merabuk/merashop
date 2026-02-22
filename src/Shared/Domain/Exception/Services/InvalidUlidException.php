@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Shared\Domain\Exception;
+namespace App\Shared\Domain\Exception\Services;
+
+use App\Shared\Domain\Exception\InvalidArgumentException;
 
 final class InvalidUlidException extends InvalidArgumentException
 {

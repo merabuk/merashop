@@ -10,8 +10,8 @@ use App\IdentityAccess\Domain\Repository\ModuleAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientId;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Ulid;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmModuleAccount;
-use App\Shared\Domain\Exception\EntityIdMissingException;
-use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
+use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\ReadRepositoryTrait;
 
 class ModuleAccountReadRepository extends BaseModuleAccountRepository implements ModuleAccountReadRepositoryInterface

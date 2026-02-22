@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Service;
 
+use App\Shared\Domain\Exception\Services\TraceIdFactoryException;
 use App\Shared\Domain\Exception\ValueObject\InvalidTraceIdException;
 use App\Shared\Domain\Service\TraceIdFactoryInterface;
 use App\Shared\Domain\Service\UuidGeneratorInterface;
@@ -17,19 +18,27 @@ final class TraceIdFactory implements TraceIdFactoryInterface
     }
 
     /**
-     * @throws InvalidTraceIdException
+     * @throws TraceIdFactoryException
      */
     public function createNew(): TraceId
     {
-        return $this->makeTraceId($this->uuidGenerator->nextV7());
+        try {
+            return $this->makeTraceId($this->uuidGenerator->nextV7());
+        } catch (InvalidTraceIdException) {
+            throw TraceIdFactoryException::becauseCanNotGenerateTraceId();
+        }
     }
 
     /**
-     * @throws InvalidTraceIdException
+     * @throws TraceIdFactoryException
      */
     public function createFromString(string $value): TraceId
     {
-        return $this->makeTraceId($value);
+        try {
+            return $this->makeTraceId($value);
+        } catch (InvalidTraceIdException) {
+            throw TraceIdFactoryException::becauseCanNotCreateTraceIdFromString();
+        }
     }
 
     /**

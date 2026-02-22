@@ -11,8 +11,8 @@ use App\IdentityAccess\Domain\ValueObject\AdminAccount\EmailAddress;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\Id;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\Ulid;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmAdminAccount;
-use App\Shared\Domain\Exception\EntityIdMissingException;
-use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
+use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\ReadRepositoryTrait;
 
 class AdminAccountReadRepository extends BaseAdminAccountRepository implements AdminAccountReadRepositoryInterface

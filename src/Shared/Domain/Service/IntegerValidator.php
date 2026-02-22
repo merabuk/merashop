@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\Service;
 
-use App\Shared\Domain\Exception\IntegerIsNotUnsignedException;
+use App\Shared\Domain\Exception\Services\IntegerIsNotUnsignedException;
 
 final class IntegerValidator
 {

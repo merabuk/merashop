@@ -6,9 +6,9 @@ namespace App\EmailSender\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\EmailSender\Domain\Entity\OutboxEmail;
 use App\EmailSender\Domain\Repository\OutboxEmailWriteRepositoryInterface;
-use App\Shared\Domain\Exception\EntityIdMissingException;
-use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
-use App\Shared\Domain\Exception\ValueObjectExceptionInterface;
+use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
+use App\Shared\Domain\Exception\Markers\ValueObjectExceptionInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait;
 use Doctrine\ORM\Exception\ORMException;
 

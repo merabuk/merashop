@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\Exception;
 
+use App\Shared\Domain\Exception\Contracts\AppExceptionInterface;
 use Exception;
 
 abstract class ServerException extends Exception implements AppExceptionInterface

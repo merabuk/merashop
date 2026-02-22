@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Shared\Domain\Service;
 
 use App\Shared\Domain\Exception\InvalidStringException;
-use App\Shared\Domain\Exception\StringEmptyException;
-use App\Shared\Domain\Exception\StringMaxLengthException;
-use App\Shared\Domain\Exception\StringMinLengthException;
+use App\Shared\Domain\Exception\Services\StringEmptyException;
+use App\Shared\Domain\Exception\Services\StringMaxLengthException;
+use App\Shared\Domain\Exception\Services\StringMinLengthException;
 
 final class StringValidator
 {

@@ -12,8 +12,8 @@ use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Id;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Ulid;
 use App\IdentityAccess\Domain\ValueObject\ScopeCollection;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmModuleAccount;
-use App\Shared\Domain\Exception\EntityIdMissingException;
-use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
+use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\MapperInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
 

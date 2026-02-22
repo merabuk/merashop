@@ -9,8 +9,8 @@ use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectExceptio
 use App\IdentityAccess\Domain\Repository\RefreshTokenReadRepositoryInterface;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\TokenHash;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmRefreshToken;
-use App\Shared\Domain\Exception\EntityIdMissingException;
-use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
+use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 
 final class RefreshTokenReadRepository extends BaseRefreshTokenRepository implements RefreshTokenReadRepositoryInterface
 {

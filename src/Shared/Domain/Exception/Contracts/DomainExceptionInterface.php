@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Shared\Domain\Exception;
+namespace App\Shared\Domain\Exception\Contracts;
 
 interface DomainExceptionInterface extends AppExceptionInterface
 {

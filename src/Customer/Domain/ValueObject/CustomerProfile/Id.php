@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Customer\Domain\ValueObject\CustomerProfile;
 
 use App\Customer\Domain\Exception\CustomerProfile\InvalidCustomerProfileIdException;
-use App\Shared\Domain\Exception\IntegerIsNotUnsignedException;
+use App\Shared\Domain\Exception\Services\IntegerIsNotUnsignedException;
 use App\Shared\Domain\Service\IntegerValidator;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;

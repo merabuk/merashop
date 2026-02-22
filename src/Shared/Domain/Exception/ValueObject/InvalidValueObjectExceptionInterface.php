@@ -3,7 +3,7 @@
 namespace App\Shared\Domain\Exception\ValueObject;
 
 use App\Shared\Domain\Exception\LogicException;
-use App\Shared\Domain\Exception\ValueObjectExceptionInterface;
+use App\Shared\Domain\Exception\Markers\ValueObjectExceptionInterface;
 
 abstract class InvalidValueObjectExceptionInterface extends LogicException implements ValueObjectExceptionInterface
 {

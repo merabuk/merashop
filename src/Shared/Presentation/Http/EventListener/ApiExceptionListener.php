@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace App\Shared\Presentation\Http\EventListener;
 
 use App\Shared\Domain\Enum\ErrorCodeEnum;
-use App\Shared\Domain\Exception\AppExceptionInterface;
-use App\Shared\Domain\Exception\ConflictExceptionInterface;
-use App\Shared\Domain\Exception\ForbiddenExceptionInterface;
-use App\Shared\Domain\Exception\NotFoundExceptionInterface;
-use App\Shared\Domain\Exception\UnauthorizedExceptionInterface;
+use App\Shared\Domain\Exception\Contracts\AppExceptionInterface;
+use App\Shared\Domain\Exception\Markers\BadRequestExceptionInterface;
+use App\Shared\Domain\Exception\Markers\ConflictExceptionInterface;
+use App\Shared\Domain\Exception\Markers\ForbiddenExceptionInterface;
+use App\Shared\Domain\Exception\Markers\NotFoundExceptionInterface;
+use App\Shared\Domain\Exception\Markers\UnauthorizedExceptionInterface;
 use App\Shared\Domain\Service\TranslationDomainResolverInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
@@ -209,6 +210,7 @@ class ApiExceptionListener
     private function getStatusCode(Throwable $exception): int
     {
         return match (true) {
+            $exception instanceof BadRequestExceptionInterface => Response::HTTP_BAD_REQUEST,
             $exception instanceof UnauthorizedExceptionInterface => Response::HTTP_UNAUTHORIZED,
             $exception instanceof ForbiddenExceptionInterface => Response::HTTP_FORBIDDEN,
             $exception instanceof NotFoundExceptionInterface => Response::HTTP_NOT_FOUND,

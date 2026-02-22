@@ -13,8 +13,8 @@ use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Ulid;
 use App\IdentityAccess\Domain\ValueObject\ScopeCollection;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmModuleAccount;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Mapper\ModuleAccountMapper;
-use App\Shared\Domain\Exception\EntityIdMissingException;
-use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
+use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 

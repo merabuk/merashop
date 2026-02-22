@@ -24,7 +24,6 @@ final class LocaleListener
 
         if ($preferred) {
             $request->setLocale($preferred);
-        // \Locale::setDefault($preferred);
         } else {
             $request->setLocale(LocaleEnum::default()->value);
         }

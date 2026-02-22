@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\Exception;
 
-use App\Shared\Domain\Exception\ConflictExceptionInterface;
+use App\Shared\Domain\Exception\Markers\ConflictExceptionInterface;
 
 abstract class CatalogConflictException extends CatalogDomainException implements ConflictExceptionInterface
 {

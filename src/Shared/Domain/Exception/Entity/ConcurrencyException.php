@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Shared\Domain\Exception\Entity;
 
 use App\Shared\Domain\Enum\ErrorCodeEnum;
-use App\Shared\Domain\Exception\ConflictExceptionInterface;
 use App\Shared\Domain\Exception\LogicException;
+use App\Shared\Domain\Exception\Markers\ConflictExceptionInterface;
 
 class ConcurrencyException extends LogicException implements ConflictExceptionInterface
 {

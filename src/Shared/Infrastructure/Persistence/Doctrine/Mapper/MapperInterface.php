@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Persistence\Doctrine\Mapper;
 
-use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
+use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 
 /**
  * @template TDomain of object

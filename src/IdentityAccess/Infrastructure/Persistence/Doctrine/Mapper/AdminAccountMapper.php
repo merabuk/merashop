@@ -14,8 +14,8 @@ use App\IdentityAccess\Domain\ValueObject\AdminAccount\Status;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\Ulid;
 use App\IdentityAccess\Domain\ValueObject\RoleCollection;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmAdminAccount;
-use App\Shared\Domain\Exception\EntityIdMissingException;
-use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
+use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\MapperInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
 

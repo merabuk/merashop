@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Shared\Domain\Exception;
+namespace App\Shared\Domain\Exception\Services;
+
+use App\Shared\Domain\Exception\InvalidEmailAddressException;
 
 final class EmailAddressFormatException extends InvalidEmailAddressException
 {

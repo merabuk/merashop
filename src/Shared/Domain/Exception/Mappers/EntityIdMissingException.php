@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Shared\Domain\Exception;
+namespace App\Shared\Domain\Exception\Mappers;
+
+use App\Shared\Domain\Exception\LogicException;
 
 final class EntityIdMissingException extends LogicException
 {

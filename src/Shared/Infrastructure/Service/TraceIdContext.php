@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Service;
 
+use App\Shared\Domain\Exception\Services\TraceIdFactoryException;
 use App\Shared\Domain\Service\TraceIdContextInterface;
 use App\Shared\Domain\Service\TraceIdFactoryInterface;
 use App\Shared\Domain\ValueObject\TraceId;
@@ -18,6 +19,9 @@ final class TraceIdContext implements TraceIdContextInterface, ResetInterface
     ) {
     }
 
+    /**
+     * @throws TraceIdFactoryException
+     */
     public function get(): TraceId
     {
         return $this->current ??= $this->traceIdFactory->createNew();

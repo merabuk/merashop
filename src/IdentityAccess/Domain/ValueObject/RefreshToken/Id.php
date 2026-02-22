@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Domain\ValueObject\RefreshToken;
 
 use App\IdentityAccess\Domain\Exception\RefreshToken\InvalidRefreshTokenIdException;
-use App\Shared\Domain\Exception\IntegerIsNotUnsignedException;
+use App\Shared\Domain\Exception\Services\IntegerIsNotUnsignedException;
 use App\Shared\Domain\Service\IntegerValidator;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;

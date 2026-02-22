@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\EmailSender\Domain\ValueObject\OutboxEmail;
 
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailIdException;
-use App\Shared\Domain\Exception\IntegerIsNotUnsignedException;
+use App\Shared\Domain\Exception\Services\IntegerIsNotUnsignedException;
 use App\Shared\Domain\Service\IntegerValidator;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;

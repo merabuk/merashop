@@ -2,7 +2,6 @@
 
 namespace App\Shared\Infrastructure;
 
-use App\Shared\Infrastructure\Symfony\DependencyInjection\Compiler\RegisterModuleTranslationsPass;
 use App\Shared\Infrastructure\Symfony\DependencyInjection\SharedExtension;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -35,6 +34,5 @@ class Kernel extends BaseKernel
     protected function build(ContainerBuilder $container): void
     {
         $container->registerExtension(new SharedExtension());
-        //        $container->addCompilerPass(new RegisterModuleTranslationsPass());
     }
 }

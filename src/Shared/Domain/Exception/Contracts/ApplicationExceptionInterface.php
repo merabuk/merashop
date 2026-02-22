@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Shared\Domain\Exception;
+namespace App\Shared\Domain\Exception\Contracts;
 
 interface ApplicationExceptionInterface extends AppExceptionInterface
 {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Shared\Unit\Domain\Service;
 
-use App\Shared\Domain\Exception\IntegerIsNotUnsignedException;
+use App\Shared\Domain\Exception\Services\IntegerIsNotUnsignedException;
 use App\Shared\Domain\Service\IntegerValidator;
 use PHPUnit\Framework\TestCase;
 

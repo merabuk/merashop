@@ -12,8 +12,8 @@ use App\IdentityAccess\Domain\ValueObject\RefreshToken\Id;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\TokenHash;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\Ulid;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmRefreshToken;
-use App\Shared\Domain\Exception\EntityIdMissingException;
-use App\Shared\Domain\Exception\IncompatibleMappedEntityException;
+use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\MapperInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
 

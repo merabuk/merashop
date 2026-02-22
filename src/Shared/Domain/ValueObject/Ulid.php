@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\ValueObject;
 
-use App\Shared\Domain\Exception\InvalidUlidException as BaseInvalidUlidException;
+use App\Shared\Domain\Exception\Services\InvalidUlidException as BaseInvalidUlidException;
 use App\Shared\Domain\Exception\ValueObject\InvalidUlidException;
 use App\Shared\Domain\Service\UlidValidator;
 use Stringable;

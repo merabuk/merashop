@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Presentation\Console\EventListener;
 
+use App\Shared\Domain\Exception\Services\TraceIdFactoryException;
 use App\Shared\Domain\Service\TraceIdContextInterface;
 use App\Shared\Domain\Service\TraceIdFactoryInterface;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
@@ -18,6 +19,9 @@ final readonly class ConsoleTraceIdListener
     ) {
     }
 
+    /**
+     * @throws TraceIdFactoryException
+     */
     public function onConsoleCommand(ConsoleCommandEvent $event): void
     {
         $this->context->set($this->traceIdGenerator->createNew());
