@@ -6,19 +6,19 @@ namespace App\Tests\Shared\Unit\Presentation\Http\EventListener;
 
 use App\Shared\Domain\Enum\LocaleEnum;
 use App\Shared\Presentation\Http\EventListener\LocaleListener;
-use App\Tests\Shared\Support\Traits\AppListenersTrait;
+use App\Tests\Shared\Support\Traits\AppListenerTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
 final class LocaleListenerTest extends TestCase
 {
-    use AppListenersTrait;
+    use AppListenerTrait;
 
     #[DataProvider('localeProvider')]
     public function testItSetsCorrectLocale(
         ?string $acceptLanguage,
-        string $expectedLocale
+        string $expectedLocale,
     ): void {
         $listener = new LocaleListener();
         $request = new Request();

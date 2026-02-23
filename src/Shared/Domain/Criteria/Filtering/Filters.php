@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\Criteria\Filtering;
 
-final readonly class Filters
+use Countable;
+
+final readonly class Filters implements Countable
 {
     public function __construct(
         /** @var array<string, mixed> $items */
@@ -20,5 +22,10 @@ final readonly class Filters
     public function has(string $key): bool
     {
         return isset($this->items[$key]);
+    }
+
+    public function count(): int
+    {
+        return count($this->items);
     }
 }

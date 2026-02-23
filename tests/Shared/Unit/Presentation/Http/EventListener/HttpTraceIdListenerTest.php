@@ -11,14 +11,14 @@ use App\Shared\Domain\Service\TraceIdContextInterface;
 use App\Shared\Domain\Service\TraceIdFactoryInterface;
 use App\Shared\Domain\ValueObject\TraceId;
 use App\Shared\Presentation\Http\EventListener\HttpTraceIdListener;
-use App\Tests\Shared\Support\Traits\AppListenersTrait;
+use App\Tests\Shared\Support\Traits\AppListenerTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 final class HttpTraceIdListenerTest extends TestCase
 {
-    use AppListenersTrait;
+    use AppListenerTrait;
 
     /**
      * @throws InvalidTraceIdException

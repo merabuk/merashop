@@ -15,7 +15,7 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 /**
  * @mixin TestCase
  */
-trait AppListenersTrait
+trait AppListenerTrait
 {
     /**
      * @throws Exception
