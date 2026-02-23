@@ -38,11 +38,17 @@ services:
       - { name: 'kernel.reset', method: 'reset' }
 
   App\IdentityAccess\Application\Security\TokenGeneratorInterface: '@App\IdentityAccess\Infrastructure\Security\Jwt\JwtGenerator'
+
+  App\IdentityAccess\Domain\Service\AdminAccountFactoryInterface: '@App\IdentityAccess\Infrastructure\Service\AdminAccountFactory'
+  App\IdentityAccess\Domain\Repository\AdminAccountReadRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\AdminAccountReadRepository'
+  App\IdentityAccess\Domain\Repository\AdminAccountWriteRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\AdminAccountWriteRepository'
+
   App\IdentityAccess\Domain\Repository\ModuleAccountReadRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\ModuleAccountReadRepository'
   App\IdentityAccess\Domain\Repository\ModuleAccountWriteRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\ModuleAccountWriteRepository'
   App\IdentityAccess\Domain\Repository\RefreshTokenReadRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\RefreshTokenReadRepository'
   App\IdentityAccess\Domain\Repository\RefreshTokenWriteRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\RefreshTokenWriteRepository'
   App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\UserAccountReadRepository'
+
   App\IdentityAccess\Domain\Service\PasswordHasherInterface: '@App\IdentityAccess\Infrastructure\Security\Hasher\PasswordHasherService'
   App\IdentityAccess\Domain\Service\TokenHasherInterface: '@App\IdentityAccess\Infrastructure\Security\Hasher\TokenHasherService'
 

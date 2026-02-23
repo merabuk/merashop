@@ -12,6 +12,7 @@ services:
     arguments:
       $referenceProvider: '@catalog.proxy_reference_provider'
 
+  App\Catalog\Domain\Service\AttributeFactoryInterface: '@App\Catalog\Infrastructure\Service\AttributeFactory'
   App\Catalog\Domain\Repository\AttributeReadRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\AttributeReadRepository'
   App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\AttributeWriteRepository'
 

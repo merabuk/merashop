@@ -21,6 +21,8 @@ final readonly class PasswordHash implements Stringable
      */
     private function __construct(string $hash)
     {
+        $hash = mb_trim($hash);
+
         $this->ensureIsValidHash($hash);
 
         $this->passwordHash = $hash;
