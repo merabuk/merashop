@@ -8,4 +8,13 @@ use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectExceptio
 
 final class InvalidModuleAccountClientIdException extends InvalidIdentityAccessValueObjectException
 {
+    public static function becauseItIsEmpty(): self
+    {
+        return new self('Module account client id cannot be empty');
+    }
+
+    public static function becauseItIsTooLong(int $maxLength): self
+    {
+        return new self(sprintf('Module account client id cannot exceed %d characters', $maxLength));
+    }
 }

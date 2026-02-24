@@ -44,6 +44,8 @@ final readonly class TokenHash implements Stringable
      */
     private function ensureIsValidHash(string $hash): void
     {
+        $hash = mb_trim($hash);
+
         if (empty($hash)) {
             throw InvalidRefreshTokenTokenHashException::fromEmptyTokenHash();
         }

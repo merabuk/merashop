@@ -5,24 +5,28 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Domain\Entity;
 
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\AccountType;
+use App\IdentityAccess\Domain\ValueObject\RefreshToken\AccountUlid;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\ExpiresAt;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\Id;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\TokenHash;
-use App\IdentityAccess\Domain\ValueObject\RefreshToken\Ulid;
 
 readonly class RefreshToken
 {
     public function __construct(
         private TokenHash $tokenHash,
-        private Ulid $accountUlid,
+        private AccountUlid $accountUlid,
         private AccountType $accountType,
         private ExpiresAt $expiresAt,
         private ?Id $id = null,
     ) {
     }
 
-    public static function create(TokenHash $token, Ulid $accountUlid, AccountType $accountType, ExpiresAt $expiresAt): self
-    {
+    public static function create(
+        TokenHash $token,
+        AccountUlid $accountUlid,
+        AccountType $accountType,
+        ExpiresAt $expiresAt,
+    ): self {
         return new self(
             tokenHash: $token,
             accountUlid: $accountUlid,
@@ -36,7 +40,7 @@ readonly class RefreshToken
         return $this->tokenHash;
     }
 
-    public function getAccountUlid(): Ulid
+    public function getAccountUlid(): AccountUlid
     {
         return $this->accountUlid;
     }

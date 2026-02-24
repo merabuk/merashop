@@ -4,35 +4,18 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Domain\ValueObject\RefreshToken;
 
-use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use App\Shared\Domain\ValueObject\DateTimeValueObject;
 use DateTimeImmutable;
-use DateTimeInterface;
 
-final readonly class ExpiresAt
+final readonly class ExpiresAt extends DateTimeValueObject
 {
-    use ValueObjectEqualityTrait;
-
-    public function __construct(private DateTimeImmutable $date)
-    {
-    }
-
     public static function fromDateTime(DateTimeImmutable $date): self
     {
         return new self($date);
     }
 
-    public function value(): DateTimeImmutable
-    {
-        return $this->date;
-    }
-
     public function isExpired(): bool
     {
-        return $this->date < new DateTimeImmutable();
-    }
-
-    protected function getPrimitiveValue(): string
-    {
-        return $this->date->format(DateTimeInterface::ATOM);
+        return $this->value() < new DateTimeImmutable();
     }
 }

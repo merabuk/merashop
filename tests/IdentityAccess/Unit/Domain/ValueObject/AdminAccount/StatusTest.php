@@ -21,9 +21,6 @@ final class StatusTest extends TestCase
         self::assertSame($enum->value, (string) $vo);
     }
 
-    /**
-     * @throws InvalidAdminAccountStatusException
-     */
     #[DataProvider('statusEnumProvider')]
     public function testItCreatesValidStatusFromString(StatusEnum $enum): void
     {
@@ -60,9 +57,6 @@ final class StatusTest extends TestCase
         yield 'vacation' => [Status::vacation(), StatusEnum::OnVacation, 'isOnVacation'];
     }
 
-    /**
-     * @throws InvalidAdminAccountStatusException
-     */
     public function testItTrimsInput(): void
     {
         $vo = Status::fromString('  active  ');

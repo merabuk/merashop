@@ -4,23 +4,15 @@ declare(strict_types=1);
 
 namespace App\Tests\IdentityAccess\Unit\Domain\Entity;
 
-use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\PasswordHash;
 use App\Tests\IdentityAccess\Support\AdminAccountMother;
-use DateMalformedStringException;
 use PHPUnit\Framework\TestCase;
 
 class AdminAccountTest extends TestCase
 {
-    /**
-     * @throws InvalidIdentityAccessValueObjectException
-     * @throws DateMalformedStringException
-     */
     public function testItChangesPasswordCorrectly(): void
     {
-        $admin = AdminAccountMother::createWithData([
-            'passwordChangedAt' => null,
-        ]);
+        $admin = AdminAccountMother::createWithData();
 
         self::assertNull($admin->getPasswordChangedAt());
         self::assertTrue($admin->isPasswordChangeRequired());

@@ -10,4 +10,9 @@ final class EmailAddressFormatException extends InvalidEmailAddressException
     {
         return new self(sprintf('The email address "%s" is not valid', $invalidValue));
     }
+
+    public static function becauseLocalPartIsTooLong(int $maxLength): self
+    {
+        return new self(sprintf('The local part of the email address is too long (max %d characters before @)', $maxLength));
+    }
 }

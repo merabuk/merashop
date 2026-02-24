@@ -8,7 +8,7 @@ use App\IdentityAccess\Domain\Exception\RefreshToken\InvalidRefreshTokenAccountU
 use App\Shared\Domain\Exception\ValueObject\InvalidUlidException;
 use App\Shared\Domain\ValueObject\Ulid as BaseUlid;
 
-final class Ulid extends BaseUlid
+final class AccountUlid extends BaseUlid
 {
     /**
      * @throws InvalidRefreshTokenAccountUlidException

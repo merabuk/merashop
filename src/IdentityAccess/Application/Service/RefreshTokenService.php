@@ -11,9 +11,9 @@ use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectExceptio
 use App\IdentityAccess\Domain\Repository\RefreshTokenWriteRepositoryInterface;
 use App\IdentityAccess\Domain\Service\TokenHasherInterface;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\AccountType;
+use App\IdentityAccess\Domain\ValueObject\RefreshToken\AccountUlid;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\ExpiresAt;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\TokenHash;
-use App\IdentityAccess\Domain\ValueObject\RefreshToken\Ulid;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 use DateMalformedStringException;
 use Random\RandomException;
@@ -40,7 +40,7 @@ final readonly class RefreshTokenService
 
             $refreshToken = RefreshToken::create(
                 token: TokenHash::fromString($hashedToken),
-                accountUlid: Ulid::fromString($accountUlid),
+                accountUlid: AccountUlid::fromString($accountUlid),
                 accountType: AccountType::fromEnum($accountType),
                 expiresAt: ExpiresAt::fromDateTime($this->clock->now()->modify("+{$this->ttl} seconds"))
             );

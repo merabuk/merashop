@@ -39,6 +39,8 @@ final readonly class ClientSecretHash implements Stringable
      */
     private function ensureIsValidHash(string $hash): void
     {
+        $hash = mb_trim($hash);
+
         if (empty($hash)) {
             throw new InvalidModuleAccountPasswordHashException('Password hash cannot be empty');
         }

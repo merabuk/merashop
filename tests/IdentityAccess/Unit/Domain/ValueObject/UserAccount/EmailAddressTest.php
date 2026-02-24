@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\AdminAccount;
+namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\UserAccount;
 
-use App\IdentityAccess\Domain\Exception\AdminAccount\InvalidAdminAccountEmailException;
-use App\IdentityAccess\Domain\ValueObject\AdminAccount\EmailAddress;
+use App\IdentityAccess\Domain\Exception\UserAccount\InvalidUserAccountEmailException;
+use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
 use App\Tests\Shared\Unit\Domain\ValueObject\EmailAddressTestTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -27,7 +27,7 @@ final class EmailAddressTest extends TestCase
     #[DataProvider('invalidEmailSampleProvider')]
     public function testThrowsExceptionOnInvalidInput(string $invalidValue): void
     {
-        $this->expectException(InvalidAdminAccountEmailException::class);
+        $this->expectException(InvalidUserAccountEmailException::class);
 
         EmailAddress::fromString($invalidValue);
     }

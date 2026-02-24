@@ -2,22 +2,21 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\AdminAccount;
+namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\RefreshToken;
 
-use App\IdentityAccess\Domain\Exception\AdminAccount\InvalidAdminAccountUlidException;
-use App\IdentityAccess\Domain\ValueObject\AdminAccount\Ulid;
+use App\IdentityAccess\Domain\Exception\RefreshToken\InvalidRefreshTokenAccountUlidException;
+use App\IdentityAccess\Domain\ValueObject\RefreshToken\AccountUlid;
 use App\Shared\Domain\ValueObject\Ulid as SharedUlid;
-use App\Tests\IdentityAccess\Support\AdminAccountMother;
 use App\Tests\Shared\Unit\Domain\ValueObject\UlidTest as SharedUlidTest;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 
-final class UlidTest extends TestCase
+final class AccountUlidTest extends TestCase
 {
     public function testItCreatesValidUlid(): void
     {
-        $ulid = AdminAccountMother::DEFAULT_ULID;
-        $vo = Ulid::fromString($ulid);
+        $ulid = '01H7B6P9Y8M1V5X2A7S4D3F6G8';
+        $vo = AccountUlid::fromString($ulid);
 
         self::assertSame($ulid, $vo->value());
         self::assertSame($ulid, (string) $vo);
@@ -26,14 +25,14 @@ final class UlidTest extends TestCase
     #[DataProviderExternal(SharedUlidTest::class, 'invalidUlidProvider')]
     public function testThrowsExceptionOnInvalidInput(string $invalidValue): void
     {
-        $this->expectException(InvalidAdminAccountUlidException::class);
-        Ulid::fromString($invalidValue);
+        $this->expectException(InvalidRefreshTokenAccountUlidException::class);
+        AccountUlid::fromString($invalidValue);
     }
 
     public function testItIsStrictlyTyped(): void
     {
-        $ulid = AdminAccountMother::DEFAULT_ULID;
-        $adminUlid = Ulid::fromString($ulid);
+        $ulid = '01H7B6P9Y8M1V5X2A7S4D3F6G8';
+        $adminUlid = AccountUlid::fromString($ulid);
         $sharedUlid = SharedUlid::fromString($ulid);
 
         self::assertFalse($adminUlid->equals($sharedUlid));

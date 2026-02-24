@@ -39,6 +39,8 @@ final readonly class PasswordHash implements Stringable
      */
     private function ensureIsValidHash(string $hash): void
     {
+        $hash = mb_trim($hash);
+
         if (empty($hash)) {
             throw new InvalidUserAccountPasswordHashException('Password hash cannot be empty');
         }

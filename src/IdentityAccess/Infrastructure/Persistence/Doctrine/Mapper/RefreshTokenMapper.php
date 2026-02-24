@@ -7,10 +7,10 @@ namespace App\IdentityAccess\Infrastructure\Persistence\Doctrine\Mapper;
 use App\IdentityAccess\Domain\Entity\RefreshToken;
 use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\AccountType;
+use App\IdentityAccess\Domain\ValueObject\RefreshToken\AccountUlid;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\ExpiresAt;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\Id;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\TokenHash;
-use App\IdentityAccess\Domain\ValueObject\RefreshToken\Ulid;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmRefreshToken;
 use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
@@ -56,9 +56,9 @@ class RefreshTokenMapper implements MapperInterface
 
         return new RefreshToken(
             tokenHash: TokenHash::fromString($orm->token),
-            accountUlid: Ulid::fromString($orm->accountUlid),
+            accountUlid: AccountUlid::fromString($orm->accountUlid),
             accountType: AccountType::fromEnum($orm->accountType),
-            expiresAt: new ExpiresAt($orm->expiresAt),
+            expiresAt: ExpiresAt::fromDateTime($orm->expiresAt),
             id: $id,
         );
     }

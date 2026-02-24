@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\AdminAccount;
+namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\UserAccount;
 
-use App\IdentityAccess\Domain\Exception\AdminAccount\InvalidAdminAccountPasswordHashException;
-use App\IdentityAccess\Domain\ValueObject\AdminAccount\PasswordHash;
+use App\IdentityAccess\Domain\Exception\UserAccount\InvalidUserAccountPasswordHashException;
+use App\IdentityAccess\Domain\ValueObject\UserAccount\PasswordHash;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -34,7 +34,7 @@ final class PasswordHashTest extends TestCase
     #[DataProvider('invalidPasswordHashProvider')]
     public function testThrowsExceptionOnInvalidInput(string $invalidValue): void
     {
-        $this->expectException(InvalidAdminAccountPasswordHashException::class);
+        $this->expectException(InvalidUserAccountPasswordHashException::class);
         PasswordHash::fromString($invalidValue);
     }
 

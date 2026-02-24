@@ -25,6 +25,11 @@ final class AccountType implements Stringable
         return new self($type);
     }
 
+    public static function admin(): self
+    {
+        return self::fromEnum(IdentityTypeEnum::Admin);
+    }
+
     public static function user(): self
     {
         return self::fromEnum(IdentityTypeEnum::User);
@@ -40,7 +45,7 @@ final class AccountType implements Stringable
      */
     public static function fromString(string $type): self
     {
-        $enum = IdentityTypeEnum::tryFrom($type);
+        $enum = IdentityTypeEnum::tryFrom(mb_trim($type));
 
         if (null === $enum) {
             throw InvalidRefreshTokenAccountTypeException::becauseItIsNotAValidAccountType(invalidValue: $type, availableValues: IdentityTypeEnum::getValues());
@@ -52,6 +57,11 @@ final class AccountType implements Stringable
     public function value(): IdentityTypeEnum
     {
         return $this->type;
+    }
+
+    public function isAdmin(): bool
+    {
+        return IdentityTypeEnum::Admin === $this->type;
     }
 
     public function isUser(): bool

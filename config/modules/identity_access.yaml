@@ -43,10 +43,15 @@ services:
   App\IdentityAccess\Domain\Repository\AdminAccountReadRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\AdminAccountReadRepository'
   App\IdentityAccess\Domain\Repository\AdminAccountWriteRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\AdminAccountWriteRepository'
 
+  App\IdentityAccess\Domain\Service\ModuleAccountFactoryInterface: '@App\IdentityAccess\Infrastructure\Service\ModuleAccountFactory'
   App\IdentityAccess\Domain\Repository\ModuleAccountReadRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\ModuleAccountReadRepository'
   App\IdentityAccess\Domain\Repository\ModuleAccountWriteRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\ModuleAccountWriteRepository'
+
+  App\IdentityAccess\Donain\Service\RefreshTokenFactoryInterface: '@App\IdentityAccess\Infrastructure\Service\RefreshTokenFactory'
   App\IdentityAccess\Domain\Repository\RefreshTokenReadRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\RefreshTokenReadRepository'
   App\IdentityAccess\Domain\Repository\RefreshTokenWriteRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\RefreshTokenWriteRepository'
+
+  App\IdentityAccess\Domain\Service\UserFactoryInterface: '@App\IdentityAccess\Infrastructure\Service\UserAccountFactory'
   App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\UserAccountReadRepository'
 
   App\IdentityAccess\Domain\Service\PasswordHasherInterface: '@App\IdentityAccess\Infrastructure\Security\Hasher\PasswordHasherService'

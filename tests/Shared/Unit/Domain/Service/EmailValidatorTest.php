@@ -35,7 +35,7 @@ final class EmailValidatorTest extends TestCase
     public function testThrowsExceptionOnInvalidFormat(string $invalidEmail): void
     {
         $this->expectException(EmailAddressFormatException::class);
-        EmailValidator::validate(email: $invalidEmail, maxLength: 50);
+        EmailValidator::validate(email: $invalidEmail, maxLength: 256);
     }
 
     public static function invalidEmailFormatProvider(): iterable
@@ -44,5 +44,6 @@ final class EmailValidatorTest extends TestCase
         yield 'no domain' => ['test@'];
         yield 'multiple at' => ['test@@example.com'];
         yield 'invalid characters' => ['test(parenthesis)@example.com'];
+        yield 'local part too long' => [str_repeat('a', EmailValidator::LOCAL_PART_MAX_LENGTH + 1).'@example.com'];
     }
 }

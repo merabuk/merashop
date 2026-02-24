@@ -1,0 +1,52 @@
+<?php
+
+namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\ModuleAccount;
+
+use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountClientIdException;
+use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientId;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
+
+class ClientIdTest extends TestCase
+{
+    #[DataProvider('validClientIdProvider')]
+    public function testItCreatesValidClientId(string $input, string $expected): void
+    {
+        $vo = ClientId::fromString($input);
+
+        self::assertEquals($expected, $vo->value());
+        self::assertEquals($expected, (string) $vo);
+    }
+
+    public static function validClientIdProvider(): iterable
+    {
+        yield 'normal' => ['valid-id', 'valid-id'];
+        yield 'with spaces' => ['  trimmed-id  ', 'trimmed-id'];
+    }
+
+    public function testItProvidesEqualityCheck(): void
+    {
+        $clientId = 'valid-client-id';
+        $vo1 = ClientId::fromString($clientId);
+        $vo2 = ClientId::fromString($clientId);
+        $vo3 = ClientId::fromString('another-valid-client-id');
+
+        self::assertTrue($vo1->equals($vo2));
+        self::assertFalse($vo1->equals($vo3));
+    }
+
+    #[DataProvider('invalidClientIdProvider')]
+    public function testThrowsExceptionOnInvalidInput(string $invalidValue): void
+    {
+        $this->expectException(InvalidModuleAccountClientIdException::class);
+
+        ClientId::fromString($invalidValue);
+    }
+
+    public static function invalidClientIdProvider(): iterable
+    {
+        yield 'empty' => [''];
+        yield 'only spaces' => ['    '];
+        yield 'too long' => [str_repeat('a', ClientId::MAX_LENGTH + 1)];
+    }
+}

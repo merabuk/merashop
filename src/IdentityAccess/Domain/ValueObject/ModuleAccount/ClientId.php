@@ -24,7 +24,11 @@ final readonly class ClientId implements Stringable
         $trimmed = mb_trim($clientId);
 
         if (empty($trimmed)) {
-            throw new InvalidModuleAccountClientIdException('Client ID cannot be empty');
+            throw InvalidModuleAccountClientIdException::becauseItIsEmpty();
+        }
+
+        if (self::MAX_LENGTH < mb_strlen($trimmed)) {
+            throw InvalidModuleAccountClientIdException::becauseItIsTooLong(self::MAX_LENGTH);
         }
 
         $this->clientId = $trimmed;

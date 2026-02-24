@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\AdminAccount;
 
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\PasswordChangedAt;
-use DateMalformedStringException;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
 final class PasswordChangedAtTest extends TestCase
 {
-    public function testItWrapsDateTimeCorrectly(): void
+    public function testItCreatesValidPasswordChangedAt(): void
     {
         $date = new DateTimeImmutable('2024-01-01 12:00:00');
         $vo = PasswordChangedAt::fromDateTime($date);
@@ -30,16 +29,14 @@ final class PasswordChangedAtTest extends TestCase
         self::assertLessThanOrEqual($after, $vo->value());
     }
 
-    /**
-     * @throws DateMalformedStringException
-     */
     public function testItProvidesEqualityCheck(): void
     {
-        $dateString = '2024-01-01 15:30:00.123456';
+        $dateString1 = '2024-01-01 15:30:00.123456';
+        $dateString2 = '2024-01-01 15:30:00.123457';
 
-        $vo1 = PasswordChangedAt::fromDateTime(new DateTimeImmutable($dateString));
-        $vo2 = PasswordChangedAt::fromDateTime(new DateTimeImmutable($dateString));
-        $vo3 = PasswordChangedAt::fromDateTime(new DateTimeImmutable('2024-01-01 15:30:00.123457'));
+        $vo1 = PasswordChangedAt::fromDateTime(new DateTimeImmutable($dateString1));
+        $vo2 = PasswordChangedAt::fromDateTime(new DateTimeImmutable($dateString1));
+        $vo3 = PasswordChangedAt::fromDateTime(new DateTimeImmutable($dateString2));
 
         self::assertTrue($vo1->equals($vo2), 'Identical dates must be equal');
         self::assertFalse($vo1->equals($vo3), 'Dates with different microseconds must not be equal');

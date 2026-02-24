@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\AdminAccount;
+namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\ModuleAccount;
 
-use App\IdentityAccess\Domain\Exception\AdminAccount\InvalidAdminAccountUlidException;
-use App\IdentityAccess\Domain\ValueObject\AdminAccount\Ulid;
+use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountUlidException;
+use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Ulid;
 use App\Shared\Domain\ValueObject\Ulid as SharedUlid;
-use App\Tests\IdentityAccess\Support\AdminAccountMother;
+use App\Tests\IdentityAccess\Support\ModuleAccountMother;
 use App\Tests\Shared\Unit\Domain\ValueObject\UlidTest as SharedUlidTest;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
@@ -16,7 +16,7 @@ final class UlidTest extends TestCase
 {
     public function testItCreatesValidUlid(): void
     {
-        $ulid = AdminAccountMother::DEFAULT_ULID;
+        $ulid = ModuleAccountMother::DEFAULT_ULID;
         $vo = Ulid::fromString($ulid);
 
         self::assertSame($ulid, $vo->value());
@@ -26,13 +26,13 @@ final class UlidTest extends TestCase
     #[DataProviderExternal(SharedUlidTest::class, 'invalidUlidProvider')]
     public function testThrowsExceptionOnInvalidInput(string $invalidValue): void
     {
-        $this->expectException(InvalidAdminAccountUlidException::class);
+        $this->expectException(InvalidModuleAccountUlidException::class);
         Ulid::fromString($invalidValue);
     }
 
     public function testItIsStrictlyTyped(): void
     {
-        $ulid = AdminAccountMother::DEFAULT_ULID;
+        $ulid = ModuleAccountMother::DEFAULT_ULID;
         $adminUlid = Ulid::fromString($ulid);
         $sharedUlid = SharedUlid::fromString($ulid);
 

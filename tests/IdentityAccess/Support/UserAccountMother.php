@@ -4,30 +4,26 @@ declare(strict_types=1);
 
 namespace App\Tests\IdentityAccess\Support;
 
-use App\IdentityAccess\Domain\Entity\AdminAccount;
-use App\IdentityAccess\Domain\Enum\AdminAccount\StatusEnum;
+use App\IdentityAccess\Domain\Entity\UserAccount;
 use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
-use App\IdentityAccess\Domain\Service\AdminAccountFactoryInterface;
-use App\IdentityAccess\Domain\ValueObject\AdminAccount\EmailAddress;
-use App\IdentityAccess\Domain\ValueObject\AdminAccount\Id;
-use App\IdentityAccess\Domain\ValueObject\AdminAccount\PasswordChangedAt;
-use App\IdentityAccess\Domain\ValueObject\AdminAccount\PasswordHash;
-use App\IdentityAccess\Domain\ValueObject\AdminAccount\Status;
-use App\IdentityAccess\Domain\ValueObject\AdminAccount\Ulid;
+use App\IdentityAccess\Domain\Service\UserAccountFactoryInterface;
 use App\IdentityAccess\Domain\ValueObject\RoleCollection;
+use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
+use App\IdentityAccess\Domain\ValueObject\UserAccount\Id;
+use App\IdentityAccess\Domain\ValueObject\UserAccount\PasswordHash;
+use App\IdentityAccess\Domain\ValueObject\UserAccount\Ulid;
 use App\Shared\Domain\Enum\RoleEnum;
 use App\Shared\Domain\Service\UlidGeneratorInterface;
-use DateTimeImmutable;
 use Faker\Generator;
 
-final readonly class AdminAccountMother
+final readonly class UserAccountMother
 {
-    public const string DEFAULT_ULID = '01KHVRCA679BJ6PBXX5N3G6RR5';
-    public const string DEFAULT_EMAIL = 'admin@example.com';
+    public const string DEFAULT_ULID = '01ARZ3NDEKTSV4RRFFQ6KHNQZY';
+    public const string DEFAULT_EMAIL = 'user@example.com';
     private const string DEFAULT_PASSWORD_HASH = '$2y$13$EfTxMGbVX8xxscagFCXKVOHsSKEelbmVsbGX1otIsWzGIZ1cG1uTa'; // password
 
     public function __construct(
-        private AdminAccountFactoryInterface $adminAccountFactory,
+        private UserAccountFactoryInterface $userAccountFactory,
         private UlidGeneratorInterface $ulidGenerator,
         private Generator $faker,
     ) {
@@ -43,17 +39,13 @@ final readonly class AdminAccountMother
         ?string $email = null,
         ?string $passwordHash = null,
         ?array $roles = null,
-        StatusEnum $status = StatusEnum::Active,
-        ?DateTimeImmutable $passwordChangedAt = null,
         ?int $id = null,
-    ): AdminAccount {
-        return new AdminAccount(
+    ): UserAccount {
+        return new UserAccount(
             ulid: Ulid::fromString($ulid ?? self::DEFAULT_ULID),
             email: EmailAddress::fromString($email ?? self::DEFAULT_EMAIL),
             passwordHash: PasswordHash::fromString($passwordHash ?? self::DEFAULT_PASSWORD_HASH),
-            roles: RoleCollection::fromStrings($roles ?? [RoleEnum::Admin->value]),
-            status: Status::fromEnum($status),
-            passwordChangedAt: $passwordChangedAt ? PasswordChangedAt::fromDateTime($passwordChangedAt) : null,
+            roles: RoleCollection::fromStrings($roles ?? [RoleEnum::User->value]),
             id: $id ? Id::fromInt($id) : null
         );
     }
@@ -66,19 +58,17 @@ final readonly class AdminAccountMother
         ?string $email = null,
         ?string $passwordHash = null,
         ?array $roles = null,
-        StatusEnum $status = StatusEnum::Active,
-    ): AdminAccount {
-        return $this->adminAccountFactory->createForTest(
+    ): UserAccount {
+        return $this->userAccountFactory->createForTest(
             ulid: $ulid ?? $this->ulidGenerator->next(),
             email: $email ?? $this->faker->unique()->safeEmail(),
             passwordHash: $passwordHash ?? self::DEFAULT_PASSWORD_HASH,
-            roles: $roles ?? [RoleEnum::Admin->value],
-            status: $status,
+            roles: $roles ?? [RoleEnum::User->value],
         );
     }
 
     /**
-     * @return AdminAccount[]
+     * @return UserAccount[]
      */
     public function createMany(int $count): array
     {

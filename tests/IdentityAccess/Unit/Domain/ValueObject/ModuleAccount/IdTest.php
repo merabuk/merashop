@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\AdminAccount;
+namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\ModuleAccount;
 
-use App\IdentityAccess\Domain\Exception\AdminAccount\InvalidAdminAccountIdException;
-use App\IdentityAccess\Domain\ValueObject\AdminAccount\Id;
+use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountIdException;
+use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Id;
 use App\Tests\Shared\Unit\Domain\ValueObject\IntegerIdTestTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -27,7 +27,7 @@ final class IdTest extends TestCase
     #[DataProvider('invalidIdProvider')]
     public function testThrowsExceptionOnInvalidInput(int $invalidValue): void
     {
-        $this->expectException(InvalidAdminAccountIdException::class);
+        $this->expectException(InvalidModuleAccountIdException::class);
         Id::fromInt($invalidValue);
     }
 }

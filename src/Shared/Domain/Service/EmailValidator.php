@@ -10,6 +10,9 @@ use App\Shared\Domain\Exception\Services\EmailAddressMaxLengthException;
 
 final class EmailValidator
 {
+    public const int LOCAL_PART_MAX_LENGTH = 64;
+    public const int DOMAIN_PART_MAX_LENGTH = 63;
+
     /**
      * @throws InvalidEmailAddressException
      */
@@ -24,6 +27,16 @@ final class EmailValidator
         // TODO improve validation in future
         if (!filter_var($trimmedEmail, FILTER_VALIDATE_EMAIL)) {
             throw EmailAddressFormatException::becauseItIsNotValidEmailAddress($trimmedEmail);
+        }
+
+        $atPosition = mb_strpos($trimmedEmail, '@');
+        if (false === $atPosition) {
+            throw EmailAddressFormatException::becauseItIsNotValidEmailAddress($trimmedEmail);
+        }
+
+        $localPart = mb_substr($trimmedEmail, 0, $atPosition);
+        if (mb_strlen($localPart) > self::LOCAL_PART_MAX_LENGTH) {
+            throw EmailAddressFormatException::becauseLocalPartIsTooLong(self::LOCAL_PART_MAX_LENGTH);
         }
 
         return $trimmedEmail;
