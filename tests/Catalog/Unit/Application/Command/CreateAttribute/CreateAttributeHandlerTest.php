@@ -24,7 +24,7 @@ final class CreateAttributeHandlerTest extends TestCase
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
      */
-    public function testHandleSuccess(): void
+    public function testItHandleSuccess(): void
     {
         $readRepository = $this->createMock(AttributeReadRepositoryInterface::class);
         $writeRepository = $this->createMock(AttributeWriteRepositoryInterface::class);
@@ -59,13 +59,14 @@ final class CreateAttributeHandlerTest extends TestCase
             writeRepository: $writeRepository
         );
         $resultId = $handler($command);
+
         self::assertSame($fakeId, $resultId);
     }
 
     /**
      * @throws CreateAttributeException
      */
-    public function testHandleThrowsExceptionIfAttributeExists(): void
+    public function testThrowsExceptionIfAttributeExists(): void
     {
         $readRepository = $this->createMock(AttributeReadRepositoryInterface::class);
         $writeRepository = $this->createMock(AttributeWriteRepositoryInterface::class);

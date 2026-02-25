@@ -69,12 +69,13 @@ final class AttributeReadRepositoryTest extends KernelTestCase
      */
     public function testExistsByCode(): void
     {
-        $code = 'unique_test_code';
-        self::assertFalse($this->repository->existsByCode(Code::fromString($code)));
+        $code = Code::fromString('unique_test_code');
 
-        $this->getAttributeFixture()->create(['code' => $code]);
+        self::assertFalse($this->repository->existsByCode($code));
 
-        self::assertTrue($this->repository->existsByCode(Code::fromString($code)));
+        $this->getAttributeFixture()->create(['code' => $code->value()]);
+
+        self::assertTrue($this->repository->existsByCode($code));
     }
 
     /**

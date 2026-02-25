@@ -9,7 +9,7 @@ use App\IdentityAccess\Domain\Entity\ModuleAccount;
 use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
 use App\IdentityAccess\Domain\Exception\PasswordGenerateException;
 use App\IdentityAccess\Domain\Repository\ModuleAccountWriteRepositoryInterface;
-use App\IdentityAccess\Domain\Service\PasswordGenerator;
+use App\IdentityAccess\Domain\Service\PasswordGeneratorInterface;
 use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientId;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientSecretHash;
@@ -24,7 +24,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 readonly class CreateModuleAccountHandler implements CommandHandlerInterface
 {
     public function __construct(
-        private PasswordGenerator $passwordGenerator,
+        private PasswordGeneratorInterface $passwordGenerator,
         private ModuleAccountWriteRepositoryInterface $writeRepository,
         private PasswordHasherInterface $passwordHasher,
         private UlidGeneratorInterface $ulidGenerator,

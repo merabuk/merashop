@@ -15,6 +15,9 @@ services:
   App\Tests\EmailSender\Support\:
     resource: '../tests/EmailSender/Support/'
 
+  App\Tests\IdentityAccess\Support\:
+    resource: '../tests/IdentityAccess/Support/'
+
   App\Tests\Shared\Support\:
     resource: '../tests/Shared/Support/'
 

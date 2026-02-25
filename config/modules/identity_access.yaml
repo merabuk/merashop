@@ -38,6 +38,7 @@ services:
       - { name: 'kernel.reset', method: 'reset' }
 
   App\IdentityAccess\Application\Security\TokenGeneratorInterface: '@App\IdentityAccess\Infrastructure\Security\Jwt\JwtGenerator'
+  App\IdentityAccess\Domain\Service\PasswordGeneratorInterface: '@App\IdentityAccess\Infrastructure\Service\NativePasswordGenerator'
 
   App\IdentityAccess\Domain\Service\AdminAccountFactoryInterface: '@App\IdentityAccess\Infrastructure\Service\AdminAccountFactory'
   App\IdentityAccess\Domain\Repository\AdminAccountReadRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\AdminAccountReadRepository'

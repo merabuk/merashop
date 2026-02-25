@@ -6,7 +6,6 @@ namespace App\Tests\Shared\Unit\Domain\ValueObject;
 
 use App\Tests\Shared\Support\Traits\EmailTestDataTrait;
 use PHPUnit\Framework\Assert;
-use RuntimeException;
 
 trait EmailAddressTestTrait
 {
@@ -16,9 +15,7 @@ trait EmailAddressTestTrait
     {
         $email = 'test@example.com';
 
-        if (!method_exists($className, 'fromString')) {
-            throw new RuntimeException(sprintf('%s class must implement fromString method', $className));
-        }
+        $this->assertHasStaticMethod($className);
 
         $vo = $className::fromString($email);
 
@@ -26,11 +23,20 @@ trait EmailAddressTestTrait
         Assert::assertSame($email, (string) $vo);
     }
 
+    protected function assertEmailAddressTrimming(string $className): void
+    {
+        $email = '  test@example.com  ';
+        $expected = 'test@example.com';
+
+        $this->assertHasStaticMethod($className);
+
+        $vo = $className::fromString($email);
+        Assert::assertSame($expected, $vo->value(), sprintf('VO %s must trim spaces', $className));
+    }
+
     protected function assertEmailAddressEquality(string $className): void
     {
-        if (!method_exists($className, 'fromString')) {
-            throw new RuntimeException(sprintf('%s class must implement fromString method', $className));
-        }
+        $this->assertHasStaticMethod($className);
 
         $vo1 = $className::fromString('test@example.com');
         $vo2 = $className::fromString('test@example.com');
@@ -48,4 +54,12 @@ trait EmailAddressTestTrait
     }
 
     abstract protected static function getTotalLimit(): int;
+
+    private function assertHasStaticMethod(string $className): void
+    {
+        Assert::assertTrue(
+            condition: method_exists(static::class, 'fromString'),
+            message: sprintf('%s class must implement fromString method', $className)
+        );
+    }
 }

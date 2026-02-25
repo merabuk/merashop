@@ -60,16 +60,6 @@ class UserAccount
         return $this->id;
     }
 
-    public function changeEmail(EmailAddress $email): void
-    {
-        $this->email = $email;
-    }
-
-    public function changePasswordHash(PasswordHash $passwordHash): void
-    {
-        $this->passwordHash = $passwordHash;
-    }
-
     public function updateRoles(RoleCollection $roles): void
     {
         $this->roles = $roles;

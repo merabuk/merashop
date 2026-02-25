@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Domain\ValueObject;
 
+use App\IdentityAccess\Domain\Exception\ValueObject\InvalidRoleException;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use ArrayIterator;
 use Countable;
@@ -33,6 +34,8 @@ final readonly class RoleCollection implements Stringable, Countable, IteratorAg
 
     /**
      * @param string[] $roles
+     *
+     * @throws InvalidRoleException
      */
     public static function fromStrings(array $roles): self
     {
@@ -63,6 +66,19 @@ final readonly class RoleCollection implements Stringable, Countable, IteratorAg
     public function getIterator(): Traversable
     {
         return new ArrayIterator($this->roles);
+    }
+
+    public function contains(string|Role $role): bool
+    {
+        $searchValue = $role instanceof Role ? $role->value() : $role;
+
+        foreach ($this->roles as $existingRole) {
+            if ($existingRole->value() === $searchValue) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function __toString(): string

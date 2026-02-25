@@ -12,9 +12,11 @@ use App\IdentityAccess\Domain\Repository\AdminAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\EmailAddress;
 use App\Shared\Domain\Enum\RoleEnum;
 use App\Shared\Presentation\Console\BaseConsoleCommand;
+use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -22,11 +24,13 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Throwable;
 
 #[AsCommand(
-    name: 'app:identity-access:create-admin',
+    name: self::COMMAND_NAME,
     description: 'Create a new admin account'
 )]
 final class CreateAdminAccountConsoleCommand extends BaseConsoleCommand
 {
+    public const string COMMAND_NAME = 'app:identity_access:create-admin';
+
     public function __construct(
         ValidatorInterface $validator,
         private readonly CreateAdminAccountHandler $handler,
@@ -47,6 +51,12 @@ final class CreateAdminAccountConsoleCommand extends BaseConsoleCommand
                 name: 'status',
                 mode: InputArgument::OPTIONAL,
                 description: 'Admin status'
+            )
+            ->addOption(
+                name: 'role',
+                shortcut: 'r',
+                mode: InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+                description: 'Roles for the admin account'
             );
     }
 
@@ -85,30 +95,31 @@ final class CreateAdminAccountConsoleCommand extends BaseConsoleCommand
             );
             $input->setArgument('status', $status);
         }
+        if (empty($input->getOption('role'))) {
+            $selectedRoles = $this->io->choice(
+                question: 'Select Roles for the admin account',
+                choices: $this->getAvailableRoles(),
+                default: RoleEnum::Admin->value,
+                multiSelect: true
+            );
+            $input->setOption('role', $selectedRoles);
+        }
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $email = (string) $input->getArgument('email');
         $status = (string) $input->getArgument('status');
-
-        $roles = [RoleEnum::Admin->value];
-        $selectedRoles = $this->io->choice(
-            question: 'Select Roles for the admin account',
-            choices: $roles,
-            multiSelect: true
-        );
+        $roles = (array) $input->getOption('role');
 
         try {
-            $command = new CreateAdminAccountCommand(
-                email: $email,
-                status: $status,
-                roles: $selectedRoles
-            );
+            $this->validateInputs($email, $status, $roles);
+
+            $command = new CreateAdminAccountCommand(email: $email, status: $status, roles: $roles);
             $plainSecret = ($this->handler)($command);
 
             $this->io->success('Admin account created!');
-            $this->io->info("Temporary password: {$plainSecret}");
+            $this->io->info("Temporary password: <fg=yellow;options=bold>{$plainSecret}</fg>");
 
             return self::SUCCESS;
         } catch (Throwable $e) {
@@ -128,5 +139,42 @@ final class CreateAdminAccountConsoleCommand extends BaseConsoleCommand
             StatusEnum::Inactive->value,
             StatusEnum::Draft->value,
         ];
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getAvailableRoles(): array
+    {
+        return [RoleEnum::Admin->value];
+    }
+
+    /**
+     * @param string[] $roles
+     */
+    private function validateInputs(string $email, string $status, array $roles): void
+    {
+        if (empty($email) || empty($status) || empty($roles)) {
+            throw new InvalidArgumentException('Missing required data. Provide email, status and roles');
+        }
+
+        try {
+            $emailVo = EmailAddress::fromString($email);
+        } catch (Throwable) {
+            throw new InvalidArgumentException(sprintf('Invalid email format: %s', $email));
+        }
+
+        if ($this->readRepository->existsByEmail($emailVo)) {
+            throw new InvalidArgumentException(sprintf('Email "%s" already exists', $email));
+        }
+
+        if (!in_array($status, $this->getAvailableStatuses(), true)) {
+            throw new InvalidArgumentException(sprintf('Invalid status "%s". Available: %s', $status, implode(', ', $this->getAvailableStatuses())));
+        }
+
+        $diff = array_diff($roles, $this->getAvailableRoles());
+        if ([] !== $diff) {
+            throw new InvalidArgumentException(sprintf('Invalid roles: "%s". Available: %s', implode('", "', $diff), implode(', ', $this->getAvailableRoles())));
+        }
     }
 }

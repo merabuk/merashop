@@ -56,16 +56,6 @@ class ModuleAccount
         return $this->id;
     }
 
-    public function updateClientId(ClientId $clientId): void
-    {
-        $this->clientId = $clientId;
-    }
-
-    public function updateClientSecret(ClientSecretHash $clientSecret): void
-    {
-        $this->clientSecret = $clientSecret;
-    }
-
     public function updateScopes(ScopeCollection $scopes): void
     {
         $this->scopes = $scopes;

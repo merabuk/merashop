@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Domain\ValueObject;
 
+use App\IdentityAccess\Domain\Exception\ValueObject\InvalidScopeException;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use ArrayIterator;
 use Countable;
@@ -33,6 +34,8 @@ final readonly class ScopeCollection implements Stringable, Countable, IteratorA
 
     /**
      * @param string[] $scopes
+     *
+     * @throws InvalidScopeException
      */
     public static function fromStrings(array $scopes): self
     {

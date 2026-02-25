@@ -19,6 +19,11 @@ final class EmailAddressTest extends TestCase
         $this->assertValidEmailAddress(EmailAddress::class);
     }
 
+    public function testItTrimsSpaces(): void
+    {
+        $this->assertEmailAddressTrimming(EmailAddress::class);
+    }
+
     public function testItProvidesEqualityCheck(): void
     {
         $this->assertEmailAddressEquality(EmailAddress::class);

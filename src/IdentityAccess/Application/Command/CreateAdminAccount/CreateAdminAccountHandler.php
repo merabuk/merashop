@@ -7,11 +7,9 @@ namespace App\IdentityAccess\Application\Command\CreateAdminAccount;
 use App\IdentityAccess\Application\Exception\AdminAccount\CreateAdminAccountException;
 use App\IdentityAccess\Domain\Entity\AdminAccount;
 use App\IdentityAccess\Domain\Exception\AdminAccount\AdminAccountAlreadyExistsException;
-use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
-use App\IdentityAccess\Domain\Exception\PasswordGenerateException;
 use App\IdentityAccess\Domain\Repository\AdminAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\Repository\AdminAccountWriteRepositoryInterface;
-use App\IdentityAccess\Domain\Service\PasswordGenerator;
+use App\IdentityAccess\Domain\Service\PasswordGeneratorInterface;
 use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\EmailAddress;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\PasswordHash;
@@ -23,19 +21,19 @@ use App\Shared\Application\Command\CommandHandlerInterface;
 use App\Shared\Domain\Event\AdminCreatedSharedEvent;
 use App\Shared\Domain\Service\UlidGeneratorInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Throwable;
 
 #[AsMessageHandler(bus: BusNameEnum::Command->value)]
 readonly class CreateAdminAccountHandler implements CommandHandlerInterface
 {
     public function __construct(
-        private PasswordGenerator $passwordGenerator,
+        private PasswordGeneratorInterface $passwordGenerator,
         private AdminAccountReadRepositoryInterface $readRepository,
         private AdminAccountWriteRepositoryInterface $writeRepository,
         private PasswordHasherInterface $passwordHasher,
-        private MessageBusInterface $eventBus,
         private UlidGeneratorInterface $ulidGenerator,
+        private MessageBusInterface $eventBus,
     ) {
     }
 
@@ -56,7 +54,7 @@ readonly class CreateAdminAccountHandler implements CommandHandlerInterface
             $passwordHash = $this->passwordHasher->hash($plainPassword);
             $ulid = $this->ulidGenerator->next();
 
-            $user = AdminAccount::create(
+            $admin = AdminAccount::create(
                 ulid: Ulid::fromString($ulid),
                 email: $email,
                 passwordHash: PasswordHash::fromString($passwordHash),
@@ -64,16 +62,18 @@ readonly class CreateAdminAccountHandler implements CommandHandlerInterface
                 status: Status::fromString($command->status),
             );
 
-            $this->writeRepository->save($user);
+            $admin = $this->writeRepository->save($admin);
 
             $this->eventBus->dispatch(new AdminCreatedSharedEvent(
-                id: $user->getUlid()->value(),
-                email: $user->getEmail()->value(),
+                id: $admin->getUlid()->value(),
+                email: $admin->getEmail()->value(),
                 temporaryPassword: $plainPassword,
             ));
 
             return $plainPassword;
-        } catch (PasswordGenerateException|InvalidIdentityAccessValueObjectException|ExceptionInterface $e) {
+        } catch (AdminAccountAlreadyExistsException $e) {
+            throw $e;
+        } catch (Throwable $e) {
             throw new CreateAdminAccountException(message: 'Error during creating admin account', previous: $e);
         }
     }
