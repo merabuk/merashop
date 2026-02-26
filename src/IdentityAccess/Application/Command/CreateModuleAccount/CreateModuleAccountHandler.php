@@ -6,8 +6,8 @@ namespace App\IdentityAccess\Application\Command\CreateModuleAccount;
 
 use App\IdentityAccess\Application\Exception\ModuleAccount\CreateModuleAccountException;
 use App\IdentityAccess\Domain\Entity\ModuleAccount;
-use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
-use App\IdentityAccess\Domain\Exception\PasswordGenerateException;
+use App\IdentityAccess\Domain\Exception\ModuleAccount\ModuleAccountAlreadyExistsException;
+use App\IdentityAccess\Domain\Repository\ModuleAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\Repository\ModuleAccountWriteRepositoryInterface;
 use App\IdentityAccess\Domain\Service\PasswordGeneratorInterface;
 use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
@@ -19,11 +19,13 @@ use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
 use App\Shared\Domain\Service\UlidGeneratorInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Throwable;
 
 #[AsMessageHandler(bus: BusNameEnum::Command->value)]
 readonly class CreateModuleAccountHandler implements CommandHandlerInterface
 {
     public function __construct(
+        private ModuleAccountReadRepositoryInterface $readRepository,
         private PasswordGeneratorInterface $passwordGenerator,
         private ModuleAccountWriteRepositoryInterface $writeRepository,
         private PasswordHasherInterface $passwordHasher,
@@ -33,17 +35,24 @@ readonly class CreateModuleAccountHandler implements CommandHandlerInterface
 
     /**
      * @throws CreateModuleAccountException
+     * @throws ModuleAccountAlreadyExistsException
      */
     public function __invoke(CreateModuleAccountCommand $command): string
     {
         try {
+            $clientId = ClientId::fromString($command->clientId);
+
+            if ($this->readRepository->existsByClientId($clientId)) {
+                throw new ModuleAccountAlreadyExistsException();
+            }
+
             $plainSecret = $this->passwordGenerator->generateClientSecret();
             $secretHash = $this->passwordHasher->hash($plainSecret);
             $ulid = $this->ulidGenerator->next();
 
             $module = ModuleAccount::create(
                 ulid: Ulid::fromString($ulid),
-                clientId: ClientId::fromString($command->clientId),
+                clientId: $clientId,
                 clientSecret: ClientSecretHash::fromString($secretHash),
                 scopes: ScopeCollection::fromStrings($command->scopes),
             );
@@ -51,7 +60,9 @@ readonly class CreateModuleAccountHandler implements CommandHandlerInterface
             $this->writeRepository->save($module);
 
             return $plainSecret;
-        } catch (PasswordGenerateException|InvalidIdentityAccessValueObjectException $e) {
+        } catch (ModuleAccountAlreadyExistsException $e) {
+            throw $e;
+        } catch (Throwable $e) {
             throw new CreateModuleAccountException(message: 'Error during creating module account', previous: $e);
         }
     }

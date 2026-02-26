@@ -22,7 +22,6 @@ $managers = [
     'email_sender' => 'config/migrations/email_sender.php',
     'identity_access' => 'config/migrations/identity_access.php',
 ];
-$managers = [];
 
 echo 'Preparing test databases...'.PHP_EOL;
 

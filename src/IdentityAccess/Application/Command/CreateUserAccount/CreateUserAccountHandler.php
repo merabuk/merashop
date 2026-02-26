@@ -6,7 +6,6 @@ namespace App\IdentityAccess\Application\Command\CreateUserAccount;
 
 use App\IdentityAccess\Application\Exception\UserAccount\CreateUserAccountException;
 use App\IdentityAccess\Domain\Entity\UserAccount;
-use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
 use App\IdentityAccess\Domain\Exception\UserAccount\UserAccountAlreadyExistsException;
 use App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\Repository\UserAccountWriteRepositoryInterface;
@@ -21,18 +20,18 @@ use App\Shared\Domain\Enum\RoleEnum;
 use App\Shared\Domain\Event\UserRegisteredSharedEvent;
 use App\Shared\Domain\Service\UlidGeneratorInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Throwable;
 
 #[AsMessageHandler(bus: BusNameEnum::Command->value)]
 readonly class CreateUserAccountHandler implements CommandHandlerInterface
 {
     public function __construct(
         private UserAccountReadRepositoryInterface $readRepository,
-        private UserAccountWriteRepositoryInterface $writeRepository,
         private PasswordHasherInterface $passwordHasher,
-        private MessageBusInterface $eventBus,
         private UlidGeneratorInterface $ulidGenerator,
+        private UserAccountWriteRepositoryInterface $writeRepository,
+        private MessageBusInterface $eventBus,
     ) {
     }
 
@@ -66,7 +65,9 @@ readonly class CreateUserAccountHandler implements CommandHandlerInterface
                 id: $user->getUlid()->value(),
                 email: $user->getEmail()->value(),
             ));
-        } catch (InvalidIdentityAccessValueObjectException|ExceptionInterface $e) {
+        } catch (UserAccountAlreadyExistsException $e) {
+            throw $e;
+        } catch (Throwable $e) {
             throw new CreateUserAccountException(message: 'Error during creating user account', previous: $e);
         }
     }

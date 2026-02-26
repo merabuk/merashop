@@ -8,7 +8,9 @@ use App\IdentityAccess\Application\DTO\RefreshTokenData;
 use App\IdentityAccess\Application\Exception\RefreshToken\CreateRefreshTokenException;
 use App\IdentityAccess\Domain\Entity\RefreshToken;
 use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
+use App\IdentityAccess\Domain\Exception\RandomGenerateException;
 use App\IdentityAccess\Domain\Repository\RefreshTokenWriteRepositoryInterface;
+use App\IdentityAccess\Domain\Service\RandomTokenGeneratorInterface;
 use App\IdentityAccess\Domain\Service\TokenHasherInterface;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\AccountType;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\AccountUlid;
@@ -16,12 +18,12 @@ use App\IdentityAccess\Domain\ValueObject\RefreshToken\ExpiresAt;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\TokenHash;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 use DateMalformedStringException;
-use Random\RandomException;
 use Symfony\Component\Clock\ClockInterface;
 
-final readonly class RefreshTokenService
+final readonly class RefreshTokenService implements RefreshTokenServiceInterface
 {
     public function __construct(
+        private RandomTokenGeneratorInterface $tokenGenerator,
         private RefreshTokenWriteRepositoryInterface $writeRepository,
         private TokenHasherInterface $tokenHasher,
         private ClockInterface $clock,
@@ -35,7 +37,7 @@ final readonly class RefreshTokenService
     public function create(string $accountUlid, IdentityTypeEnum $accountType): RefreshTokenData
     {
         try {
-            $plainToken = $this->generatePlainToken();
+            $plainToken = $this->tokenGenerator->generateRefreshToken();
             $hashedToken = $this->tokenHasher->hash($plainToken);
 
             $refreshToken = RefreshToken::create(
@@ -49,7 +51,7 @@ final readonly class RefreshTokenService
             $this->writeRepository->save($refreshToken);
 
             return new RefreshTokenData(token: $plainToken, expiresIn: $this->ttl);
-        } catch (DateMalformedStringException|InvalidIdentityAccessValueObjectException|RandomException $e) {
+        } catch (DateMalformedStringException|InvalidIdentityAccessValueObjectException|RandomGenerateException $e) {
             throw new CreateRefreshTokenException('Error while creating refresh token', previous: $e);
         }
     }
@@ -57,13 +59,5 @@ final readonly class RefreshTokenService
     public function revoke(RefreshToken $refreshToken): void
     {
         $this->writeRepository->deleteAllPrevious($refreshToken);
-    }
-
-    /**
-     * @throws RandomException
-     */
-    private function generatePlainToken(): string
-    {
-        return bin2hex(random_bytes(32));
     }
 }

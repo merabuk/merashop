@@ -13,10 +13,9 @@ trait EmailAddressTestTrait
 
     protected function assertValidEmailAddress(string $className): void
     {
-        $email = 'test@example.com';
-
         $this->assertHasStaticMethod($className);
 
+        $email = 'test@example.com';
         $vo = $className::fromString($email);
 
         Assert::assertSame($email, $vo->value());
@@ -25,10 +24,10 @@ trait EmailAddressTestTrait
 
     protected function assertEmailAddressTrimming(string $className): void
     {
+        $this->assertHasStaticMethod($className);
+
         $email = '  test@example.com  ';
         $expected = 'test@example.com';
-
-        $this->assertHasStaticMethod($className);
 
         $vo = $className::fromString($email);
         Assert::assertSame($expected, $vo->value(), sprintf('VO %s must trim spaces', $className));
@@ -58,7 +57,7 @@ trait EmailAddressTestTrait
     private function assertHasStaticMethod(string $className): void
     {
         Assert::assertTrue(
-            condition: method_exists(static::class, 'fromString'),
+            condition: method_exists($className, 'fromString'),
             message: sprintf('%s class must implement fromString method', $className)
         );
     }

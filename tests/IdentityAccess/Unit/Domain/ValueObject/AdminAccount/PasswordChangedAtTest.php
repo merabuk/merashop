@@ -5,18 +5,20 @@ declare(strict_types=1);
 namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\AdminAccount;
 
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\PasswordChangedAt;
+use App\Tests\Shared\Unit\Domain\ValueObject\DateTimeValueObjectTrait;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
 final class PasswordChangedAtTest extends TestCase
 {
+    use DateTimeValueObjectTrait;
+
     public function testItCreatesValidPasswordChangedAt(): void
     {
-        $date = new DateTimeImmutable('2024-01-01 12:00:00');
-        $vo = PasswordChangedAt::fromDateTime($date);
-
-        self::assertSame($date, $vo->value());
-        self::assertSame($date->format(DateTimeImmutable::ATOM), (string) $vo);
+        $this->assertCreatesValidDateTime(
+            className: PasswordChangedAt::class,
+            dateTime: new DateTimeImmutable('2024-01-01 12:00:00'),
+        );
     }
 
     public function testItCanBeCreatedForNow(): void
@@ -31,14 +33,21 @@ final class PasswordChangedAtTest extends TestCase
 
     public function testItProvidesEqualityCheck(): void
     {
-        $dateString1 = '2024-01-01 15:30:00.123456';
-        $dateString2 = '2024-01-01 15:30:00.123457';
+        $this->assertDateTimeEquality(PasswordChangedAt::class);
+    }
 
-        $vo1 = PasswordChangedAt::fromDateTime(new DateTimeImmutable($dateString1));
-        $vo2 = PasswordChangedAt::fromDateTime(new DateTimeImmutable($dateString1));
-        $vo3 = PasswordChangedAt::fromDateTime(new DateTimeImmutable($dateString2));
+    public function testItProvidesEqualityCheckWithDateTime(): void
+    {
+        $this->assertDateTimeEquality(PasswordChangedAt::class);
+    }
 
-        self::assertTrue($vo1->equals($vo2), 'Identical dates must be equal');
-        self::assertFalse($vo1->equals($vo3), 'Dates with different microseconds must not be equal');
+    public function testItIsAfter(): void
+    {
+        $this->assertIsAfter(PasswordChangedAt::class);
+    }
+
+    public function testItIsBefore(): void
+    {
+        $this->assertIsBefore(PasswordChangedAt::class);
     }
 }

@@ -5,44 +5,56 @@ declare(strict_types=1);
 namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\RefreshToken;
 
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\ExpiresAt;
+use App\Tests\Shared\Unit\Domain\ValueObject\DateTimeValueObjectTrait;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Clock\MockClock;
 
 class ExpiresAtTest extends TestCase
 {
+    use DateTimeValueObjectTrait;
+
     public function testItCreatesValidExpiresAt(): void
     {
-        $date = new DateTimeImmutable('+1 hour');
-        $expiresAt = ExpiresAt::fromDateTime($date);
-
-        self::assertSame($date, $expiresAt->value());
-        self::assertSame($date->format(DateTimeImmutable::ATOM), (string) $expiresAt);
+        $this->assertCreatesValidDateTime(
+            className: ExpiresAt::class,
+            dateTime: new DateTimeImmutable('+1 hour'),
+        );
     }
 
     public function testItChecksIfItIsExpired(): void
     {
+        $clock = new MockClock();
         $expiresAt = ExpiresAt::fromDateTime(new DateTimeImmutable('-1 hour'));
 
-        self::assertTrue($expiresAt->isExpired());
+        self::assertTrue($expiresAt->isExpired($clock));
     }
 
     public function testItChecksIfItIsNotExpired(): void
     {
+        $clock = new MockClock();
         $expiresAt = ExpiresAt::fromDateTime(new DateTimeImmutable('+1 hour'));
 
-        self::assertFalse($expiresAt->isExpired());
+        self::assertFalse($expiresAt->isExpired($clock));
     }
 
     public function testItProvidesEqualityCheck(): void
     {
-        $dateString1 = '2024-01-01 15:30:00.123456';
-        $dateString2 = '2024-01-01 15:30:00.123457';
+        $this->assertDateTimeEquality(ExpiresAt::class);
+    }
 
-        $vo1 = ExpiresAt::fromDateTime(new DateTimeImmutable($dateString1));
-        $vo2 = ExpiresAt::fromDateTime(new DateTimeImmutable($dateString1));
-        $vo3 = ExpiresAt::fromDateTime(new DateTimeImmutable($dateString2));
+    public function testItProvidesEqualityCheckWithDateTime(): void
+    {
+        $this->assertDateTimeEquality(ExpiresAt::class);
+    }
 
-        self::assertTrue($vo1->equals($vo2));
-        self::assertFalse($vo1->equals($vo3));
+    public function testItIsAfter(): void
+    {
+        $this->assertIsAfter(ExpiresAt::class);
+    }
+
+    public function testItIsBefore(): void
+    {
+        $this->assertIsBefore(ExpiresAt::class);
     }
 }

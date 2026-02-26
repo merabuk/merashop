@@ -23,8 +23,8 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 final class CreateAdminAccountHandlerTest extends TestCase
 {
-    private PasswordGeneratorInterface $passwordGenerator;
     private AdminAccountReadRepositoryInterface $readRepository;
+    private PasswordGeneratorInterface $passwordGenerator;
     private AdminAccountWriteRepositoryInterface $writeRepository;
     private PasswordHasherInterface $passwordHasher;
     private UlidGeneratorInterface $ulidGenerator;
@@ -32,8 +32,8 @@ final class CreateAdminAccountHandlerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->passwordGenerator = $this->createMock(PasswordGeneratorInterface::class);
         $this->readRepository = $this->createMock(AdminAccountReadRepositoryInterface::class);
+        $this->passwordGenerator = $this->createMock(PasswordGeneratorInterface::class);
         $this->writeRepository = $this->createMock(AdminAccountWriteRepositoryInterface::class);
         $this->passwordHasher = $this->createMock(PasswordHasherInterface::class);
         $this->ulidGenerator = $this->createMock(UlidGeneratorInterface::class);
@@ -68,7 +68,7 @@ final class CreateAdminAccountHandlerTest extends TestCase
         self::assertSame('plain_password', $result);
     }
 
-    public function testItThrowsExceptionWhenAdminAlreadyExists(): void
+    public function testThrowsExceptionWhenAdminAlreadyExists(): void
     {
         $command = new CreateAdminAccountCommand(
             email: AdminAccountMother::DEFAULT_EMAIL,
@@ -85,8 +85,8 @@ final class CreateAdminAccountHandlerTest extends TestCase
     private function createHandler(): CreateAdminAccountHandler
     {
         return new CreateAdminAccountHandler(
-            passwordGenerator: $this->passwordGenerator,
             readRepository: $this->readRepository,
+            passwordGenerator: $this->passwordGenerator,
             writeRepository: $this->writeRepository,
             passwordHasher: $this->passwordHasher,
             ulidGenerator: $this->ulidGenerator,

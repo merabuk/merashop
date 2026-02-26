@@ -35,4 +35,23 @@ abstract readonly class DateTimeValueObject implements Stringable
     {
         return $this->date->format(self::COMPARISON_FORMAT);
     }
+
+    public function equalsWithDateTime(DateTimeImmutable $other): bool
+    {
+        return $this->date->format(self::COMPARISON_FORMAT) === $other->format(self::COMPARISON_FORMAT);
+    }
+
+    public function isAfter(self|DateTimeImmutable $other): bool
+    {
+        $otherDate = $other instanceof self ? $other->value() : $other;
+
+        return $this->date > $otherDate;
+    }
+
+    public function isBefore(self|DateTimeImmutable $other): bool
+    {
+        $otherDate = $other instanceof self ? $other->value() : $other;
+
+        return $this->date < $otherDate;
+    }
 }

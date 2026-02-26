@@ -10,10 +10,9 @@ trait IntegerIdTestTrait
 {
     protected function assertValidIntegerId(string $className): void
     {
-        $id = 123;
-
         $this->assertHasStaticMethod($className);
 
+        $id = 123;
         $vo = $className::fromInt($id);
 
         Assert::assertSame($id, $vo->value());

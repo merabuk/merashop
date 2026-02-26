@@ -6,6 +6,7 @@ namespace App\IdentityAccess\Domain\ValueObject\RefreshToken;
 
 use App\Shared\Domain\ValueObject\DateTimeValueObject;
 use DateTimeImmutable;
+use Symfony\Component\Clock\ClockInterface;
 
 final readonly class ExpiresAt extends DateTimeValueObject
 {
@@ -14,8 +15,8 @@ final readonly class ExpiresAt extends DateTimeValueObject
         return new self($date);
     }
 
-    public function isExpired(): bool
+    public function isExpired(ClockInterface $clock): bool
     {
-        return $this->value() < new DateTimeImmutable();
+        return $this->isBefore($clock->now());
     }
 }

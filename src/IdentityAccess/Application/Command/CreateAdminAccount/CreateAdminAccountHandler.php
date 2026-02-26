@@ -28,8 +28,8 @@ use Throwable;
 readonly class CreateAdminAccountHandler implements CommandHandlerInterface
 {
     public function __construct(
-        private PasswordGeneratorInterface $passwordGenerator,
         private AdminAccountReadRepositoryInterface $readRepository,
+        private PasswordGeneratorInterface $passwordGenerator,
         private AdminAccountWriteRepositoryInterface $writeRepository,
         private PasswordHasherInterface $passwordHasher,
         private UlidGeneratorInterface $ulidGenerator,
