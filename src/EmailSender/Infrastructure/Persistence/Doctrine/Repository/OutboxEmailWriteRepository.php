@@ -11,6 +11,7 @@ use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\Markers\ValueObjectExceptionInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait;
 use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 
 class OutboxEmailWriteRepository extends BaseOutgoingEmailRepository implements OutboxEmailWriteRepositoryInterface
 {
@@ -30,10 +31,11 @@ class OutboxEmailWriteRepository extends BaseOutgoingEmailRepository implements 
     }
 
     /**
-     * @throws IncompatibleMappedEntityException
+     * @throws OptimisticLockException
+     * @throws ORMException
      */
     public function delete(OutboxEmail $outgoingEmail): void
     {
-        $this->_delete($outgoingEmail);
+        $this->_delete($outgoingEmail->getId()?->value());
     }
 }

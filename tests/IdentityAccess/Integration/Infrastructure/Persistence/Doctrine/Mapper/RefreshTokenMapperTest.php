@@ -9,6 +9,7 @@ use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Mapper\RefreshTokenMa
 use App\Tests\IdentityAccess\Support\RefreshTokenMother;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Clock\MockClock;
 
 final class RefreshTokenMapperTest extends KernelTestCase
 {
@@ -25,7 +26,8 @@ final class RefreshTokenMapperTest extends KernelTestCase
 
     public function testItSuccessfullyPerformsRoundTrip(): void
     {
-        $domainToken = RefreshTokenMother::createWithData();
+        $clock = new MockClock('2023-01-01 00:00:00');
+        $domainToken = RefreshTokenMother::createWithData(expiresAt: $clock->now()->modify('+1 hour'));
 
         $ormToken = $this->mapper->toDoctrineOrm($domainToken);
 

@@ -44,22 +44,23 @@ services:
   App\IdentityAccess\Application\Service\OAuth2TokenServiceInterface: '@App\IdentityAccess\Application\Service\OAuth2TokenService'
   App\IdentityAccess\Application\Service\RefreshTokenServiceInterface: '@App\IdentityAccess\Application\Service\RefreshTokenService'
 
-  App\IdentityAccess\Domain\Service\AdminAccountFactoryInterface: '@App\IdentityAccess\Infrastructure\Service\AdminAccountFactory'
+  App\IdentityAccess\Domain\Service\PasswordHasherInterface: '@App\IdentityAccess\Infrastructure\Security\Hasher\PasswordHasherService'
+  App\IdentityAccess\Domain\Service\TokenHasherInterface: '@App\IdentityAccess\Infrastructure\Security\Hasher\TokenHasherService'
+
+  App\IdentityAccess\Domain\Factory\Contracts\AdminAccountFactoryInterface: '@App\IdentityAccess\Domain\Factory\AdminAccountFactory'
   App\IdentityAccess\Domain\Repository\AdminAccountReadRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\AdminAccountReadRepository'
   App\IdentityAccess\Domain\Repository\AdminAccountWriteRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\AdminAccountWriteRepository'
 
-  App\IdentityAccess\Domain\Service\ModuleAccountFactoryInterface: '@App\IdentityAccess\Infrastructure\Service\ModuleAccountFactory'
+  App\IdentityAccess\Domain\Factory\Contracts\ModuleAccountFactoryInterface: '@App\IdentityAccess\Domain\Factory\ModuleAccountFactory'
   App\IdentityAccess\Domain\Repository\ModuleAccountReadRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\ModuleAccountReadRepository'
   App\IdentityAccess\Domain\Repository\ModuleAccountWriteRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\ModuleAccountWriteRepository'
 
-  App\IdentityAccess\Domain\Service\RefreshTokenFactoryInterface: '@App\IdentityAccess\Infrastructure\Service\RefreshTokenFactory'
+  App\IdentityAccess\Domain\Factory\Contracts\RefreshTokenFactoryInterface: '@App\IdentityAccess\Domain\Factory\RefreshTokenFactory'
   App\IdentityAccess\Domain\Repository\RefreshTokenReadRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\RefreshTokenReadRepository'
   App\IdentityAccess\Domain\Repository\RefreshTokenWriteRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\RefreshTokenWriteRepository'
 
-  App\IdentityAccess\Domain\Service\UserAccountFactoryInterface: '@App\IdentityAccess\Infrastructure\Service\UserAccountFactory'
+  App\IdentityAccess\Domain\Factory\Contracts\UserAccountFactoryInterface: '@App\IdentityAccess\Domain\Factory\UserAccountFactory'
   App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\UserAccountReadRepository'
-
-  App\IdentityAccess\Domain\Service\PasswordHasherInterface: '@App\IdentityAccess\Infrastructure\Security\Hasher\PasswordHasherService'
-  App\IdentityAccess\Domain\Service\TokenHasherInterface: '@App\IdentityAccess\Infrastructure\Security\Hasher\TokenHasherService'
+  App\IdentityAccess\Domain\Repository\UserAccountWriteRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\UserAccountWriteRepository'
 
   App\Shared\Application\Security\AuthEntityContextInterface: '@App\IdentityAccess\Infrastructure\Security\Bridge\SymfonyAuthEntityContext'

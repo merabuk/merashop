@@ -26,7 +26,7 @@ class IdentityOutboxRelayHandlerTest extends TestCase
             }
         };
 
-        $eventBus->expects($this->once())
+        $eventBus->expects(self::once())
             ->method('dispatch')
             ->with(
                 self::identicalTo($event),

@@ -8,7 +8,7 @@ use App\IdentityAccess\Domain\Enum\GrantTypeEnum;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 use InvalidArgumentException;
 
-readonly class OAuth2Data implements UserCredentialsInterface, ClientCredentialsInterface, RefreshTokenInterface
+readonly class OAuth2Data implements UserCredentialsInterface, ClientCredentialsInterface, RefreshTokenCredentialsInterface
 {
     public function __construct(
         private string $grantType,

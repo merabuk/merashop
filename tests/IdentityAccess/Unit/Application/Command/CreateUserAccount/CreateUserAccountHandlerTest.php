@@ -45,7 +45,7 @@ class CreateUserAccountHandlerTest extends TestCase
 
         $this->readRepository->method('existsByEmail')->willReturn(false);
         $this->passwordHasher->method('hash')->willReturn('hashed_password');
-        $this->ulidGenerator->method('generate')->willReturn('ulid');
+        $this->ulidGenerator->method('next')->willReturn(UserAccountMother::DEFAULT_ULID);
 
         $this->writeRepository->expects(self::once())
             ->method('save')

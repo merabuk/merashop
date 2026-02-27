@@ -7,7 +7,7 @@ namespace App\Tests\IdentityAccess\Support;
 use App\IdentityAccess\Domain\Entity\AdminAccount;
 use App\IdentityAccess\Domain\Enum\AdminAccount\StatusEnum;
 use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
-use App\IdentityAccess\Domain\Service\AdminAccountFactoryInterface;
+use App\IdentityAccess\Domain\Factory\Contracts\AdminAccountFactoryInterface;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\EmailAddress;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\Id;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\PasswordChangedAt;

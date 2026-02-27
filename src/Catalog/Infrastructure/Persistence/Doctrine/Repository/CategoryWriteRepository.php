@@ -14,6 +14,7 @@ use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\Markers\ValueObjectExceptionInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait;
 use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 
 final class CategoryWriteRepository extends BaseCategoryRepository implements CategoryWriteRepositoryInterface
 {
@@ -33,11 +34,12 @@ final class CategoryWriteRepository extends BaseCategoryRepository implements Ca
     }
 
     /**
-     * @throws IncompatibleMappedEntityException
+     * @throws OptimisticLockException
+     * @throws ORMException
      */
     public function delete(Category $category): void
     {
-        $this->_delete($category);
+        $this->_delete($category->getId()?->value());
     }
 
     public function replaceOldPathOnNew(Path $oldPath, Path $newPath): void

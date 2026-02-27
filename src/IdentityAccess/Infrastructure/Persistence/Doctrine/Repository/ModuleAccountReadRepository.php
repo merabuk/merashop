@@ -8,6 +8,7 @@ use App\IdentityAccess\Domain\Entity\ModuleAccount;
 use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
 use App\IdentityAccess\Domain\Repository\ModuleAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientId;
+use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Id;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Ulid;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmModuleAccount;
 use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
@@ -17,6 +18,18 @@ use App\Shared\Infrastructure\Persistence\Doctrine\Repository\ReadRepositoryTrai
 class ModuleAccountReadRepository extends BaseModuleAccountRepository implements ModuleAccountReadRepositoryInterface
 {
     use ReadRepositoryTrait;
+
+    /**
+     * @throws EntityIdMissingException
+     * @throws InvalidIdentityAccessValueObjectException
+     * @throws IncompatibleMappedEntityException
+     */
+    public function findById(Id $id): ?ModuleAccount
+    {
+        $orm = $this->findOneBy(['id' => $id->value()]);
+
+        return $this->checkAndMapToDomain($orm);
+    }
 
     /**
      * @throws EntityIdMissingException

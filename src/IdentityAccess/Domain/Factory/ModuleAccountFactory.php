@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\IdentityAccess\Infrastructure\Service;
+namespace App\IdentityAccess\Domain\Factory;
 
 use App\IdentityAccess\Domain\Entity\ModuleAccount;
 use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountClientIdException;
 use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountPasswordHashException;
 use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountUlidException;
-use App\IdentityAccess\Domain\Service\ModuleAccountFactoryInterface;
+use App\IdentityAccess\Domain\Exception\ValueObject\InvalidScopeException;
+use App\IdentityAccess\Domain\Factory\Contracts\ModuleAccountFactoryInterface;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientId;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientSecretHash;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Ulid;
@@ -22,6 +23,7 @@ final readonly class ModuleAccountFactory implements ModuleAccountFactoryInterfa
      * @throws InvalidModuleAccountClientIdException
      * @throws InvalidModuleAccountPasswordHashException
      * @throws InvalidModuleAccountUlidException
+     * @throws InvalidScopeException
      */
     public function createForTest(
         string $ulid,

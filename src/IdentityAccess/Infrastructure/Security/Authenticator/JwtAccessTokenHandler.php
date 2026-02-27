@@ -7,12 +7,13 @@ namespace App\IdentityAccess\Infrastructure\Security\Authenticator;
 use App\IdentityAccess\Application\Security\CurrentAccessTokenContextInterface;
 use App\IdentityAccess\Domain\Security\AccessTokenBlacklistInterface;
 use App\IdentityAccess\Infrastructure\Exception\InvalidCredentialsException;
+use App\IdentityAccess\Infrastructure\Security\Jwt\JwtConfigFactory;
 use App\IdentityAccess\Infrastructure\Security\Provider\AuthEntityProvider;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 use DateTimeInterface;
 use Lcobucci\JWT\Configuration;
-use Lcobucci\JWT\Token\Plain;
 use Lcobucci\JWT\Token\RegisteredClaims;
+use Lcobucci\JWT\UnencryptedToken;
 use Symfony\Component\Security\Http\AccessToken\AccessTokenHandlerInterface;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Throwable;
@@ -37,7 +38,7 @@ final readonly class JwtAccessTokenHandler implements AccessTokenHandlerInterfac
             throw new InvalidCredentialsException('Invalid JWT token');
         }
 
-        if (false === $token instanceof Plain) {
+        if (false === $token instanceof UnencryptedToken) {
             throw new InvalidCredentialsException('Invalid JWT token type');
         }
 
@@ -53,7 +54,7 @@ final readonly class JwtAccessTokenHandler implements AccessTokenHandlerInterfac
         }
 
         $ulid = $claims->get(RegisteredClaims::SUBJECT);
-        $type = IdentityTypeEnum::tryFrom((string) $claims->get('sub_type'));
+        $type = IdentityTypeEnum::tryFrom((string) $claims->get(JwtConfigFactory::CLAIM_SUBJECT_TYPE));
 
         if (null === $ulid) {
             throw new InvalidCredentialsException('JWT token does not contain a subject (ULID)');

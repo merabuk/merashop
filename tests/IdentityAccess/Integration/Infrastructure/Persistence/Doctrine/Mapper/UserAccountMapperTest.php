@@ -65,7 +65,7 @@ final class UserAccountMapperTest extends KernelTestCase
 
         $this->mapper->mapToExistingOrm($domainUser, $ormUser);
 
-        self::assertEquals(['ROLE_USER'], $ormUser->roles);
+        self::assertEquals($domainUser->getRoles()->toStrings(), $ormUser->roles);
         self::assertNull($ormUser->id);
         self::assertNull($ormUser->ulid);
         self::assertNull($ormUser->email);

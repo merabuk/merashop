@@ -46,8 +46,7 @@ readonly class UserPasswordGrantAccountProvider implements PasswordGrantAccountP
             return new GrantResultData(
                 subjectUlid: $user->getUlid()->value(),
                 subjectType: self::getAccountType(),
-                roles: $user->getRoles()->toStrings(),
-                scopes: [],
+                roles: $user->getRoles()->toStrings()
             );
         } catch (InvalidIdentityAccessValueObjectException $e) {
             throw new InvalidCredentialsException(message: 'Failed to process user credentials', previous: $e);

@@ -11,6 +11,7 @@ use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\Markers\ValueObjectExceptionInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait;
 use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 
 final class UserAccountWriteRepository extends BaseUserAccountRepository implements UserAccountWriteRepositoryInterface
 {
@@ -30,10 +31,11 @@ final class UserAccountWriteRepository extends BaseUserAccountRepository impleme
     }
 
     /**
-     * @throws IncompatibleMappedEntityException
+     * @throws OptimisticLockException
+     * @throws ORMException
      */
     public function delete(UserAccount $userAccount): void
     {
-        $this->_delete($userAccount);
+        $this->_delete($userAccount->getId()?->value());
     }
 }

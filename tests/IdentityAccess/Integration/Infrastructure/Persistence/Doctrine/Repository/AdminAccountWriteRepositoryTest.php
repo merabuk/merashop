@@ -6,12 +6,17 @@ namespace App\Tests\IdentityAccess\Integration\Infrastructure\Persistence\Doctri
 
 use App\IdentityAccess\Domain\Repository\AdminAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\Repository\AdminAccountWriteRepositoryInterface;
+use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmAdminAccount;
 use App\Tests\IdentityAccess\Support\Traits\AdminAccountFactoryTrait;
+use App\Tests\IdentityAccess\Support\Traits\IdentityAccessEntityManagerTrait;
+use App\Tests\Shared\Support\Traits\EntityTechnicalMetadataTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class AdminAccountWriteRepositoryTest extends KernelTestCase
 {
     use AdminAccountFactoryTrait;
+    use EntityTechnicalMetadataTrait;
+    use IdentityAccessEntityManagerTrait;
 
     private AdminAccountWriteRepositoryInterface $repository;
 
@@ -22,7 +27,7 @@ class AdminAccountWriteRepositoryTest extends KernelTestCase
         $this->repository = self::getContainer()->get(AdminAccountWriteRepositoryInterface::class);
     }
 
-    public function testSaveSuccess(): void
+    public function testSave(): void
     {
         $admin = $this->getAdminAccountMother()->create();
 
@@ -41,14 +46,29 @@ class AdminAccountWriteRepositoryTest extends KernelTestCase
         }
     }
 
-    public function testDeleteSuccess(): void
+    public function testDelete(): void
     {
         $admin = $this->getAdminAccountFixture()->create();
+        $this->clearEntityManager();
 
         $this->repository->delete($admin);
 
         $readRepository = self::getContainer()->get(AdminAccountReadRepositoryInterface::class);
 
         self::assertNull($readRepository->findByUlid($admin->getUlid()));
+    }
+
+    public function testItSetsTechnicalMetadataOnSave(): void
+    {
+        $admin = $this->getAdminAccountFixture()->create();
+        $id = $admin->getId()->value();
+
+        $this->clearEntityManager();
+
+        $ormEntity = $this->findOrmEntity(OrmAdminAccount::class, $id);
+
+        self::assertNotNull($ormEntity);
+        $this->assertHasCreatedAt($ormEntity);
+        $this->assertHasUpdatedAt($ormEntity);
     }
 }

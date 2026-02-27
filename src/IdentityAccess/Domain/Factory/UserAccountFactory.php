@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\IdentityAccess\Infrastructure\Service;
+namespace App\IdentityAccess\Domain\Factory;
 
 use App\IdentityAccess\Domain\Entity\UserAccount;
 use App\IdentityAccess\Domain\Exception\UserAccount\InvalidUserAccountEmailException;
 use App\IdentityAccess\Domain\Exception\UserAccount\InvalidUserAccountPasswordHashException;
 use App\IdentityAccess\Domain\Exception\UserAccount\InvalidUserAccountUlidException;
-use App\IdentityAccess\Domain\Service\UserAccountFactoryInterface;
+use App\IdentityAccess\Domain\Exception\ValueObject\InvalidRoleException;
+use App\IdentityAccess\Domain\Factory\Contracts\UserAccountFactoryInterface;
 use App\IdentityAccess\Domain\ValueObject\RoleCollection;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\PasswordHash;
@@ -22,6 +23,7 @@ final readonly class UserAccountFactory implements UserAccountFactoryInterface
      * @throws InvalidUserAccountEmailException
      * @throws InvalidUserAccountPasswordHashException
      * @throws InvalidUserAccountUlidException
+     * @throws InvalidRoleException
      */
     public function createForTest(
         string $ulid,

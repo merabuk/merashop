@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\IdentityAccess\Infrastructure\Service;
+namespace App\IdentityAccess\Domain\Factory;
 
 use App\IdentityAccess\Domain\Entity\AdminAccount;
 use App\IdentityAccess\Domain\Enum\AdminAccount\StatusEnum;
 use App\IdentityAccess\Domain\Exception\AdminAccount\InvalidAdminAccountEmailException;
 use App\IdentityAccess\Domain\Exception\AdminAccount\InvalidAdminAccountPasswordHashException;
 use App\IdentityAccess\Domain\Exception\AdminAccount\InvalidAdminAccountUlidException;
-use App\IdentityAccess\Domain\Service\AdminAccountFactoryInterface;
+use App\IdentityAccess\Domain\Exception\ValueObject\InvalidRoleException;
+use App\IdentityAccess\Domain\Factory\Contracts\AdminAccountFactoryInterface;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\EmailAddress;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\PasswordHash;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\Status;
@@ -24,6 +25,7 @@ final readonly class AdminAccountFactory implements AdminAccountFactoryInterface
      * @throws InvalidAdminAccountUlidException
      * @throws InvalidAdminAccountEmailException
      * @throws InvalidAdminAccountPasswordHashException
+     * @throws InvalidRoleException
      */
     public function createForTest(
         string $ulid,

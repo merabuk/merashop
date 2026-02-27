@@ -65,7 +65,7 @@ final class ModuleAccountMapperTest extends KernelTestCase
 
         $this->mapper->mapToExistingOrm($domainModule, $ormModule);
 
-        self::assertEquals(['role_module'], $ormModule->scopes);
+        self::assertEquals($domainModule->getScopes()->toStrings(), $ormModule->scopes);
         self::assertNull($ormModule->id);
         self::assertNull($ormModule->ulid);
         self::assertNull($ormModule->clientId);

@@ -6,10 +6,10 @@ namespace App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity;
 
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientId;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientSecretHash;
+use App\Shared\Infrastructure\Persistence\Doctrine\Entity\Traits\SoftDeleteableEntityTrait;
+use App\Shared\Infrastructure\Persistence\Doctrine\Entity\Traits\TimestampableEntityTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Entity]
@@ -18,8 +18,8 @@ use Symfony\Bridge\Doctrine\Types\UlidType;
 #[ORM\UniqueConstraint(name: 'uniq_module_accounts_client_id', columns: ['client_id'])]
 class OrmModuleAccount
 {
-    use TimestampableEntity;
-    use SoftDeleteableEntity;
+    use TimestampableEntityTrait;
+    use SoftDeleteableEntityTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]

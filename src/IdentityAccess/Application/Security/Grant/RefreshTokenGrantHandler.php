@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Application\Security\Grant;
 
-use App\IdentityAccess\Application\DTO\RefreshTokenInterface;
+use App\IdentityAccess\Application\DTO\RefreshTokenCredentialsInterface;
 use App\IdentityAccess\Application\DTO\TokenResponseData;
 use App\IdentityAccess\Application\Exception\GrantHandlerException;
 use App\IdentityAccess\Application\Exception\InvalidRefreshTokenException;
@@ -13,7 +13,7 @@ use App\IdentityAccess\Application\Exception\TokenGenerateException;
 use App\IdentityAccess\Application\Exception\UnsupportedAccountProviderException;
 use App\IdentityAccess\Application\Security\Provider\RefreshTokenGrant\RefreshTokenGrantAccountProviderInterface;
 use App\IdentityAccess\Application\Security\TokenGeneratorInterface;
-use App\IdentityAccess\Application\Service\RefreshTokenService;
+use App\IdentityAccess\Application\Service\RefreshTokenServiceInterface;
 use App\IdentityAccess\Domain\Enum\GrantTypeEnum;
 use App\IdentityAccess\Domain\Exception\RefreshToken\InvalidRefreshTokenTokenHashException;
 use App\IdentityAccess\Domain\Repository\RefreshTokenReadRepositoryInterface;
@@ -22,6 +22,7 @@ use App\IdentityAccess\Domain\ValueObject\RefreshToken\TokenHash;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
+use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 
 readonly class RefreshTokenGrantHandler implements GrantHandlerInterface
@@ -33,9 +34,10 @@ readonly class RefreshTokenGrantHandler implements GrantHandlerInterface
         )]
         private ContainerInterface $providers,
         private RefreshTokenReadRepositoryInterface $refreshTokenReadRepository,
+        private ClockInterface $clock,
         private TokenHasherInterface $tokenHasher,
         private TokenGeneratorInterface $tokenGenerator,
-        private RefreshTokenService $refreshTokenService,
+        private RefreshTokenServiceInterface $refreshTokenService,
     ) {
     }
 
@@ -50,7 +52,7 @@ readonly class RefreshTokenGrantHandler implements GrantHandlerInterface
      * @throws NotFoundExceptionInterface
      * @throws UnsupportedAccountProviderException
      */
-    public function handle(RefreshTokenInterface $data): TokenResponseData
+    public function handle(RefreshTokenCredentialsInterface $data): TokenResponseData
     {
         try {
             $tokenHash = $this->tokenHasher->hash($data->getRefreshToken());
@@ -61,7 +63,7 @@ readonly class RefreshTokenGrantHandler implements GrantHandlerInterface
                 throw new InvalidRefreshTokenException('Invalid refresh token');
             }
 
-            if ($refreshToken->getExpiresAt()->isExpired()) {
+            if ($refreshToken->getExpiresAt()->isExpired($this->clock)) {
                 $this->refreshTokenService->revoke($refreshToken);
 
                 throw new InvalidRefreshTokenException('Refresh token expired');
@@ -88,7 +90,7 @@ readonly class RefreshTokenGrantHandler implements GrantHandlerInterface
                 return new TokenResponseData(accessTokenData: $accessTokenData, refreshTokenData: $refreshTokenData);
             }
 
-            throw new UnsupportedAccountProviderException(sprintf('Account provider %s is not an instance of %s', is_object($provider) ? get_class($provider) : (string) $provider, RefreshTokenGrantAccountProviderInterface::class));
+            throw new UnsupportedAccountProviderException(sprintf('Account provider %s is not an instance of %s', get_debug_type($provider), RefreshTokenGrantAccountProviderInterface::class));
         } catch (
             CreateRefreshTokenException
             |InvalidRefreshTokenTokenHashException

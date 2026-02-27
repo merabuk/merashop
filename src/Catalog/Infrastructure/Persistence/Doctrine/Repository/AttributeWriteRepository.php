@@ -11,6 +11,7 @@ use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\Markers\ValueObjectExceptionInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait;
 use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 
 final class AttributeWriteRepository extends BaseAttributeRepository implements AttributeWriteRepositoryInterface
 {
@@ -30,10 +31,11 @@ final class AttributeWriteRepository extends BaseAttributeRepository implements 
     }
 
     /**
-     * @throws IncompatibleMappedEntityException
+     * @throws OptimisticLockException
+     * @throws ORMException
      */
     public function delete(Attribute $attribute): void
     {
-        $this->_delete($attribute);
+        $this->_delete($attribute->getId()?->value());
     }
 }

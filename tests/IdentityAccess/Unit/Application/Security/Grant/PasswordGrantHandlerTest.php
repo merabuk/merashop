@@ -13,6 +13,7 @@ use App\IdentityAccess\Application\Security\Grant\PasswordGrantHandler;
 use App\IdentityAccess\Application\Security\Provider\PasswordGrant\PasswordGrantAccountProviderInterface;
 use App\IdentityAccess\Application\Security\TokenGeneratorInterface as JwtGenerator;
 use App\IdentityAccess\Application\Service\RefreshTokenServiceInterface;
+use App\IdentityAccess\Domain\Enum\GrantTypeEnum;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 use App\Shared\Domain\Enum\RoleEnum;
 use App\Tests\IdentityAccess\Support\UserAccountMother;
@@ -36,6 +37,11 @@ final class PasswordGrantHandlerTest extends TestCase
         $this->handler = $this->creatHandler();
     }
 
+    public function testGetDefaultIndexName(): void
+    {
+        self::assertSame(GrantTypeEnum::Password->value, $this->handler::getDefaultIndexName());
+    }
+
     public function testItSuccessfullyIssuesTokens(): void
     {
         $accountType = IdentityTypeEnum::User;
@@ -51,8 +57,8 @@ final class PasswordGrantHandlerTest extends TestCase
         $provider = $this->createMock(PasswordGrantAccountProviderInterface::class);
         $provider->method('handle')->willReturn($grantResult);
 
-        $this->providers->method('has')->with('user')->willReturn(true);
-        $this->providers->method('get')->with('user')->willReturn($provider);
+        $this->providers->method('has')->with($accountType->value)->willReturn(true);
+        $this->providers->method('get')->with($accountType->value)->willReturn($provider);
 
         $accessTokenData = new AccessTokenData(token: 'access_token', expiresIn: 3600);
         $refreshTokenData = new RefreshTokenData(token: 'refresh_token', expiresIn: 86400);
@@ -92,7 +98,7 @@ final class PasswordGrantHandlerTest extends TestCase
     private function createUserCredentialsMock(
         IdentityTypeEnum $accountType = IdentityTypeEnum::User,
         string $username = UserAccountMother::DEFAULT_EMAIL,
-        string $password = 'password'
+        string $password = 'password',
     ): UserCredentialsInterface {
         $credentials = $this->createMock(UserCredentialsInterface::class);
 

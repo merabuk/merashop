@@ -32,7 +32,7 @@ final class RefreshTokenServiceTest extends TestCase
             tokenGenerator: $randomGenerator,
             writeRepository: $writeRepository,
             tokenHasher: $tokenHasher,
-            clock:$clock,
+            clock: $clock,
             ttl: $ttl
         );
 

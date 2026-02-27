@@ -12,6 +12,7 @@ use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\Markers\ValueObjectExceptionInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait;
 use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 
 final class RefreshTokenWriteRepository extends BaseRefreshTokenRepository implements RefreshTokenWriteRepositoryInterface
@@ -32,11 +33,12 @@ final class RefreshTokenWriteRepository extends BaseRefreshTokenRepository imple
     }
 
     /**
-     * @throws IncompatibleMappedEntityException
+     * @throws OptimisticLockException
+     * @throws ORMException
      */
     public function delete(RefreshToken $refreshToken): void
     {
-        $this->_delete($refreshToken);
+        $this->_delete($refreshToken->getId()?->value());
     }
 
     public function deleteAllPrevious(RefreshToken $refreshToken): void

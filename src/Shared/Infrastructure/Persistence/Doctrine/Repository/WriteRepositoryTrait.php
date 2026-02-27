@@ -15,7 +15,7 @@ trait WriteRepositoryTrait
      * @throws OptimisticLockException
      * @throws ORMException
      */
-    protected function _save(object $domain, ?int $id): object
+    protected function _save(object $domain, int|string|null $id): object
     {
         $mapper = $this->requireMapper(__METHOD__);
 
@@ -43,16 +43,25 @@ trait WriteRepositoryTrait
     }
 
     /**
-     * @throws IncompatibleMappedEntityException
+     * @throws OptimisticLockException
+     * @throws ORMException
      */
-    protected function _delete(object $domain): void
+    protected function _delete(int|string|null $id): void
     {
-        $mapper = $this->requireMapper(__METHOD__);
+        if (null === $id) {
+            throw new RuntimeException(sprintf('Entity %s must have an ID to delete', self::getEntityClass()));
+        }
+        $stringId = (string) $id;
 
-        $this->getEntityManager()->remove(
-            $mapper->toDoctrineOrm($domain)
-        );
-        $this->getEntityManager()->flush();
+        $em = $this->getEntityManager();
+
+        $orm = $em->getUnitOfWork()->tryGetById($stringId, self::getEntityClass()) ?: null;
+        $orm ??= $this->findOrmForDeleteFallback($id);
+
+        if ($orm) {
+            $em->remove($orm);
+            $em->flush();
+        }
     }
 
     /**
@@ -61,15 +70,33 @@ trait WriteRepositoryTrait
      */
     protected function findOrmForUpdateFallback(string $stringId): ?object
     {
+        return $this->findOrmById($stringId);
+    }
+
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
+    protected function findOrmForDeleteFallback(string $stringId): ?object
+    {
+        return $this->findOrmById($stringId);
+    }
+
+    /**
+     * @throws OptimisticLockException
+     * @throws ORMException
+     */
+    private function findOrmById(string $stringId): ?object
+    {
         return $this->getEntityManager()->find(self::getEntityClass(), $stringId);
     }
 
-    protected function makeRuntimeException(string $stringId): RuntimeException
+    private function makeRuntimeException(string $stringId): RuntimeException
     {
         return new RuntimeException(sprintf('Entity %s with ID %s not found', self::getEntityClass(), $stringId));
     }
 
-    protected function requireMapper(string $method): MapperInterface
+    private function requireMapper(string $method): MapperInterface
     {
         $mapper = $this->mapper;
 
@@ -80,7 +107,7 @@ trait WriteRepositoryTrait
         return $mapper;
     }
 
-    protected function makeMapperException(object $mapper, string $method): RuntimeException
+    private function makeMapperException(object $mapper, string $method): RuntimeException
     {
         return new RuntimeException(sprintf(
             'Mapper %s instance must implement %s to use this method %s',

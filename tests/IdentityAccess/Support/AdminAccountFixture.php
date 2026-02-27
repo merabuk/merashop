@@ -16,6 +16,9 @@ final readonly class AdminAccountFixture
     ) {
     }
 
+    /**
+     * @param ?string[] $roles
+     */
     public function create(
         ?string $ulid = null,
         ?string $email = null,

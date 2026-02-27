@@ -12,6 +12,7 @@ use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\Markers\ValueObjectExceptionInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait;
 use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 
 final class ProductWriteRepository extends BaseProductRepository implements ProductWriteRepositoryInterface
 {
@@ -31,11 +32,12 @@ final class ProductWriteRepository extends BaseProductRepository implements Prod
     }
 
     /**
-     * @throws IncompatibleMappedEntityException
+     * @throws OptimisticLockException
+     * @throws ORMException
      */
     public function delete(Product $product): void
     {
-        $this->_delete($product);
+        $this->_delete($product->getId()?->value());
     }
 
     protected function findOrmForUpdateFallback(string $stringId): ?OrmProduct

@@ -6,7 +6,7 @@ namespace App\Tests\IdentityAccess\Support;
 
 use App\IdentityAccess\Domain\Entity\UserAccount;
 use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
-use App\IdentityAccess\Domain\Service\UserAccountFactoryInterface;
+use App\IdentityAccess\Domain\Factory\Contracts\UserAccountFactoryInterface;
 use App\IdentityAccess\Domain\ValueObject\RoleCollection;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\Id;

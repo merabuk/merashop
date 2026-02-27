@@ -95,15 +95,18 @@ final class AdminAccountMapperTest extends KernelTestCase
         $domainAdmin = AdminAccountMother::createWithData(roles: ['ROLE_ADMIN']);
         $ormAdmin = new OrmAdminAccount();
         $ormAdmin->roles = ['ROLE_OLD'];
+        $ormAdmin->passwordHash = 'old_hash';
+        $ormAdmin->passwordChangedAt = new DateTimeImmutable('-2 years');
+        $ormAdmin->status = StatusEnum::OnVacation;
 
         $this->mapper->mapToExistingOrm($domainAdmin, $ormAdmin);
 
-        self::assertEquals(['ROLE_ADMIN'], $ormAdmin->roles);
+        self::assertSame($domainAdmin->getRoles()->toStrings(), $ormAdmin->roles);
+        self::assertSame($domainAdmin->getPasswordHash()->value(), $ormAdmin->passwordHash);
+        self::assertSame($domainAdmin->getStatus()->value(), $ormAdmin->status);
+        self::assertSame($domainAdmin->getPasswordChangedAt()?->value(), $ormAdmin->passwordChangedAt);
         self::assertNull($ormAdmin->id);
         self::assertNull($ormAdmin->ulid);
         self::assertNull($ormAdmin->email);
-        self::assertNull($ormAdmin->passwordHash);
-        self::assertNull($ormAdmin->passwordChangedAt);
-        self::assertNull($ormAdmin->status);
     }
 }

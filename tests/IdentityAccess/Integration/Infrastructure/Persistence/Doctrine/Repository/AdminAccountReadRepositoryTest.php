@@ -7,10 +7,12 @@ namespace App\Tests\IdentityAccess\Integration\Infrastructure\Persistence\Doctri
 use App\IdentityAccess\Domain\Repository\AdminAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\EmailAddress;
 use App\Tests\IdentityAccess\Support\Traits\AdminAccountFactoryTrait;
+use App\Tests\IdentityAccess\Support\Traits\IdentityAccessEntityManagerTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class AdminAccountReadRepositoryTest extends KernelTestCase
 {
+    use IdentityAccessEntityManagerTrait;
     use AdminAccountFactoryTrait;
 
     private AdminAccountReadRepositoryInterface $repository;
@@ -22,12 +24,12 @@ class AdminAccountReadRepositoryTest extends KernelTestCase
         $this->repository = self::getContainer()->get(AdminAccountReadRepositoryInterface::class);
     }
 
-    public function testFindByIdSuccess(): void
+    public function testFindById(): void
     {
         $admin = $this->getAdminAccountFixture()->create();
-        $id = $admin->getId();
+        $this->clearEntityManager();
 
-        $found = $this->repository->findById($id);
+        $found = $this->repository->findById($admin->getId());
 
         self::assertNotNull($found);
         self::assertTrue($admin->getUlid()->equals($found->getUlid()));
@@ -42,9 +44,10 @@ class AdminAccountReadRepositoryTest extends KernelTestCase
         }
     }
 
-    public function testFindByEmailSuccess(): void
+    public function testFindByEmail(): void
     {
         $admin = $this->getAdminAccountFixture()->create();
+        $this->clearEntityManager();
 
         $found = $this->repository->findByEmail($admin->getEmail());
 
@@ -53,9 +56,10 @@ class AdminAccountReadRepositoryTest extends KernelTestCase
         self::assertTrue($admin->getUlid()->equals($found->getUlid()));
     }
 
-    public function testFindByUlidSuccess(): void
+    public function testFindByUlid(): void
     {
         $admin = $this->getAdminAccountFixture()->create();
+        $this->clearEntityManager();
 
         $found = $this->repository->findByUlid($admin->getUlid());
 
@@ -64,13 +68,14 @@ class AdminAccountReadRepositoryTest extends KernelTestCase
         self::assertTrue($admin->getEmail()->equals($found->getEmail()));
     }
 
-    public function testExistsByEmailSuccess(): void
+    public function testExistsByEmail(): void
     {
         $email = EmailAddress::fromString('admin@example.com');
 
         self::assertFalse($this->repository->existsByEmail($email));
 
         $this->getAdminAccountFixture()->create(email: $email->value());
+        $this->clearEntityManager();
 
         self::assertTrue($this->repository->existsByEmail($email));
     }

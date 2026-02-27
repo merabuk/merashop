@@ -11,6 +11,7 @@ use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\Markers\ValueObjectExceptionInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait;
 use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\OptimisticLockException;
 
 final class AdminAccountWriteRepository extends BaseAdminAccountRepository implements AdminAccountWriteRepositoryInterface
 {
@@ -30,10 +31,11 @@ final class AdminAccountWriteRepository extends BaseAdminAccountRepository imple
     }
 
     /**
-     * @throws IncompatibleMappedEntityException
+     * @throws OptimisticLockException
+     * @throws ORMException
      */
     public function delete(AdminAccount $adminAccount): void
     {
-        $this->_delete($adminAccount);
+        $this->_delete($adminAccount->getId()?->value());
     }
 }

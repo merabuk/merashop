@@ -44,7 +44,6 @@ final class NativeRandomStringGenerator implements PasswordGeneratorInterface, R
         }
     }
 
-
     /**
      * @throws RandomException
      */

@@ -25,6 +25,7 @@ final class Version20260118124301 extends AbstractMigration
             account_ulid UUID NOT NULL,
             account_type refresh_token_account_type NOT NULL,
             expires_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
+            created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
             PRIMARY KEY (id)
         )'
         );

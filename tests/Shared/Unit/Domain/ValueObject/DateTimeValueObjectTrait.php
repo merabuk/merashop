@@ -12,7 +12,7 @@ trait DateTimeValueObjectTrait
     protected function assertCreatesValidDateTime(
         string $className,
         ?DateTimeImmutable $dateTime = null,
-        string $toStringFormat = DateTimeImmutable::ATOM
+        string $toStringFormat = DateTimeImmutable::ATOM,
     ): void {
         $this->assertVoHasStaticMethod($className);
 

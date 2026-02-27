@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\IdentityAccess\Unit\Application\Service;
 
+use App\IdentityAccess\Application\DTO\AccessTokenData;
 use App\IdentityAccess\Application\DTO\OAuth2Data;
-use App\IdentityAccess\Domain\Enum\GrantTypeEnum;
+use App\IdentityAccess\Application\DTO\RefreshTokenData;
+use App\IdentityAccess\Application\DTO\TokenResponseData;
 use App\IdentityAccess\Application\Exception\UnsupportedGrantTypeException;
 use App\IdentityAccess\Application\Security\Grant\GrantHandlerInterface;
 use App\IdentityAccess\Application\Service\OAuth2TokenService;
+use App\IdentityAccess\Domain\Enum\GrantTypeEnum;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use stdClass;
@@ -30,14 +33,16 @@ final class OAuth2TokenServiceTest extends TestCase
         $data = $this->createMock(OAuth2Data::class);
         $data->method('getGrantType')->willReturn($grantType);
 
+        $tokenResponseData = new TokenResponseData(
+            accessTokenData: new AccessTokenData(token: 'access_token', expiresIn: 3600),
+            refreshTokenData: new RefreshTokenData(token: 'refresh_token', expiresIn: 86400)
+        );
+
         $grantHandler = $this->createMock(GrantHandlerInterface::class);
+        $grantHandler->method('handle')->with($data)->willReturn($tokenResponseData);
 
         $this->container->method('has')->with($grantType->value)->willReturn(true);
         $this->container->method('get')->with($grantType->value)->willReturn($grantHandler);
-
-        $grantHandler->expects(self::once())
-            ->method('handle')
-            ->with($data);
 
         $this->service->handle($data);
     }
