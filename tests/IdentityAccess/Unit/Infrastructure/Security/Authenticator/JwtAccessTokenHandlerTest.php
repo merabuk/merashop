@@ -20,6 +20,7 @@ use Lcobucci\JWT\Token\DataSet;
 use Lcobucci\JWT\Token\RegisteredClaims;
 use Lcobucci\JWT\UnencryptedToken;
 use Lcobucci\JWT\Validator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
@@ -104,6 +105,7 @@ final class JwtAccessTokenHandlerTest extends TestCase
         $handler->getUserBadgeFrom('invalid-string');
     }
 
+    #[DataProvider('invalidClaimsProvider')]
     public function testItThrowsExceptionWhenRequiredClaimsAreMissing(array $claimsData, string $expectedMessage): void
     {
         $token = $this->createMock(UnencryptedToken::class);

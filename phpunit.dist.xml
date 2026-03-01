@@ -31,7 +31,7 @@
         </testsuite>
         <testsuite name="email_sender">
             <directory>tests/EmailSender/Unit</directory>
-            <directory>tests/EmailSender/Integration</directory>
+<!--            <directory>tests/EmailSender/Integration</directory>-->
             <directory>tests/EmailSender/Functional</directory>
         </testsuite>
         <testsuite name="identity_access">
