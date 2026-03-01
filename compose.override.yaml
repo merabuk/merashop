@@ -10,6 +10,18 @@ x-queue-worker-defaults: &queue-worker-defaults-override
   restart: on-failure
 
 services:
+  pgsql:
+    platform: ${PLATFORM_ARCHITECTURE:-linux/amd64}
+
+  pgsql-test:
+    platform: ${PLATFORM_ARCHITECTURE:-linux/amd64}
+
+  redis:
+    platform: ${PLATFORM_ARCHITECTURE:-linux/amd64}
+
+  redis-test:
+    platform: ${PLATFORM_ARCHITECTURE:-linux/amd64}
+
   nginx:
     platform: ${PLATFORM_ARCHITECTURE:-linux/amd64}
     build:
@@ -32,6 +44,15 @@ services:
       - pgsql
       - redis
     restart: on-failure
+
+  rabbitmq:
+    platform: ${PLATFORM_ARCHITECTURE:-linux/amd64}
+
+  elasticsearch:
+    platform: ${PLATFORM_ARCHITECTURE:-linux/amd64}
+
+  kibana:
+    platform: ${PLATFORM_ARCHITECTURE:-linux/amd64}
 
   filebeat:
     platform: ${PLATFORM_ARCHITECTURE:-linux/amd64}

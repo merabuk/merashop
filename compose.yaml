@@ -25,6 +25,7 @@ x-queue-worker-defaults: &queue-worker-defaults
         memory: 256M
   environment:
     APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
+    PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
   healthcheck:
     test: [ "CMD-SHELL", "php -r \"echo 'php is alive';\" || exit 1" ]
     retries: 3
@@ -38,6 +39,7 @@ services:
   pgsql:
     image: postgres:18-alpine3.21
     environment:
+      PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB_IDENTITY_ACCESS}
@@ -70,6 +72,7 @@ services:
   pgsql-test:
     image: postgres:18-alpine3.21
     environment:
+      PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB_IDENTITY_ACCESS}
@@ -110,6 +113,8 @@ services:
         reservations:
           cpus: '0.10'
           memory: 64M
+    environment:
+      PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
@@ -133,6 +138,8 @@ services:
         reservations:
           cpus: '0.10'
           memory: 32M
+    environment:
+      PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
@@ -166,6 +173,7 @@ services:
           cpus: '0.25'
           memory: 100M
     environment:
+      PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
       APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
       PHP_CGI_PASS: ${PHP_CGI_PASS}
       APP_WEB_DOMAIN: ${APP_WEB_DOMAIN}
@@ -207,6 +215,7 @@ services:
           cpus: '0.5'
           memory: 350M
     environment:
+      PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
       PHP_IDE_CONFIG: serverName=Docker
       STATIC_PHP_FPM_POOL_WORKERS: 5
       APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
@@ -227,6 +236,7 @@ services:
   rabbitmq:
     image: rabbitmq:4.2-management-alpine
     environment:
+      PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     healthcheck:
@@ -245,6 +255,7 @@ services:
   elasticsearch:
     image: elastic/elasticsearch:9.2.3
     environment:
+      PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
       node.name: es01
       discovery.type: 'single-node'
@@ -260,6 +271,7 @@ services:
   kibana:
     image: elastic/kibana:9.2.3
     environment:
+      PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
       ELASTICSEARCH_HOSTS: ${KIBANA_ELASTIC_HOST}
       ELASTICSEARCH_USERNAME: ${KIBANA_USERNAME}
       ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD}
@@ -272,6 +284,7 @@ services:
     image: merashop/filebeat:latest
     user: root
     environment:
+      PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
       ELASTIC_HOSTS: ${ELASTIC_HOSTS}
       ELASTIC_USER: ${ELASTIC_USER}
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
@@ -288,6 +301,7 @@ services:
   catalog-outbox-queue-worker:
     <<: *queue-worker-defaults
     environment:
+      PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
       APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
       WAIT_RABBITMQ: true
       WORKER_TYPE: queue
@@ -296,6 +310,7 @@ services:
   catalog-internal-queue-worker:
     <<: *queue-worker-defaults
     environment:
+      PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
       APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
       WAIT_RABBITMQ: true
       WORKER_TYPE: queue
@@ -304,6 +319,7 @@ services:
   customer-external-queue-worker:
     <<: *queue-worker-defaults
     environment:
+      PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
       APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
       WAIT_RABBITMQ: true
       WORKER_TYPE: queue
@@ -313,6 +329,7 @@ services:
   email-sender-external-queue-worker:
     <<: *queue-worker-defaults
     environment:
+      PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
       APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
       WAIT_RABBITMQ: true
       WORKER_TYPE: queue
@@ -322,6 +339,7 @@ services:
   email-sender-internal-queue-worker:
     <<: *queue-worker-defaults
     environment:
+      PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
       APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
       WAIT_RABBITMQ: true
       WORKER_TYPE: queue
@@ -331,6 +349,7 @@ services:
   email-sender-sheduler-worker:
     <<: *queue-worker-defaults
     environment:
+      PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
       APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
       WAIT_RABBITMQ: true
       WORKER_TYPE: scheduler
@@ -339,6 +358,7 @@ services:
   identity-access-outbox-queue-worker:
     <<: *queue-worker-defaults
     environment:
+      PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
       APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
       WAIT_RABBITMQ: true
       WORKER_TYPE: queue
