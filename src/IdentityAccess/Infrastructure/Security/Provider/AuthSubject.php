@@ -39,17 +39,12 @@ final readonly class AuthSubject implements UserInterface, PasswordAuthenticated
 
     public static function fromModuleAccount(ModuleAccount $moduleAccount): self
     {
-        $roles = array_map(
-            static fn (string $scope) => 'SCOPE_'.str_replace([':', ' '], '_', strtoupper($scope)),
-            $moduleAccount->getScopes()->toStrings()
-        );
-
         return new self(
             type: IdentityTypeEnum::Module,
             ulid: $moduleAccount->getUlid()->value(),
             identifier: $moduleAccount->getClientId()->value(),
             passwordHash: $moduleAccount->getClientSecret()->value(),
-            roles: array_unique([...$roles, RoleEnum::Module->value]),
+            roles: array_unique([...$moduleAccount->getScopes()->toStrings(), RoleEnum::Module->value]),
         );
     }
 
