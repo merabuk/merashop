@@ -11,3 +11,11 @@ identity_access.admin.api.v1:
     namespace: App\IdentityAccess\Presentation\Http\AdminApiVersion1\Controller
   type: attribute
   prefix: /admin/api/v1/identity-access
+
+identity_access.internal.api.v1:
+  resource:
+    path: ../InternalApiVersion1/Controller/
+    namespace: App\IdentityAccess\Presentation\Http\InternalApiVersion1\Controller
+  type: attribute
+  prefix: /internal/api/v1/identity-access
+

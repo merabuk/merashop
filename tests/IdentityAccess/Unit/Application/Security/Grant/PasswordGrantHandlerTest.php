@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Tests\IdentityAccess\Unit\Application\Security\Grant;
 
 use App\IdentityAccess\Application\DTO\AccessTokenData;
+use App\IdentityAccess\Application\DTO\Contracts\UserCredentialsInterface;
 use App\IdentityAccess\Application\DTO\GrantResultData;
 use App\IdentityAccess\Application\DTO\RefreshTokenData;
-use App\IdentityAccess\Application\DTO\UserCredentialsInterface;
 use App\IdentityAccess\Application\Exception\UnsupportedAccountProviderException;
 use App\IdentityAccess\Application\Security\Grant\PasswordGrantHandler;
 use App\IdentityAccess\Application\Security\Provider\PasswordGrant\PasswordGrantAccountProviderInterface;
@@ -78,7 +78,7 @@ final class PasswordGrantHandlerTest extends TestCase
     {
         $credentials = $this->createUserCredentialsMock();
 
-        $this->providers->method('has')->with('user')->willReturn(false);
+        $this->providers->method('has')->with(IdentityTypeEnum::User->value)->willReturn(false);
 
         $this->expectException(UnsupportedAccountProviderException::class);
         $this->handler->handle($credentials);
@@ -88,8 +88,8 @@ final class PasswordGrantHandlerTest extends TestCase
     {
         $credentials = $this->createUserCredentialsMock();
 
-        $this->providers->method('has')->with('user')->willReturn(true);
-        $this->providers->method('get')->with('user')->willReturn(new stdClass());
+        $this->providers->method('has')->with(IdentityTypeEnum::User->value)->willReturn(true);
+        $this->providers->method('get')->with(IdentityTypeEnum::User->value)->willReturn(new stdClass());
 
         $this->expectException(UnsupportedAccountProviderException::class);
         $this->handler->handle($credentials);

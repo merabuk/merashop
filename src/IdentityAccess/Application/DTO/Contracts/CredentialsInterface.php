@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\IdentityAccess\Application\DTO;
+namespace App\IdentityAccess\Application\DTO\Contracts;
 
 use App\IdentityAccess\Domain\Enum\GrantTypeEnum;
 

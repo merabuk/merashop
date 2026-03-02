@@ -12,13 +12,18 @@ final class OAuth2Error
     public const string UNSUPPORTED_GRANT_TYPE = 'unsupported_grant_type';
     public const string SERVER_ERROR = 'server_error';
 
-    public static function getDescription(string $errorCode): string
+    public static function getDescriptionKey(string $errorCode): string
     {
         return match ($errorCode) {
-            self::INVALID_CLIENT => 'Client authentication failed',
-            self::INVALID_GRANT => 'The provided authorization grant is invalid, expired, or revoked',
-            self::UNSUPPORTED_GRANT_TYPE => 'The authorization grant type is not supported',
-            default => 'An unexpected error occurred',
+            self::INVALID_CLIENT => self::INVALID_CLIENT,
+            self::INVALID_GRANT => self::INVALID_GRANT,
+            self::UNSUPPORTED_GRANT_TYPE => self::UNSUPPORTED_GRANT_TYPE,
+            default => self::SERVER_ERROR,
         };
+    }
+
+    public static function getTranslationDomain(): string
+    {
+        return 'oauth2';
     }
 }

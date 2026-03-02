@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Application\DTO;
 
+use App\IdentityAccess\Application\DTO\Contracts\ClientCredentialsInterface;
+use App\IdentityAccess\Application\DTO\Contracts\RefreshTokenCredentialsInterface;
+use App\IdentityAccess\Application\DTO\Contracts\UserCredentialsInterface;
 use App\IdentityAccess\Domain\Enum\GrantTypeEnum;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 use InvalidArgumentException;
@@ -12,12 +15,12 @@ readonly class OAuth2Data implements UserCredentialsInterface, ClientCredentials
 {
     public function __construct(
         private string $grantType,
-        private ?string $username,
-        private ?string $password,
-        private ?IdentityTypeEnum $accountType,
-        private ?string $clientId,
-        private ?string $clientSecret,
-        private ?string $refreshToken,
+        private IdentityTypeEnum $accountType,
+        private ?string $username = null,
+        private ?string $password = null,
+        private ?string $clientId = null,
+        private ?string $clientSecret = null,
+        private ?string $refreshToken = null,
     ) {
     }
 
@@ -38,7 +41,7 @@ readonly class OAuth2Data implements UserCredentialsInterface, ClientCredentials
 
     public function getAccountType(): IdentityTypeEnum
     {
-        return $this->accountType ?? throw $this->prepareException('accountType', GrantTypeEnum::Password);
+        return $this->accountType;
     }
 
     public function getClientId(): string

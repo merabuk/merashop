@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Application\Security\Grant;
 
-use App\IdentityAccess\Application\DTO\RefreshTokenCredentialsInterface;
+use App\IdentityAccess\Application\DTO\Contracts\RefreshTokenCredentialsInterface;
 use App\IdentityAccess\Application\DTO\TokenResponseData;
 use App\IdentityAccess\Application\Exception\GrantHandlerException;
 use App\IdentityAccess\Application\Exception\InvalidRefreshTokenException;
@@ -25,7 +25,7 @@ use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 
-readonly class RefreshTokenGrantHandler implements GrantHandlerInterface
+final readonly class RefreshTokenGrantHandler implements GrantHandlerInterface
 {
     public function __construct(
         #[AutowireLocator(

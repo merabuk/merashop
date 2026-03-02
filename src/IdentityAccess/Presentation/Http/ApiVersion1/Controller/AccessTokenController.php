@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Presentation\Http\ApiVersion1\Controller;
 
 use App\IdentityAccess\Application\Command\IssueAccessToken\IssueAccessTokenCommand;
-use App\IdentityAccess\Application\DTO\OAuth2Data;
-use App\IdentityAccess\Domain\Enum\GrantTypeEnum;
+use App\IdentityAccess\Application\DTO\TokenResponseData;
 use App\IdentityAccess\Presentation\Http\ApiVersion1\Request\AccessTokenRequest;
+use App\IdentityAccess\Presentation\Http\ApiVersion1\Resource\AccessTokenResource;
 use App\Shared\Application\Command\CommandBusInterface;
-use App\Shared\Domain\Enum\IdentityTypeEnum;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,25 +30,11 @@ final class AccessTokenController extends AbstractController
         #[MapRequestPayload] AccessTokenRequest $request,
         CommandBusInterface $commandBus,
     ): JsonResponse {
-        $accountType = match (GrantTypeEnum::tryFrom((string) $request->grant_type)) {
-            GrantTypeEnum::Password => IdentityTypeEnum::User,
-            GrantTypeEnum::ClientCredentials => IdentityTypeEnum::Module,
-            default => null,
-        };
+        $command = new IssueAccessTokenCommand($request->getData());
 
-        $authData = new OAuth2Data(
-            grantType: (string) $request->grant_type,
-            username: $request->username,
-            password: $request->password,
-            accountType: $accountType,
-            clientId: $request->client_id,
-            clientSecret: $request->client_secret,
-            refreshToken: $request->refresh_token,
-        );
-        $command = new IssueAccessTokenCommand($authData);
-
+        /** @var TokenResponseData $response */
         $response = $commandBus->execute($command);
 
-        return $this->json($response);
+        return $this->json(AccessTokenResource::fromDto($response));
     }
 }

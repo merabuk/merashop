@@ -79,7 +79,7 @@ final class CreateAdminAccountConsoleCommand extends BaseConsoleCommand
                         }
 
                         if ($this->readRepository->existsByEmail($email)) {
-                            $context->buildViolation('This email is already in use.')
+                            $context->buildViolation('This email is already in use')
                                 ->addViolation();
                         }
                     }),
@@ -155,7 +155,7 @@ final class CreateAdminAccountConsoleCommand extends BaseConsoleCommand
     private function validateInputs(string $email, string $status, array $roles): void
     {
         if (empty($email) || empty($status) || empty($roles)) {
-            throw new InvalidArgumentException('Missing required data. Provide email, status and roles');
+            throw new InvalidArgumentException('Missing required data. Provide email, status and role');
         }
 
         try {

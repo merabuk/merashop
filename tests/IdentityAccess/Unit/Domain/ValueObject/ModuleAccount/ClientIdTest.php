@@ -47,6 +47,7 @@ class ClientIdTest extends TestCase
     {
         yield 'empty' => [''];
         yield 'only spaces' => ['    '];
+        yield 'too short' => [str_repeat('a', ClientId::MIN_LENGTH - 1)];
         yield 'too long' => [str_repeat('a', ClientId::MAX_LENGTH + 1)];
     }
 }

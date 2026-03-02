@@ -12,7 +12,7 @@ use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\EmailAddress;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 
-readonly class AdminPasswordGrantAccountProvider implements PasswordGrantAccountProviderInterface
+final readonly class AdminPasswordGrantAccountProvider implements PasswordGrantAccountProviderInterface
 {
     public function __construct(
         private AdminAccountReadRepositoryInterface $readRepository,

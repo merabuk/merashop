@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Application\Security\Grant;
 
+use App\IdentityAccess\Application\DTO\Contracts\UserCredentialsInterface;
 use App\IdentityAccess\Application\DTO\TokenResponseData;
-use App\IdentityAccess\Application\DTO\UserCredentialsInterface;
 use App\IdentityAccess\Application\Exception\GrantHandlerException;
 use App\IdentityAccess\Application\Exception\InvalidCredentialsException;
 use App\IdentityAccess\Application\Exception\RefreshToken\CreateRefreshTokenException;
@@ -20,7 +20,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 
-readonly class PasswordGrantHandler implements GrantHandlerInterface
+final readonly class PasswordGrantHandler implements GrantHandlerInterface
 {
     public function __construct(
         #[AutowireLocator(

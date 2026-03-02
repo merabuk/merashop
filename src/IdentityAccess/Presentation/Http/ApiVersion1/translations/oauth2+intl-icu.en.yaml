@@ -1,0 +1,4 @@
+invalid_client: Client authentication failed
+invalid_grant: The provided authorization grant is invalid, expired, or revoked
+unsupported_grant_type: The authorization grant type is not supported
+server_error: An unexpected error occurred

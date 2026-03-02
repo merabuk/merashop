@@ -13,6 +13,7 @@ use App\Tests\IdentityAccess\Support\Traits\AdminAccountFactoryTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
 final class CreateAdminAccountConsoleCommandTest extends KernelTestCase
@@ -47,7 +48,7 @@ final class CreateAdminAccountConsoleCommandTest extends KernelTestCase
 
         $this->commandTester->execute([]);
 
-        self::assertSame(0, $this->commandTester->getStatusCode());
+        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
 
         $output = $this->commandTester->getDisplay();
         self::assertStringContainsString('Admin account created!', $output);
@@ -56,10 +57,10 @@ final class CreateAdminAccountConsoleCommandTest extends KernelTestCase
         $admin = $this->readRepository->findByEmail(EmailAddress::fromString($email));
         self::assertNotNull($admin);
         self::assertSame($status, $admin->getStatus()->value());
-        self::assertTrue($admin->getRoles()->contains(RoleEnum::Admin->value));
+        self::assertTrue($admin->getRoles()->contains($role->value));
     }
 
-    public function testItValidationLoopWorksOnInvalidEmail(): void
+    public function testItValidationLoopWorksOnInvalidData(): void
     {
         $invalidEmail = 'not-an-email';
         $validEmail = 'fixed@example.com';
@@ -98,7 +99,7 @@ final class CreateAdminAccountConsoleCommandTest extends KernelTestCase
 
         $output = $this->commandTester->getDisplay();
 
-        self::assertStringContainsString('This email is already in use.', $output);
+        self::assertStringContainsString('This email is already in use', $output);
         self::assertStringContainsString('Admin account created!', $output);
     }
 
@@ -112,7 +113,7 @@ final class CreateAdminAccountConsoleCommandTest extends KernelTestCase
             '--role' => [RoleEnum::Admin->value],
         ]);
 
-        self::assertSame(0, $this->commandTester->getStatusCode());
+        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
 
         $admin = $this->readRepository->findByEmail(EmailAddress::fromString($email));
         self::assertNotNull($admin);
@@ -130,7 +131,7 @@ final class CreateAdminAccountConsoleCommandTest extends KernelTestCase
             'interactive' => false,
         ]);
 
-        self::assertSame(0, $this->commandTester->getStatusCode());
+        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
 
         $output = $this->commandTester->getDisplay();
         self::assertStringContainsString('Admin account created!', $output);
@@ -154,7 +155,7 @@ final class CreateAdminAccountConsoleCommandTest extends KernelTestCase
             'interactive' => false,
         ]);
 
-        self::assertSame(1, $this->commandTester->getStatusCode());
+        self::assertSame(Command::FAILURE, $this->commandTester->getStatusCode());
 
         $output = $this->commandTester->getDisplay();
         self::assertStringContainsString($expectedErrorMessage, $output);

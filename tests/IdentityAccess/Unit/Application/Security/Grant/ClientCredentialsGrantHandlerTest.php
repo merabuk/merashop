@@ -5,27 +5,29 @@ declare(strict_types=1);
 namespace App\Tests\IdentityAccess\Unit\Application\Security\Grant;
 
 use App\IdentityAccess\Application\DTO\AccessTokenData;
-use App\IdentityAccess\Application\DTO\ClientCredentialsInterface;
-use App\IdentityAccess\Application\Exception\InvalidClientException;
+use App\IdentityAccess\Application\DTO\Contracts\ClientCredentialsInterface;
+use App\IdentityAccess\Application\DTO\GrantResultData;
+use App\IdentityAccess\Application\Exception\UnsupportedAccountProviderException;
 use App\IdentityAccess\Application\Security\Grant\ClientCredentialsGrantHandler;
+use App\IdentityAccess\Application\Security\Provider\ClientCredentialsGrant\ClientCredentialsGrantAccountProviderInterface;
 use App\IdentityAccess\Application\Security\TokenGeneratorInterface;
 use App\IdentityAccess\Domain\Enum\GrantTypeEnum;
-use App\IdentityAccess\Domain\Repository\ModuleAccountReadRepositoryInterface;
-use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
+use App\Shared\Domain\Enum\IdentityTypeEnum;
+use App\Shared\Domain\Enum\RoleEnum;
 use App\Tests\IdentityAccess\Support\ModuleAccountMother;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
+use stdClass;
 
 class ClientCredentialsGrantHandlerTest extends TestCase
 {
-    private ModuleAccountReadRepositoryInterface $readRepository;
-    private PasswordHasherInterface $passwordHasher;
+    private ContainerInterface $providers;
     private TokenGeneratorInterface $tokenGenerator;
     private ClientCredentialsGrantHandler $handler;
 
     protected function setUp(): void
     {
-        $this->readRepository = $this->createMock(ModuleAccountReadRepositoryInterface::class);
-        $this->passwordHasher = $this->createMock(PasswordHasherInterface::class);
+        $this->providers = $this->createMock(ContainerInterface::class);
         $this->tokenGenerator = $this->createMock(TokenGeneratorInterface::class);
 
         $this->handler = $this->createHandler();
@@ -38,13 +40,22 @@ class ClientCredentialsGrantHandlerTest extends TestCase
 
     public function testItSuccessfullyIssuesTokens(): void
     {
+        $accountType = IdentityTypeEnum::Module;
+
         $credentials = $this->createClientCredentialsMock();
 
-        $this->readRepository->expects(self::once())
-            ->method('findByClientId')
-            ->willReturn(ModuleAccountMother::createWithData());
+        $grantResult = new GrantResultData(
+            subjectUlid: ModuleAccountMother::DEFAULT_ULID,
+            subjectType: $accountType,
+            roles: [],
+            scopes: [RoleEnum::Module->value]
+        );
 
-        $this->passwordHasher->method('verify')->willReturn(true);
+        $provider = $this->createMock(ClientCredentialsGrantAccountProviderInterface::class);
+        $provider->method('handle')->willReturn($grantResult);
+
+        $this->providers->method('has')->with($accountType->value)->willReturn(true);
+        $this->providers->method('get')->with($accountType->value)->willReturn($provider);
 
         $accessTokenData = new AccessTokenData(token: 'access_token', expiresIn: 3600);
         $this->tokenGenerator->method('generateAccessToken')->willReturn($accessTokenData);
@@ -55,38 +66,35 @@ class ClientCredentialsGrantHandlerTest extends TestCase
         self::assertNull($result->refreshTokenData);
     }
 
-    public function testThrowsExceptionWhenModuleAccountNotFound(): void
+    public function testThrowsExceptionWhenProviderMissingInContainer(): void
     {
         $credentials = $this->createClientCredentialsMock();
 
-        $this->readRepository->expects(self::once())
-            ->method('findByClientId')
-            ->willReturn(null);
+        $this->providers->method('has')->with(IdentityTypeEnum::Module->value)->willReturn(false);
 
-        $this->expectException(InvalidClientException::class);
+        $this->expectException(UnsupportedAccountProviderException::class);
         $this->handler->handle($credentials);
     }
 
-    public function testThrowsExceptionWhenGivenPasswordIncorrect(): void
+    public function testThrowsExceptionWhenProviderHasWrongType(): void
     {
         $credentials = $this->createClientCredentialsMock();
 
-        $this->readRepository->expects(self::once())
-            ->method('findByClientId')
-            ->willReturn(ModuleAccountMother::createWithData());
+        $this->providers->method('has')->with(IdentityTypeEnum::Module->value)->willReturn(true);
+        $this->providers->method('get')->with(IdentityTypeEnum::Module->value)->willReturn(new stdClass());
 
-        $this->passwordHasher->method('verify')->willReturn(false);
-
-        $this->expectException(InvalidClientException::class);
+        $this->expectException(UnsupportedAccountProviderException::class);
         $this->handler->handle($credentials);
     }
 
     private function createClientCredentialsMock(
+        IdentityTypeEnum $accountType = IdentityTypeEnum::Module,
         string $clientId = ModuleAccountMother::DEFAULT_CLIENT_ID,
         string $clientSecret = 'client_secret',
     ): ClientCredentialsInterface {
         $credentials = $this->createMock(ClientCredentialsInterface::class);
 
+        $credentials->method('getAccountType')->willReturn($accountType);
         $credentials->method('getClientId')->willReturn($clientId);
         $credentials->method('getClientSecret')->willReturn($clientSecret);
 
@@ -96,8 +104,7 @@ class ClientCredentialsGrantHandlerTest extends TestCase
     private function createHandler(): ClientCredentialsGrantHandler
     {
         return new ClientCredentialsGrantHandler(
-            moduleAccountReadRepository: $this->readRepository,
-            passwordHasher: $this->passwordHasher,
+            providers: $this->providers,
             tokenGenerator: $this->tokenGenerator,
         );
     }

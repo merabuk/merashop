@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\IdentityAccess\Unit\Application\Security\Grant;
 
 use App\IdentityAccess\Application\DTO\AccessTokenData;
+use App\IdentityAccess\Application\DTO\Contracts\RefreshTokenCredentialsInterface;
 use App\IdentityAccess\Application\DTO\GrantResultData;
-use App\IdentityAccess\Application\DTO\RefreshTokenCredentialsInterface;
 use App\IdentityAccess\Application\DTO\RefreshTokenData;
 use App\IdentityAccess\Application\Exception\InvalidRefreshTokenException;
 use App\IdentityAccess\Application\Exception\UnsupportedAccountProviderException;

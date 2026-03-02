@@ -68,6 +68,19 @@ final readonly class ScopeCollection implements Stringable, Countable, IteratorA
         return new ArrayIterator($this->scopes);
     }
 
+    public function contains(string|Scope $scope): bool
+    {
+        $searchValue = $scope instanceof Scope ? $scope->value() : $scope;
+
+        foreach ($this->scopes as $existingScope) {
+            if ($existingScope->value() === $searchValue) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function __toString(): string
     {
         return implode(' ', $this->getPrimitiveValue());

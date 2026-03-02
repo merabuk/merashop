@@ -12,6 +12,7 @@ final readonly class ClientId implements Stringable
 {
     use ValueObjectEqualityTrait;
 
+    public const int MIN_LENGTH = 3;
     public const int MAX_LENGTH = 255;
 
     private string $clientId;
@@ -25,6 +26,10 @@ final readonly class ClientId implements Stringable
 
         if (empty($trimmed)) {
             throw InvalidModuleAccountClientIdException::becauseItIsEmpty();
+        }
+
+        if (self::MIN_LENGTH > mb_strlen($trimmed)) {
+            throw InvalidModuleAccountClientIdException::becauseItIsTooShort(self::MIN_LENGTH);
         }
 
         if (self::MAX_LENGTH < mb_strlen($trimmed)) {

@@ -11,7 +11,7 @@ use App\IdentityAccess\Domain\Repository\AdminAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\Ulid;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 
-readonly class AdminRefreshTokenGrantAccountProvider implements RefreshTokenGrantAccountProviderInterface
+final readonly class AdminRefreshTokenGrantAccountProvider implements RefreshTokenGrantAccountProviderInterface
 {
     public function __construct(
         private AdminAccountReadRepositoryInterface $readRepository,

@@ -117,7 +117,7 @@ final class HttpTraceIdListenerTest extends TestCase
 
         $context->expects(self::once())->method('get')->willReturn($traceId);
 
-        $event = $this->createResponseEvent();
+        $event = $this->makeResponseEvent();
 
         $listener->onKernelResponse($event);
 

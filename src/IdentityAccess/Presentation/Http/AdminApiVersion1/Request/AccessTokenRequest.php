@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Presentation\Http\AdminApiVersion1\Request;
 
+use App\IdentityAccess\Application\DTO\OAuth2Data;
 use App\IdentityAccess\Domain\Enum\GrantTypeEnum;
+use App\Shared\Domain\Enum\IdentityTypeEnum;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\GroupSequenceProviderInterface;
 
@@ -30,6 +32,17 @@ final readonly class AccessTokenRequest implements GroupSequenceProviderInterfac
         #[Assert\Blank(groups: [GrantTypeEnum::Password->value])]
         public ?string $refresh_token = null,
     ) {
+    }
+
+    public function getData(): OAuth2Data
+    {
+        return new OAuth2Data(
+            grantType: (string) $this->grant_type,
+            accountType: IdentityTypeEnum::Admin,
+            username: $this->username,
+            password: $this->password,
+            refreshToken: $this->refresh_token,
+        );
     }
 
     public function getGroupSequence(): array
