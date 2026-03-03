@@ -6,6 +6,7 @@ namespace App\EmailSender\Domain\ValueObject\OutboxEmail;
 
 use App\Shared\Domain\ValueObject\DateTimeValueObject;
 use DateTimeImmutable;
+use Psr\Clock\ClockInterface;
 
 final readonly class ScheduledAt extends DateTimeValueObject
 {
@@ -14,13 +15,13 @@ final readonly class ScheduledAt extends DateTimeValueObject
         return new self($date);
     }
 
-    public static function now(): self
+    public static function now(ClockInterface $clock): self
     {
-        return new self(new DateTimeImmutable());
+        return new self($clock->now());
     }
 
-    public function isInPast(): bool
+    public function isInPast(ClockInterface $clock): bool
     {
-        return $this->isBefore(new DateTimeImmutable());
+        return $this->isBefore($clock->now());
     }
 }

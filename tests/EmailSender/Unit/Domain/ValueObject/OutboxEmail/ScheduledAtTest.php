@@ -8,6 +8,7 @@ use App\EmailSender\Domain\ValueObject\OutboxEmail\ScheduledAt;
 use App\Tests\Shared\Unit\Domain\ValueObject\DateTimeValueObjectTrait;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Clock\MockClock;
 
 class ScheduledAtTest extends TestCase
 {
@@ -53,7 +54,10 @@ class ScheduledAtTest extends TestCase
 
     public function testItIsInPast(): void
     {
-        $vo = ScheduledAt::now();
-        self::assertTrue($vo->isInPast());
+        $clock = new MockClock('2024-01-01 10:00:00');
+        $newClock = new MockClock('2024-01-01 11:00:00');
+        $vo = ScheduledAt::now($clock);
+
+        self::assertTrue($vo->isInPast($newClock));
     }
 }

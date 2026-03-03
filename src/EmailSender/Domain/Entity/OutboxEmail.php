@@ -22,6 +22,7 @@ use App\EmailSender\Domain\ValueObject\OutboxEmail\Subject;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\To;
 use App\Shared\Domain\ValueObject\TraceId;
 use DateTimeImmutable;
+use Symfony\Component\Clock\ClockInterface;
 
 class OutboxEmail
 {
@@ -106,20 +107,22 @@ class OutboxEmail
     }
 
     /**
+     * @throws InvalidOutboxEmailAttemptsException
      * @throws InvalidOutboxEmailErrorMessageException
      */
     public function markAsFailedPermanently(string $error): void
     {
         $this->status = Status::failedPermanently();
         $this->errorMessage = ErrorMessage::fromString($error);
+        $this->attempts = $this->attempts->increment();
         $this->scheduledAt = null;
         $this->lockedAt = null;
     }
 
-    public function canBeProcessed(): bool
+    public function canBeProcessed(ClockInterface $clock): bool
     {
         return ($this->status->isCreated() || $this->status->isFailed())
-            && (null === $this->scheduledAt || $this->scheduledAt->isInPast());
+            && (null === $this->scheduledAt || $this->scheduledAt->isInPast($clock));
     }
 
     public function getId(): ?Id

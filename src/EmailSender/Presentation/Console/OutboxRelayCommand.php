@@ -16,12 +16,14 @@ use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[AsCommand(
-    name: 'app:email-sender:outbox-relay',
+    name: self::NAME,
     description: 'Finds pending outbox emails and dispatches sending commands'
 )]
 final class OutboxRelayCommand extends BaseConsoleCommand
 {
     use LockableTrait;
+
+    public const string NAME = 'app:email-sender:outbox-relay';
 
     public function __construct(
         ValidatorInterface $validator,

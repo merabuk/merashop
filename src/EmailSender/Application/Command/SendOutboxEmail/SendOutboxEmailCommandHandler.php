@@ -22,8 +22,8 @@ use Throwable;
 readonly class SendOutboxEmailCommandHandler implements CommandHandlerInterface
 {
     public function __construct(
-        private OutboxEmailReadRepositoryInterface $outboxEmailReadRepository,
-        private OutboxEmailWriteRepositoryInterface $outboxEmailWriteRepository,
+        private OutboxEmailReadRepositoryInterface $readRepository,
+        private OutboxEmailWriteRepositoryInterface $writeRepository,
         private MailerServiceInterface $mailer,
         private LoggerInterface $logger,
         private OutboxRetryPolicy $retryPolicy,
@@ -37,12 +37,12 @@ readonly class SendOutboxEmailCommandHandler implements CommandHandlerInterface
      */
     public function __invoke(SendOutboxEmailCommand $command): void
     {
-        $email = $this->outboxEmailReadRepository->findByIdForUpdate(Id::fromInt($command->id));
+        $email = $this->readRepository->findByIdForUpdate(Id::fromInt($command->id));
 
-        if (!$email || !$email->canBeProcessed()) {
+        if (!$email || !$email->canBeProcessed($this->clock)) {
             $this->logger->notice("Email not found or can't be processed", [
                 'id' => $command->id,
-                'trace_id' => $email->getTraceId()?->value(),
+                'trace_id' => $email?->getTraceId()?->value(),
                 'found' => (bool) $email,
             ]);
 
@@ -51,7 +51,7 @@ readonly class SendOutboxEmailCommandHandler implements CommandHandlerInterface
 
         try {
             $email->lock($this->clock->now());
-            $email = $this->outboxEmailWriteRepository->save($email);
+            $email = $this->writeRepository->save($email);
 
             $this->mailer->process($email);
 
@@ -73,7 +73,7 @@ readonly class SendOutboxEmailCommandHandler implements CommandHandlerInterface
                 $email->markAsFailedPermanently(error: $e->getMessage());
             }
         } finally {
-            $this->outboxEmailWriteRepository->save($email);
+            $this->writeRepository->save($email);
         }
     }
 }

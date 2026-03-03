@@ -5,6 +5,7 @@ namespace App\Tests\EmailSender\Unit\Domain\Entity;
 use App\EmailSender\Domain\Entity\OutboxEmail;
 use App\EmailSender\Domain\Exception\OutboxEmailAlreadyInProcessException;
 use App\Tests\EmailSender\Support\OutboxEmailMother;
+use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;
@@ -69,14 +70,14 @@ class OutboxEmailTest extends TestCase
 
     public function testMarkEmailAsFailedPermanently(): void
     {
-        $email = OutboxEmailMother::makeLockedEmail();
+        $email = OutboxEmailMother::makeFailedEmail(attempts: 4);
 
         $error = 'Error message text';
 
         $email->markAsFailedPermanently(error: $error);
 
         self::assertTrue($email->getStatus()->isFailedPermanently());
-        self::assertSame(0, $email->getAttempts()->value());
+        self::assertSame(5, $email->getAttempts()->value());
         self::assertSame($error, $email->getErrorMessage()->value());
         self::assertNull($email->getScheduledAt());
         self::assertNull($email->getLockedAt());
@@ -85,14 +86,17 @@ class OutboxEmailTest extends TestCase
     #[DataProvider('canBeProcessedProvider')]
     public function testEmailCanBeProcessed(OutboxEmail $outboxEmail, bool $expectedResult): void
     {
-        self::assertSame($outboxEmail->canBeProcessed(), $expectedResult);
+        $clock = new MockClock('2024-01-01 10:00:00');
+        self::assertSame($outboxEmail->canBeProcessed($clock), $expectedResult);
     }
 
     public static function canBeProcessedProvider(): iterable
     {
         yield 'created' => [OutboxEmailMother::makeCreatedEmail(), true];
         yield 'locked' => [OutboxEmailMother::makeLockedEmail(), false];
-        yield 'failed' => [OutboxEmailMother::makeFailedEmail(), true];
+        yield 'failed' => [OutboxEmailMother::makeFailedEmail(
+            nextAttemptAt: new DateTimeImmutable('2024-01-01 10:00:00')->modify('-1 seconds')
+        ), true];
         yield 'sent' => [OutboxEmailMother::makeSentEmail(), false];
         yield 'failedPermanently' => [OutboxEmailMother::makeFailedPermanentlyEmail(), false];
     }

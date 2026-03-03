@@ -16,6 +16,7 @@ use App\EmailSender\Domain\ValueObject\OutboxEmail\Driver;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\ErrorMessage;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\From;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\FromName;
+use App\EmailSender\Domain\ValueObject\OutboxEmail\Id;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\LockedAt;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Payload;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\ScheduledAt;
@@ -38,55 +39,59 @@ final readonly class OutboxEmailMother
     ) {
     }
 
-    public static function makeSentEmail(): OutboxEmail
+    public static function makeSentEmail(?int $id = null): OutboxEmail
     {
-        $outboxEmail = self::createWithData();
-
-        $outboxEmail->markAsSent();
-
-        return $outboxEmail;
+        return self::createWithData(
+            status: StatusEnum::Sent,
+            id: $id
+        );
     }
 
-    public static function makeLockedEmail(?DateTimeImmutable $now = null): OutboxEmail
-    {
-        $outboxEmail = self::createWithData();
-
-        $outboxEmail->lock($now ?? new DateTimeImmutable());
-
-        return $outboxEmail;
+    public static function makeLockedEmail(
+        ?DateTimeImmutable $now = null,
+        ?int $id = null,
+    ): OutboxEmail {
+        return self::createWithData(
+            status: StatusEnum::Processing,
+            lockedAt: $now ?? new DateTimeImmutable(),
+            id: $id
+        );
     }
 
     public static function makeFailedEmail(
         int $attempts = 1,
         ?string $errorMessage = null,
         ?DateTimeImmutable $nextAttemptAt = null,
+        ?int $id = null,
     ): OutboxEmail {
-        $outboxEmail = self::createWithData(attempts: $attempts);
-
-        $outboxEmail->markAsFailed(
-            error: $errorMessage ?? 'Connection timeout',
-            nextAttemptAt: $nextAttemptAt ?? new DateTimeImmutable(sprintf('+%d minutes', $outboxEmail->getAttempts()->value()))
+        return self::createWithData(
+            status: StatusEnum::Failed,
+            attempts: $attempts,
+            scheduledAt: $nextAttemptAt ?? new DateTimeImmutable(sprintf('+%d minutes', ($attempts + 1) ** 2)),
+            errorMessage: $errorMessage ?? 'Connection timeout',
+            id: $id
         );
-
-        return $outboxEmail;
     }
 
     public static function makeFailedPermanentlyEmail(
         int $attempts = 5,
         ?string $errorMessage = null,
+        ?int $id = null,
     ): OutboxEmail {
-        $outboxEmail = self::createWithData(attempts: $attempts);
-
-        $outboxEmail->markAsFailedPermanently(
-            error: $errorMessage ?? 'Connection timeout',
+        return self::createWithData(
+            status: StatusEnum::FailedPermanently,
+            attempts: $attempts,
+            errorMessage: $errorMessage ?? 'Connection timeout',
+            id: $id
         );
-
-        return $outboxEmail;
     }
 
-    public static function makeCreatedEmail(): OutboxEmail
+    public static function makeCreatedEmail(?int $id = null): OutboxEmail
     {
-        return self::createWithData();
+        return self::createWithData(
+            status: StatusEnum::Created,
+            id: $id
+        );
     }
 
     public static function createWithData(
@@ -103,9 +108,10 @@ final readonly class OutboxEmailMother
         ?DateTimeImmutable $scheduledAt = null,
         ?DateTimeImmutable $lockedAt = null,
         ?string $errorMessage = null,
+        ?int $id = null,
     ): OutboxEmail {
         return new OutboxEmail(
-            id: null,
+            id: $id ? Id::fromInt($id) : null,
             status: Status::fromEnum($status ?? StatusEnum::Created),
             driver: Driver::fromEnum($driver ?? DriverEnum::Log),
             from: From::fromString($from ?? 'no-reply.merashop@example.com'),

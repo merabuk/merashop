@@ -17,7 +17,7 @@ final readonly class OutboxRetryPolicy
 
     public function shouldRetry(Attempts $attempts): bool
     {
-        return $attempts->value() < $this->maxAttempts;
+        return ($attempts->value() + 1) < $this->maxAttempts;
     }
 
     /**
