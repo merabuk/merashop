@@ -56,7 +56,7 @@ final class Status implements EquatableInterface, Stringable
      */
     public static function fromString(string $status): self
     {
-        $enum = StatusEnum::tryFrom($status);
+        $enum = StatusEnum::tryFrom(mb_trim($status));
 
         if (null === $enum) {
             throw InvalidOutboxEmailStatusException::becauseItIsNotAValidStatus(invalidValue: $status, availableValues: StatusEnum::getValues());

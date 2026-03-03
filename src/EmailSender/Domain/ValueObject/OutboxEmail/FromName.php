@@ -10,7 +10,7 @@ use App\Shared\Domain\Service\StringValidator;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
 
-final class FromName implements Stringable
+final readonly class FromName implements Stringable
 {
     use ValueObjectEqualityTrait;
 

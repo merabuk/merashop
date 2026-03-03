@@ -9,7 +9,7 @@ use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use JsonException;
 use Stringable;
 
-final class Payload implements EquatableInterface, Stringable
+final readonly class Payload implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 

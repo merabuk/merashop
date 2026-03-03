@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\AdminAccount;
+namespace App\Tests\EmailSender\Unit\Domain\ValueObject\OutboxEmail;
 
-use App\IdentityAccess\Domain\Enum\AdminAccount\StatusEnum;
-use App\IdentityAccess\Domain\Exception\AdminAccount\InvalidAdminAccountStatusException;
-use App\IdentityAccess\Domain\ValueObject\AdminAccount\Status;
+use App\EmailSender\Domain\Enum\OutboxEmail\StatusEnum;
+use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailStatusException;
+use App\EmailSender\Domain\ValueObject\OutboxEmail\Status;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-final class StatusTest extends TestCase
+class StatusTest extends TestCase
 {
     #[DataProvider('statusEnumProvider')]
     public function testItCreatesValidStatusFromEnum(StatusEnum $enum): void
@@ -49,26 +49,25 @@ final class StatusTest extends TestCase
 
     public static function factoryMethodProvider(): iterable
     {
-        yield 'active' => [Status::active(), StatusEnum::Active, 'isActive'];
-        yield 'inactive' => [Status::inactive(), StatusEnum::Inactive, 'isInactive'];
-        yield 'draft' => [Status::draft(), StatusEnum::Draft, 'isDraft'];
-        yield 'blocked' => [Status::blocked(), StatusEnum::Blocked, 'isBlocked'];
-        yield 'deleted' => [Status::deleted(), StatusEnum::Deleted, 'isDeleted'];
-        yield 'vacation' => [Status::vacation(), StatusEnum::OnVacation, 'isOnVacation'];
+        yield 'created' => [Status::created(), StatusEnum::Created, 'isCreated'];
+        yield 'processing' => [Status::processing(), StatusEnum::Processing, 'isProcessing'];
+        yield 'sent' => [Status::sent(), StatusEnum::Sent, 'isSent'];
+        yield 'failed' => [Status::failed(), StatusEnum::Failed, 'isFailed'];
+        yield 'failedPermanently' => [Status::failedPermanently(), StatusEnum::FailedPermanently, 'isFailedPermanently'];
     }
 
     public function testItTrimsInput(): void
     {
-        $status = StatusEnum::Active->value;
+        $status = StatusEnum::Sent->value;
         $vo = Status::fromString('  '.$status.'  ');
-        self::assertTrue($vo->isActive());
+        self::assertTrue($vo->isSent());
     }
 
     public function testItProvidesEqualityCheck(): void
     {
-        $vo1 = Status::active();
-        $vo2 = Status::active();
-        $vo3 = Status::blocked();
+        $vo1 = Status::created();
+        $vo2 = Status::created();
+        $vo3 = Status::sent();
 
         self::assertTrue($vo1->equals($vo2));
         self::assertFalse($vo1->equals($vo3));
@@ -77,7 +76,7 @@ final class StatusTest extends TestCase
     #[DataProvider('invalidStatusProvider')]
     public function testThrowsExceptionOnInvalidInput(string $invalidValue): void
     {
-        $this->expectException(InvalidAdminAccountStatusException::class);
+        $this->expectException(InvalidOutboxEmailStatusException::class);
         Status::fromString($invalidValue);
     }
 
@@ -85,7 +84,7 @@ final class StatusTest extends TestCase
     {
         yield 'empty string' => [''];
         yield 'only spaces' => ['   '];
-        yield 'wrong case' => ['ACTIVE'];
+        yield 'wrong case' => ['CREATED'];
         yield 'random string' => ['not-a-status'];
     }
 }

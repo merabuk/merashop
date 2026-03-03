@@ -46,4 +46,13 @@ class ScopeCollectionTest extends TestCase
         self::assertCount(2, $vo);
         self::assertSame(['scope_admin', 'scope_user'], $vo->toStrings());
     }
+
+    public function testItContainsScope(): void
+    {
+        $scopes = ['user:read', 'user:write'];
+        $vo = ScopeCollection::fromStrings($scopes);
+
+        self::assertTrue($vo->contains('user:read'));
+        self::assertFalse($vo->contains('invalid-scope'));
+    }
 }

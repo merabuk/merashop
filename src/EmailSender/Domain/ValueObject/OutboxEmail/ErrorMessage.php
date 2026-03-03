@@ -22,7 +22,7 @@ final class ErrorMessage implements EquatableInterface, Stringable
     {
         $trimmed = mb_trim($message);
         if (empty($trimmed)) {
-            throw new InvalidOutboxEmailErrorMessageException('Email error message cannot be empty');
+            throw InvalidOutboxEmailErrorMessageException::becauseItEmpty();
         }
 
         $this->message = $trimmed;

@@ -9,7 +9,7 @@ use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
 
-final class From implements EquatableInterface, Stringable
+final readonly class From implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 

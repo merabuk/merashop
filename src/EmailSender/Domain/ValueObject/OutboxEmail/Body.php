@@ -9,7 +9,7 @@ use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
 
-final class Body implements EquatableInterface, Stringable
+final readonly class Body implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 
@@ -21,8 +21,8 @@ final class Body implements EquatableInterface, Stringable
     public function __construct(string $body)
     {
         $trimmed = mb_trim($body);
-        if ('' === $trimmed) {
-            throw new InvalidOutboxEmailBodyException('Email body cannot be empty');
+        if (empty($trimmed)) {
+            throw InvalidOutboxEmailBodyException::becauseItEmpty();
         }
         $this->body = $trimmed;
     }

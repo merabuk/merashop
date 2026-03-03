@@ -11,7 +11,7 @@ use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
 
-final class ExternalId implements EquatableInterface, Stringable
+final readonly class ExternalId implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 

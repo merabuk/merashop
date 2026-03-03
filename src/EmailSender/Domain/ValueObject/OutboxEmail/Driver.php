@@ -10,7 +10,7 @@ use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
 
-final class Driver implements EquatableInterface, Stringable
+final readonly class Driver implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 
@@ -31,7 +31,7 @@ final class Driver implements EquatableInterface, Stringable
      */
     public static function fromString(string $driver): self
     {
-        $enum = DriverEnum::tryFrom($driver);
+        $enum = DriverEnum::tryFrom(mb_trim($driver));
 
         if (false === $enum instanceof DriverEnum) {
             throw InvalidOutboxEmailDriverException::becauseItIsNotAValidDriver(invalidValue: $driver, availableValues: DriverEnum::getValues());
