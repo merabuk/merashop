@@ -10,6 +10,7 @@ use App\Shared\Domain\Enum\ErrorCodeEnum;
 use App\Tests\Catalog\Support\Traits\AttributeFactoryTrait;
 use App\Tests\Shared\Support\Traits\ApiAuthTrait;
 use App\Tests\Shared\Support\Traits\ApiRequestTrait;
+use App\Tests\Shared\Support\Traits\ApiResponseTrait;
 use App\Tests\Shared\Support\Traits\BaseUriTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -20,17 +21,26 @@ final class UpdateAttributeControllerTest extends WebTestCase
 {
     use ApiAuthTrait;
     use ApiRequestTrait;
+    use ApiResponseTrait;
     use AttributeFactoryTrait;
     use BaseUriTrait;
 
     private const string ROUTE_NAME = UpdateAttributeController::ROUTE_NAME;
+    private const string METHOD = Request::METHOD_PUT;
+
+    protected function tearDown(): void
+    {
+        $this->clearIdentity();
+
+        parent::tearDown();
+    }
 
     public function testItSuccessfullyUpdatesAttribute(): void
     {
         $client = self::createClient();
         $this->loginAsAdmin();
 
-        $attribute = $this->getAttributeFixture()->create(['code' => 'brand']);
+        $attribute = $this->getAttributeFixture()->create(code: 'brand');
 
         $payload = [
             'code' => 'brand_updated',
@@ -41,7 +51,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
 
         $this->requestJson(
             client: $client,
-            method: Request::METHOD_PUT,
+            method: self::METHOD,
             uri: $this->getUrl(['id' => $attribute->getId()->value()]),
             payload: $payload
         );
@@ -57,9 +67,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
         $client = self::createClient();
         $this->loginAsAdmin();
 
-        $attribute = $this->getAttributeFixture()->create([
-            'code' => 'old',
-        ]);
+        $attribute = $this->getAttributeFixture()->create(code: 'old');
 
         $payload = [
             'code' => 'new',
@@ -70,13 +78,13 @@ final class UpdateAttributeControllerTest extends WebTestCase
 
         $this->requestJson(
             client: $client,
-            method: Request::METHOD_PUT,
+            method: self::METHOD,
             uri: $this->getUrl(['id' => $attribute->getId()->value()]),
             payload: $payload
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
-        $data = json_decode($client->getResponse()->getContent(), true);
+        $data = $this->getResponseData($client);
         $this->assertSame(ErrorCodeEnum::ConcurrencyError->value, $data['code']);
     }
 
@@ -90,7 +98,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
 
         $this->requestJson(
             client: $client,
-            method: Request::METHOD_PUT,
+            method: self::METHOD,
             uri: $this->getUrl(['id' => $attribute->getId()->value()]),
             payload: [
                 'version' => $attribute->getVersion()->value(),
@@ -99,13 +107,10 @@ final class UpdateAttributeControllerTest extends WebTestCase
         );
 
         $this->assertResponseIsUnprocessable();
-        $data = json_decode($client->getResponse()->getContent(), true);
 
-        $actualErrorFields = array_map(fn (array $v) => $v['field'], $data['violations']);
+        $data = $this->getResponseData($client);
 
-        foreach ($expectedErrorFields as $field) {
-            $this->assertContains($field, $actualErrorFields, "Validation error for field '{$field}' not found");
-        }
+        $this->assertValidationErrors(responseData: $data, expectedErrorFields: $expectedErrorFields);
     }
 
     public static function invalidAttributeProvider(): iterable

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Catalog\Support;
 
 use App\Catalog\Domain\Entity\Attribute;
+use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
 
 final readonly class AttributeFixture
@@ -15,9 +16,23 @@ final readonly class AttributeFixture
     ) {
     }
 
-    public function create(array $overrides = []): Attribute
-    {
-        $attribute = $this->mother->create($overrides);
+    /**
+     * @param ?array<string, array{name: string}> $translations
+     */
+    public function create(
+        ?string $ulid = null,
+        ?string $code = null,
+        ?TypeEnum $type = null,
+        ?array $translations = null,
+        ?string $createdByUlid = null,
+    ): Attribute {
+        $attribute = $this->mother->create(
+            ulid: $ulid,
+            code: $code,
+            type: $type,
+            translations: $translations,
+            createdByUlid: $createdByUlid,
+        );
 
         return $this->repository->save($attribute);
     }

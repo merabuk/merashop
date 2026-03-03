@@ -34,6 +34,7 @@ class ApiExceptionListener
 {
     private const string PUBLIC_API_PREFIX = '/api/';
     private const string ADMIN_API_PREFIX = '/admin/api/';
+    private const string INTERNAL_API_PREFIX = '/internal/api/';
 
     public function __construct(
         private readonly TranslatorInterface $translator,
@@ -60,7 +61,8 @@ class ApiExceptionListener
     private function isApiRequest(string $path): bool
     {
         return str_starts_with($path, self::PUBLIC_API_PREFIX)
-            || str_starts_with($path, self::ADMIN_API_PREFIX);
+            || str_starts_with($path, self::ADMIN_API_PREFIX)
+            || str_starts_with($path, self::INTERNAL_API_PREFIX);
     }
 
     private function determineResponse(Throwable $exception): JsonResponse
@@ -186,10 +188,6 @@ class ApiExceptionListener
 
     private function logAndResponseWithBaseUnexpectedError(Throwable $exception): JsonResponse
     {
-        dump([
-            'exception' => $exception,
-        ]);
-
         $this->logger->error($exception->getMessage(), [
             'exception_class' => get_class($exception),
             'trace' => $exception->getTraceAsString(),

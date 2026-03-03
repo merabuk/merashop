@@ -51,8 +51,6 @@ final class AttributeTest extends TestCase
      */
     private function makeAttribute(string $code = 'code'): Attribute
     {
-        return AttributeMother::createWithData([
-            'code' => $code,
-        ]);
+        return AttributeMother::createWithData(code: $code);
     }
 }

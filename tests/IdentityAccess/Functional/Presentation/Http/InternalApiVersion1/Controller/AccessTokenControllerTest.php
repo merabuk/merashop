@@ -23,6 +23,7 @@ final class AccessTokenControllerTest extends WebTestCase
     use ModuleAccountFactoryTrait;
 
     private const string ROUTE_NAME = AccessTokenController::ROUTE_NAME;
+    private const string METHOD = Request::METHOD_POST;
 
     public function testItSuccessfullyIssuesTokenViaPassword(): void
     {
@@ -34,7 +35,7 @@ final class AccessTokenControllerTest extends WebTestCase
 
         $this->requestJson(
             client: $client,
-            method: Request::METHOD_POST,
+            method: self::METHOD,
             uri: $this->getUrl(),
             payload: [
                 'grant_type' => GrantTypeEnum::ClientCredentials->value,
@@ -43,7 +44,7 @@ final class AccessTokenControllerTest extends WebTestCase
             ]
         );
 
-        self::assertSame(Response::HTTP_OK, $this->getResponseStatusCode($client));
+        $this->assertResponseIsSuccessful();
 
         $data = $this->getResponseData($client);
         self::assertArrayHasKey('access_token', $data);
@@ -61,7 +62,7 @@ final class AccessTokenControllerTest extends WebTestCase
 
         $this->requestJson(
             client: $client,
-            method: Request::METHOD_POST,
+            method: self::METHOD,
             uri: $this->getUrl(),
             payload: [
                 'grant_type' => GrantTypeEnum::ClientCredentials->value,
@@ -70,7 +71,7 @@ final class AccessTokenControllerTest extends WebTestCase
             ]
         );
 
-        self::assertSame(Response::HTTP_UNAUTHORIZED, $this->getResponseStatusCode($client));
+        $this->assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
         $data = $this->getResponseData($client);
         self::assertSame(OAuth2Error::INVALID_CLIENT, $data['error']);
     }
@@ -81,7 +82,7 @@ final class AccessTokenControllerTest extends WebTestCase
 
         $this->requestJson(
             client: $client,
-            method: Request::METHOD_POST,
+            method: self::METHOD,
             uri: $this->getUrl(),
             payload: [
                 'grant_type' => GrantTypeEnum::ClientCredentials->value,
@@ -90,7 +91,7 @@ final class AccessTokenControllerTest extends WebTestCase
             ],
         );
 
-        self::assertSame(Response::HTTP_BAD_REQUEST, $this->getResponseStatusCode($client));
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
         $data = $this->getResponseData($client);
         self::assertSame(OAuth2Error::INVALID_REQUEST, $data['error']);
     }

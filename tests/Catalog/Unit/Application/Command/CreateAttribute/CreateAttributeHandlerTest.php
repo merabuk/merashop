@@ -7,6 +7,7 @@ namespace App\Tests\Catalog\Unit\Application\Command\CreateAttribute;
 use App\Catalog\Application\Command\CreateAttribute\CreateAttributeCommand;
 use App\Catalog\Application\Command\CreateAttribute\CreateAttributeHandler;
 use App\Catalog\Application\Exception\Attribute\CreateAttributeException;
+use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Exception\Attribute\AttributeAlreadyExistsException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
@@ -30,9 +31,11 @@ final class CreateAttributeHandlerTest extends TestCase
         $writeRepository = $this->createMock(AttributeWriteRepositoryInterface::class);
         $ulidGenerator = $this->createMock(UlidGeneratorInterface::class);
 
+        $attributeType = TypeEnum::String;
+
         $command = new CreateAttributeCommand(
             code: 'color',
-            type: 'string',
+            type: $attributeType->value,
             translations: ['en' => ['name' => 'Color']],
             adminUlid: '01KHVRCA679BJ6PBXX5N3G6RR5'
         );
@@ -44,14 +47,14 @@ final class CreateAttributeHandlerTest extends TestCase
 
         $writeRepository->expects($this->once())
             ->method('save')
-            ->willReturn(AttributeMother::createWithData([
-                'id' => $fakeId,
-                'ulid' => $ulid,
-                'code' => $command->code,
-                'type' => $command->type,
-                'translations' => $command->translations,
-                'createdBy' => $command->adminUlid,
-            ]));
+            ->willReturn(AttributeMother::createWithData(
+                ulid: $ulid,
+                code: $command->code,
+                type: $attributeType,
+                translations: $command->translations,
+                createdByUlid: $command->adminUlid,
+                id: $fakeId,
+            ));
 
         $handler = new CreateAttributeHandler(
             readRepository: $readRepository,

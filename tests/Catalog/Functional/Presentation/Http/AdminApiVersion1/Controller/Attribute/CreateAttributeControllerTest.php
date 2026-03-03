@@ -10,6 +10,7 @@ use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Presentation\Http\AdminApiVersion1\Controller\Attribute\CreateAttributeController;
 use App\Tests\Shared\Support\Traits\ApiAuthTrait;
 use App\Tests\Shared\Support\Traits\ApiRequestTrait;
+use App\Tests\Shared\Support\Traits\ApiResponseTrait;
 use App\Tests\Shared\Support\Traits\BaseUriTrait;
 use App\Tests\Shared\Support\Traits\DbPerformanceTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -21,17 +22,25 @@ final class CreateAttributeControllerTest extends WebTestCase
 {
     use ApiAuthTrait;
     use ApiRequestTrait;
+    use ApiResponseTrait;
     use BaseUriTrait;
     use DbPerformanceTrait;
 
     private const string ROUTE_NAME = CreateAttributeController::ROUTE_NAME;
+    private const string METHOD = Request::METHOD_POST;
+
+    protected function tearDown(): void
+    {
+        $this->clearIdentity();
+
+        parent::tearDown();
+    }
 
     public function testItReturnsForbiddenForGuests(): void
     {
         $client = self::createClient();
-        $this->clearIdentity();
 
-        $client->request(method: Request::METHOD_POST, uri: $this->getUrl());
+        $this->requestJson(client: $client, method: self::METHOD, uri: $this->getUrl());
 
         $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
@@ -41,7 +50,7 @@ final class CreateAttributeControllerTest extends WebTestCase
         $client = self::createClient();
         $this->loginAsUser();
 
-        $client->request(method: Request::METHOD_POST, uri: $this->getUrl(), content: '{}');
+        $this->requestJson(client: $client, method: self::METHOD, uri: $this->getUrl());
 
         $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
@@ -65,7 +74,7 @@ final class CreateAttributeControllerTest extends WebTestCase
 
         $this->requestJson(
             client: $client,
-            method: Request::METHOD_POST,
+            method: self::METHOD,
             uri: $this->getUrl(),
             payload: $payload
         );
@@ -76,7 +85,7 @@ final class CreateAttributeControllerTest extends WebTestCase
         $exists = $readRepository->existsByCode(Code::fromString('brand_name'));
         $this->assertTrue($exists, 'Attribute was not saved to database');
 
-        $data = json_decode($client->getResponse()->getContent(), true);
+        $data = $this->getResponseData($client);
         $this->assertStringContainsString('successfully created', $data['message']);
     }
 
@@ -88,19 +97,15 @@ final class CreateAttributeControllerTest extends WebTestCase
 
         $this->requestJson(
             client: $client,
-            method: Request::METHOD_POST,
+            method: self::METHOD,
             uri: $this->getUrl(),
             payload: $payload
         );
 
         $this->assertResponseIsUnprocessable();
-        $data = json_decode($client->getResponse()->getContent(), true);
+        $data = $this->getResponseData($client);
 
-        $actualErrorFields = array_map(fn (array $v) => $v['field'], $data['violations']);
-
-        foreach ($expectedErrorFields as $field) {
-            $this->assertContains($field, $actualErrorFields, "Validation error for field '{$field}' not found");
-        }
+        $this->assertValidationErrors(responseData: $data, expectedErrorFields: $expectedErrorFields);
     }
 
     public static function invalidAttributeProvider(): iterable

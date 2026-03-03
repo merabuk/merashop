@@ -15,6 +15,6 @@ interface AttributeFactoryInterface
         string $code,
         TypeEnum $type,
         array $translations,
-        string $adminUlid,
+        string $createdByUlid,
     ): Attribute;
 }

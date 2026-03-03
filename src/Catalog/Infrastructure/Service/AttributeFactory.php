@@ -36,14 +36,14 @@ final readonly class AttributeFactory implements AttributeFactoryInterface
         string $code,
         TypeEnum $type,
         array $translations,
-        string $adminUlid,
+        string $createdByUlid,
     ): Attribute {
         return Attribute::create(
             ulid: Ulid::fromString($ulid),
             code: Code::fromString($code),
             type: Type::fromEnum($type),
             translations: Translations::fromArray($translations),
-            createdBy: AdminUlid::fromString($adminUlid),
+            createdBy: AdminUlid::fromString($createdByUlid),
         );
     }
 }

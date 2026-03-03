@@ -34,42 +34,51 @@ final readonly class AttributeMother
     /**
      * Static method for Unit-tests.
      *
+     * @param ?array<string, array{name: string}> $translations
+     *
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
      */
-    public static function createWithData(array $overrides = []): Attribute
-    {
+    public static function createWithData(
+        ?string $ulid = null,
+        ?string $code = null,
+        ?TypeEnum $type = null,
+        ?array $translations = null,
+        ?int $version = null,
+        ?string $createdByUlid = null,
+        ?string $updatedByUlid = null,
+        ?int $id = null,
+    ): Attribute {
         return new Attribute(
-            id: Id::fromInt($overrides['id'] ?? 123),
-            ulid: Ulid::fromString($overrides['ulid'] ?? '01KHVRCA0FCCYAQT1P88R317DD'),
-            code: Code::fromString($overrides['code'] ?? 'test-code'),
-            type: isset($overrides['type']) && $overrides['type'] instanceof TypeEnum
-                ? Type::fromEnum($overrides['type'])
-                : Type::string(),
-            translations: isset($overrides['translations'])
-                ? Translations::fromArray($overrides['translations'])
+            id: $id ? Id::fromInt($id) : null,
+            ulid: Ulid::fromString($ulid ?? '01KHVRCA0FCCYAQT1P88R317DD'),
+            code: Code::fromString($code ?? 'test-code'),
+            type: $type ? Type::fromEnum($type) : Type::string(),
+            translations: $translations
+                ? Translations::fromArray($translations)
                 : Translations::fromArray(self::makeFakeTranslations()),
-            version: isset($overrides['version'])
-                ? Version::fromInt($overrides['version'])
-                : Version::initial(),
-            createdBy: AdminUlid::fromString($overrides['adminUlid'] ?? '01KHVRCA679BJ6PBXX5N3G6RR5'),
-            updatedBy: isset($overrides['updatedBy'])
-                ? AdminUlid::fromString($overrides['updatedBy'])
-                : null
+            version: $version ? Version::fromInt($version) : Version::initial(),
+            createdBy: AdminUlid::fromString($createdByUlid ?? '01KHVRCA679BJ6PBXX5N3G6RR5'),
+            updatedBy: $updatedByUlid ? AdminUlid::fromString($updatedByUlid) : null
         );
     }
 
     /**
-     * @param array<string, mixed> $overrides
+     * @param ?array<string, array{name: string}> $translations
      */
-    public function create(array $overrides = []): Attribute
-    {
+    public function create(
+        ?string $ulid = null,
+        ?string $code = null,
+        ?TypeEnum $type = null,
+        ?array $translations = null,
+        ?string $createdByUlid = null,
+    ): Attribute {
         return $this->attributeFactory->createForTest(
-            ulid: $overrides['ulid'] ?? $this->ulidGenerator->next(),
-            code: $overrides['code'] ?? $this->faker->unique()->word(),
-            type: $overrides['type'] ?? $this->faker->randomElement(TypeEnum::cases()),
-            translations: $overrides['translations'] ?? $this->makeTranslations(),
-            adminUlid: $overrides['adminUlid'] ?? $this->ulidGenerator->next(),
+            ulid: $ulid ?? $this->ulidGenerator->next(),
+            code: $code ?? $this->faker->unique()->word(),
+            type: $type ?? $this->faker->randomElement(TypeEnum::cases()),
+            translations: $translations ?? $this->makeTranslations(),
+            createdByUlid: $createdByUlid ?? $this->ulidGenerator->next(),
         );
     }
 

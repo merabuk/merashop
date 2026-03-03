@@ -92,8 +92,6 @@ final class UpdateAttributeHandlerTest extends TestCase
      */
     private function makeAttribute(int $version = 1): Attribute
     {
-        return AttributeMother::createWithData([
-            'version' => $version,
-        ]);
+        return AttributeMother::createWithData(version: $version);
     }
 }
