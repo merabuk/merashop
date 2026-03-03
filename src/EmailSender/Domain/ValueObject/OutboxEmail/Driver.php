@@ -6,10 +6,11 @@ namespace App\EmailSender\Domain\ValueObject\OutboxEmail;
 
 use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailDriverException;
+use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
 
-final class Driver implements Stringable
+final class Driver implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 

@@ -7,9 +7,11 @@ namespace App\Catalog\Domain\ValueObject\Product;
 use App\Catalog\Domain\Exception\Product\InvalidProductPriceAmountException;
 use App\Catalog\Domain\Exception\Product\InvalidProductPriceCurrencyException;
 use App\Shared\Domain\Enum\CurrencyEnum;
+use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use Stringable;
 
-final class Price
+final class Price implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 

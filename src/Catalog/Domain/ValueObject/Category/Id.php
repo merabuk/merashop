@@ -7,10 +7,11 @@ namespace App\Catalog\Domain\ValueObject\Category;
 use App\Catalog\Domain\Exception\Category\InvalidCategoryIdException;
 use App\Shared\Domain\Exception\Services\IntegerIsNotUnsignedException;
 use App\Shared\Domain\Service\IntegerValidator;
+use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\IdInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 
-final class Id implements IdInterface
+final class Id implements EquatableInterface, IdInterface
 {
     use ValueObjectEqualityTrait;
 

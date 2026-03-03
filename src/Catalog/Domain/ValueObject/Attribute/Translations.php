@@ -6,6 +6,7 @@ namespace App\Catalog\Domain\ValueObject\Attribute;
 
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeNameException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
+use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use ArrayIterator;
 use Countable;
@@ -17,7 +18,7 @@ use Traversable;
 /**
  * @implements IteratorAggregate<string, Translation>
  */
-final class Translations implements Stringable, Countable, IteratorAggregate
+final class Translations implements Countable, EquatableInterface, IteratorAggregate, Stringable
 {
     use ValueObjectEqualityTrait;
 

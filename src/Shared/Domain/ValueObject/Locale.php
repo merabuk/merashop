@@ -8,7 +8,7 @@ use App\Shared\Domain\Enum\LocaleEnum;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use Stringable;
 
-final class Locale implements Stringable
+final class Locale implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 

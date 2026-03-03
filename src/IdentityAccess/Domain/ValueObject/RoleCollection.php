@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Domain\ValueObject;
 
 use App\IdentityAccess\Domain\Exception\ValueObject\InvalidRoleException;
+use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use ArrayIterator;
 use Countable;
@@ -15,7 +16,7 @@ use Traversable;
 /**
  * @implements IteratorAggregate<int, Role>
  */
-final readonly class RoleCollection implements Stringable, Countable, IteratorAggregate
+final readonly class RoleCollection implements Countable, EquatableInterface, IteratorAggregate, Stringable
 {
     use ValueObjectEqualityTrait;
 

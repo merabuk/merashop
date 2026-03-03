@@ -8,6 +8,7 @@ use App\IdentityAccess\Domain\Enum\AdminAccount\StatusEnum;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmAdminAccount;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Mapper\AdminAccountMapper;
 use App\Tests\IdentityAccess\Support\AdminAccountMother;
+use App\Tests\IdentityAccess\Support\Traits\IdentityAccessEntityManagerTrait;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -15,6 +16,8 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 final class AdminAccountMapperTest extends KernelTestCase
 {
+    use IdentityAccessEntityManagerTrait;
+
     private EntityManagerInterface $em;
     private AdminAccountMapper $mapper;
 
@@ -22,7 +25,7 @@ final class AdminAccountMapperTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->em = self::getContainer()->get('doctrine')->getManager('identity_access');
+        $this->em = $this->getIdentityAccessEntityManager();
         $this->mapper = new AdminAccountMapper();
     }
 

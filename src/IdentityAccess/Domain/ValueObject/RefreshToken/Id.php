@@ -7,10 +7,11 @@ namespace App\IdentityAccess\Domain\ValueObject\RefreshToken;
 use App\IdentityAccess\Domain\Exception\RefreshToken\InvalidRefreshTokenIdException;
 use App\Shared\Domain\Exception\Services\IntegerIsNotUnsignedException;
 use App\Shared\Domain\Service\IntegerValidator;
+use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
 
-final class Id implements Stringable
+final class Id implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 

@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\ValueObject\Category;
 
+use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
 
-final class SortOrder implements Stringable
+final class SortOrder implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 

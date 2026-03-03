@@ -30,7 +30,8 @@ final class UpdateAttributeHandlerTest extends TestCase
         $readRepository = $this->createMock(AttributeReadRepositoryInterface::class);
         $writeRepository = $this->createMock(AttributeWriteRepositoryInterface::class);
 
-        $existingAttribute = $this->makeAttribute(version: 2);
+        $fakeId = 123;
+        $existingAttribute = $this->makeAttribute(version: 2, id: $fakeId);
         $readRepository->method('getById')->willReturn($existingAttribute);
 
         $invalidVersion = $existingAttribute->getVersion()->value() + 1;
@@ -65,7 +66,8 @@ final class UpdateAttributeHandlerTest extends TestCase
         $readRepository = $this->createMock(AttributeReadRepositoryInterface::class);
         $writeRepository = $this->createMock(AttributeWriteRepositoryInterface::class);
 
-        $attribute = $this->makeAttribute();
+        $fakeId = 123;
+        $attribute = $this->makeAttribute(id: $fakeId);
         $readRepository->method('getById')->willReturn($attribute);
 
         $writeRepository->expects($this->once())->method('save')->willReturn($attribute);
@@ -90,8 +92,8 @@ final class UpdateAttributeHandlerTest extends TestCase
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
      */
-    private function makeAttribute(int $version = 1): Attribute
+    private function makeAttribute(int $version = 1, ?int $id = null): Attribute
     {
-        return AttributeMother::createWithData(version: $version);
+        return AttributeMother::createWithData(version: $version, id: $id);
     }
 }

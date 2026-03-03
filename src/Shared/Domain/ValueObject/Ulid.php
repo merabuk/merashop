@@ -9,7 +9,7 @@ use App\Shared\Domain\Exception\ValueObject\InvalidUlidException;
 use App\Shared\Domain\Service\UlidValidator;
 use Stringable;
 
-class Ulid implements Stringable
+class Ulid implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 

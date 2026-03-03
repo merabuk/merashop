@@ -38,9 +38,9 @@ final class FromName implements Stringable
     /**
      * @throws InvalidOutboxEmailFromNameException
      */
-    public static function fromString(string $subject): self
+    public static function fromString(string $name): self
     {
-        return new self($subject);
+        return new self($name);
     }
 
     public function __toString(): string

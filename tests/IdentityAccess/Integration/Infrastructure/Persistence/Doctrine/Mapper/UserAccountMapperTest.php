@@ -6,12 +6,15 @@ namespace App\Tests\IdentityAccess\Integration\Infrastructure\Persistence\Doctri
 
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmUserAccount;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Mapper\UserAccountMapper;
+use App\Tests\IdentityAccess\Support\Traits\IdentityAccessEntityManagerTrait;
 use App\Tests\IdentityAccess\Support\UserAccountMother;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 final class UserAccountMapperTest extends KernelTestCase
 {
+    use IdentityAccessEntityManagerTrait;
+
     private EntityManagerInterface $em;
     private UserAccountMapper $mapper;
 
@@ -19,7 +22,7 @@ final class UserAccountMapperTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->em = self::getContainer()->get('doctrine')->getManager('identity_access');
+        $this->em = $this->getIdentityAccessEntityManager();
         $this->mapper = new UserAccountMapper();
     }
 

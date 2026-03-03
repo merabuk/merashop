@@ -7,7 +7,7 @@ namespace App\Shared\Domain\ValueObject;
 use DateTimeImmutable;
 use Stringable;
 
-abstract readonly class DateTimeValueObject implements Stringable
+abstract readonly class DateTimeValueObject implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 

@@ -7,10 +7,11 @@ namespace App\Catalog\Domain\ValueObject\Attribute;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeVersionException;
 use App\Shared\Domain\Exception\Services\IntegerIsNotUnsignedException;
 use App\Shared\Domain\Service\IntegerValidator;
+use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
 
-final class Version implements Stringable
+final class Version implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 

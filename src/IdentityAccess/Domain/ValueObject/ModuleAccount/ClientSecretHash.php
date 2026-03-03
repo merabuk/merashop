@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Domain\ValueObject\ModuleAccount;
 
 use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountPasswordHashException;
+use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
 
-final readonly class ClientSecretHash implements Stringable
+final readonly class ClientSecretHash implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 

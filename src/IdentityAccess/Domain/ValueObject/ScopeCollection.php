@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Domain\ValueObject;
 
 use App\IdentityAccess\Domain\Exception\ValueObject\InvalidScopeException;
+use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use ArrayIterator;
 use Countable;
@@ -15,7 +16,7 @@ use Traversable;
 /**
  * @implements IteratorAggregate<int, Scope>
  */
-final readonly class ScopeCollection implements Stringable, Countable, IteratorAggregate
+final readonly class ScopeCollection implements Countable, EquatableInterface, IteratorAggregate, Stringable
 {
     use ValueObjectEqualityTrait;
 

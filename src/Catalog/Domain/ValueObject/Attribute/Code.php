@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Catalog\Domain\ValueObject\Attribute;
 
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeCodeException;
+use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
 
-final class Code implements Stringable
+final class Code implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 

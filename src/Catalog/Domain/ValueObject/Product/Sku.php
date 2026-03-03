@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Catalog\Domain\ValueObject\Product;
 
 use App\Catalog\Domain\Exception\Product\InvalidProductSkuException;
+use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
 
-final class Sku implements Stringable
+final class Sku implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 

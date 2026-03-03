@@ -6,7 +6,6 @@ namespace App\Catalog\Application\Command\UpdateAttribute;
 
 use App\Catalog\Application\Exception\Attribute\UpdateAttributeException;
 use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
-use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
 use App\Catalog\Domain\ValueObject\AdminUlid;
@@ -17,8 +16,8 @@ use App\Catalog\Domain\ValueObject\Attribute\Type;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
 use App\Shared\Domain\Exception\Entity\ConcurrencyException;
-use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Throwable;
 
 #[AsMessageHandler(bus: BusNameEnum::Command->value)]
 readonly class UpdateAttributeHandler implements CommandHandlerInterface
@@ -34,7 +33,7 @@ readonly class UpdateAttributeHandler implements CommandHandlerInterface
      * @throws UpdateAttributeException
      * @throws ConcurrencyException
      */
-    public function __invoke(UpdateAttributeCommand $command): int
+    public function __invoke(UpdateAttributeCommand $command): void
     {
         try {
             $attribute = $this->readRepository->getById(Id::fromInt($command->id));
@@ -50,10 +49,10 @@ readonly class UpdateAttributeHandler implements CommandHandlerInterface
                 updatedBy: AdminUlid::fromString($command->adminUlid),
             );
 
-            $attribute = $this->writeRepository->save($attribute);
-
-            return $attribute->getId()->value();
-        } catch (InvalidCatalogValueObjectException|InvalidLocaleException $e) {
+            $this->writeRepository->save($attribute);
+        } catch (AttributeNotFoundException|ConcurrencyException $e) {
+            throw $e;
+        } catch (Throwable $e) {
             throw new UpdateAttributeException(message: 'Error during updating attribute', previous: $e);
         }
     }

@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Domain\ValueObject;
 
 use App\IdentityAccess\Domain\Exception\ValueObject\InvalidScopeException;
+use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
 
-final readonly class Scope implements Stringable
+final readonly class Scope implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 

@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Catalog\Domain\ValueObject\Category;
 
 use App\Catalog\Domain\Exception\Category\InvalidCategorySlugException;
+use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
 
-final class Slug implements Stringable
+final class Slug implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 

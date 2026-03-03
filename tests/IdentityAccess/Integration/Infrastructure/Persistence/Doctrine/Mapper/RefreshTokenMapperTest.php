@@ -7,12 +7,15 @@ namespace App\Tests\IdentityAccess\Integration\Infrastructure\Persistence\Doctri
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmRefreshToken;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Mapper\RefreshTokenMapper;
 use App\Tests\IdentityAccess\Support\RefreshTokenMother;
+use App\Tests\IdentityAccess\Support\Traits\IdentityAccessEntityManagerTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Clock\MockClock;
 
 final class RefreshTokenMapperTest extends KernelTestCase
 {
+    use IdentityAccessEntityManagerTrait;
+
     private EntityManagerInterface $em;
     private RefreshTokenMapper $mapper;
 
@@ -20,7 +23,7 @@ final class RefreshTokenMapperTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->em = self::getContainer()->get('doctrine')->getManager('identity_access');
+        $this->em = $this->getIdentityAccessEntityManager();
         $this->mapper = new RefreshTokenMapper();
     }
 

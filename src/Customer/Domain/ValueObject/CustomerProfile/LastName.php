@@ -7,10 +7,11 @@ namespace App\Customer\Domain\ValueObject\CustomerProfile;
 use App\Customer\Domain\Exception\CustomerProfile\InvalidCustomerProfileLastNameException;
 use App\Shared\Domain\Exception\InvalidStringException;
 use App\Shared\Domain\Service\StringValidator;
+use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
 
-final readonly class LastName implements Stringable
+final readonly class LastName implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 

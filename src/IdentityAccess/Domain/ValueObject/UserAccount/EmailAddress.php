@@ -7,10 +7,11 @@ namespace App\IdentityAccess\Domain\ValueObject\UserAccount;
 use App\IdentityAccess\Domain\Exception\UserAccount\InvalidUserAccountEmailException;
 use App\Shared\Domain\Exception\InvalidEmailAddressException;
 use App\Shared\Domain\Service\EmailValidator;
+use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
 
-final readonly class EmailAddress implements Stringable
+final readonly class EmailAddress implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 

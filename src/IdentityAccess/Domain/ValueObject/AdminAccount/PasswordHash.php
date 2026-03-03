@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Domain\ValueObject\AdminAccount;
 
 use App\IdentityAccess\Domain\Exception\AdminAccount\InvalidAdminAccountPasswordHashException;
+use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
 
-final readonly class PasswordHash implements Stringable
+final readonly class PasswordHash implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 

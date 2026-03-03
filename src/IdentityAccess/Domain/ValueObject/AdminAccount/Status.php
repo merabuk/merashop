@@ -6,10 +6,11 @@ namespace App\IdentityAccess\Domain\ValueObject\AdminAccount;
 
 use App\IdentityAccess\Domain\Enum\AdminAccount\StatusEnum;
 use App\IdentityAccess\Domain\Exception\AdminAccount\InvalidAdminAccountStatusException;
+use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
 
-final class Status implements Stringable
+final class Status implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 

@@ -13,10 +13,10 @@ use App\EmailSender\Domain\ValueObject\OutboxEmail\Subject;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\To;
 use App\EmailSender\Infrastructure\Persistence\Doctrine\Type\OutboxEmail\DriverType;
 use App\EmailSender\Infrastructure\Persistence\Doctrine\Type\OutboxEmail\StatusType;
+use App\Shared\Infrastructure\Persistence\Doctrine\Entity\Traits\TimestampableEntityTrait;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'outbox_emails')]
@@ -28,7 +28,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 #[ORM\Index(name: 'idx_outbox_emails_trace_id', columns: ['trace_id'])]
 class OrmOutboxEmail
 {
-    use TimestampableEntity;
+    use TimestampableEntityTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]

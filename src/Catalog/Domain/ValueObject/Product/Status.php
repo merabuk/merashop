@@ -6,10 +6,11 @@ namespace App\Catalog\Domain\ValueObject\Product;
 
 use App\Catalog\Domain\Enum\Product\StatusEnum;
 use App\Catalog\Domain\Exception\Product\InvalidProductStatusException;
+use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
 
-final class Status implements Stringable
+final class Status implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 

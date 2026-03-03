@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\EmailSender\Domain\ValueObject\OutboxEmail;
 
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailAttemptsException;
+use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use Stringable;
 
-final readonly class Attempts
+final readonly class Attempts implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 

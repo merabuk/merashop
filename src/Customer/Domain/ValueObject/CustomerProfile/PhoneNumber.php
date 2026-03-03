@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Customer\Domain\ValueObject\CustomerProfile;
 
 use App\Customer\Domain\Exception\CustomerProfile\InvalidCustomerProfilePhoneNumberException;
+use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
 
-final readonly class PhoneNumber implements Stringable
+final readonly class PhoneNumber implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 
