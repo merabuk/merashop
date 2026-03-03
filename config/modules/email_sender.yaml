@@ -23,6 +23,13 @@ services:
   App\EmailSender\Application\EventHandler\UserRegisteredHandler:
     arguments:
       $appName: '%app.name%'
+  App\EmailSender\Application\Service\OutboxEmailRelayService:
+    arguments:
+      $subMinutes: 10
+      $limit: 100
+
+  App\EmailSender\Application\Service\EmailQueueServiceInterface: '@App\EmailSender\Application\Service\EmailQueueService'
+  App\EmailSender\Application\Service\OutboxEmailRelayServiceInterface: '@App\EmailSender\Application\Service\OutboxEmailRelayService'
 
   App\EmailSender\Domain\Repository\OutboxEmailReadRepositoryInterface: '@App\EmailSender\Infrastructure\Persistence\Doctrine\Repository\OutboxEmailReadRepository'
   App\EmailSender\Domain\Repository\OutboxEmailWriteRepositoryInterface: '@App\EmailSender\Infrastructure\Persistence\Doctrine\Repository\OutboxEmailWriteRepository'

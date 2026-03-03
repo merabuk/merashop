@@ -153,7 +153,7 @@ class SendOutboxEmailCommandHandlerTest extends TestCase
         $this->logger->expects(self::once())
             ->method('critical')
             ->with(
-                'Email sending failed permanently',
+                self::equalTo('Email sending failed permanently'),
                 self::logicalAnd(
                     self::arrayHasKey('id'),
                     self::arrayHasKey('trace_id'),

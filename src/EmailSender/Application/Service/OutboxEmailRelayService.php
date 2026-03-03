@@ -17,6 +17,8 @@ readonly class OutboxEmailRelayService
         private OutboxEmailReadRepositoryInterface $readRepository,
         private MessageBusInterface $commandBus,
         private ClockInterface $clock,
+        private int $subMinutes,
+        private int $limit,
     ) {
     }
 
@@ -26,11 +28,10 @@ readonly class OutboxEmailRelayService
      */
     public function execute(): int
     {
-        $limit = 100;
         $now = $this->clock->now();
-        $staleTime = $now->modify('-10 minutes');
+        $staleTime = $now->modify("-{$this->subMinutes} minutes");
 
-        $emails = $this->readRepository->findReadyToProcess($limit, $now, $staleTime);
+        $emails = $this->readRepository->findReadyToProcess($this->limit, $now, $staleTime);
 
         foreach ($emails as $email) {
             $this->commandBus->dispatch(new SendOutboxEmailCommand($email->getId()->value()));

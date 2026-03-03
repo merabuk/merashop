@@ -10,15 +10,14 @@ use App\EmailSender\Domain\Service\OutboxEmailFactoryInterface;
 use App\Shared\Domain\Service\TraceIdContextInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
-use Psr\Container\NotFoundExceptionInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
-use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\DispatchAfterCurrentBusStamp;
+use Throwable;
 
-final readonly class EmailQueueService
+final readonly class EmailQueueService implements EmailQueueServiceInterface
 {
     public function __construct(
         private TraceIdContextInterface $traceIdContext,
@@ -37,14 +36,9 @@ final readonly class EmailQueueService
 
     /**
      * @param array<string, mixed> $context
-     *
-     * @throws ExceptionInterface
      */
-    public function queueEmail(
-        string $emailType,
-        string $to,
-        array $context,
-    ): void {
+    public function queueEmail(string $emailType, string $to, array $context): void
+    {
         $traceId = $this->traceIdContext->get();
 
         if ($this->readRepository->existsByTraceId($traceId)) {
@@ -53,47 +47,62 @@ final readonly class EmailQueueService
             return;
         }
 
-        if (!$this->providers->has($emailType)) {
-            $this->logger->error(sprintf('Email provider "%s" not found', $emailType));
-
+        $provider = $this->getProvider($emailType);
+        if (null === $provider) {
             return;
         }
 
         try {
-            $provider = $this->providers->get($emailType);
+            $email = $this->emailFactory->createFromTemplate(
+                to: $to,
+                subject: $provider->getSubject($context),
+                template: $provider->getTemplate(),
+                context: $context,
+                traceId: $traceId
+            );
+            $email = $this->writeRepository->save($email);
 
+            $id = $email->getId()?->value() ?? throw new RuntimeException('ID missing');
+
+            $this->commandBus->dispatch(
+                new SendOutboxEmailCommand($id),
+                [new DispatchAfterCurrentBusStamp()]
+            );
+        } catch (Throwable $e) {
+            $this->logger->error(sprintf('Failed to queue email "%s": %s', $emailType, $e->getMessage()), [
+                'trace_id' => $traceId,
+                'exception_class' => get_class($e),
+            ]);
+        }
+    }
+
+    private function getProvider(string $type): ?EmailContentProviderInterface
+    {
+        try {
+            if (!$this->providers->has($type)) {
+                $this->logger->error(sprintf('Email provider "%s" not found', $type));
+
+                return null;
+            }
+
+            $provider = $this->providers->get($type);
             if (!$provider instanceof EmailContentProviderInterface) {
                 $this->logger->error(sprintf(
                     'Email provider "%s" is not an instance of %s',
-                    $emailType,
+                    $type,
                     EmailContentProviderInterface::class
                 ));
 
-                return;
+                return null;
             }
 
-            $subject = $provider->getSubject($context);
-            $template = $provider->getTemplate();
-        } catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
-            $this->logger->error(sprintf('Email provider "%s" not found', $emailType));
+            return $provider;
+        } catch (ContainerExceptionInterface $e) {
+            $this->logger->error(sprintf('Failed to get email provider: %s', $e->getMessage()), [
+                'exception_class' => get_class($e),
+            ]);
 
-            return;
+            return null;
         }
-
-        $email = $this->emailFactory->createFromTemplate(
-            to: $to,
-            subject: $subject,
-            template: $template,
-            context: $context,
-            traceId: $traceId
-        );
-        $email = $this->writeRepository->save($email);
-
-        $id = $email->getId()?->value() ?? throw new RuntimeException('Outbox email does not have an ID');
-
-        $this->commandBus->dispatch(
-            new SendOutboxEmailCommand($id),
-            [new DispatchAfterCurrentBusStamp()]
-        );
     }
 }

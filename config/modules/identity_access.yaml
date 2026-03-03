@@ -41,11 +41,11 @@ services:
   App\IdentityAccess\Domain\Service\PasswordGeneratorInterface: '@App\IdentityAccess\Infrastructure\Service\NativeRandomStringGenerator'
   App\IdentityAccess\Domain\Service\RandomTokenGeneratorInterface: '@App\IdentityAccess\Infrastructure\Service\NativeRandomStringGenerator'
 
-  App\IdentityAccess\Application\Service\OAuth2TokenServiceInterface: '@App\IdentityAccess\Application\Service\OAuth2TokenService'
-  App\IdentityAccess\Application\Service\RefreshTokenServiceInterface: '@App\IdentityAccess\Application\Service\RefreshTokenService'
-
   App\IdentityAccess\Domain\Service\PasswordHasherInterface: '@App\IdentityAccess\Infrastructure\Security\Hasher\PasswordHasherService'
   App\IdentityAccess\Domain\Service\TokenHasherInterface: '@App\IdentityAccess\Infrastructure\Security\Hasher\TokenHasherService'
+
+  App\IdentityAccess\Application\Service\OAuth2TokenServiceInterface: '@App\IdentityAccess\Application\Service\OAuth2TokenService'
+  App\IdentityAccess\Application\Service\RefreshTokenServiceInterface: '@App\IdentityAccess\Application\Service\RefreshTokenService'
 
   App\IdentityAccess\Domain\Factory\Contracts\AdminAccountFactoryInterface: '@App\IdentityAccess\Domain\Factory\AdminAccountFactory'
   App\IdentityAccess\Domain\Repository\AdminAccountReadRepositoryInterface: '@App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository\AdminAccountReadRepository'

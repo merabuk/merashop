@@ -9,9 +9,9 @@ use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;
 use App\EmailSender\Domain\Enum\OutboxEmail\StatusEnum;
 use App\EmailSender\Infrastructure\Persistence\Doctrine\Entity\OrmOutboxEmail;
 use App\EmailSender\Infrastructure\Persistence\Doctrine\Mapper\OutboxEmailMapper;
-use App\Shared\Domain\ValueObject\TraceId;
 use App\Tests\EmailSender\Support\OutboxEmailMother;
 use App\Tests\EmailSender\Support\Traits\EmailSenderEntityManagerTrait;
+use App\Tests\Shared\Support\Traits\TraceIdHelperTrait;
 use App\Tests\Shared\Support\Traits\ValueObjectAssertionTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -21,6 +21,7 @@ use Symfony\Component\Clock\MockClock;
 class OutboxEmailMapperTest extends KernelTestCase
 {
     use EmailSenderEntityManagerTrait;
+    use TraceIdHelperTrait;
     use ValueObjectAssertionTrait;
 
     private EntityManagerInterface $em;
@@ -114,7 +115,7 @@ class OutboxEmailMapperTest extends KernelTestCase
             status: StatusEnum::Failed,
             driver: DriverEnum::Log,
             attempts: 1,
-            traceId: TraceId::fromString('01946393-271d-799d-8f2e-062e2467d018'),
+            traceId: $this->getTraceId(),
             scheduledAt: $clock->now()->modify('+1 minute'),
             errorMessage: 'Error message',
         );

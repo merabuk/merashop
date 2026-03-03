@@ -4,30 +4,26 @@ declare(strict_types=1);
 
 namespace App\Tests\Shared\Unit\Infrastructure\Bus\TraceId;
 
-use App\Shared\Domain\Exception\ValueObject\InvalidTraceIdException;
 use App\Shared\Domain\Service\TraceIdContextInterface;
-use App\Shared\Domain\ValueObject\TraceId;
 use App\Shared\Infrastructure\Bus\TraceId\TraceIdMiddleware;
 use App\Shared\Infrastructure\Bus\TraceId\TraceIdStamp;
+use App\Tests\Shared\Support\Traits\TraceIdHelperTrait;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Symfony\Component\Messenger\Envelope;
-use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\Middleware\MiddlewareInterface;
 use Symfony\Component\Messenger\Middleware\StackInterface;
 
 class TraceIdMiddlewareTest extends TestCase
 {
-    /**
-     * @throws InvalidTraceIdException
-     * @throws ExceptionInterface
-     */
+    use TraceIdHelperTrait;
+
     public function testItSetsTraceIdContextFromStamp(): void
     {
         $traceIdContext = $this->createMock(TraceIdContextInterface::class);
         $middleware = new TraceIdMiddleware($traceIdContext);
 
-        $traceId = TraceId::fromString('01952796-03f3-793a-867c-d6159f8a329f');
+        $traceId = $this->getTraceId();
         $envelope = new Envelope(new stdClass(), [new TraceIdStamp($traceId)]);
 
         $traceIdContext->expects(self::once())
@@ -43,16 +39,12 @@ class TraceIdMiddlewareTest extends TestCase
         $middleware->handle($envelope, $stack);
     }
 
-    /**
-     * @throws InvalidTraceIdException
-     * @throws ExceptionInterface
-     */
     public function testItAddsTraceIdStampToEnvelopeFromContext(): void
     {
         $traceIdContext = $this->createMock(TraceIdContextInterface::class);
         $middleware = new TraceIdMiddleware($traceIdContext);
 
-        $traceId = TraceId::fromString('01952796-03f3-793a-867c-d6159f8a329f');
+        $traceId = $this->getTraceId();
 
         $traceIdContext->method('get')->willReturn($traceId);
 

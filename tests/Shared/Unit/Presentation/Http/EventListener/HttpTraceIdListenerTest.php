@@ -6,12 +6,11 @@ namespace App\Tests\Shared\Unit\Presentation\Http\EventListener;
 
 use App\Shared\Domain\Exception\Request\InvalidRequestHeaderValueException;
 use App\Shared\Domain\Exception\Services\TraceIdFactoryException;
-use App\Shared\Domain\Exception\ValueObject\InvalidTraceIdException;
 use App\Shared\Domain\Service\TraceIdContextInterface;
 use App\Shared\Domain\Service\TraceIdFactoryInterface;
-use App\Shared\Domain\ValueObject\TraceId;
 use App\Shared\Presentation\Http\EventListener\HttpTraceIdListener;
 use App\Tests\Shared\Support\Traits\AppListenerTrait;
+use App\Tests\Shared\Support\Traits\TraceIdHelperTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -19,11 +18,8 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 final class HttpTraceIdListenerTest extends TestCase
 {
     use AppListenerTrait;
+    use TraceIdHelperTrait;
 
-    /**
-     * @throws InvalidTraceIdException
-     * @throws InvalidRequestHeaderValueException
-     */
     public function testItSetsTraceIdFromHeader(): void
     {
         $context = $this->createMock(TraceIdContextInterface::class);
@@ -31,7 +27,7 @@ final class HttpTraceIdListenerTest extends TestCase
         $listener = new HttpTraceIdListener(traceIdContext: $context, traceIdFactory: $factory);
 
         $traceIdValue = '01952796-03f3-793a-867c-d6159f8a329f';
-        $traceId = TraceId::fromString($traceIdValue);
+        $traceId = $this->getTraceId($traceIdValue);
 
         $factory->expects(self::once())
             ->method('createFromString')
@@ -48,10 +44,6 @@ final class HttpTraceIdListenerTest extends TestCase
         self::assertSame($traceId, $request->attributes->get('trace_id'));
     }
 
-    /**
-     * @throws InvalidTraceIdException
-     * @throws InvalidRequestHeaderValueException
-     */
     public function testItSetsTraceIdWithoutHeader(): void
     {
         $context = $this->createMock(TraceIdContextInterface::class);
@@ -59,7 +51,7 @@ final class HttpTraceIdListenerTest extends TestCase
         $listener = new HttpTraceIdListener(traceIdContext: $context, traceIdFactory: $factory);
 
         $traceIdValue = '01952796-03f3-793a-867c-d6159f8a329f';
-        $traceId = TraceId::fromString($traceIdValue);
+        $traceId = $this->getTraceId($traceIdValue);
 
         $factory->expects(self::once())
             ->method('createNew')
@@ -70,9 +62,6 @@ final class HttpTraceIdListenerTest extends TestCase
         $listener->onKernelRequest($this->makeRequestEvent());
     }
 
-    /**
-     * @throws InvalidRequestHeaderValueException
-     */
     public function testItDoesNothingOnSubRequest(): void
     {
         $context = $this->createMock(TraceIdContextInterface::class);
@@ -103,9 +92,6 @@ final class HttpTraceIdListenerTest extends TestCase
         $listener->onKernelRequest($this->makeRequestEvent(request: $request));
     }
 
-    /**
-     * @throws InvalidTraceIdException
-     */
     public function testItAddsResponseHeader(): void
     {
         $context = $this->createMock(TraceIdContextInterface::class);
@@ -113,7 +99,7 @@ final class HttpTraceIdListenerTest extends TestCase
         $listener = new HttpTraceIdListener($context, $factory);
 
         $traceIdValue = '01952796-03f3-793a-867c-d6159f8a329f';
-        $traceId = TraceId::fromString($traceIdValue);
+        $traceId = $this->getTraceId($traceIdValue);
 
         $context->expects(self::once())->method('get')->willReturn($traceId);
 
