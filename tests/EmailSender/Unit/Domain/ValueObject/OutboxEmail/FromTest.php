@@ -10,7 +10,7 @@ use App\Tests\Shared\Unit\Domain\ValueObject\EmailAddressTestTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class FromTest extends TestCase
+final class FromTest extends TestCase
 {
     use EmailAddressTestTrait;
 

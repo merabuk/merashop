@@ -10,7 +10,7 @@ use App\EmailSender\Domain\ValueObject\OutboxEmail\Driver;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class DriverTest extends TestCase
+final class DriverTest extends TestCase
 {
     #[DataProvider('driverEnumProvider')]
     public function testItCreatesValidDriverFromEnum(DriverEnum $enum): void

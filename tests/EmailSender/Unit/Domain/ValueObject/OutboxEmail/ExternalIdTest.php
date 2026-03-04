@@ -9,7 +9,7 @@ use App\EmailSender\Domain\ValueObject\OutboxEmail\ExternalId;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class ExternalIdTest extends TestCase
+final class ExternalIdTest extends TestCase
 {
     public function testItCreatesValidExternalId(): void
     {

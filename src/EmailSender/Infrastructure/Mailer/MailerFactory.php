@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace App\EmailSender\Infrastructure\Mailer;
 
 use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;
+use App\EmailSender\Infrastructure\Exception\MailerFactoryException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
-use Psr\Container\NotFoundExceptionInterface;
-use RuntimeException;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 
-readonly class MailerFactory
+readonly class MailerFactory implements MailerFactoryInterface
 {
     public function __construct(
         #[AutowireLocator(
@@ -23,23 +22,26 @@ readonly class MailerFactory
     }
 
     /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @throws MailerFactoryException
      */
     public function make(DriverEnum $driver): MailerInterface
     {
-        $id = $driver->value;
+        try {
+            $id = $driver->value;
 
-        if (!$this->mailers->has($id)) {
-            throw new RuntimeException(sprintf('Mailer driver "%s" not found', $driver->value));
+            if (!$this->mailers->has($id)) {
+                throw new MailerFactoryException(sprintf('Mailer driver "%s" not found', $driver->value));
+            }
+
+            $mailer = $this->mailers->get($id);
+
+            if ($mailer instanceof MailerInterface) {
+                return $mailer;
+            }
+
+            throw new MailerFactoryException(sprintf('Mailer driver "%s" is not an instance of %s', $driver->value, MailerInterface::class));
+        } catch (ContainerExceptionInterface $e) {
+            throw new MailerFactoryException(message: 'Fail to get mailer', previous: $e);
         }
-
-        $mailer = $this->mailers->get($id);
-
-        if ($mailer instanceof MailerInterface) {
-            return $mailer;
-        }
-
-        throw new RuntimeException(sprintf('Mailer driver "%s" is not an instance of %s', $driver->value, MailerInterface::class));
     }
 }

@@ -10,7 +10,7 @@ use App\EmailSender\Domain\ValueObject\OutboxEmail\Status;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class StatusTest extends TestCase
+final class StatusTest extends TestCase
 {
     #[DataProvider('statusEnumProvider')]
     public function testItCreatesValidStatusFromEnum(StatusEnum $enum): void

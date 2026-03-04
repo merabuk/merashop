@@ -18,7 +18,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Clock\MockClock;
 
-class OutboxEmailMapperTest extends KernelTestCase
+final class OutboxEmailMapperTest extends KernelTestCase
 {
     use EmailSenderEntityManagerTrait;
     use TraceIdHelperTrait;

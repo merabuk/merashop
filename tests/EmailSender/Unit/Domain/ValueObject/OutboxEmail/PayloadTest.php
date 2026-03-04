@@ -7,7 +7,7 @@ namespace App\Tests\EmailSender\Unit\Domain\ValueObject\OutboxEmail;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Payload;
 use PHPUnit\Framework\TestCase;
 
-class PayloadTest extends TestCase
+final class PayloadTest extends TestCase
 {
     public function testItCreatesValidPayload(): void
     {

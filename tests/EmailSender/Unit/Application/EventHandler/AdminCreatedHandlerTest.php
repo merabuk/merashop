@@ -9,7 +9,7 @@ use App\EmailSender\Application\Service\EmailQueueServiceInterface;
 use App\Shared\Domain\Event\AdminCreatedSharedEvent;
 use PHPUnit\Framework\TestCase;
 
-class AdminCreatedHandlerTest extends TestCase
+final class AdminCreatedHandlerTest extends TestCase
 {
     private EmailQueueServiceInterface $notificationService;
 

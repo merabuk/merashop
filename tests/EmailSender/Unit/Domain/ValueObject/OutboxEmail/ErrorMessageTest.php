@@ -9,7 +9,7 @@ use App\EmailSender\Domain\ValueObject\OutboxEmail\ErrorMessage;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class ErrorMessageTest extends TestCase
+final class ErrorMessageTest extends TestCase
 {
     public function testItCreatesValidErrorMessage(): void
     {

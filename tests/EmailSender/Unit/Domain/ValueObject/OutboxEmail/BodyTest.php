@@ -9,7 +9,7 @@ use App\EmailSender\Domain\ValueObject\OutboxEmail\Body;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class BodyTest extends TestCase
+final class BodyTest extends TestCase
 {
     public function testItCreatesValidBody(): void
     {

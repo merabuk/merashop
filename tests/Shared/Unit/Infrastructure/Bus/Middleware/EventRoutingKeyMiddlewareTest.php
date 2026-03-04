@@ -10,15 +10,11 @@ use PHPUnit\Framework\TestCase;
 use stdClass;
 use Symfony\Component\Messenger\Bridge\Amqp\Transport\AmqpStamp;
 use Symfony\Component\Messenger\Envelope;
-use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\Middleware\MiddlewareInterface;
 use Symfony\Component\Messenger\Middleware\StackInterface;
 
 final class EventRoutingKeyMiddlewareTest extends TestCase
 {
-    /**
-     * @throws ExceptionInterface
-     */
     public function testItAddsAmqpStampForAsyncMessages(): void
     {
         $middleware = new EventRoutingKeyMiddleware();
@@ -49,9 +45,6 @@ final class EventRoutingKeyMiddlewareTest extends TestCase
         $middleware->handle($envelope, $stack);
     }
 
-    /**
-     * @throws ExceptionInterface
-     */
     public function testItDoesNotAddStampForRegularMessages(): void
     {
         $middleware = new EventRoutingKeyMiddleware();

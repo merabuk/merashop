@@ -10,7 +10,7 @@ use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;
 
-class ScheduledAtTest extends TestCase
+final class ScheduledAtTest extends TestCase
 {
     use DateTimeValueObjectTrait;
 

@@ -15,7 +15,7 @@ use Symfony\Component\Clock\MockClock;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class OutboxEmailRelayServiceTest extends TestCase
+final class OutboxEmailRelayServiceTest extends TestCase
 {
     private OutboxEmailReadRepositoryInterface $readRepository;
     private MessageBusInterface $commandBus;

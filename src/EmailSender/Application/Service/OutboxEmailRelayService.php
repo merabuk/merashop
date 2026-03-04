@@ -11,7 +11,7 @@ use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-readonly class OutboxEmailRelayService
+readonly class OutboxEmailRelayService implements OutboxEmailRelayServiceInterface
 {
     public function __construct(
         private OutboxEmailReadRepositoryInterface $readRepository,

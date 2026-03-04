@@ -10,6 +10,7 @@ use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmAdminAccoun
 use App\Tests\IdentityAccess\Support\Traits\AdminAccountFactoryTrait;
 use App\Tests\IdentityAccess\Support\Traits\IdentityAccessEntityManagerTrait;
 use App\Tests\Shared\Support\Traits\EntityTechnicalMetadataTrait;
+use App\Tests\Shared\Support\Traits\ValueObjectAssertionTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class AdminAccountWriteRepositoryTest extends KernelTestCase
@@ -17,6 +18,7 @@ class AdminAccountWriteRepositoryTest extends KernelTestCase
     use AdminAccountFactoryTrait;
     use EntityTechnicalMetadataTrait;
     use IdentityAccessEntityManagerTrait;
+    use ValueObjectAssertionTrait;
 
     private AdminAccountWriteRepositoryInterface $repository;
 
@@ -39,11 +41,7 @@ class AdminAccountWriteRepositoryTest extends KernelTestCase
         self::assertTrue($admin->getPasswordHash()->equals($created->getPasswordHash()));
         self::assertTrue($admin->getRoles()->equals($created->getRoles()));
         self::assertTrue($admin->getStatus()->equals($created->getStatus()));
-        if ($admin->getPasswordChangedAt()) {
-            self::assertTrue($admin->getPasswordChangedAt()->equals($created->getPasswordChangedAt()));
-        } else {
-            self::assertNull($created->getPasswordChangedAt());
-        }
+        $this->assertVoEqualsOrNull($admin->getPasswordChangedAt(), $created->getPasswordChangedAt());
     }
 
     public function testDelete(): void

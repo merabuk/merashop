@@ -9,7 +9,7 @@ use App\EmailSender\Application\Scheduler\OutboxEmailRelayMessage;
 use App\EmailSender\Application\Service\OutboxEmailRelayServiceInterface;
 use PHPUnit\Framework\TestCase;
 
-class OutboxEmailRelayHandlerTest extends TestCase
+final class OutboxEmailRelayHandlerTest extends TestCase
 {
     private OutboxEmailRelayServiceInterface $relayService;
 

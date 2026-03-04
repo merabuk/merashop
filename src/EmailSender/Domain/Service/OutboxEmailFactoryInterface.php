@@ -4,7 +4,9 @@ namespace App\EmailSender\Domain\Service;
 
 use App\EmailSender\Domain\Entity\OutboxEmail;
 use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;
+use App\EmailSender\Domain\Enum\OutboxEmail\StatusEnum;
 use App\Shared\Domain\ValueObject\TraceId;
+use DateTimeImmutable;
 
 interface OutboxEmailFactoryInterface
 {
@@ -23,6 +25,7 @@ interface OutboxEmailFactoryInterface
      * @param array<string, mixed> $context
      */
     public function createForTest(
+        StatusEnum $status,
         DriverEnum $driver,
         string $from,
         string $fromName,
@@ -31,5 +34,9 @@ interface OutboxEmailFactoryInterface
         string $body,
         array $context,
         TraceId $traceId,
+        ?int $attempts = null,
+        ?DateTimeImmutable $scheduledAt = null,
+        ?DateTimeImmutable $lockedAt = null,
+        ?string $errorMessage = null,
     ): OutboxEmail;
 }

@@ -8,7 +8,7 @@ use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailAttemptsExcep
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Attempts;
 use PHPUnit\Framework\TestCase;
 
-class AttemptsTest extends TestCase
+final class AttemptsTest extends TestCase
 {
     public function testItCreatesValidAttempts(): void
     {

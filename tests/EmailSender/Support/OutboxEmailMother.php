@@ -7,8 +7,6 @@ namespace App\Tests\EmailSender\Support;
 use App\EmailSender\Domain\Entity\OutboxEmail;
 use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;
 use App\EmailSender\Domain\Enum\OutboxEmail\StatusEnum;
-use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectException;
-use App\EmailSender\Domain\Exception\OutboxEmailAlreadyInProcessException;
 use App\EmailSender\Domain\Service\OutboxEmailFactoryInterface;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Attempts;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Body;
@@ -26,7 +24,6 @@ use App\EmailSender\Domain\ValueObject\OutboxEmail\To;
 use App\Shared\Domain\Exception\Services\TraceIdFactoryException;
 use App\Shared\Domain\Service\TraceIdFactoryInterface;
 use App\Shared\Domain\ValueObject\TraceId;
-use DateMalformedStringException;
 use DateTimeImmutable;
 use Symfony\Component\Clock\ClockInterface;
 
@@ -48,12 +45,12 @@ final readonly class OutboxEmailMother
     }
 
     public static function makeLockedEmail(
-        ?DateTimeImmutable $now = null,
+        ?DateTimeImmutable $lockedAt = null,
         ?int $id = null,
     ): OutboxEmail {
         return self::createWithData(
             status: StatusEnum::Processing,
-            lockedAt: $now ?? new DateTimeImmutable(),
+            lockedAt: $lockedAt ?? new DateTimeImmutable(),
             id: $id
         );
     }
@@ -132,50 +129,80 @@ final readonly class OutboxEmailMother
      * @throws TraceIdFactoryException
      */
     public function createBaseEmail(
-        string $to = 'test@example.com',
-        string $subject = 'Subject',
-        string $body = 'Body',
-        array $context = [],
+        ?StatusEnum $status = null,
+        ?DriverEnum $driver = null,
+        ?string $from = null,
+        ?string $fromName = null,
+        ?string $to = null,
+        ?string $subject = null,
+        ?string $body = null,
+        ?array $context = null,
+        ?int $attempts = null,
         ?TraceId $traceId = null,
+        ?DateTimeImmutable $scheduledAt = null,
+        ?DateTimeImmutable $lockedAt = null,
+        ?string $errorMessage = null,
     ): OutboxEmail {
         return $this->outboxEmailFactory->createForTest(
-            driver: DriverEnum::Log,
-            from: 'no-reply.merashop@example.com',
-            fromName: 'MeraShop',
-            to: $to,
-            subject: $subject,
-            body: $body,
-            context: $context,
-            traceId: $traceId ?? $this->traceIdFactory->createNew()
+            status: $status ?? StatusEnum::Created,
+            driver: $driver ?? DriverEnum::Log,
+            from: $from ?? 'no-reply.merashop@example.com',
+            fromName: $fromName ?? 'MeraShop',
+            to: $to ?? 'test@example.com',
+            subject: $subject ?? 'Test subject',
+            body: $body ?? 'Test body',
+            context: $context ?? [],
+            traceId: $traceId ?? $this->traceIdFactory->createNew(),
+            attempts: $attempts,
+            scheduledAt: $scheduledAt,
+            lockedAt: $lockedAt,
+            errorMessage: $errorMessage
         );
     }
 
-    /**
-     * @throws OutboxEmailAlreadyInProcessException
-     * @throws TraceIdFactoryException
-     */
+    public function createCreatedEmail(): OutboxEmail
+    {
+        return $this->createBaseEmail(
+            status: StatusEnum::Created
+        );
+    }
+
+    public function createSentEmail(): OutboxEmail
+    {
+        return $this->createBaseEmail(
+            status: StatusEnum::Sent
+        );
+    }
+
     public function createLockedEmail(?DateTimeImmutable $lockedAt = null): OutboxEmail
     {
-        $email = $this->createBaseEmail();
-        $email->lock($lockedAt ?? $this->clock->now());
-
-        return $email;
+        return $this->createBaseEmail(
+            status: StatusEnum::Processing,
+            lockedAt: $lockedAt ?? $this->clock->now(),
+        );
     }
 
-    /**
-     * @throws InvalidEmailSenderValueObjectException
-     * @throws DateMalformedStringException
-     * @throws TraceIdFactoryException
-     */
-    public function createFailedEmail(): OutboxEmail
-    {
-        $email = $this->createBaseEmail();
-        $minutes = $email->getAttempts()->value() ** 2;
-        $email->markAsFailed(
-            error: 'Connection timeout',
-            nextAttemptAt: $this->clock->now()->modify("+{$minutes} minutes")
+    public function createFailedEmail(
+        int $attempts = 1,
+        ?string $errorMessage = null,
+        ?DateTimeImmutable $nextAttemptAt = null,
+    ): OutboxEmail {
+        return $this->createBaseEmail(
+            status: StatusEnum::Failed,
+            attempts: $attempts,
+            scheduledAt: $nextAttemptAt ?? $this->clock->now()->modify(sprintf('+%d minutes', ($attempts + 1) ** 2)),
+            errorMessage: $errorMessage ?? 'Connection timeout',
         );
+    }
 
-        return $email;
+    public function createFailedPermanentlyEmail(
+        int $attempts = 5,
+        ?string $errorMessage = null,
+    ): OutboxEmail {
+        return $this->createBaseEmail(
+            status: StatusEnum::FailedPermanently,
+            attempts: $attempts,
+            errorMessage: $errorMessage ?? 'Connection timeout',
+        );
     }
 }

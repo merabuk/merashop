@@ -9,7 +9,7 @@ use App\Tests\Shared\Unit\Domain\ValueObject\DateTimeValueObjectTrait;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
-class LockedAtTest extends TestCase
+final class LockedAtTest extends TestCase
 {
     use DateTimeValueObjectTrait;
 

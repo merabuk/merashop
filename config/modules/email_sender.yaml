@@ -31,6 +31,8 @@ services:
   App\EmailSender\Application\Service\EmailQueueServiceInterface: '@App\EmailSender\Application\Service\EmailQueueService'
   App\EmailSender\Application\Service\OutboxEmailRelayServiceInterface: '@App\EmailSender\Application\Service\OutboxEmailRelayService'
 
+  App\EmailSender\Infrastructure\Mailer\MailerFactoryInterface: '@App\EmailSender\Infrastructure\Mailer\MailerFactory'
+
   App\EmailSender\Domain\Repository\OutboxEmailReadRepositoryInterface: '@App\EmailSender\Infrastructure\Persistence\Doctrine\Repository\OutboxEmailReadRepository'
   App\EmailSender\Domain\Repository\OutboxEmailWriteRepositoryInterface: '@App\EmailSender\Infrastructure\Persistence\Doctrine\Repository\OutboxEmailWriteRepository'
   App\EmailSender\Domain\Service\MailerServiceInterface: '@App\EmailSender\Infrastructure\Service\MailerService'

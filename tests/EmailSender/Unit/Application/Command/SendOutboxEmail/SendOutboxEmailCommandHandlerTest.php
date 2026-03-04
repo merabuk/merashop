@@ -20,7 +20,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\Clock\MockClock;
 
-class SendOutboxEmailCommandHandlerTest extends TestCase
+final class SendOutboxEmailCommandHandlerTest extends TestCase
 {
     private OutboxEmailReadRepositoryInterface $readRepository;
     private OutboxEmailWriteRepositoryInterface $writeRepository;

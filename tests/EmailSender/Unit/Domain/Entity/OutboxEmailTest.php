@@ -10,7 +10,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;
 
-class OutboxEmailTest extends TestCase
+final class OutboxEmailTest extends TestCase
 {
     private MockClock $clock;
 

@@ -23,7 +23,7 @@ use Symfony\Component\Messenger\Exception\RuntimeException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\DispatchAfterCurrentBusStamp;
 
-class EmailQueueServiceTest extends TestCase
+final class EmailQueueServiceTest extends TestCase
 {
     use TraceIdHelperTrait;
 

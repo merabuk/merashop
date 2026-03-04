@@ -9,7 +9,7 @@ use App\EmailSender\Domain\ValueObject\OutboxEmail\Subject;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class SubjectTest extends TestCase
+final class SubjectTest extends TestCase
 {
     public function testItCreatesValidFromName(): void
     {

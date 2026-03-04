@@ -6,23 +6,21 @@ namespace App\EmailSender\Infrastructure\Service;
 
 use App\EmailSender\Domain\Entity\OutboxEmail;
 use App\EmailSender\Domain\Service\MailerServiceInterface;
-use App\EmailSender\Infrastructure\Mailer\MailerFactory;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
+use App\EmailSender\Infrastructure\Exception\MailerFactoryException;
+use App\EmailSender\Infrastructure\Mailer\MailerFactoryInterface;
 
 final readonly class MailerService implements MailerServiceInterface
 {
     public function __construct(
-        private MailerFactory $mailerFactory,
+        private MailerFactoryInterface $factory,
     ) {
     }
 
     /**
-     * @throws ContainerExceptionInterface
-     * @throws NotFoundExceptionInterface
+     * @throws MailerFactoryException
      */
     public function process(OutboxEmail $email): void
     {
-        $this->mailerFactory->make($email->getDriver()->value())->send($email);
+        $this->factory->make($email->getDriver()->value())->send($email);
     }
 }
