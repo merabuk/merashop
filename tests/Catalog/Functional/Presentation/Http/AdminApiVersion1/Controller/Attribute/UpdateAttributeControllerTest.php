@@ -58,7 +58,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
 
-        $updated = self::getContainer()->get(AttributeReadRepositoryInterface::class)->findById($attribute->getId());
+        $updated = $this->getReadRepository()->findById($attribute->getId());
         $this->assertSame('brand_updated', $updated->getCode()->value());
     }
 
@@ -131,6 +131,11 @@ final class UpdateAttributeControllerTest extends WebTestCase
             'payload' => ['code' => 'brand', 'type' => 'string', 'version' => -1],
             'expectedErrorFields' => ['version'],
         ];
+    }
+
+    private function getReadRepository(): AttributeReadRepositoryInterface
+    {
+        return self::getContainer()->get(AttributeReadRepositoryInterface::class);
     }
 
     private function getUrl(array $params = []): string

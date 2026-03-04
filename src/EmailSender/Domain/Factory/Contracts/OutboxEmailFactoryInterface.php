@@ -1,6 +1,6 @@
 <?php
 
-namespace App\EmailSender\Domain\Service;
+namespace App\EmailSender\Domain\Factory\Contracts;
 
 use App\EmailSender\Domain\Entity\OutboxEmail;
 use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;

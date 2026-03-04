@@ -43,11 +43,11 @@ final readonly class ClientSecretHash implements EquatableInterface, Stringable
         $hash = mb_trim($hash);
 
         if (empty($hash)) {
-            throw new InvalidModuleAccountPasswordHashException('Password hash cannot be empty');
+            throw InvalidModuleAccountPasswordHashException::becauseItIsEmpty();
         }
 
         if (self::MAX_LENGTH < mb_strlen($hash)) {
-            throw new InvalidModuleAccountPasswordHashException('Password hash is too long');
+            throw InvalidModuleAccountPasswordHashException::becauseItIsTooLong(self::MAX_LENGTH);
         }
     }
 

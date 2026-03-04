@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\IdentityAccess\Support\Traits;
 
+use App\Tests\Shared\Support\Traits\BaseEntityManagerTrait;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -12,18 +13,15 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  */
 trait IdentityAccessEntityManagerTrait
 {
+    use BaseEntityManagerTrait;
+
     protected function getIdentityAccessEntityManager(): EntityManager
     {
         return self::getContainer()->get('doctrine')->getManager('identity_access');
     }
 
-    protected function findOrmEntity(string $entityClass, int|string $id): object
+    protected function getEntityManager(): EntityManager
     {
-        return $this->getIdentityAccessEntityManager()->find($entityClass, $id);
-    }
-
-    protected function clearEntityManager(): void
-    {
-        $this->getIdentityAccessEntityManager()->clear();
+        return $this->getIdentityAccessEntityManager();
     }
 }

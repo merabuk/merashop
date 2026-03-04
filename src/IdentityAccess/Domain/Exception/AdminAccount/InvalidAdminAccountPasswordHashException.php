@@ -8,4 +8,13 @@ use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectExceptio
 
 final class InvalidAdminAccountPasswordHashException extends InvalidIdentityAccessValueObjectException
 {
+    public static function becauseItIsEmpty(): self
+    {
+        return new self('The password hash cannot be empty.');
+    }
+
+    public static function becauseItIsTooLong(int $maxLength): self
+    {
+        return new self(sprintf('The password hash cannot be longer than %d characters.', $maxLength));
+    }
 }

@@ -7,7 +7,7 @@ namespace App\Tests\EmailSender\Support;
 use App\EmailSender\Domain\Entity\OutboxEmail;
 use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;
 use App\EmailSender\Domain\Enum\OutboxEmail\StatusEnum;
-use App\EmailSender\Domain\Service\OutboxEmailFactoryInterface;
+use App\EmailSender\Domain\Factory\Contracts\OutboxEmailFactoryInterface;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Attempts;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Body;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Driver;
@@ -58,13 +58,13 @@ final readonly class OutboxEmailMother
     public static function makeFailedEmail(
         int $attempts = 1,
         ?string $errorMessage = null,
-        ?DateTimeImmutable $nextAttemptAt = null,
+        ?DateTimeImmutable $scheduledAt = null,
         ?int $id = null,
     ): OutboxEmail {
         return self::createWithData(
             status: StatusEnum::Failed,
             attempts: $attempts,
-            scheduledAt: $nextAttemptAt ?? new DateTimeImmutable(sprintf('+%d minutes', ($attempts + 1) ** 2)),
+            scheduledAt: $scheduledAt ?? new DateTimeImmutable(sprintf('+%d minutes', ($attempts + 1) ** 2)),
             errorMessage: $errorMessage ?? 'Connection timeout',
             id: $id
         );

@@ -47,9 +47,7 @@ class ModuleAccountWriteRepositoryTest extends KernelTestCase
 
         $this->repository->delete($module);
 
-        $readRepository = self::getContainer()->get(ModuleAccountReadRepositoryInterface::class);
-
-        $this->assertNull($readRepository->findById($module->getId()));
+        $this->assertNull($this->getReadRepository()->findById($module->getId()));
     }
 
     public function testItSetsTechnicalMetadataOnSave(): void
@@ -64,5 +62,10 @@ class ModuleAccountWriteRepositoryTest extends KernelTestCase
         self::assertNotNull($ormEntity);
         $this->assertHasCreatedAt($ormEntity);
         $this->assertHasUpdatedAt($ormEntity);
+    }
+
+    private function getReadRepository(): ModuleAccountReadRepositoryInterface
+    {
+        return self::getContainer()->get(ModuleAccountReadRepositoryInterface::class);
     }
 }

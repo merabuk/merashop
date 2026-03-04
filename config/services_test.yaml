@@ -12,6 +12,9 @@ services:
   App\Tests\Catalog\Support\:
     resource: '../tests/Catalog/Support/'
 
+  App\Tests\Customer\Support\:
+    resource: '../tests/Customer/Support/'
+
   App\Tests\EmailSender\Support\:
     resource: '../tests/EmailSender/Support/'
 

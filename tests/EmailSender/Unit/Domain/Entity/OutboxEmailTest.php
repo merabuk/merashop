@@ -95,7 +95,7 @@ final class OutboxEmailTest extends TestCase
         yield 'created' => [OutboxEmailMother::makeCreatedEmail(), true];
         yield 'locked' => [OutboxEmailMother::makeLockedEmail(), false];
         yield 'failed' => [OutboxEmailMother::makeFailedEmail(
-            nextAttemptAt: new DateTimeImmutable('2024-01-01 10:00:00')->modify('-1 seconds')
+            scheduledAt: new DateTimeImmutable('2024-01-01 10:00:00')->modify('-1 seconds')
         ), true];
         yield 'sent' => [OutboxEmailMother::makeSentEmail(), false];
         yield 'failedPermanently' => [OutboxEmailMother::makeFailedPermanentlyEmail(), false];

@@ -7,10 +7,10 @@ namespace App\Customer\Infrastructure\Persistence\Doctrine\Entity;
 use App\Customer\Domain\ValueObject\CustomerProfile\FirstName;
 use App\Customer\Domain\ValueObject\CustomerProfile\LastName;
 use App\Customer\Domain\ValueObject\CustomerProfile\PhoneNumber;
+use App\Shared\Infrastructure\Persistence\Doctrine\Entity\Traits\SoftDeleteableEntityTrait;
+use App\Shared\Infrastructure\Persistence\Doctrine\Entity\Traits\TimestampableEntityTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Entity]
@@ -18,8 +18,8 @@ use Symfony\Bridge\Doctrine\Types\UlidType;
 #[ORM\UniqueConstraint(name: 'uniq_customer_profiles_user_ulid', columns: ['user_ulid'])]
 class OrmCustomerProfile
 {
-    use TimestampableEntity;
-    use SoftDeleteableEntity;
+    use TimestampableEntityTrait;
+    use SoftDeleteableEntityTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]

@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Customer\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Customer\Domain\Entity\CustomerProfile;
+use App\Customer\Domain\Exception\CustomerProfile\CustomerProfileNotFoundException;
 use App\Customer\Domain\Exception\InvalidCustomerValueObjectException;
 use App\Customer\Domain\Repository\CustomerProfileReadRepositoryInterface;
+use App\Customer\Domain\ValueObject\CustomerProfile\Id;
 use App\Customer\Infrastructure\Persistence\Doctrine\Entity\OrmCustomerProfile;
 use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
-use App\Shared\Domain\Exception\ValueObject\InvalidUlidException;
 use App\Shared\Domain\ValueObject\Ulid;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\ReadRepositoryTrait;
 use Symfony\Bridge\Doctrine\Types\UlidType;
@@ -22,20 +23,29 @@ class CustomerProfileReadRepository extends BaseCustomerProfileRepository implem
 
     /**
      * @throws EntityIdMissingException
-     * @throws InvalidUlidException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCustomerValueObjectException
      */
-    public function findById(int $id): ?CustomerProfile
+    public function findById(Id $id): ?CustomerProfile
     {
-        $ormUser = $this->find($id);
+        $ormUser = $this->find($id->value());
 
         return $this->checkAndMapToDomain($ormUser);
     }
 
     /**
+     * @throws CustomerProfileNotFoundException
      * @throws EntityIdMissingException
-     * @throws InvalidUlidException
+     * @throws IncompatibleMappedEntityException
+     * @throws InvalidCustomerValueObjectException
+     */
+    public function getByUlid(Ulid $ulid): CustomerProfile
+    {
+        return $this->findByUlid($ulid) ?? throw new CustomerProfileNotFoundException();
+    }
+
+    /**
+     * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCustomerValueObjectException
      */
@@ -55,7 +65,6 @@ class CustomerProfileReadRepository extends BaseCustomerProfileRepository implem
 
     /**
      * @throws EntityIdMissingException
-     * @throws InvalidUlidException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCustomerValueObjectException
      */

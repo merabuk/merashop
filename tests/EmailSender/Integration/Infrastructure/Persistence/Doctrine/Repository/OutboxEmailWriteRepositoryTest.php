@@ -58,9 +58,7 @@ final class OutboxEmailWriteRepositoryTest extends KernelTestCase
 
         $this->repository->delete($email);
 
-        $readRepository = self::getContainer()->get(OutboxEmailReadRepositoryInterface::class);
-
-        self::assertNull($readRepository->findById($email->getId()));
+        self::assertNull($this->getReadRepository()->findById($email->getId()));
     }
 
     public function testItSetsTechnicalMetadataOnSave(): void
@@ -75,5 +73,10 @@ final class OutboxEmailWriteRepositoryTest extends KernelTestCase
         self::assertNotNull($ormEntity);
         $this->assertHasCreatedAt($ormEntity);
         $this->assertHasUpdatedAt($ormEntity);
+    }
+
+    private function getReadRepository(): OutboxEmailReadRepositoryInterface
+    {
+        return self::getContainer()->get(OutboxEmailReadRepositoryInterface::class);
     }
 }

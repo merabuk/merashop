@@ -9,9 +9,9 @@ use App\Customer\Domain\Entity\CustomerProfile;
 use App\Customer\Domain\Repository\CustomerProfileWriteRepositoryInterface;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
-use App\Shared\Domain\Exception\ValueObject\InvalidUlidException;
 use App\Shared\Domain\ValueObject\Ulid;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Throwable;
 
 #[AsMessageHandler(bus: BusNameEnum::Command->value)]
 readonly class CreateCustomerProfileHandler implements CommandHandlerInterface
@@ -30,8 +30,8 @@ readonly class CreateCustomerProfileHandler implements CommandHandlerInterface
             $customerProfile = CustomerProfile::create(userUlid: Ulid::fromString($command->userUlid));
 
             $this->writeRepository->save($customerProfile);
-        } catch (InvalidUlidException $e) {
-            throw new CreateCustomerProfileException('Error while creating customer profile', previous: $e);
+        } catch (Throwable $e) {
+            throw new CreateCustomerProfileException(message: 'Error while creating customer profile', previous: $e);
         }
     }
 }

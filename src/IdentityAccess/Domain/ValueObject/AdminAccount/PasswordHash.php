@@ -43,11 +43,11 @@ final readonly class PasswordHash implements EquatableInterface, Stringable
     private function ensureIsValidHash(string $hash): void
     {
         if (empty($hash)) {
-            throw new InvalidAdminAccountPasswordHashException('Password hash cannot be empty');
+            throw InvalidAdminAccountPasswordHashException::becauseItIsEmpty();
         }
 
         if (self::MAX_LENGTH < mb_strlen($hash)) {
-            throw new InvalidAdminAccountPasswordHashException('Password hash is too long');
+            throw InvalidAdminAccountPasswordHashException::becauseItIsTooLong(self::MAX_LENGTH);
         }
     }
 

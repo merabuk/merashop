@@ -33,7 +33,8 @@ services:
 
   App\EmailSender\Infrastructure\Mailer\MailerFactoryInterface: '@App\EmailSender\Infrastructure\Mailer\MailerFactory'
 
+  App\EmailSender\Domain\Factory\Contracts\OutboxEmailFactoryInterface: '@App\EmailSender\Infrastructure\Service\OutboxEmailFactory'
+  App\EmailSender\Domain\Service\MailerServiceInterface: '@App\EmailSender\Infrastructure\Service\MailerService'
+
   App\EmailSender\Domain\Repository\OutboxEmailReadRepositoryInterface: '@App\EmailSender\Infrastructure\Persistence\Doctrine\Repository\OutboxEmailReadRepository'
   App\EmailSender\Domain\Repository\OutboxEmailWriteRepositoryInterface: '@App\EmailSender\Infrastructure\Persistence\Doctrine\Repository\OutboxEmailWriteRepository'
-  App\EmailSender\Domain\Service\MailerServiceInterface: '@App\EmailSender\Infrastructure\Service\MailerService'
-  App\EmailSender\Domain\Service\OutboxEmailFactoryInterface: '@App\EmailSender\Infrastructure\Service\OutboxEmailFactory'

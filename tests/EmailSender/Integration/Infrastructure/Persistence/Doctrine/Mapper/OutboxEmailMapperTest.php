@@ -67,15 +67,15 @@ final class OutboxEmailMapperTest extends KernelTestCase
         $restoredDomain = $this->mapper->fromDoctrineOrm($loadedOrm);
 
         self::assertSame($generatedId, $restoredDomain->getId()?->value());
-        self::assertTrue($restoredDomain->getStatus()->equals($domainOutboxEmail->getStatus()));
-        self::assertTrue($restoredDomain->getDriver()->equals($domainOutboxEmail->getDriver()));
-        self::assertTrue($restoredDomain->getFrom()->equals($domainOutboxEmail->getFrom()));
-        self::assertTrue($restoredDomain->getFromName()->equals($domainOutboxEmail->getFromName()));
-        self::assertTrue($restoredDomain->getTo()->equals($domainOutboxEmail->getTo()));
-        self::assertTrue($restoredDomain->getSubject()->equals($domainOutboxEmail->getSubject()));
-        self::assertTrue($restoredDomain->getBody()->equals($domainOutboxEmail->getBody()));
+        self::assertTrue($domainOutboxEmail->getStatus()->equals($restoredDomain->getStatus()));
+        self::assertTrue($domainOutboxEmail->getDriver()->equals($restoredDomain->getDriver()));
+        self::assertTrue($domainOutboxEmail->getFrom()->equals($restoredDomain->getFrom()));
+        self::assertTrue($domainOutboxEmail->getFromName()->equals($restoredDomain->getFromName()));
+        self::assertTrue($domainOutboxEmail->getTo()->equals($restoredDomain->getTo()));
+        self::assertTrue($domainOutboxEmail->getSubject()->equals($restoredDomain->getSubject()));
+        self::assertTrue($domainOutboxEmail->getBody()->equals($restoredDomain->getBody()));
         $this->assertVoEqualsOrNull($domainOutboxEmail->getPayload(), $restoredDomain->getPayload());
-        self::assertTrue($restoredDomain->getAttempts()->equals($domainOutboxEmail->getAttempts()));
+        self::assertTrue($domainOutboxEmail->getAttempts()->equals($restoredDomain->getAttempts()));
         $this->assertVoEqualsOrNull($domainOutboxEmail->getTraceId(), $restoredDomain->getTraceId());
         $this->assertVoEqualsOrNull($domainOutboxEmail->getScheduledAt(), $restoredDomain->getScheduledAt());
         $this->assertVoEqualsOrNull($domainOutboxEmail->getLockedAt(), $restoredDomain->getLockedAt());
@@ -86,25 +86,15 @@ final class OutboxEmailMapperTest extends KernelTestCase
     {
         $clock = new MockClock('2024-01-01 10:00:00');
 
-        yield 'State: Created (clean)' => [
-            OutboxEmailMother::createWithData(status: StatusEnum::Created),
-        ];
+        yield 'State: Created (clean)' => [OutboxEmailMother::makeCreatedEmail()];
 
-        yield 'State: Failed (with error and schedule)' => [
-            OutboxEmailMother::createWithData(
-                status: StatusEnum::Failed,
-                attempts: 3,
-                scheduledAt: $clock->now()->modify('+1 hour'),
-                errorMessage: 'Connection timeout'
-            ),
-        ];
+        yield 'State: Failed (with error and schedule)' => [OutboxEmailMother::makeFailedEmail(
+            attempts: 3,
+            errorMessage: 'Connection timeout',
+            scheduledAt: $clock->now()->modify('+1 hour'),
+        )];
 
-        yield 'State: Processing (locked)' => [
-            OutboxEmailMother::createWithData(
-                status: StatusEnum::Processing,
-                lockedAt: $clock->now()
-            ),
-        ];
+        yield 'State: Processing (locked)' => [OutboxEmailMother::makeLockedEmail(lockedAt: $clock->now())];
     }
 
     public function testItUpdatesExistingOrmEntity(): void

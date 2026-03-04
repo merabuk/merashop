@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\EmailSender\Support\Traits;
 
+use App\Tests\Shared\Support\Traits\BaseEntityManagerTrait;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -12,18 +13,15 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  */
 trait EmailSenderEntityManagerTrait
 {
+    use BaseEntityManagerTrait;
+
     protected function getEmailSenderEntityManager(): EntityManager
     {
         return self::getContainer()->get('doctrine')->getManager('email_sender');
     }
 
-    protected function findOrmEntity(string $entityClass, int|string $id): object
+    protected function getEntityManager(): EntityManager
     {
-        return $this->getEmailSenderEntityManager()->find($entityClass, $id);
-    }
-
-    protected function clearEntityManager(): void
-    {
-        $this->getEmailSenderEntityManager()->clear();
+        return $this->getEmailSenderEntityManager();
     }
 }

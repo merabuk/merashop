@@ -1,5 +1,7 @@
 parameters:
 
 services:
+  App\Customer\Domain\Factory\Contracts\CustomerProfileFactoryInterface: '@App\Customer\Domain\Factory\CustomerProfileFactory'
+
   App\Customer\Domain\Repository\CustomerProfileReadRepositoryInterface: '@App\Customer\Infrastructure\Persistence\Doctrine\Repository\CustomerProfileReadRepository'
   App\Customer\Domain\Repository\CustomerProfileWriteRepositoryInterface: '@App\Customer\Infrastructure\Persistence\Doctrine\Repository\CustomerProfileWriteRepository'

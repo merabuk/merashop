@@ -4,9 +4,9 @@ namespace App\EmailSender\Application\Service;
 
 use App\EmailSender\Application\Command\SendOutboxEmail\SendOutboxEmailCommand;
 use App\EmailSender\Application\Service\ContentProvider\EmailContentProviderInterface;
+use App\EmailSender\Domain\Factory\Contracts\OutboxEmailFactoryInterface;
 use App\EmailSender\Domain\Repository\OutboxEmailReadRepositoryInterface;
 use App\EmailSender\Domain\Repository\OutboxEmailWriteRepositoryInterface;
-use App\EmailSender\Domain\Service\OutboxEmailFactoryInterface;
 use App\Shared\Domain\Service\TraceIdContextInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;

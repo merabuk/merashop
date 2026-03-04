@@ -10,11 +10,10 @@ use App\Customer\Domain\ValueObject\CustomerProfile\FirstName;
 use App\Customer\Domain\ValueObject\CustomerProfile\Id;
 use App\Customer\Domain\ValueObject\CustomerProfile\LastName;
 use App\Customer\Domain\ValueObject\CustomerProfile\PhoneNumber;
+use App\Customer\Domain\ValueObject\CustomerProfile\Ulid;
 use App\Customer\Infrastructure\Persistence\Doctrine\Entity\OrmCustomerProfile;
 use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
-use App\Shared\Domain\Exception\ValueObject\InvalidUlidException;
-use App\Shared\Domain\ValueObject\Ulid;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\MapperInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
 
@@ -48,7 +47,6 @@ class CustomerProfileMapper implements MapperInterface
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCustomerValueObjectException
-     * @throws InvalidUlidException
      */
     public function fromDoctrineOrm(object $orm): CustomerProfile
     {

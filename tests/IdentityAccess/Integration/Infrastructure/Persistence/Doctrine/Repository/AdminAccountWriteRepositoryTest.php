@@ -51,9 +51,7 @@ class AdminAccountWriteRepositoryTest extends KernelTestCase
 
         $this->repository->delete($admin);
 
-        $readRepository = self::getContainer()->get(AdminAccountReadRepositoryInterface::class);
-
-        self::assertNull($readRepository->findByUlid($admin->getUlid()));
+        self::assertNull($this->getReadRepository()->findByUlid($admin->getUlid()));
     }
 
     public function testItSetsTechnicalMetadataOnSave(): void
@@ -68,5 +66,10 @@ class AdminAccountWriteRepositoryTest extends KernelTestCase
         self::assertNotNull($ormEntity);
         $this->assertHasCreatedAt($ormEntity);
         $this->assertHasUpdatedAt($ormEntity);
+    }
+
+    private function getReadRepository(): AdminAccountReadRepositoryInterface
+    {
+        return self::getContainer()->get(AdminAccountReadRepositoryInterface::class);
     }
 }

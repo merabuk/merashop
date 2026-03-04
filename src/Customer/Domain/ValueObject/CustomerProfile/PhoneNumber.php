@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Customer\Domain\ValueObject\CustomerProfile;
 
 use App\Customer\Domain\Exception\CustomerProfile\InvalidCustomerProfilePhoneNumberException;
+use App\Shared\Domain\Exception\InvalidPhoneNumberException;
+use App\Shared\Domain\Service\PhoneNumberValidator;
 use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
@@ -22,17 +24,11 @@ final readonly class PhoneNumber implements EquatableInterface, Stringable
      */
     public function __construct(string $phoneNumber)
     {
-        $trimmed = mb_trim($phoneNumber);
-
-        if (empty($trimmed)) {
-            throw new InvalidCustomerProfilePhoneNumberException('Phone number cannot be empty');
+        try {
+            $this->phoneNumber = PhoneNumberValidator::validate($phoneNumber, self::MAX_LENGTH);
+        } catch (InvalidPhoneNumberException $e) {
+            throw InvalidCustomerProfilePhoneNumberException::fromBase($e);
         }
-
-        if (self::MAX_LENGTH < mb_strlen($trimmed)) {
-            throw new InvalidCustomerProfilePhoneNumberException(sprintf('Phone number must be at most %d characters long', self::MAX_LENGTH));
-        }
-
-        $this->phoneNumber = $trimmed;
     }
 
     public function value(): string

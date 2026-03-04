@@ -85,7 +85,7 @@ final class SendOutboxEmailCommandHandlerTest extends TestCase
         $attempts = 1;
         $email = OutboxEmailMother::makeFailedEmail(
             attempts: $attempts,
-            nextAttemptAt: $clock->now()->modify('-1 seconds'),
+            scheduledAt: $clock->now()->modify('-1 seconds'),
             id: $fakeId
         );
 
@@ -126,7 +126,7 @@ final class SendOutboxEmailCommandHandlerTest extends TestCase
 
         $email = OutboxEmailMother::makeFailedEmail(
             attempts: $this->retryPolicy->getMaxAttempts() - 1,
-            nextAttemptAt: $clock->now()->modify('-1 seconds'),
+            scheduledAt: $clock->now()->modify('-1 seconds'),
             id: $fakeId
         );
 
@@ -187,7 +187,7 @@ final class SendOutboxEmailCommandHandlerTest extends TestCase
         yield 'already sent' => [OutboxEmailMother::makeSentEmail()];
         yield 'already locker' => [OutboxEmailMother::makeLockedEmail()];
         yield 'delay time not reached' => [OutboxEmailMother::makeFailedEmail(
-            nextAttemptAt: new DateTimeImmutable('2024-01-01 10:00:00')->modify('+1 minutes')
+            scheduledAt: new DateTimeImmutable('2024-01-01 10:00:00')->modify('+1 minutes')
         )];
     }
 

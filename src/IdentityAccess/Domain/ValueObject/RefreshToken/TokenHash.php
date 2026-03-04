@@ -48,11 +48,11 @@ final readonly class TokenHash implements EquatableInterface, Stringable
         $hash = mb_trim($hash);
 
         if (empty($hash)) {
-            throw InvalidRefreshTokenTokenHashException::fromEmptyTokenHash();
+            throw InvalidRefreshTokenTokenHashException::becauseItEmpty();
         }
 
         if (self::MAX_LENGTH < mb_strlen($hash)) {
-            throw new InvalidRefreshTokenTokenHashException('Token hash is too long');
+            throw InvalidRefreshTokenTokenHashException::becauseItIsTooLong(self::MAX_LENGTH);
         }
     }
 

@@ -47,9 +47,7 @@ class UserAccountWriteRepositoryTest extends KernelTestCase
 
         $this->repository->delete($user);
 
-        $readRepository = self::getContainer()->get(UserAccountReadRepositoryInterface::class);
-
-        $this->assertNull($readRepository->findById($user->getId()));
+        self::assertNull($this->getReadRepository()->findById($user->getId()));
     }
 
     public function testItSetsTechnicalMetadataOnSave(): void
@@ -64,5 +62,10 @@ class UserAccountWriteRepositoryTest extends KernelTestCase
         self::assertNotNull($ormEntity);
         $this->assertHasCreatedAt($ormEntity);
         $this->assertHasUpdatedAt($ormEntity);
+    }
+
+    private function getReadRepository(): UserAccountReadRepositoryInterface
+    {
+        return self::getContainer()->get(UserAccountReadRepositoryInterface::class);
     }
 }

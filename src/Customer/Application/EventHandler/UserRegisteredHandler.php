@@ -18,12 +18,12 @@ use Symfony\Component\Messenger\Exception\ExceptionInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 #[AsMessageHandler(bus: BusNameEnum::Event->value, fromTransport: TransportNameEnum::CustomerExternal->value)]
-class UserRegisteredHandler implements EventHandlerInterface
+readonly class UserRegisteredHandler implements EventHandlerInterface
 {
     public function __construct(
-        private readonly CustomerProfileReadRepositoryInterface $readRepository,
-        private readonly LoggerInterface $logger,
-        private readonly MessageBusInterface $commandBus,
+        private CustomerProfileReadRepositoryInterface $readRepository,
+        private LoggerInterface $logger,
+        private MessageBusInterface $commandBus,
     ) {
     }
 
