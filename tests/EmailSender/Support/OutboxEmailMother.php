@@ -7,7 +7,7 @@ namespace App\Tests\EmailSender\Support;
 use App\EmailSender\Domain\Entity\OutboxEmail;
 use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;
 use App\EmailSender\Domain\Enum\OutboxEmail\StatusEnum;
-use App\EmailSender\Domain\Factory\Contracts\OutboxEmailFactoryInterface;
+use App\EmailSender\Domain\Factory\Contract\OutboxEmailFactoryInterface;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Attempts;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Body;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Driver;

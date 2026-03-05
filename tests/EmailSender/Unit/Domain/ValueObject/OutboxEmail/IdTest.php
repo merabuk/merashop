@@ -6,7 +6,7 @@ namespace App\Tests\EmailSender\Unit\Domain\ValueObject\OutboxEmail;
 
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailIdException;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Id;
-use App\Tests\Shared\Unit\Domain\ValueObject\IntegerIdTestTrait;
+use App\Tests\Shared\Unit\Domain\ValueObject\Traits\IntegerIdTestTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Catalog\Application\Command\UpdateAttribute;
 
 use App\Catalog\Application\Exception\Attribute\UpdateAttributeException;
+use App\Catalog\Domain\Exception\Attribute\AttributeAlreadyExistsException;
 use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
@@ -29,6 +30,7 @@ readonly class UpdateAttributeHandler implements CommandHandlerInterface
     }
 
     /**
+     * @throws AttributeAlreadyExistsException
      * @throws AttributeNotFoundException
      * @throws UpdateAttributeException
      * @throws ConcurrencyException
@@ -42,15 +44,21 @@ readonly class UpdateAttributeHandler implements CommandHandlerInterface
                 throw new ConcurrencyException();
             }
 
+            $newCode = Code::fromString($command->code);
+
+            if (!$attribute->getCode()->equals($newCode) && $this->readRepository->existsByCode($newCode)) {
+                throw new AttributeAlreadyExistsException();
+            }
+
             $attribute->update(
-                code: Code::fromString($command->code),
+                code: $newCode,
                 type: Type::fromString($command->type),
                 translations: Translations::fromArray($command->translations),
                 updatedBy: AdminUlid::fromString($command->adminUlid),
             );
 
             $this->writeRepository->save($attribute);
-        } catch (AttributeNotFoundException|ConcurrencyException $e) {
+        } catch (AttributeAlreadyExistsException|AttributeNotFoundException|ConcurrencyException $e) {
             throw $e;
         } catch (Throwable $e) {
             throw new UpdateAttributeException(message: 'Error during updating attribute', previous: $e);

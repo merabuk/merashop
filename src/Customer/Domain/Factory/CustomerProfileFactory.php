@@ -9,7 +9,7 @@ use App\Customer\Domain\Exception\CustomerProfile\InvalidCustomerProfileFirstNam
 use App\Customer\Domain\Exception\CustomerProfile\InvalidCustomerProfileLastNameException;
 use App\Customer\Domain\Exception\CustomerProfile\InvalidCustomerProfilePhoneNumberException;
 use App\Customer\Domain\Exception\CustomerProfile\InvalidCustomerProfileUlidException;
-use App\Customer\Domain\Factory\Contracts\CustomerProfileFactoryInterface;
+use App\Customer\Domain\Factory\Contract\CustomerProfileFactoryInterface;
 use App\Customer\Domain\ValueObject\CustomerProfile\FirstName;
 use App\Customer\Domain\ValueObject\CustomerProfile\LastName;
 use App\Customer\Domain\ValueObject\CustomerProfile\PhoneNumber;

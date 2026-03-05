@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Shared\Unit\Domain\ValueObject;
+namespace App\Tests\Shared\Unit\Domain\ValueObject\Traits;
 
 use App\Shared\Domain\ValueObject\EquatableInterface;
 use BackedEnum;

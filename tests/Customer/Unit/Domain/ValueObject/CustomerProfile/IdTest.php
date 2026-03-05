@@ -6,7 +6,7 @@ namespace App\Tests\Customer\Unit\Domain\ValueObject\CustomerProfile;
 
 use App\Customer\Domain\Exception\CustomerProfile\InvalidCustomerProfileIdException;
 use App\Customer\Domain\ValueObject\CustomerProfile\Id;
-use App\Tests\Shared\Unit\Domain\ValueObject\IntegerIdTestTrait;
+use App\Tests\Shared\Unit\Domain\ValueObject\Traits\IntegerIdTestTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

@@ -33,13 +33,18 @@ class AttributeMapper implements MapperInterface
      */
     public function toDoctrineOrm(object $domain): OrmAttribute
     {
+        $this->assertIsType(Attribute::class, $domain);
+        /** @var Attribute $domain */
         $orm = new OrmAttribute();
 
         $orm->ulid = $domain->getUlid()->value();
+        $orm->code = $domain->getCode()->value();
+        $orm->type = $domain->getType()->value();
         $orm->version = $domain->getVersion()->value();
         $orm->createdBy = $domain->getCreatedBy()->value();
+        $orm->updatedBy = $domain->getUpdatedBy()?->value();
 
-        $this->mapToExistingOrm($domain, $orm);
+        $this->mapTranslations($domain, $orm);
 
         return $orm;
     }

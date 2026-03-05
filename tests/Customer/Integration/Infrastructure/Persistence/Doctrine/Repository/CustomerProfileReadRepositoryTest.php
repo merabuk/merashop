@@ -41,7 +41,7 @@ final class CustomerProfileReadRepositoryTest extends KernelTestCase
         $this->assertVoEqualsOrNull($customerProfile->getPhoneNumber(), $found->getPhoneNumber());
     }
 
-    public function testGetByUlidThrowsException(): void
+    public function testGetByUlidThrowsExceptionWhenNotFound(): void
     {
         $this->expectException(CustomerProfileNotFoundException::class);
 

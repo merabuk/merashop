@@ -16,11 +16,15 @@ use App\Shared\Domain\Criteria\Listing\Criteria;
 use App\Shared\Domain\Criteria\Paging\Cursor;
 use App\Shared\Domain\Criteria\Sorting\Sort;
 use App\Tests\Catalog\Support\Traits\AttributeFactoryTrait;
+use App\Tests\Catalog\Support\Traits\CatalogEntityManagerTrait;
+use App\Tests\Shared\Support\Traits\ValueObjectAssertionTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 final class AttributeReadRepositoryTest extends KernelTestCase
 {
     use AttributeFactoryTrait;
+    use CatalogEntityManagerTrait;
+    use ValueObjectAssertionTrait;
 
     private AttributeReadRepositoryInterface $repository;
 
@@ -30,17 +34,25 @@ final class AttributeReadRepositoryTest extends KernelTestCase
         $this->repository = self::getContainer()->get(AttributeReadRepositoryInterface::class);
     }
 
-    public function testFindByIdSuccess(): void
+    public function testFindById(): void
     {
         $attribute = $this->getAttributeFixture()->create();
-        $id = $attribute->getId();
+        $this->clearEntityManager();
 
-        $found = $this->repository->findById($id);
+        $found = $this->repository->findById($attribute->getId());
 
         self::assertNotNull($found);
-        self::assertSame($attribute->getUlid()->value(), $found->getUlid()->value());
-        self::assertSame($attribute->getCode()->value(), $found->getCode()->value());
-        self::assertCount(count($attribute->getTranslations()->toArray()), $found->getTranslations()->toArray());
+        self::assertTrue($attribute->getUlid()->equals($found->getUlid()));
+        self::assertTrue($attribute->getCode()->equals($found->getCode()));
+        self::assertTrue($attribute->getType()->equals($found->getType()));
+        self::assertCount($attribute->getTranslations()->count(), $found->getTranslations());
+        foreach ($attribute->getTranslations() as $locale => $translation) {
+            $foundTranslation = $found->getTranslations()->get($locale);
+            self::assertNotNull($foundTranslation);
+            self::assertSame($translation->name, $foundTranslation->name);
+        }
+        self::assertTrue($attribute->getCreatedBy()->equals($found->getCreatedBy()));
+        $this->assertVoEqualsOrNull($attribute->getUpdatedBy(), $found->getUpdatedBy());
     }
 
     /**
@@ -50,15 +62,15 @@ final class AttributeReadRepositoryTest extends KernelTestCase
     {
         $this->expectException(AttributeNotFoundException::class);
 
-        $this->repository->getById(Id::fromInt(999999));
+        $this->repository->getById(Id::fromInt(1));
     }
 
     public function testFindByUlid(): void
     {
         $attribute = $this->getAttributeFixture()->create();
-        $ulid = $attribute->getUlid();
+        $this->clearEntityManager();
 
-        $found = $this->repository->findByUlid($ulid);
+        $found = $this->repository->findByUlid($attribute->getUlid());
 
         self::assertNotNull($found);
         self::assertSame($attribute->getId()->value(), $found->getId()->value());
@@ -81,7 +93,7 @@ final class AttributeReadRepositoryTest extends KernelTestCase
     /**
      * @throws OneOfAttributesNotFoundException
      */
-    public function testAssertAllExistByIdsSuccess(): void
+    public function testAssertAllExistByIds(): void
     {
         $attr1 = $this->getAttributeFixture()->create();
         $attr2 = $this->getAttributeFixture()->create();
@@ -96,7 +108,7 @@ final class AttributeReadRepositoryTest extends KernelTestCase
     public function testAssertAllExistByIdsThrowsExceptionOnFailure(): void
     {
         $attr1 = $this->getAttributeFixture()->create();
-        $invalidId = Id::fromInt(999999);
+        $invalidId = Id::fromInt(1);
 
         $this->expectException(OneOfAttributesNotFoundException::class);
 

@@ -51,7 +51,7 @@ final class Type implements EquatableInterface, Stringable
      */
     public static function fromString(string $type): self
     {
-        $enum = TypeEnum::tryFrom($type);
+        $enum = TypeEnum::tryFrom(mb_trim($type));
 
         if (null === $enum) {
             throw InvalidAttributeTypeException::becauseItIsNotAValidType(invalidValue: $type, availableValues: TypeEnum::getValues());

@@ -35,7 +35,8 @@ Every module within `src/` must follow this standardized structure:
     - `Enum` - common enumerations
     - `Event` - domain events.
     - `Exception` - domain exceptions and marker-interfaces.
-    - `Factory` - domain factories.
+    - `Factory` - domain factories (simple implementations without external dependencies).
+        - `Contract` - domain factories contracts.
     - `Repository` - interfaces (definitions only).
     - `Service` - domain services (simple implementations without external dependencies, interfaces).
     - `ValueObject` - value objects (primitives).

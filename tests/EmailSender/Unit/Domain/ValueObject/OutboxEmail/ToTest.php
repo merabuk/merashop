@@ -6,7 +6,7 @@ namespace App\Tests\EmailSender\Unit\Domain\ValueObject\OutboxEmail;
 
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailToException;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\To;
-use App\Tests\Shared\Unit\Domain\ValueObject\EmailAddressTestTrait;
+use App\Tests\Shared\Unit\Domain\ValueObject\Traits\EmailAddressTestTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

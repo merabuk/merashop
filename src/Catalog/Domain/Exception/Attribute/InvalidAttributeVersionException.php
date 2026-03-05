@@ -8,7 +8,7 @@ use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 
 final class InvalidAttributeVersionException extends InvalidCatalogValueObjectException
 {
-    public static function becauseItIsNotAValidId(): self
+    public static function becauseItIsNotAValidVersion(): self
     {
         return new self('Attribute version must be a positive integer');
     }

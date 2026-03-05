@@ -6,7 +6,7 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject;
 
 use App\IdentityAccess\Domain\ValueObject\Role;
 use App\IdentityAccess\Domain\ValueObject\RoleCollection;
-use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
+use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\TestCase;
 use Traversable;
 

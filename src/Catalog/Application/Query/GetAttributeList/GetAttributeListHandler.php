@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Catalog\Application\Query\GetAttributeList;
 
+use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Query\QueryHandlerInterface;
@@ -18,6 +19,9 @@ readonly class GetAttributeListHandler implements QueryHandlerInterface
     ) {
     }
 
+    /**
+     * @return PaginatedResult<Attribute>
+     */
     public function __invoke(GetAttributeListQuery $query): PaginatedResult
     {
         return $this->readRepository->paginate($query->criteria);

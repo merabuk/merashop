@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Customer\Domain\Factory\Contracts;
+namespace App\Customer\Domain\Factory\Contract;
 
 use App\Customer\Domain\Entity\CustomerProfile;
 

@@ -7,7 +7,6 @@ namespace App\Catalog\Application\Command\CreateAttribute;
 use App\Catalog\Application\Exception\Attribute\CreateAttributeException;
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Exception\Attribute\AttributeAlreadyExistsException;
-use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
 use App\Catalog\Domain\ValueObject\AdminUlid;
@@ -17,9 +16,9 @@ use App\Catalog\Domain\ValueObject\Attribute\Type;
 use App\Catalog\Domain\ValueObject\Attribute\Ulid;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
-use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Domain\Service\UlidGeneratorInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Throwable;
 
 #[AsMessageHandler(bus: BusNameEnum::Command->value)]
 readonly class CreateAttributeHandler implements CommandHandlerInterface
@@ -57,7 +56,9 @@ readonly class CreateAttributeHandler implements CommandHandlerInterface
             $attribute = $this->writeRepository->save($attribute);
 
             return $attribute->getId()->value();
-        } catch (InvalidCatalogValueObjectException|InvalidLocaleException $e) {
+        } catch (AttributeAlreadyExistsException $e) {
+            throw $e;
+        } catch (Throwable $e) {
             throw new CreateAttributeException(message: 'Error during creating attribute', previous: $e);
         }
     }

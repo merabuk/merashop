@@ -11,7 +11,7 @@ use App\Catalog\Domain\Exception\Attribute\InvalidAttributeNameException;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeUlidException;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeVersionException;
 use App\Catalog\Domain\Exception\InvalidAdminUlidException;
-use App\Catalog\Domain\Service\AttributeFactoryInterface;
+use App\Catalog\Domain\Factory\Contract\AttributeFactoryInterface;
 use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Translations;

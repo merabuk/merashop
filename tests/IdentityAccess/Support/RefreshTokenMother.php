@@ -6,7 +6,7 @@ namespace App\Tests\IdentityAccess\Support;
 
 use App\IdentityAccess\Domain\Entity\RefreshToken;
 use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
-use App\IdentityAccess\Domain\Factory\Contracts\RefreshTokenFactoryInterface;
+use App\IdentityAccess\Domain\Factory\Contract\RefreshTokenFactoryInterface;
 use App\IdentityAccess\Domain\Service\TokenHasherInterface;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\AccountType;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\AccountUlid;

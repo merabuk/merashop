@@ -6,7 +6,7 @@ namespace App\Tests\Catalog\Support;
 
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
-use App\Catalog\Domain\Service\AttributeFactoryInterface;
+use App\Catalog\Domain\Factory\Contract\AttributeFactoryInterface;
 use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Id;
@@ -21,6 +21,8 @@ use Faker\Generator;
 
 final readonly class AttributeMother
 {
+    public const string DEFAULT_ULID = '01KHVRCA0FCCYAQT1P88R317DD';
+
     public function __construct(
         private AttributeFactoryInterface $attributeFactory,
         private UlidGeneratorInterface $ulidGenerator,
@@ -46,7 +48,7 @@ final readonly class AttributeMother
     ): Attribute {
         return new Attribute(
             id: $id ? Id::fromInt($id) : null,
-            ulid: Ulid::fromString($ulid ?? '01KHVRCA0FCCYAQT1P88R317DD'),
+            ulid: Ulid::fromString($ulid ?? self::DEFAULT_ULID),
             code: Code::fromString($code ?? 'test-code'),
             type: $type ? Type::fromEnum($type) : Type::string(),
             translations: $translations

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Catalog\Unit\Domain\ValueObject\Attribute;
 
 use App\Catalog\Domain\ValueObject\Attribute\Code;
-use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
+use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

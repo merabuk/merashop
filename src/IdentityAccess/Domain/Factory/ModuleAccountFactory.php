@@ -9,7 +9,7 @@ use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountClient
 use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountPasswordHashException;
 use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountUlidException;
 use App\IdentityAccess\Domain\Exception\ValueObject\InvalidScopeException;
-use App\IdentityAccess\Domain\Factory\Contracts\ModuleAccountFactoryInterface;
+use App\IdentityAccess\Domain\Factory\Contract\ModuleAccountFactoryInterface;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientId;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientSecretHash;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Ulid;

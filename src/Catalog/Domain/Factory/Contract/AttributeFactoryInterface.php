@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Catalog\Domain\Service;
+namespace App\Catalog\Domain\Factory\Contract;
 
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;

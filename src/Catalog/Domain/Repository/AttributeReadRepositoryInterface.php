@@ -33,5 +33,8 @@ interface AttributeReadRepositoryInterface
      */
     public function assertAllExistByIds(array $ids): void;
 
+    /**
+     * @return PaginatedResult<Attribute>
+     */
     public function paginate(Criteria $criteria): PaginatedResult;
 }

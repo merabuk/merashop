@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\EmailSender\Unit\Domain\ValueObject\OutboxEmail;
 
 use App\EmailSender\Domain\ValueObject\OutboxEmail\ScheduledAt;
-use App\Tests\Shared\Unit\Domain\ValueObject\DateTimeValueObjectTrait;
+use App\Tests\Shared\Unit\Domain\ValueObject\Traits\DateTimeValueObjectTrait;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;

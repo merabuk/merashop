@@ -1,6 +1,6 @@
 <?php
 
-namespace App\IdentityAccess\Domain\Factory\Contracts;
+namespace App\IdentityAccess\Domain\Factory\Contract;
 
 use App\IdentityAccess\Domain\Entity\AdminAccount;
 use App\IdentityAccess\Domain\Enum\AdminAccount\StatusEnum;

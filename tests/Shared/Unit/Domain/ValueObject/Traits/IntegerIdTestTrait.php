@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Shared\Unit\Domain\ValueObject;
+namespace App\Tests\Shared\Unit\Domain\ValueObject\Traits;
 
 use PHPUnit\Framework\Assert;
 

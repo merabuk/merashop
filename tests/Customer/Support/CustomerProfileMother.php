@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Customer\Support;
 
 use App\Customer\Domain\Entity\CustomerProfile;
-use App\Customer\Domain\Factory\Contracts\CustomerProfileFactoryInterface;
+use App\Customer\Domain\Factory\Contract\CustomerProfileFactoryInterface;
 use App\Customer\Domain\ValueObject\CustomerProfile\FirstName;
 use App\Customer\Domain\ValueObject\CustomerProfile\Id;
 use App\Customer\Domain\ValueObject\CustomerProfile\LastName;

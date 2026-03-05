@@ -7,11 +7,11 @@ namespace App\Catalog\Infrastructure\Persistence\Doctrine\Entity;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Type\Attribute\TypeType;
+use App\Shared\Infrastructure\Persistence\Doctrine\Entity\Traits\TimestampableEntityTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Entity]
@@ -20,7 +20,7 @@ use Symfony\Bridge\Doctrine\Types\UlidType;
 #[ORM\UniqueConstraint(name: 'uniq_attributes_code', columns: ['code'])]
 class OrmAttribute
 {
-    use TimestampableEntity;
+    use TimestampableEntityTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]

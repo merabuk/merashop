@@ -8,7 +8,7 @@ use App\Catalog\Domain\Exception\Attribute\InvalidAttributeNameException;
 use App\Catalog\Domain\ValueObject\Attribute\Translation;
 use App\Catalog\Domain\ValueObject\Attribute\Translations;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
-use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
+use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

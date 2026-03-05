@@ -7,7 +7,7 @@ namespace App\IdentityAccess\Domain\Factory;
 use App\IdentityAccess\Domain\Entity\RefreshToken;
 use App\IdentityAccess\Domain\Exception\RefreshToken\InvalidRefreshTokenAccountUlidException;
 use App\IdentityAccess\Domain\Exception\RefreshToken\InvalidRefreshTokenTokenHashException;
-use App\IdentityAccess\Domain\Factory\Contracts\RefreshTokenFactoryInterface;
+use App\IdentityAccess\Domain\Factory\Contract\RefreshTokenFactoryInterface;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\AccountType;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\AccountUlid;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\ExpiresAt;

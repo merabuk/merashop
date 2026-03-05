@@ -10,7 +10,7 @@ use App\IdentityAccess\Domain\Exception\AdminAccount\InvalidAdminAccountEmailExc
 use App\IdentityAccess\Domain\Exception\AdminAccount\InvalidAdminAccountPasswordHashException;
 use App\IdentityAccess\Domain\Exception\AdminAccount\InvalidAdminAccountUlidException;
 use App\IdentityAccess\Domain\Exception\ValueObject\InvalidRoleException;
-use App\IdentityAccess\Domain\Factory\Contracts\AdminAccountFactoryInterface;
+use App\IdentityAccess\Domain\Factory\Contract\AdminAccountFactoryInterface;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\EmailAddress;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\PasswordHash;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\Status;

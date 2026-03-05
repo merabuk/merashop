@@ -94,6 +94,9 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
         }
     }
 
+    /**
+     * @return PaginatedResult<Attribute>
+     */
     public function paginate(Criteria $criteria): PaginatedResult
     {
         $qb = $this->createQueryBuilder('a')
@@ -103,8 +106,10 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
         if ($criteria->filters->has('search')) {
             $search = $this->_prepareSearchValue($criteria->filters->get('search'));
 
-            $qb->andWhere('a.code LIKE :code')
-                ->setParameter('code', $search);
+            $qb->andWhere($qb->expr()->orX(
+                'a.code LIKE :search',
+                't.name LIKE :search'
+            ))->setParameter('search', $search);
         }
 
         return $this->_paginate(

@@ -6,7 +6,7 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\UserAccount;
 
 use App\IdentityAccess\Domain\Exception\UserAccount\InvalidUserAccountEmailException;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
-use App\Tests\Shared\Unit\Domain\ValueObject\EmailAddressTestTrait;
+use App\Tests\Shared\Unit\Domain\ValueObject\Traits\EmailAddressTestTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

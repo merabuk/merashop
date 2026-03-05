@@ -9,7 +9,7 @@ use App\IdentityAccess\Domain\Exception\UserAccount\InvalidUserAccountEmailExcep
 use App\IdentityAccess\Domain\Exception\UserAccount\InvalidUserAccountPasswordHashException;
 use App\IdentityAccess\Domain\Exception\UserAccount\InvalidUserAccountUlidException;
 use App\IdentityAccess\Domain\Exception\ValueObject\InvalidRoleException;
-use App\IdentityAccess\Domain\Factory\Contracts\UserAccountFactoryInterface;
+use App\IdentityAccess\Domain\Factory\Contract\UserAccountFactoryInterface;
 use App\IdentityAccess\Domain\ValueObject\RoleCollection;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\PasswordHash;

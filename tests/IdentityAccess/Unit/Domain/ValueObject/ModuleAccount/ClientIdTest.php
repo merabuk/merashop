@@ -4,7 +4,7 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\ModuleAccount;
 
 use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountClientIdException;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientId;
-use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
+use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

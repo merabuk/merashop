@@ -6,94 +6,116 @@ namespace App\Tests\Catalog\Unit\Application\Command\UpdateAttribute;
 
 use App\Catalog\Application\Command\UpdateAttribute\UpdateAttributeCommand;
 use App\Catalog\Application\Command\UpdateAttribute\UpdateAttributeHandler;
-use App\Catalog\Application\Exception\Attribute\UpdateAttributeException;
 use App\Catalog\Domain\Entity\Attribute;
+use App\Catalog\Domain\Exception\Attribute\AttributeAlreadyExistsException;
 use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
-use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
 use App\Shared\Domain\Exception\Entity\ConcurrencyException;
-use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Tests\Catalog\Support\AttributeMother;
 use PHPUnit\Framework\TestCase;
 
 final class UpdateAttributeHandlerTest extends TestCase
 {
-    /**
-     * @throws AttributeNotFoundException
-     * @throws InvalidCatalogValueObjectException
-     * @throws InvalidLocaleException
-     * @throws UpdateAttributeException
-     */
-    public function testHandleThrowsConcurrencyExceptionOnVersionMismatch(): void
+    private AttributeReadRepositoryInterface $readRepository;
+    private AttributeWriteRepositoryInterface $writeRepository;
+
+    public function setUp(): void
     {
-        $readRepository = $this->createMock(AttributeReadRepositoryInterface::class);
-        $writeRepository = $this->createMock(AttributeWriteRepositoryInterface::class);
+        $this->readRepository = $this->createMock(AttributeReadRepositoryInterface::class);
+        $this->writeRepository = $this->createMock(AttributeWriteRepositoryInterface::class);
+    }
 
+    public function testHandleSuccess(): void
+    {
         $fakeId = 123;
-        $existingAttribute = $this->makeAttribute(version: 2, id: $fakeId);
-        $readRepository->method('getById')->willReturn($existingAttribute);
+        $newCode = 'updated-code';
+        $attribute = AttributeMother::createWithData(code: 'old-code', id: $fakeId);
 
-        $invalidVersion = $existingAttribute->getVersion()->value() + 1;
+        $this->readRepository->expects(self::once())->method('getById')->willReturn($attribute);
+        $this->readRepository->expects(self::never())->method('existsByCode');
+        $this->writeRepository->expects(self::once())
+            ->method('save')
+            ->with(self::callback(fn (Attribute $updatedAttribute) => $updatedAttribute->getCode()->value() === $newCode))
+            ->willReturn($attribute);
 
-        $command = new UpdateAttributeCommand(
-            id: $existingAttribute->getId()->value(),
-            code: $existingAttribute->getCode()->value(),
-            type: $existingAttribute->getType()->value()->value,
-            translations: $existingAttribute->getTranslations()->toArray(),
-            version: $invalidVersion,
-            adminUlid: $existingAttribute->getCreatedBy()->value()
-        );
+        $command = $this->fillAndGetCommand(attribute: $attribute, code: $newCode);
+
+        $this->createHandler()($command);
+    }
+
+    public function testThrowsExceptionIfAttributeDoesNotExist(): void
+    {
+        $fakeId = 123;
+        $attribute = AttributeMother::createWithData(id: $fakeId);
+
+        $this->readRepository->expects(self::once())
+            ->method('getById')
+            ->willThrowException(new AttributeNotFoundException());
+        $this->readRepository->expects(self::never())->method('existsByCode');
+        $this->writeRepository->expects(self::never())->method('save');
+
+        $command = $this->fillAndGetCommand(attribute: $attribute);
+
+        $this->expectException(AttributeNotFoundException::class);
+
+        $this->createHandler()($command);
+    }
+
+    public function testThrowsConcurrencyExceptionOnVersionMismatch(): void
+    {
+        $fakeId = 123;
+        $attribute = AttributeMother::createWithData(version: 2, id: $fakeId);
+
+        $this->readRepository->expects(self::once())->method('getById')->willReturn($attribute);
+        $this->readRepository->expects(self::never())->method('existsByCode');
+        $this->writeRepository->expects(self::never())->method('save');
+
+        $invalidVersion = $attribute->getVersion()->value() + 1;
+
+        $command = $this->fillAndGetCommand(attribute: $attribute, version: $invalidVersion);
 
         $this->expectException(ConcurrencyException::class);
 
-        $handler = new UpdateAttributeHandler(
-            readRepository: $readRepository,
-            writeRepository: $writeRepository
-        );
-        $handler($command);
+        $this->createHandler()($command);
     }
 
-    /**
-     * @throws AttributeNotFoundException
-     * @throws UpdateAttributeException
-     * @throws InvalidCatalogValueObjectException
-     * @throws ConcurrencyException
-     * @throws InvalidLocaleException
-     */
-    public function testHandleSuccess(): void
+    public function testThrowsExceptionIfAttributeExists(): void
     {
-        $readRepository = $this->createMock(AttributeReadRepositoryInterface::class);
-        $writeRepository = $this->createMock(AttributeWriteRepositoryInterface::class);
-
         $fakeId = 123;
-        $attribute = $this->makeAttribute(id: $fakeId);
-        $readRepository->method('getById')->willReturn($attribute);
+        $attribute = AttributeMother::createWithData(code: 'old-code', id: $fakeId);
 
-        $writeRepository->expects($this->once())->method('save')->willReturn($attribute);
+        $this->readRepository->expects(self::once())->method('getById')->willReturn($attribute);
+        $this->readRepository->expects(self::once())->method('existsByCode')->willReturn(true);
+        $this->writeRepository->expects(self::never())->method('save');
 
-        $command = new UpdateAttributeCommand(
+        $command = $this->fillAndGetCommand(attribute: $attribute, code: 'new-code');
+
+        $this->expectException(AttributeAlreadyExistsException::class);
+
+        $this->createHandler()($command);
+    }
+
+    private function fillAndGetCommand(
+        Attribute $attribute,
+        ?string $code = null,
+        ?int $version = null,
+    ): UpdateAttributeCommand {
+        return new UpdateAttributeCommand(
             id: $attribute->getId()->value(),
-            code: $attribute->getCode()->value(),
+            code: $code ?? $attribute->getCode()->value(),
             type: $attribute->getType()->value()->value,
             translations: $attribute->getTranslations()->toArray(),
-            version: $attribute->getVersion()->value(),
+            version: $version ?? $attribute->getVersion()->value(),
             adminUlid: $attribute->getCreatedBy()->value()
         );
-
-        $handler = new UpdateAttributeHandler(
-            readRepository: $readRepository,
-            writeRepository: $writeRepository
-        );
-        $handler($command);
     }
 
-    /**
-     * @throws InvalidCatalogValueObjectException
-     * @throws InvalidLocaleException
-     */
-    private function makeAttribute(int $version = 1, ?int $id = null): Attribute
+    private function createHandler(): UpdateAttributeHandler
     {
-        return AttributeMother::createWithData(version: $version, id: $id);
+        return new UpdateAttributeHandler(
+            readRepository: $this->readRepository,
+            writeRepository: $this->writeRepository
+        );
     }
 }

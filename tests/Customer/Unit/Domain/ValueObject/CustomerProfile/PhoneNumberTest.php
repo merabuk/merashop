@@ -6,7 +6,7 @@ namespace App\Tests\Customer\Unit\Domain\ValueObject\CustomerProfile;
 
 use App\Customer\Domain\Exception\CustomerProfile\InvalidCustomerProfilePhoneNumberException;
 use App\Customer\Domain\ValueObject\CustomerProfile\PhoneNumber;
-use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
+use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

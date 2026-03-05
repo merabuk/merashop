@@ -6,7 +6,7 @@ namespace App\Tests\IdentityAccess\Support;
 
 use App\IdentityAccess\Domain\Entity\ModuleAccount;
 use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
-use App\IdentityAccess\Domain\Factory\Contracts\ModuleAccountFactoryInterface;
+use App\IdentityAccess\Domain\Factory\Contract\ModuleAccountFactoryInterface;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientId;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientSecretHash;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Id;

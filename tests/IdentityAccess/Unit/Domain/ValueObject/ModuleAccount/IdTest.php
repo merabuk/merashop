@@ -6,7 +6,7 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\ModuleAccount;
 
 use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountIdException;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Id;
-use App\Tests\Shared\Unit\Domain\ValueObject\IntegerIdTestTrait;
+use App\Tests\Shared\Unit\Domain\ValueObject\Traits\IntegerIdTestTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

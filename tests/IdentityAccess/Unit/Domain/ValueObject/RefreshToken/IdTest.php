@@ -6,7 +6,7 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\RefreshToken;
 
 use App\IdentityAccess\Domain\Exception\RefreshToken\InvalidRefreshTokenIdException;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\Id;
-use App\Tests\Shared\Unit\Domain\ValueObject\IntegerIdTestTrait;
+use App\Tests\Shared\Unit\Domain\ValueObject\Traits\IntegerIdTestTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 

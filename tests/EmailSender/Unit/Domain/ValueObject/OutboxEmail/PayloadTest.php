@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\EmailSender\Unit\Domain\ValueObject\OutboxEmail;
 
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Payload;
-use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
+use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\TestCase;
 
 final class PayloadTest extends TestCase

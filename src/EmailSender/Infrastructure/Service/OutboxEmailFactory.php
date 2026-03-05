@@ -15,7 +15,7 @@ use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailFromException
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailFromNameException;
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailSubjectException;
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailToException;
-use App\EmailSender\Domain\Factory\Contracts\OutboxEmailFactoryInterface;
+use App\EmailSender\Domain\Factory\Contract\OutboxEmailFactoryInterface;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Attempts;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Body;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Driver;

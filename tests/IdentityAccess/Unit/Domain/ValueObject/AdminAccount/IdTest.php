@@ -6,7 +6,7 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\AdminAccount;
 
 use App\IdentityAccess\Domain\Exception\AdminAccount\InvalidAdminAccountIdException;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\Id;
-use App\Tests\Shared\Unit\Domain\ValueObject\IntegerIdTestTrait;
+use App\Tests\Shared\Unit\Domain\ValueObject\Traits\IntegerIdTestTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
