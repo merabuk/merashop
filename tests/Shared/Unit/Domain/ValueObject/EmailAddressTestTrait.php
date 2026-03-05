@@ -10,39 +10,31 @@ use PHPUnit\Framework\Assert;
 trait EmailAddressTestTrait
 {
     use EmailTestDataTrait;
+    use ValueObjectEqualityCheckTrait;
 
-    protected function assertValidEmailAddress(string $className): void
+    protected function assertValidEmailAddress(string $className, string $email, string $expected): void
     {
-        $this->assertHasStaticMethod($className);
+        $this->assertHasStaticMethod($className, 'fromString');
 
-        $email = 'test@example.com';
         $vo = $className::fromString($email);
 
-        Assert::assertSame($email, $vo->value());
-        Assert::assertSame($email, (string) $vo);
-    }
-
-    protected function assertEmailAddressTrimming(string $className): void
-    {
-        $this->assertHasStaticMethod($className);
-
-        $email = '  test@example.com  ';
-        $expected = 'test@example.com';
-
-        $vo = $className::fromString($email);
-        Assert::assertSame($expected, $vo->value(), sprintf('VO %s must trim spaces', $className));
+        Assert::assertSame($expected, $vo->value());
+        Assert::assertSame($expected, (string) $vo);
     }
 
     protected function assertEmailAddressEquality(string $className): void
     {
-        $this->assertHasStaticMethod($className);
+        $this->assertStringVOProvidesEqualityCheck(
+            className: $className,
+            value: 'test@example.com',
+            anotherValue: 'different@example.com',
+        );
+    }
 
-        $vo1 = $className::fromString('test@example.com');
-        $vo2 = $className::fromString('test@example.com');
-        $vo3 = $className::fromString('different@example.com');
-
-        Assert::assertTrue($vo1->equals($vo2));
-        Assert::assertFalse($vo1->equals($vo3));
+    public static function validEmailSampleProvider(): iterable
+    {
+        yield 'simple' => ['test@example.com', 'test@example.com'];
+        yield 'trimmed' => ['  test@example.com  ', 'test@example.com'];
     }
 
     public static function invalidEmailSampleProvider(): iterable
@@ -53,12 +45,4 @@ trait EmailAddressTestTrait
     }
 
     abstract protected static function getTotalLimit(): int;
-
-    private function assertHasStaticMethod(string $className): void
-    {
-        Assert::assertTrue(
-            condition: method_exists($className, 'fromString'),
-            message: sprintf('%s class must implement fromString method', $className)
-        );
-    }
 }

@@ -7,11 +7,14 @@ namespace App\Tests\EmailSender\Unit\Domain\ValueObject\OutboxEmail;
 use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailDriverException;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Driver;
+use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class DriverTest extends TestCase
 {
+    use ValueObjectEqualityCheckTrait;
+
     #[DataProvider('driverEnumProvider')]
     public function testItCreatesValidDriverFromEnum(DriverEnum $enum): void
     {
@@ -47,12 +50,11 @@ final class DriverTest extends TestCase
 
     public function testItProvidesEqualityCheck(): void
     {
-        $vo1 = Driver::fromEnum(DriverEnum::Log);
-        $vo2 = Driver::fromEnum(DriverEnum::Log);
-        $vo3 = Driver::fromEnum(DriverEnum::Smtp);
-
-        self::assertTrue($vo1->equals($vo2));
-        self::assertFalse($vo1->equals($vo3));
+        $this->assertEnumVOProvidesEqualityCheck(
+            className: Driver::class,
+            enum: DriverEnum::Log,
+            anotherEnum: DriverEnum::Smtp,
+        );
     }
 
     #[DataProvider('invalidDriverProvider')]

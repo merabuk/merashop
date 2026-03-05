@@ -6,39 +6,37 @@ namespace App\Tests\EmailSender\Unit\Domain\ValueObject\OutboxEmail;
 
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailFromNameException;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\FromName;
+use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class FromNameTest extends TestCase
 {
-    public function testItCreatesValidFromName(): void
+    use ValueObjectEqualityCheckTrait;
+
+    #[DataProvider('validFromNameProvider')]
+    public function testItCreatesValidFromName(string $name, string $expected): void
     {
-        $name = 'John Doe';
         $vo = FromName::fromString($name);
 
-        self::assertSame($name, $vo->value());
-        self::assertSame($name, (string) $vo);
+        self::assertSame($expected, $vo->value());
+        self::assertSame($expected, (string) $vo);
+    }
+
+    public static function validFromNameProvider(): iterable
+    {
+        yield 'valid' => ['John Doe', 'John Doe'];
+        yield 'name with special characters' => ['John Doe & Johnson', 'John Doe & Johnson'];
+        yield 'trimmed' => ['  John Doe  ', 'John Doe'];
     }
 
     public function testItProvidesEqualityCheck(): void
     {
-        $name1 = 'John Doe';
-        $name2 = 'Jane Doe';
-
-        $vo1 = FromName::fromString($name1);
-        $vo2 = FromName::fromString($name1);
-        $vo3 = FromName::fromString($name2);
-
-        self::assertTrue($vo1->equals($vo2));
-        self::assertFalse($vo1->equals($vo3));
-    }
-
-    public function testItTrimsInput(): void
-    {
-        $name = 'John Doe';
-        $vo = FromName::fromString('  '.$name.'  ');
-
-        self::assertSame($name, $vo->value());
+        $this->assertStringVOProvidesEqualityCheck(
+            className: FromName::class,
+            value: 'John Doe',
+            anotherValue: 'Jane Doe'
+        );
     }
 
     #[DataProvider('invalidFromNameProvider')]

@@ -6,11 +6,14 @@ namespace App\Tests\Customer\Unit\Domain\ValueObject\CustomerProfile;
 
 use App\Customer\Domain\Exception\CustomerProfile\InvalidCustomerProfilePhoneNumberException;
 use App\Customer\Domain\ValueObject\CustomerProfile\PhoneNumber;
+use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class PhoneNumberTest extends TestCase
 {
+    use ValueObjectEqualityCheckTrait;
+
     #[DataProvider('validPhoneNumbersProvider')]
     public function testItCreatesValidPhoneNumber(string $phone, string $expected): void
     {
@@ -31,14 +34,11 @@ final class PhoneNumberTest extends TestCase
 
     public function testItProvidesEqualityCheck(): void
     {
-        $phone1 = '+380998877666';
-        $phone2 = '+380995544333';
-        $vo1 = PhoneNumber::fromString($phone1);
-        $vo2 = PhoneNumber::fromString($phone1);
-        $vo3 = PhoneNumber::fromString($phone2);
-
-        self::assertTrue($vo1->equals($vo2));
-        self::assertFalse($vo1->equals($vo3));
+        $this->assertStringVOProvidesEqualityCheck(
+            className: PhoneNumber::class,
+            value: '+380998877666',
+            anotherValue: '+380995544333'
+        );
     }
 
     #[DataProvider('invalidPhoneNumbersProvider')]

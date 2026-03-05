@@ -7,11 +7,14 @@ namespace App\Tests\EmailSender\Unit\Domain\ValueObject\OutboxEmail;
 use App\EmailSender\Domain\Enum\OutboxEmail\StatusEnum;
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailStatusException;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Status;
+use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class StatusTest extends TestCase
 {
+    use ValueObjectEqualityCheckTrait;
+
     #[DataProvider('statusEnumProvider')]
     public function testItCreatesValidStatusFromEnum(StatusEnum $enum): void
     {
@@ -58,19 +61,18 @@ final class StatusTest extends TestCase
 
     public function testItTrimsInput(): void
     {
-        $status = StatusEnum::Sent->value;
-        $vo = Status::fromString('  '.$status.'  ');
+        $status = StatusEnum::Sent;
+        $vo = Status::fromString('  '.$status->value.'  ');
         self::assertTrue($vo->isSent());
     }
 
     public function testItProvidesEqualityCheck(): void
     {
-        $vo1 = Status::created();
-        $vo2 = Status::created();
-        $vo3 = Status::sent();
-
-        self::assertTrue($vo1->equals($vo2));
-        self::assertFalse($vo1->equals($vo3));
+        $this->assertEnumVOProvidesEqualityCheck(
+            className: Status::class,
+            enum: StatusEnum::Created,
+            anotherEnum: StatusEnum::Sent,
+        );
     }
 
     #[DataProvider('invalidStatusProvider')]

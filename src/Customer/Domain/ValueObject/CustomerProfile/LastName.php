@@ -25,7 +25,7 @@ final readonly class LastName implements EquatableInterface, Stringable
     public function __construct(string $name)
     {
         try {
-            $this->name = StringValidator::validate(value: $name, maxLength: self::MAX_LENGTH);
+            $this->name = StringValidator::validate(rawValue: $name, maxLength: self::MAX_LENGTH);
         } catch (InvalidStringException $e) {
             throw InvalidCustomerProfileLastNameException::fromBaseException($e);
         }

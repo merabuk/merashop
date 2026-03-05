@@ -25,7 +25,7 @@ final readonly class ExternalId implements EquatableInterface, Stringable
     public function __construct(string $externalId)
     {
         try {
-            $this->externalId = StringValidator::validate(value: $externalId, maxLength: self::MAX_LENGTH);
+            $this->externalId = StringValidator::validate(rawValue: $externalId, maxLength: self::MAX_LENGTH);
         } catch (InvalidStringException $e) {
             throw InvalidOutboxEmailSubjectException::fromBaseException($e);
         }

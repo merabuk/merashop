@@ -6,39 +6,37 @@ namespace App\Tests\EmailSender\Unit\Domain\ValueObject\OutboxEmail;
 
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailSubjectException;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\ExternalId;
+use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class ExternalIdTest extends TestCase
 {
-    public function testItCreatesValidExternalId(): void
+    use ValueObjectEqualityCheckTrait;
+
+    #[DataProvider('validExternalIdProvider')]
+    public function testItCreatesValidExternalId(string $externalId, string $expected): void
     {
-        $externalId = '1234567890';
         $vo = ExternalId::fromString($externalId);
 
-        self::assertSame($externalId, $vo->value());
-        self::assertSame($externalId, (string) $vo);
+        self::assertSame($expected, $vo->value());
+        self::assertSame($expected, (string) $vo);
+    }
+
+    public static function validExternalIdProvider(): iterable
+    {
+        yield 'valid' => ['1234567890', '1234567890'];
+        yield 'with spaces' => ['123 456 7890', '123 456 7890'];
+        yield 'trimmed' => ['  1234567890  ', '1234567890'];
     }
 
     public function testItProvidesEqualityCheck(): void
     {
-        $externalId1 = '1234567890';
-        $externalId2 = '0987654321';
-
-        $vo1 = ExternalId::fromString($externalId1);
-        $vo2 = ExternalId::fromString($externalId1);
-        $vo3 = ExternalId::fromString($externalId2);
-
-        self::assertTrue($vo1->equals($vo2));
-        self::assertFalse($vo1->equals($vo3));
-    }
-
-    public function testItTrimsInput(): void
-    {
-        $externalId = '1234567890';
-        $vo = ExternalId::fromString('  '.$externalId.'  ');
-
-        self::assertSame($externalId, $vo->value());
+        $this->assertStringVOProvidesEqualityCheck(
+            className: ExternalId::class,
+            value: '1234567890',
+            anotherValue: '0987654321'
+        );
     }
 
     #[DataProvider('invalidExternalIdProvider')]

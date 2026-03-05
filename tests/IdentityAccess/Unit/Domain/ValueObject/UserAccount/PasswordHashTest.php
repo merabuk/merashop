@@ -6,11 +6,14 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\UserAccount;
 
 use App\IdentityAccess\Domain\Exception\UserAccount\InvalidUserAccountPasswordHashException;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\PasswordHash;
+use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class PasswordHashTest extends TestCase
 {
+    use ValueObjectEqualityCheckTrait;
+
     public function testItCreatesValidPasswordHash(): void
     {
         $passwordHash = 'valid_password_hash';
@@ -22,13 +25,11 @@ final class PasswordHashTest extends TestCase
 
     public function testItProvidesEqualityCheck(): void
     {
-        $passwordHash = 'valid_password_hash';
-        $vo1 = PasswordHash::fromString($passwordHash);
-        $vo2 = PasswordHash::fromString($passwordHash);
-        $vo3 = PasswordHash::fromString('another_valid_password_hash');
-
-        self::assertTrue($vo1->equals($vo2));
-        self::assertFalse($vo1->equals($vo3));
+        $this->assertStringVOProvidesEqualityCheck(
+            className: PasswordHash::class,
+            value: 'valid_password_hash',
+            anotherValue: 'another_valid_password_hash'
+        );
     }
 
     #[DataProvider('invalidPasswordHashProvider')]

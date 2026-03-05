@@ -7,11 +7,14 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\AdminAccount;
 use App\IdentityAccess\Domain\Enum\AdminAccount\StatusEnum;
 use App\IdentityAccess\Domain\Exception\AdminAccount\InvalidAdminAccountStatusException;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\Status;
+use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class StatusTest extends TestCase
 {
+    use ValueObjectEqualityCheckTrait;
+
     #[DataProvider('statusEnumProvider')]
     public function testItCreatesValidStatusFromEnum(StatusEnum $enum): void
     {
@@ -59,19 +62,18 @@ final class StatusTest extends TestCase
 
     public function testItTrimsInput(): void
     {
-        $status = StatusEnum::Active->value;
-        $vo = Status::fromString('  '.$status.'  ');
+        $status = StatusEnum::Active;
+        $vo = Status::fromString('  '.$status->value.'  ');
         self::assertTrue($vo->isActive());
     }
 
     public function testItProvidesEqualityCheck(): void
     {
-        $vo1 = Status::active();
-        $vo2 = Status::active();
-        $vo3 = Status::blocked();
-
-        self::assertTrue($vo1->equals($vo2));
-        self::assertFalse($vo1->equals($vo3));
+        $this->assertEnumVOProvidesEqualityCheck(
+            className: Status::class,
+            enum: StatusEnum::Active,
+            anotherEnum: StatusEnum::Blocked
+        );
     }
 
     #[DataProvider('invalidStatusProvider')]

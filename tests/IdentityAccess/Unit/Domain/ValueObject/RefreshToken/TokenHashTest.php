@@ -6,11 +6,14 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\RefreshToken;
 
 use App\IdentityAccess\Domain\Exception\RefreshToken\InvalidRefreshTokenTokenHashException;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\TokenHash;
+use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class TokenHashTest extends TestCase
 {
+    use ValueObjectEqualityCheckTrait;
+
     public function testItCreatesValidTokenHash(): void
     {
         $hash = 'valid_token_hash';
@@ -22,13 +25,11 @@ class TokenHashTest extends TestCase
 
     public function testItProvidesEqualityCheck(): void
     {
-        $hash = 'valid_token_hash';
-        $vo1 = TokenHash::fromString($hash);
-        $vo2 = TokenHash::fromString($hash);
-        $vo3 = TokenHash::fromString('another_valid_token_hash');
-
-        self::assertTrue($vo1->equals($vo2));
-        self::assertFalse($vo1->equals($vo3));
+        $this->assertStringVOProvidesEqualityCheck(
+            className: TokenHash::class,
+            value: 'valid_token_hash',
+            anotherValue: 'another_valid_token_hash'
+        );
     }
 
     #[DataProvider('invalidTokenHashProvider')]

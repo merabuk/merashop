@@ -6,11 +6,14 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject;
 
 use App\IdentityAccess\Domain\ValueObject\Scope;
 use App\IdentityAccess\Domain\ValueObject\ScopeCollection;
+use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\TestCase;
 use Traversable;
 
 class ScopeCollectionTest extends TestCase
 {
+    use ValueObjectEqualityCheckTrait;
+
     public function testItCreatesValidScopeCollection(): void
     {
         $scopes = ['scope_admin', 'scope_user'];
@@ -27,15 +30,12 @@ class ScopeCollectionTest extends TestCase
 
     public function testItProvidesEqualityCheck(): void
     {
-        $scopes1 = ['scope_admin', 'scope_user'];
-        $scopes2 = ['scope_user', 'scope_admin'];
-        $scopes3 = ['scope_admin'];
-        $vo1 = ScopeCollection::fromStrings($scopes1);
-        $vo2 = ScopeCollection::fromStrings($scopes2);
-        $vo3 = ScopeCollection::fromStrings($scopes3);
-
-        self::assertTrue($vo1->equals($vo2));
-        self::assertFalse($vo1->equals($vo3));
+        $this->assertStringCollectionVOProvidesEqualityCheck(
+            className: ScopeCollection::class,
+            values: ['scope_admin', 'scope_user'],
+            shuffledValues: ['scope_user', 'scope_admin'],
+            anotherValues: ['scope_admin'],
+        );
     }
 
     public function testItEnsuresUniqueness(): void

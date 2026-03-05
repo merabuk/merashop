@@ -14,14 +14,14 @@ final class ToTest extends TestCase
 {
     use EmailAddressTestTrait;
 
-    public function testItCreatesValidFrom(): void
+    #[DataProvider('validEmailSampleProvider')]
+    public function testItCreatesValidFrom(string $email, string $expected): void
     {
-        $this->assertValidEmailAddress(To::class);
-    }
-
-    public function testItTrimsSpaces(): void
-    {
-        $this->assertEmailAddressTrimming(To::class);
+        $this->assertValidEmailAddress(
+            className: To::class,
+            email: $email,
+            expected: $expected
+        );
     }
 
     public function testItProvidesEqualityCheck(): void

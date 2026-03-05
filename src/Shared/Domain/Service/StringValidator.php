@@ -14,15 +14,23 @@ final class StringValidator
     /**
      * @throws InvalidStringException
      */
-    public static function validate(string $value, int $maxLength, int $minLength = 0): string
-    {
-        $trimmedValue = mb_trim($value);
+    public static function validate(
+        string $rawValue,
+        int $maxLength,
+        int $minLength = 0,
+        bool $normalize = true,
+    ): string {
+        $value = mb_trim($rawValue);
 
-        if (empty($trimmedValue)) {
+        if (empty($value)) {
             throw StringEmptyException::becauseValueIsEmpty();
         }
 
-        $length = mb_strlen($trimmedValue);
+        if ($normalize) {
+            $value = self::normalize($value);
+        }
+
+        $length = mb_strlen($value);
 
         if ($length > $maxLength) {
             throw StringMaxLengthException::becauseValueIsToLong($maxLength);
@@ -32,6 +40,19 @@ final class StringValidator
             throw StringMinLengthException::becauseValueIsToShort($minLength);
         }
 
-        return $trimmedValue;
+        return $value;
+    }
+
+    private static function normalize(string $value): string
+    {
+        return preg_replace([
+            '/ +/',
+            '/ *(\r?\n) */',
+            '/(?:\r?\n){2,}/',
+        ], [
+            ' ',
+            '$1',
+            PHP_EOL.PHP_EOL,
+        ], $value);
     }
 }

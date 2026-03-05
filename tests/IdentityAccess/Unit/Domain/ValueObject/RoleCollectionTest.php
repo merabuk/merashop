@@ -6,11 +6,14 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject;
 
 use App\IdentityAccess\Domain\ValueObject\Role;
 use App\IdentityAccess\Domain\ValueObject\RoleCollection;
+use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\TestCase;
 use Traversable;
 
 class RoleCollectionTest extends TestCase
 {
+    use ValueObjectEqualityCheckTrait;
+
     public function testItCreatesValidRoleCollection(): void
     {
         $roles = ['ROLE_ADMIN', 'ROLE_USER'];
@@ -27,15 +30,12 @@ class RoleCollectionTest extends TestCase
 
     public function testItProvidesEqualityCheck(): void
     {
-        $roles1 = ['ROLE_ADMIN', 'ROLE_USER'];
-        $roles2 = ['ROLE_USER', 'ROLE_ADMIN'];
-        $roles3 = ['ROLE_ADMIN'];
-        $vo1 = RoleCollection::fromStrings($roles1);
-        $vo2 = RoleCollection::fromStrings($roles2);
-        $vo3 = RoleCollection::fromStrings($roles3);
-
-        self::assertTrue($vo1->equals($vo2));
-        self::assertFalse($vo1->equals($vo3));
+        $this->assertStringCollectionVOProvidesEqualityCheck(
+            className: RoleCollection::class,
+            values: ['ROLE_ADMIN', 'ROLE_USER'],
+            shuffledValues: ['ROLE_USER', 'ROLE_ADMIN'],
+            anotherValues: ['ROLE_ADMIN'],
+        );
     }
 
     public function testItEnsuresUniqueness(): void

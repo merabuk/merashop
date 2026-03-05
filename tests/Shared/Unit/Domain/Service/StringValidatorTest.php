@@ -16,7 +16,7 @@ final class StringValidatorTest extends TestCase
     #[DataProvider('validStringsProvider')]
     public function testItValidatesCorrectStrings(string $value, int $max, int $min, string $expected): void
     {
-        $result = StringValidator::validate(value: $value, maxLength: $max, minLength: $min);
+        $result = StringValidator::validate(rawValue: $value, maxLength: $max, minLength: $min);
         self::assertSame($expected, $result);
     }
 
@@ -24,6 +24,8 @@ final class StringValidatorTest extends TestCase
     {
         yield 'normal string' => ['Hello', 10, 2, 'Hello'];
         yield 'string with spaces' => ['  Trim Me  ', 10, 2, 'Trim Me'];
+        yield 'normalize spaces' => ['Some  extra   spaces  between  words', 35, 2, 'Some extra spaces between words'];
+        yield 'normalize break lines' => ["Some  \n\n\n\n  extra  \n\n\n\n  breaks", 35, 2, "Some\n\nextra\n\nbreaks"];
         yield 'multibyte string' => ['Привіт', 10, 2, 'Привіт'];
         yield 'exact max length' => ['ABCDE', 5, 0, 'ABCDE'];
         yield 'exact min length' => ['ABC', 10, 3, 'ABC'];
@@ -33,27 +35,27 @@ final class StringValidatorTest extends TestCase
     public function testItThrowsExceptionWhenEmptyAfterTrim(): void
     {
         $this->expectException(StringEmptyException::class);
-        StringValidator::validate(value: '   ', maxLength: 10, minLength: 0);
+        StringValidator::validate(rawValue: '   ', maxLength: 10, minLength: 0);
     }
 
     public function testItThrowsExceptionWhenTooLong(): void
     {
         $this->expectException(StringMaxLengthException::class);
-        StringValidator::validate(value: 'Too Long String', maxLength: 5, minLength: 0);
+        StringValidator::validate(rawValue: 'Too Long String', maxLength: 5, minLength: 0);
     }
 
     public function testItThrowsExceptionWhenTooShort(): void
     {
         $this->expectException(StringMinLengthException::class);
-        StringValidator::validate(value: 'Short', maxLength: 10, minLength: 8);
+        StringValidator::validate(rawValue: 'Short', maxLength: 10, minLength: 8);
     }
 
     public function testItHandlesMultibyteLengthCorrectly(): void
     {
-        $result = StringValidator::validate(value: 'Тест', maxLength: 4, minLength: 4);
+        $result = StringValidator::validate(rawValue: 'Тест', maxLength: 4, minLength: 4);
         self::assertSame('Тест', $result);
 
         $this->expectException(StringMaxLengthException::class);
-        StringValidator::validate(value: 'Тест+', maxLength: 4, minLength: 0);
+        StringValidator::validate(rawValue: 'Тест+', maxLength: 4, minLength: 0);
     }
 }

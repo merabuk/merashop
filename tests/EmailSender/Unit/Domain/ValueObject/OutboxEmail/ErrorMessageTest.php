@@ -6,39 +6,36 @@ namespace App\Tests\EmailSender\Unit\Domain\ValueObject\OutboxEmail;
 
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailErrorMessageException;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\ErrorMessage;
+use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class ErrorMessageTest extends TestCase
 {
-    public function testItCreatesValidErrorMessage(): void
+    use ValueObjectEqualityCheckTrait;
+
+    #[DataProvider('validErrorMessageProvider')]
+    public function testItCreatesValidErrorMessage(string $errorMessage, string $expected): void
     {
-        $errorMessage = 'Error message';
         $vo = ErrorMessage::fromString($errorMessage);
 
-        self::assertSame($errorMessage, $vo->value());
-        self::assertSame($errorMessage, (string) $vo);
+        self::assertSame($expected, $vo->value());
+        self::assertSame($expected, (string) $vo);
+    }
+
+    public static function validErrorMessageProvider(): iterable
+    {
+        yield 'valid' => ['Error message!', 'Error message!'];
+        yield 'trimmed' => ['  Error message!  ', 'Error message!'];
     }
 
     public function testItProvidesEqualityCheck(): void
     {
-        $errorMessage1 = 'Error message!';
-        $errorMessage2 = 'Error message.';
-
-        $vo1 = ErrorMessage::fromString($errorMessage1);
-        $vo2 = ErrorMessage::fromString($errorMessage1);
-        $vo3 = ErrorMessage::fromString($errorMessage2);
-
-        self::assertTrue($vo1->equals($vo2));
-        self::assertFalse($vo1->equals($vo3));
-    }
-
-    public function testItTrimsInput(): void
-    {
-        $errorMessage = 'Error message';
-        $vo = ErrorMessage::fromString('  '.$errorMessage.'  ');
-
-        self::assertSame($errorMessage, $vo->value());
+        $this->assertStringVOProvidesEqualityCheck(
+            className: ErrorMessage::class,
+            value: 'Error message!',
+            anotherValue: 'Error message.'
+        );
     }
 
     #[DataProvider('invalidErrorMessageProvider')]

@@ -6,7 +6,6 @@ namespace App\Tests\Catalog\Support;
 
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
-use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Service\AttributeFactoryInterface;
 use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
@@ -16,7 +15,6 @@ use App\Catalog\Domain\ValueObject\Attribute\Type;
 use App\Catalog\Domain\ValueObject\Attribute\Ulid;
 use App\Catalog\Domain\ValueObject\Attribute\Version;
 use App\Shared\Domain\Enum\LocaleEnum;
-use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Domain\Service\UlidGeneratorInterface;
 use Faker\Factory;
 use Faker\Generator;
@@ -35,9 +33,6 @@ final readonly class AttributeMother
      * Static method for Unit-tests.
      *
      * @param ?array<string, array{name: string}> $translations
-     *
-     * @throws InvalidCatalogValueObjectException
-     * @throws InvalidLocaleException
      */
     public static function createWithData(
         ?string $ulid = null,

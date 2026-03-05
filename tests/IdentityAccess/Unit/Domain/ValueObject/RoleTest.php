@@ -6,37 +6,36 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject;
 
 use App\IdentityAccess\Domain\Exception\ValueObject\InvalidRoleException;
 use App\IdentityAccess\Domain\ValueObject\Role;
+use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class RoleTest extends TestCase
 {
-    public function testItCreatesValidRole(): void
+    use ValueObjectEqualityCheckTrait;
+
+    #[DataProvider('validRoleProvider')]
+    public function testItCreatesValidRole(string $role, string $expected): void
     {
-        $role = 'ROLE_ADMIN';
         $vo = Role::fromString($role);
 
-        self::assertSame($role, $vo->value());
-        self::assertSame($role, (string) $vo);
+        self::assertSame($expected, $vo->value());
+        self::assertSame($expected, (string) $vo);
     }
 
-    public function testItTrimsInput(): void
+    public static function validRoleProvider(): iterable
     {
-        $role = 'ROLE_ADMIN';
-        $vo = Role::fromString('  '.$role.'  ');
-
-        self::assertSame($role, $vo->value());
+        yield 'valid role' => ['ROLE_ADMIN', 'ROLE_ADMIN'];
+        yield 'trimmed role' => ['  ROLE_ADMIN  ', 'ROLE_ADMIN'];
     }
 
     public function testItProvidesEqualityCheck(): void
     {
-        $role = 'ROLE_ADMIN';
-        $vo1 = Role::fromString($role);
-        $vo2 = Role::fromString($role);
-        $vo3 = Role::fromString('ROLE_USER');
-
-        self::assertTrue($vo1->equals($vo2));
-        self::assertFalse($vo1->equals($vo3));
+        $this->assertStringVOProvidesEqualityCheck(
+            className: Role::class,
+            value: 'ROLE_ADMIN',
+            anotherValue: 'ROLE_USER',
+        );
     }
 
     #[DataProvider('invalidRoleProvider')]

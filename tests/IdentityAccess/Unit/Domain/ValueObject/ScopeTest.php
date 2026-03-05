@@ -6,11 +6,14 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject;
 
 use App\IdentityAccess\Domain\Exception\ValueObject\InvalidScopeException;
 use App\IdentityAccess\Domain\ValueObject\Scope;
+use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ScopeTest extends TestCase
 {
+    use ValueObjectEqualityCheckTrait;
+
     #[DataProvider('validScopeProvider')]
     public function testItCreatesValidScope(string $input, string $expected): void
     {
@@ -27,25 +30,16 @@ class ScopeTest extends TestCase
         yield 'with numbers' => ['v1.products.read', 'v1.products.read'];
         yield 'case normalization' => ['USER.READ', 'user.read'];
         yield 'complex' => ['identity:auth-tokens:manage', 'identity:auth-tokens:manage'];
-    }
-
-    public function testItTrimsInput(): void
-    {
-        $scope = 'scope_admin';
-        $vo = Scope::fromString('  '.$scope.'  ');
-
-        self::assertSame($scope, $vo->value());
+        yield 'trimmed' => ['  scope_admin  ', 'scope_admin'];
     }
 
     public function testItProvidesEqualityCheck(): void
     {
-        $scope = 'scope_admin';
-        $vo1 = Scope::fromString($scope);
-        $vo2 = Scope::fromString($scope);
-        $vo3 = Scope::fromString('scope_user');
-
-        self::assertTrue($vo1->equals($vo2));
-        self::assertFalse($vo1->equals($vo3));
+        $this->assertStringVOProvidesEqualityCheck(
+            className: Scope::class,
+            value: 'scope_admin',
+            anotherValue: 'scope_user'
+        );
     }
 
     #[DataProvider('invalidScopeProvider')]

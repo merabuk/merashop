@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace App\Tests\EmailSender\Unit\Domain\ValueObject\OutboxEmail;
 
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Payload;
+use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\TestCase;
 
 final class PayloadTest extends TestCase
 {
+    use ValueObjectEqualityCheckTrait;
+
     public function testItCreatesValidPayload(): void
     {
         $payload = ['key' => 'value'];
@@ -20,15 +23,12 @@ final class PayloadTest extends TestCase
 
     public function testItProvidesEqualityCheck(): void
     {
-        $payload1 = ['key1' => 'value1'];
-        $payload2 = ['key2' => 'value2'];
-
-        $vo1 = Payload::fromArray($payload1);
-        $vo2 = Payload::fromArray($payload1);
-        $vo3 = Payload::fromArray($payload2);
-
-        self::assertTrue($vo1->equals($vo2));
-        self::assertFalse($vo1->equals($vo3));
+        $this->assertArrayVOProvidesEqualityCheck(
+            className: Payload::class,
+            value: ['key1' => 'value1', 'key2' => 'value2'],
+            shuffledValue: ['key2' => 'value2', 'key1' => 'value1'],
+            anotherValue: ['key' => 'another-value'],
+        );
     }
 
     public function tetsItCreatesEmptyPayload(): void

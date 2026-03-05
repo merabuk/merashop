@@ -8,14 +8,14 @@ use App\Catalog\Domain\Exception\Attribute\InvalidAttributeNameException;
 use App\Catalog\Domain\ValueObject\Attribute\Translation;
 use App\Catalog\Domain\ValueObject\Attribute\Translations;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
+use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class TranslationsTest extends TestCase
 {
-    /**
-     * @throws InvalidLocaleException
-     * @throws InvalidAttributeNameException
-     */
+    use ValueObjectEqualityCheckTrait;
+
     public function testItCreatesValidCollection(): void
     {
         $data = ['en' => ['name' => ' Color ']];
@@ -25,20 +25,12 @@ final class TranslationsTest extends TestCase
         self::assertSame('Color', $vo->get('en')?->name);
     }
 
-    /**
-     * @throws InvalidAttributeNameException
-     * @throws InvalidLocaleException
-     */
     public function testItReturnsNullForMissingLocale(): void
     {
         $vo = Translations::fromArray(['en' => ['name' => 'Name']]);
         self::assertNull($vo->get('uk'));
     }
 
-    /**
-     * @throws InvalidLocaleException
-     * @throws InvalidAttributeNameException
-     */
     public function testItCanBeIterated(): void
     {
         $data = [
@@ -57,24 +49,16 @@ final class TranslationsTest extends TestCase
         self::assertSame('Color', $iterated['en']);
     }
 
-    /**
-     * @throws InvalidAttributeNameException
-     * @throws InvalidLocaleException
-     */
     public function testItProvidesEqualityCheck(): void
     {
-        $vo1 = Translations::fromArray(['en' => ['name' => 'Name']]);
-        $vo2 = Translations::fromArray(['en' => ['name' => 'Name']]);
-        $vo3 = Translations::fromArray(['en' => ['name' => 'Different']]);
-
-        self::assertTrue($vo1->equals($vo2));
-        self::assertFalse($vo1->equals($vo3));
+        $this->assertArrayVOProvidesEqualityCheck(
+            className: Translations::class,
+            value: ['en' => ['name' => 'Name'], 'uk' => ['name' => 'Назва']],
+            shuffledValue: ['uk' => ['name' => 'Назва'], 'en' => ['name' => 'Name']],
+            anotherValue: ['en' => ['name' => 'Different']]
+        );
     }
 
-    /**
-     * @throws InvalidAttributeNameException
-     * @throws InvalidLocaleException
-     */
     public function testItSortsKeysForDeterministicStringRepresentation(): void
     {
         $vo1 = Translations::fromArray([
@@ -89,30 +73,24 @@ final class TranslationsTest extends TestCase
         self::assertSame((string) $vo1, (string) $vo2);
     }
 
-    /**
-     * @throws InvalidAttributeNameException
-     */
     public function testThrowsExceptionOnInvalidLocale(): void
     {
         $this->expectException(InvalidLocaleException::class);
         Translations::fromArray(['invalid' => ['name' => 'Test']]);
     }
 
-    /**
-     * @throws InvalidLocaleException
-     */
-    public function testThrowsExceptionOnMissingNameKey(): void
+    #[DataProvider('invalidNameProvider')]
+    public function testThrowsExceptionOnInvalidInput(array $invalidValue): void
     {
         $this->expectException(InvalidAttributeNameException::class);
-        Translations::fromArray(['en' => ['wrong_key' => 'Test']]);
+        Translations::fromArray($invalidValue);
     }
 
-    /**
-     * @throws InvalidLocaleException
-     */
-    public function testThrowsExceptionOnTooLongName(): void
+    public static function invalidNameProvider(): iterable
     {
-        $this->expectException(InvalidAttributeNameException::class);
-        Translations::fromArray(['en' => ['name' => str_repeat('a', Translation::NAME_MAX_LENGTH + 1)]]);
+        yield 'missing key' => [['en' => []]];
+        yield 'empty' => [['en' => ['name' => '']]];
+        yield 'only spaces' => [['en' => ['name' => '   ']]];
+        yield 'too long' => [['en' => ['name' => str_repeat('a', Translation::NAME_MAX_LENGTH + 1)]]];
     }
 }

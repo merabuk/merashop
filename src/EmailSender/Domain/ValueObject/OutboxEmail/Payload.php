@@ -52,6 +52,9 @@ final readonly class Payload implements EquatableInterface, Stringable
      */
     protected function getPrimitiveValue(): string
     {
-        return json_encode($this->data, JSON_THROW_ON_ERROR);
+        $data = $this->data;
+        ksort($data);
+
+        return json_encode($data, JSON_THROW_ON_ERROR);
     }
 }

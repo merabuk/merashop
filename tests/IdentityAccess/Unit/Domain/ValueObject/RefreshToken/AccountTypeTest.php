@@ -7,11 +7,14 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\RefreshToken;
 use App\IdentityAccess\Domain\Exception\RefreshToken\InvalidRefreshTokenAccountTypeException;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\AccountType;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
+use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class AccountTypeTest extends TestCase
 {
+    use ValueObjectEqualityCheckTrait;
+
     #[DataProvider('accountTypeEnumProvider')]
     public function testItCreatesValidAccountTypeFromEnum(IdentityTypeEnum $accountType): void
     {
@@ -56,18 +59,18 @@ class AccountTypeTest extends TestCase
 
     public function testItTrimsInput(): void
     {
-        $vo = AccountType::fromString('  admin  ');
+        $accountType = IdentityTypeEnum::Admin;
+        $vo = AccountType::fromString('  '.$accountType->value.'  ');
         self::assertTrue($vo->isAdmin());
     }
 
     public function testItProvidesEqualityCheck(): void
     {
-        $vo1 = AccountType::admin();
-        $vo2 = AccountType::admin();
-        $vo3 = AccountType::user();
-
-        self::assertTrue($vo1->equals($vo2));
-        self::assertFalse($vo1->equals($vo3));
+        $this->assertEnumVOProvidesEqualityCheck(
+            className: AccountType::class,
+            enum: IdentityTypeEnum::Admin,
+            anotherEnum: IdentityTypeEnum::User
+        );
     }
 
     #[DataProvider('invalidAccountTypeProvider')]

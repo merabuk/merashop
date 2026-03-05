@@ -4,11 +4,14 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\ModuleAccount;
 
 use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountClientIdException;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientId;
+use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ClientIdTest extends TestCase
 {
+    use ValueObjectEqualityCheckTrait;
+
     #[DataProvider('validClientIdProvider')]
     public function testItCreatesValidClientId(string $input, string $expected): void
     {
@@ -26,13 +29,11 @@ class ClientIdTest extends TestCase
 
     public function testItProvidesEqualityCheck(): void
     {
-        $clientId = 'valid-client-id';
-        $vo1 = ClientId::fromString($clientId);
-        $vo2 = ClientId::fromString($clientId);
-        $vo3 = ClientId::fromString('another-valid-client-id');
-
-        self::assertTrue($vo1->equals($vo2));
-        self::assertFalse($vo1->equals($vo3));
+        $this->assertStringVOProvidesEqualityCheck(
+            className: ClientId::class,
+            value: 'valid-client-id',
+            anotherValue: 'another-valid-client-id'
+        );
     }
 
     #[DataProvider('invalidClientIdProvider')]

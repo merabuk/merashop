@@ -6,11 +6,14 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\ModuleAccount;
 
 use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountPasswordHashException;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientSecretHash;
+use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ClientSecretHashTest extends TestCase
 {
+    use ValueObjectEqualityCheckTrait;
+
     #[DataProvider('validClientSecretProvider')]
     public function testItCreatesValidClientSecretHash(string $input, string $expected): void
     {
@@ -29,13 +32,11 @@ class ClientSecretHashTest extends TestCase
 
     public function testItProvidesEqualityCheck(): void
     {
-        $hash = 'valid_client_secret_hash';
-        $vo1 = ClientSecretHash::fromString($hash);
-        $vo2 = ClientSecretHash::fromString($hash);
-        $vo3 = ClientSecretHash::fromString('another_valid_client_secret_hash');
-
-        self::assertTrue($vo1->equals($vo2));
-        self::assertFalse($vo1->equals($vo3));
+        $this->assertStringVOProvidesEqualityCheck(
+            className: ClientSecretHash::class,
+            value: 'valid_client_secret_hash',
+            anotherValue: 'another_valid_client_secret_hash'
+        );
     }
 
     #[DataProvider('invalidClientSecretProvider')]

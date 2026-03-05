@@ -6,39 +6,37 @@ namespace App\Tests\EmailSender\Unit\Domain\ValueObject\OutboxEmail;
 
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailBodyException;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Body;
+use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class BodyTest extends TestCase
 {
-    public function testItCreatesValidBody(): void
+    use ValueObjectEqualityCheckTrait;
+
+    #[DataProvider('validBodyProvider')]
+    public function testItCreatesValidBody(string $body, string $expected): void
     {
-        $body = '<p>Hello, world!</p>';
         $vo = Body::fromString($body);
 
-        self::assertSame($body, $vo->value());
-        self::assertSame($body, (string) $vo);
+        self::assertSame($expected, $vo->value());
+        self::assertSame($expected, (string) $vo);
+    }
+
+    public static function validBodyProvider(): iterable
+    {
+        yield 'valid' => ['<p>Hello, world!</p>', '<p>Hello, world!</p>'];
+        yield 'with new lines' => ["\n<p>Hello, world!</p>\n", '<p>Hello, world!</p>'];
+        yield 'trimmed' => ['   <p>Hello, world!</p>   ', '<p>Hello, world!</p>'];
     }
 
     public function testItProvidesEqualityCheck(): void
     {
-        $body1 = '<p>Hello, world!</p>';
-        $body2 = '<p>Hello, world.</p>';
-
-        $vo1 = Body::fromString($body1);
-        $vo2 = Body::fromString($body1);
-        $vo3 = Body::fromString($body2);
-
-        self::assertTrue($vo1->equals($vo2));
-        self::assertFalse($vo1->equals($vo3));
-    }
-
-    public function testItTrimsInput(): void
-    {
-        $body = '<p>Hello, world!</p>';
-        $vo = Body::fromString('  '.$body.'  ');
-
-        self::assertSame($body, $vo->value());
+        $this->assertStringVOProvidesEqualityCheck(
+            className: Body::class,
+            value: '<p>Hello, world!</p>',
+            anotherValue: '<p>Hello, world.</p>'
+        );
     }
 
     #[DataProvider('invalidBodyProvider')]

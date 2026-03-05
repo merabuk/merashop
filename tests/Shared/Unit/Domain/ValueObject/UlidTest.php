@@ -11,40 +11,30 @@ use PHPUnit\Framework\TestCase;
 
 final class UlidTest extends TestCase
 {
-    /**
-     * @throws InvalidUlidException
-     */
-    public function testItCreatesValidUlid(): void
+    use ValueObjectEqualityCheckTrait;
+
+    #[DataProvider('validUlidProvider')]
+    public function testItCreatesValidUlid(string $ulid, string $expected): void
     {
-        $ulid = '01KHVRCA0FCCYAQT1P88R317DD';
         $vo = Ulid::fromString($ulid);
 
-        self::assertSame($ulid, $vo->value());
-        self::assertSame($ulid, (string) $vo);
+        self::assertSame($expected, $vo->value());
+        self::assertSame($expected, (string) $vo);
     }
 
-    /**
-     * @throws InvalidUlidException
-     */
-    public function testItTrimsInput(): void
+    public static function validUlidProvider(): iterable
     {
-        $ulid = '01KHVRCA0FCCYAQT1P88R317DD';
-        $vo = Ulid::fromString('  '.$ulid.'  ');
-
-        self::assertSame($ulid, $vo->value());
+        yield 'valid ulid' => ['01KHVRCA0FCCYAQT1P88R317DD', '01KHVRCA0FCCYAQT1P88R317DD'];
+        yield 'trimmed' => ['  01KHVRCA0FCCYAQT1P88R317DD  ', '01KHVRCA0FCCYAQT1P88R317DD'];
     }
 
-    /**
-     * @throws InvalidUlidException
-     */
     public function testItProvidesEqualityCheck(): void
     {
-        $vo1 = Ulid::fromString('01KHVRCA0FCCYAQT1P88R317DD');
-        $vo2 = Ulid::fromString('01KHVRCA0FCCYAQT1P88R317DD');
-        $vo3 = Ulid::fromString('01KHVRCA679BJ6PBXX5N3G6RR5');
-
-        self::assertTrue($vo1->equals($vo2));
-        self::assertFalse($vo1->equals($vo3));
+        $this->assertStringVOProvidesEqualityCheck(
+            className: Ulid::class,
+            value: '01KHVRCA0FCCYAQT1P88R317DD',
+            anotherValue: '01KHVRCA679BJ6PBXX5N3G6RR5'
+        );
     }
 
     #[DataProvider('invalidUlidProvider')]

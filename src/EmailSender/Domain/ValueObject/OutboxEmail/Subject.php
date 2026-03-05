@@ -25,7 +25,7 @@ final readonly class Subject implements EquatableInterface, Stringable
     public function __construct(string $subject)
     {
         try {
-            $this->subject = StringValidator::validate(value: $subject, maxLength: self::MAX_LENGTH);
+            $this->subject = StringValidator::validate(rawValue: $subject, maxLength: self::MAX_LENGTH);
         } catch (InvalidStringException $e) {
             throw InvalidOutboxEmailSubjectException::fromBaseException($e);
         }

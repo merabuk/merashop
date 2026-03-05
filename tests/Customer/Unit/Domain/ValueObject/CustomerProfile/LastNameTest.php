@@ -6,38 +6,37 @@ namespace App\Tests\Customer\Unit\Domain\ValueObject\CustomerProfile;
 
 use App\Customer\Domain\Exception\CustomerProfile\InvalidCustomerProfileLastNameException;
 use App\Customer\Domain\ValueObject\CustomerProfile\LastName;
+use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class LastNameTest extends TestCase
 {
-    public function testItCreatesValidLastName(): void
+    use ValueObjectEqualityCheckTrait;
+
+    #[DataProvider('validLastNameProvider')]
+    public function testItCreatesValidLastName(string $lastName, string $expected): void
     {
-        $lastName = 'Dou';
         $vo = LastName::fromString($lastName);
 
-        self::assertSame($lastName, $vo->value());
-        self::assertSame($lastName, (string) $vo);
+        self::assertSame($expected, $vo->value());
+        self::assertSame($expected, (string) $vo);
+    }
+
+    public static function validLastNameProvider(): iterable
+    {
+        yield 'simple' => ['Dou', 'Dou'];
+        yield 'with spaces' => ['Dou  Smith', 'Dou Smith'];
+        yield 'trimmed' => ['  Dou  ', 'Dou'];
     }
 
     public function testItProvidesEqualityCheck(): void
     {
-        $lastName1 = 'Dou';
-        $lastName2 = 'Smith';
-        $vo1 = LastName::fromString($lastName1);
-        $vo2 = LastName::fromString($lastName1);
-        $vo3 = LastName::fromString($lastName2);
-
-        self::assertTrue($vo1->equals($vo2));
-        self::assertFalse($vo1->equals($vo3));
-    }
-
-    public function testItTrimsInput(): void
-    {
-        $lastName = 'Dou';
-        $vo = LastName::fromString('  '.$lastName.'  ');
-
-        self::assertSame($lastName, $vo->value());
+        $this->assertStringVOProvidesEqualityCheck(
+            className: LastName::class,
+            value: 'Dou',
+            anotherValue: 'Smith'
+        );
     }
 
     #[DataProvider('invalidLastNameProvider')]

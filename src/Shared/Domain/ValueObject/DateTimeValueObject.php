@@ -7,7 +7,7 @@ namespace App\Shared\Domain\ValueObject;
 use DateTimeImmutable;
 use Stringable;
 
-abstract readonly class DateTimeValueObject implements EquatableInterface, Stringable
+abstract readonly class DateTimeValueObject implements EqualsWithDateTimeInterface, EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 
@@ -41,16 +41,16 @@ abstract readonly class DateTimeValueObject implements EquatableInterface, Strin
         return $this->date->format(self::COMPARISON_FORMAT) === $other->format(self::COMPARISON_FORMAT);
     }
 
-    public function isAfter(self|DateTimeImmutable $other): bool
+    public function isAfter(EqualsWithDateTimeInterface|DateTimeImmutable $other): bool
     {
-        $otherDate = $other instanceof self ? $other->value() : $other;
+        $otherDate = $other instanceof EqualsWithDateTimeInterface ? $other->value() : $other;
 
         return $this->date > $otherDate;
     }
 
-    public function isBefore(self|DateTimeImmutable $other): bool
+    public function isBefore(EqualsWithDateTimeInterface|DateTimeImmutable $other): bool
     {
-        $otherDate = $other instanceof self ? $other->value() : $other;
+        $otherDate = $other instanceof EqualsWithDateTimeInterface ? $other->value() : $other;
 
         return $this->date < $otherDate;
     }

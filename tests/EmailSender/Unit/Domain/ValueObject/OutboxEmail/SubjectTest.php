@@ -6,39 +6,36 @@ namespace App\Tests\EmailSender\Unit\Domain\ValueObject\OutboxEmail;
 
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailSubjectException;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Subject;
+use App\Tests\Shared\Unit\Domain\ValueObject\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class SubjectTest extends TestCase
 {
-    public function testItCreatesValidFromName(): void
+    use ValueObjectEqualityCheckTrait;
+
+    #[DataProvider('validFromNameProvider')]
+    public function testItCreatesValidFromName(string $name, string $expected): void
     {
-        $name = 'Welcome to our website!';
         $vo = Subject::fromString($name);
 
-        self::assertSame($name, $vo->value());
-        self::assertSame($name, (string) $vo);
+        self::assertSame($expected, $vo->value());
+        self::assertSame($expected, (string) $vo);
+    }
+
+    public static function validFromNameProvider(): iterable
+    {
+        yield 'valid name' => ['Welcome to our website!', 'Welcome to our website!'];
+        yield 'trimmed' => ['  Welcome to our website!  ', 'Welcome to our website!'];
     }
 
     public function testItProvidesEqualityCheck(): void
     {
-        $name1 = 'Welcome to our website!';
-        $name2 = 'Welcome to our website.';
-
-        $vo1 = Subject::fromString($name1);
-        $vo2 = Subject::fromString($name1);
-        $vo3 = Subject::fromString($name2);
-
-        self::assertTrue($vo1->equals($vo2));
-        self::assertFalse($vo1->equals($vo3));
-    }
-
-    public function testItTrimsInput(): void
-    {
-        $name = 'Welcome to our website!';
-        $vo = Subject::fromString('  '.$name.'  ');
-
-        self::assertSame($name, $vo->value());
+        $this->assertStringVOProvidesEqualityCheck(
+            className: Subject::class,
+            value: 'Welcome to our website!',
+            anotherValue: 'Welcome to our website.'
+        );
     }
 
     #[DataProvider('invalidFromNameProvider')]

@@ -11,40 +11,30 @@ use PHPUnit\Framework\TestCase;
 
 final class TraceIdTest extends TestCase
 {
-    /**
-     * @throws InvalidTraceIdException
-     */
-    public function testItCreatesValidTraceId(): void
+    use ValueObjectEqualityCheckTrait;
+
+    #[DataProvider('validTraceIdProvider')]
+    public function testItCreatesValidTraceId(string $traceId, string $excepted): void
     {
-        $traceId = '01952796-03f3-793a-867c-d6159f8a329f';
         $vo = TraceId::fromString($traceId);
 
-        self::assertSame($traceId, $vo->value());
-        self::assertSame($traceId, (string) $vo);
+        self::assertSame($excepted, $vo->value());
+        self::assertSame($excepted, (string) $vo);
     }
 
-    /**
-     * @throws InvalidTraceIdException
-     */
-    public function testItTrimsInput(): void
+    public static function validTraceIdProvider(): iterable
     {
-        $traceId = '01952796-03f3-793a-867c-d6159f8a329f';
-        $vo = TraceId::fromString('  '.$traceId.'  ');
-
-        self::assertSame($traceId, $vo->value());
+        yield 'valid trace id' => ['01952796-03f3-793a-867c-d6159f8a329f', '01952796-03f3-793a-867c-d6159f8a329f'];
+        yield 'trimmed' => ['   01952796-03f3-793a-867c-d6159f8a329f  ', '01952796-03f3-793a-867c-d6159f8a329f'];
     }
 
-    /**
-     * @throws InvalidTraceIdException
-     */
     public function testItProvidesEqualityCheck(): void
     {
-        $vo1 = TraceId::fromString('01952796-03f3-793a-867c-d6159f8a329f');
-        $vo2 = TraceId::fromString('01952796-03f3-793a-867c-d6159f8a329f');
-        $vo3 = TraceId::fromString('01952796-03f3-793a-867c-d6159f8a3290');
-
-        self::assertTrue($vo1->equals($vo2));
-        self::assertFalse($vo1->equals($vo3));
+        $this->assertStringVOProvidesEqualityCheck(
+            className: TraceId::class,
+            value: '01952796-03f3-793a-867c-d6159f8a329f',
+            anotherValue: '01952796-03f3-793a-867c-d6159f8a3290'
+        );
     }
 
     #[DataProvider('invalidTraceIdProvider')]
