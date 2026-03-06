@@ -6,6 +6,7 @@ namespace App\Tests\Catalog\Functional\Presentation\Http\AdminApiVersion1\Contro
 
 use App\Catalog\Domain\Enum\ErrorCodeEnum;
 use App\Catalog\Presentation\Http\AdminApiVersion1\Controller\Attribute\GetAttributeItemController;
+use App\Shared\Domain\Enum\ErrorCodeEnum as SharedErrorCodeEnum;
 use App\Tests\Catalog\Support\Traits\AttributeFactoryTrait;
 use App\Tests\Shared\Support\Traits\ApiAuthTrait;
 use App\Tests\Shared\Support\Traits\ApiRequestTrait;
@@ -111,6 +112,26 @@ final class GetAttributeItemControllerTest extends WebTestCase
             data: $data,
             expectedCode: ErrorCodeEnum::AttributeNotFound->value,
             expectedContainMessage: 'Attribute not found'
+        );
+    }
+
+    public function testItReturns404OnInvalidRouteParameterFormat(): void
+    {
+        $client = self::createClient();
+        $this->loginAsAdmin();
+
+        $this->requestJson(
+            client: $client,
+            method: self::METHOD,
+            uri: '/admin/api/v1/catalog/attributes/invalid-string'
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+        $data = $this->getResponseData($client);
+        $this->assertExceptionMessage(
+            data: $data,
+            expectedCode: SharedErrorCodeEnum::NotFound->value,
+            expectedContainMessage: 'No route found for'
         );
     }
 

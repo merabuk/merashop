@@ -108,6 +108,11 @@ class ApiExceptionListener
                 errorMessage: $exception->getMessage(),
                 statusCode: Response::HTTP_NOT_FOUND,
             ),
+            $exception instanceof NotFoundHttpException => $this->baseResponse(
+                errorCode: ErrorCodeEnum::NotFound->value,
+                errorMessage: 'Resource or endpoint not found',
+                statusCode: Response::HTTP_NOT_FOUND
+            ),
             $exception instanceof UnsupportedMediaTypeHttpException => $this->baseResponse(
                 errorCode: ErrorCodeEnum::UnsupportedMediaType->value,
                 errorMessage: $exception->getMessage(),
