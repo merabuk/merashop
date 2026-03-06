@@ -18,7 +18,7 @@ use Traversable;
 /**
  * @implements IteratorAggregate<string, Translation>
  */
-final class Translations implements Countable, EquatableInterface, IteratorAggregate, Stringable
+final readonly class Translations implements Countable, EquatableInterface, IteratorAggregate, Stringable
 {
     use ValueObjectEqualityTrait;
 

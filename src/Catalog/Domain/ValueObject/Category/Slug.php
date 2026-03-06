@@ -9,10 +9,11 @@ use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
 
-final class Slug implements EquatableInterface, Stringable
+final readonly class Slug implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 
+    public const string REGEX = '/^[a-z\d-]+$/';
     public const int MAX_LENGTH = 255;
 
     private string $slug;
@@ -23,9 +24,8 @@ final class Slug implements EquatableInterface, Stringable
     public function __construct(string $slug)
     {
         $slug = mb_trim($slug);
-        if ('' === $slug) {
-            throw InvalidCategorySlugException::becauseItIsEmpty();
-        }
+
+        $this->ensureIsValidSlug($slug);
 
         $this->slug = $slug;
     }
@@ -51,5 +51,23 @@ final class Slug implements EquatableInterface, Stringable
     protected function getPrimitiveValue(): string
     {
         return $this->value();
+    }
+
+    /**
+     * @throws InvalidCategorySlugException
+     */
+    private function ensureIsValidSlug(string $slug): void
+    {
+        if ('' === $slug) {
+            throw InvalidCategorySlugException::becauseItIsEmpty();
+        }
+
+        if (!preg_match(self::REGEX, $slug)) {
+            throw InvalidCategorySlugException::becauseItDoesNotMatchRegex();
+        }
+
+        if (mb_strlen($slug) > self::MAX_LENGTH) {
+            throw InvalidCategorySlugException::becauseItIsTooLong(self::MAX_LENGTH);
+        }
     }
 }

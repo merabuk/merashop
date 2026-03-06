@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Catalog\Unit\Domain\ValueObject\Attribute;
 
+use App\Catalog\Domain\Exception\Attribute\InvalidAttributeCodeException;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -35,5 +36,19 @@ class CodeTest extends TestCase
             value: 'color',
             anotherValue: 'different'
         );
+    }
+
+    #[DataProvider('invalidCodeProvider')]
+    public function testThrowsExceptionOnInvalidInput(string $invalidValue): void
+    {
+        $this->expectException(InvalidAttributeCodeException::class);
+        Code::fromString($invalidValue);
+    }
+
+    public static function invalidCodeProvider(): iterable
+    {
+        yield 'empty' => [''];
+        yield 'only spaces' => ['   '];
+        yield 'too long' => [str_repeat('a', Code::MAX_LENGTH + 1)];
     }
 }

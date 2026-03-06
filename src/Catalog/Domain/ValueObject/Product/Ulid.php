@@ -8,7 +8,7 @@ use App\Catalog\Domain\Exception\Product\InvalidProductUlidException;
 use App\Shared\Domain\Exception\ValueObject\InvalidUlidException;
 use App\Shared\Domain\ValueObject\Ulid as BaseUlid;
 
-final class Ulid extends BaseUlid
+final readonly class Ulid extends BaseUlid
 {
     /**
      * @throws InvalidProductUlidException

@@ -13,6 +13,16 @@ final class InvalidCategorySlugException extends InvalidCatalogValueObjectExcept
         return new self('Category slug cannot be empty');
     }
 
+    public static function becauseItDoesNotMatchRegex(): self
+    {
+        return new self('Category slug does not match regex pattern');
+    }
+
+    public static function becauseItIsTooLong(int $maxLength): self
+    {
+        return new self(sprintf('Category slug cannot be longer than %d characters', $maxLength));
+    }
+
     public function getErrorCode(): string
     {
         return 'INVALID_CATEGORY_SLUG';

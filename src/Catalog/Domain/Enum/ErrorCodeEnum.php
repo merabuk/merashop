@@ -11,10 +11,12 @@ enum ErrorCodeEnum: string
     case AttributeAlreadyExists = 'ATTRIBUTE_ALREADY_EXISTS';
     case OneOfAttributesNotFound = 'ONE_OF_ATTRIBUTES_NOT_FOUND';
     case CategoryNotFound = 'CATEGORY_NOT_FOUND';
+    case CategoryAlreadyExists = 'CATEGORY_ALREADY_EXISTS';
+    case CategorySortOrderOutOfRange = 'CATEGORY_SORT_ORDER_OUT_OF_RANGE';
     case OneOfCategoriesNotFound = 'ONE_OF_CATEGORIES_NOT_FOUND';
     case CategoryParentNotFound = 'CATEGORY_PARENT_NOT_FOUND';
-    case CategoryAlreadyExists = 'CATEGORY_ALREADY_EXISTS';
-    case CategoryOwnParentConflict = 'CATEGORY_OWN_PARENT_CONFLICT';
-    case CategoryOwnDescendantConflict = 'CATEGORY_OWN_DESCENDANTS_CONFLICT';
+    case CategoryCannotBeParentOfItselfConflict = 'CATEGORY_CANNOT_BE_PARENT_OF_ITSELF_CONFLICT';
+    case CategoryMoveToChildConflictException = 'CATEGORY_MOVE_TO_CHILD_CONFLICT';
     case ProductNotFound = 'PRODUCT_NOT_FOUND';
+    case ProductAlreadyExists = 'PRODUCT_ALREADY_EXISTS';
 }

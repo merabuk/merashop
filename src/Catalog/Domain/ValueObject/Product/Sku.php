@@ -9,7 +9,7 @@ use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
 
-final class Sku implements EquatableInterface, Stringable
+final readonly class Sku implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 

@@ -7,12 +7,13 @@ namespace App\Catalog\Presentation\Http\AdminApiVersion1\Request\Attribute;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Translation;
-use App\Shared\Domain\Enum\LocaleEnum;
+use App\Shared\Presentation\Http\Request\ValidateLocalesTrait;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 abstract class BaseAttributeRequest
 {
+    use ValidateLocalesTrait;
+
     #[Assert\NotBlank]
     #[Assert\Length(min: 1, max: Code::MAX_LENGTH)]
     public ?string $code;
@@ -42,25 +43,6 @@ abstract class BaseAttributeRequest
     ])]
     public ?array $translations;
 
-    #[Assert\Callback]
-    public function validateLocales(ExecutionContextInterface $context): void
-    {
-        if (!isset($this->translations)) {
-            return;
-        }
-
-        $validLocales = LocaleEnum::getValues();
-
-        foreach (array_keys($this->translations) as $locale) {
-            if (!in_array($locale, $validLocales, true)) {
-                $context->buildViolation('admin.api.v1.attribute.locale.invalid')
-                    ->setParameter('%locale%', (string) $locale)
-                    ->atPath(sprintf('translations[%s]', (string) $locale))
-                    ->addViolation();
-            }
-        }
-    }
-
     /**
      * @return string[]
      */
@@ -72,5 +54,28 @@ abstract class BaseAttributeRequest
             TypeEnum::Boolean->value,
             TypeEnum::Select->value,
         ];
+    }
+
+    /**
+     * @return array<string, array{name: string}>
+     */
+    protected function getTranslations(): array
+    {
+        return $this->translations ?? [];
+    }
+
+    protected function getRequestTranslationKey(): string
+    {
+        return 'translations';
+    }
+
+    protected function getMissingTranslationKey(): string
+    {
+        return 'admin.api.v1.attribute.translations.missing';
+    }
+
+    protected function getInvalidTranslationKey(): string
+    {
+        return 'admin.api.v1.attribute.translations.invalid';
     }
 }

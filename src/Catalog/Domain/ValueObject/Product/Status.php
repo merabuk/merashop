@@ -10,7 +10,7 @@ use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
 
-final class Status implements EquatableInterface, Stringable
+final readonly class Status implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 

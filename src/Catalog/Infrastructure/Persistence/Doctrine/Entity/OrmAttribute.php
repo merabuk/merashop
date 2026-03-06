@@ -54,7 +54,7 @@ class OrmAttribute
     #[ORM\Column(type: UlidType::NAME)]
     public ?string $createdBy = null;
 
-    #[ORM\Column(type: UlidType::NAME)]
+    #[ORM\Column(type: UlidType::NAME, nullable: true)]
     public ?string $updatedBy = null;
 
     public function __construct()

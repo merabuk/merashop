@@ -8,6 +8,7 @@ use App\Catalog\Domain\Entity\Category;
 use App\Catalog\Domain\Exception\Category\CategoryNotFoundException;
 use App\Catalog\Domain\Exception\Category\OneOfCategoriesNotFoundException;
 use App\Catalog\Domain\ValueObject\Category\Id;
+use App\Catalog\Domain\ValueObject\Category\Slug;
 use App\Catalog\Domain\ValueObject\Category\Ulid;
 
 interface CategoryReadRepositoryInterface
@@ -29,4 +30,6 @@ interface CategoryReadRepositoryInterface
      * @throws OneOfCategoriesNotFoundException
      */
     public function assertAllExistByIds(array $ids): void;
+
+    public function existsBySlug(Slug $slug): bool;
 }

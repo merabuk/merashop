@@ -7,6 +7,7 @@ namespace App\Catalog\Domain\Repository;
 use App\Catalog\Domain\Entity\Product;
 use App\Catalog\Domain\Exception\Product\ProductNotFoundException;
 use App\Catalog\Domain\ValueObject\Product\Id;
+use App\Catalog\Domain\ValueObject\Product\Sku;
 use App\Catalog\Domain\ValueObject\Product\Ulid;
 
 interface ProductReadRepositoryInterface
@@ -19,4 +20,6 @@ interface ProductReadRepositoryInterface
     public function findById(Id $id): ?Product;
 
     public function findByUlid(Ulid $ulid): ?Product;
+
+    public function existsBySku(Sku $sku): bool;
 }

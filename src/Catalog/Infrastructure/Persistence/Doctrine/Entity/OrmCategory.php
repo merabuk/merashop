@@ -8,12 +8,12 @@ use App\Catalog\Domain\Enum\Category\StatusEnum;
 use App\Catalog\Domain\ValueObject\Category\Path;
 use App\Catalog\Domain\ValueObject\Category\Slug;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Type\Category\StatusType;
+use App\Shared\Infrastructure\Persistence\Doctrine\Entity\Traits\TimestampableEntityTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint\ReferentialAction;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Entity]
@@ -23,7 +23,7 @@ use Symfony\Bridge\Doctrine\Types\UlidType;
 #[ORM\Index(name: 'idx_categories_parent_id', columns: ['parent_id'])]
 class OrmCategory
 {
-    use TimestampableEntity;
+    use TimestampableEntityTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
@@ -64,6 +64,16 @@ class OrmCategory
         orphanRemoval: true
     )]
     public Collection $translations;
+
+    #[ORM\Version]
+    #[ORM\Column(type: Types::INTEGER)]
+    public ?int $version = null;
+
+    #[ORM\Column(type: UlidType::NAME)]
+    public ?string $createdBy = null;
+
+    #[ORM\Column(type: UlidType::NAME, nullable: true)]
+    public ?string $updatedBy = null;
 
     /**
      * @var Collection<int, OrmProduct>

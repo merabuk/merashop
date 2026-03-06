@@ -10,6 +10,7 @@ use App\Catalog\Domain\Exception\Category\OneOfCategoriesNotFoundException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Repository\CategoryReadRepositoryInterface;
 use App\Catalog\Domain\ValueObject\Category\Id;
+use App\Catalog\Domain\ValueObject\Category\Slug;
 use App\Catalog\Domain\ValueObject\Category\Ulid;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmCategory;
 use App\Shared\Domain\Exception\Database\OneOfEntitiesNotFoundException;
@@ -118,6 +119,13 @@ final class CategoryReadRepository extends BaseCategoryRepository implements Cat
         } catch (OneOfEntitiesNotFoundException $e) {
             throw new OneOfCategoriesNotFoundException(previous: $e);
         }
+    }
+
+    public function existsBySlug(Slug $slug): bool
+    {
+        return $this->_existsBy([
+            $this->_makeCriterion(field: 'slug', value: $slug->value()),
+        ]);
     }
 
     /**

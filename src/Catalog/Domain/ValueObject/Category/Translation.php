@@ -11,14 +11,14 @@ use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Domain\Service\StringValidator;
 use App\Shared\Domain\ValueObject\Locale;
 
-final class Translation
+final readonly class Translation
 {
     public const int NAME_MAX_LENGTH = 255;
     public const int DESCRIPTION_MAX_LENGTH = 65_535;
 
-    public readonly Locale $locale;
-    public readonly string $name;
-    public readonly ?string $description;
+    public Locale $locale;
+    public string $name;
+    public ?string $description;
 
     /**
      * @throws InvalidCategoryDescriptionException
@@ -37,7 +37,9 @@ final class Translation
             throw InvalidCategoryNameException::fromBaseException($e);
         }
         try {
-            $this->description = StringValidator::validate($description, self::DESCRIPTION_MAX_LENGTH);
+            $this->description = $description
+                ? StringValidator::validate($description, self::DESCRIPTION_MAX_LENGTH)
+                : null;
         } catch (InvalidStringException $e) {
             throw InvalidCategoryDescriptionException::fromBaseException($e);
         }

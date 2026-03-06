@@ -12,12 +12,13 @@ class UpdateCategoryCommand implements CommandInterface
         public int $id,
         public string $slug,
         public ?int $parentId,
-        public int $sortOrder,
         public string $status,
         /**
          * @var array<string, array{name: string, description?: string}>
          */
         public array $translations,
+        public int $version,
+        public string $adminUlid,
     ) {
     }
 }

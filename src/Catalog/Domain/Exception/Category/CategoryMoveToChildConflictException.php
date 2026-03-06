@@ -6,10 +6,10 @@ use App\Catalog\Domain\Enum\ErrorCodeEnum;
 use App\Catalog\Domain\Exception\CatalogDomainException;
 use App\Shared\Domain\Exception\Markers\ConflictExceptionInterface;
 
-class CategoryOwnDescendantConflictException extends CatalogDomainException implements ConflictExceptionInterface
+class CategoryMoveToChildConflictException extends CatalogDomainException implements ConflictExceptionInterface
 {
     public function getErrorCode(): string
     {
-        return ErrorCodeEnum::CategoryOwnDescendantConflict->value;
+        return ErrorCodeEnum::CategoryMoveToChildConflictException->value;
     }
 }

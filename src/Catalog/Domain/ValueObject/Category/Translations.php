@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\ValueObject\Category;
 
+use App\Catalog\Domain\Exception\Category\InvalidCategoryNameException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Domain\ValueObject\EquatableInterface;
@@ -18,7 +19,7 @@ use Traversable;
 /**
  * @implements IteratorAggregate<string, Translation>
  */
-final class Translations implements Countable, EquatableInterface, IteratorAggregate, Stringable
+final readonly class Translations implements Countable, EquatableInterface, IteratorAggregate, Stringable
 {
     use ValueObjectEqualityTrait;
 
@@ -44,7 +45,7 @@ final class Translations implements Countable, EquatableInterface, IteratorAggre
     }
 
     /**
-     * @param array<string, array{name: string, description?: string}> $data
+     * @param array<string, array{name?: string, description?: string}> $data
      *
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
@@ -55,7 +56,7 @@ final class Translations implements Countable, EquatableInterface, IteratorAggre
         foreach ($data as $locale => $item) {
             $translations[$locale] = new Translation(
                 locale: $locale,
-                name: $item['name'],
+                name: $item['name'] ?? throw new InvalidCategoryNameException(sprintf('Category name is required for locale: %s', $locale)),
                 description: $item['description'] ?? null
             );
         }

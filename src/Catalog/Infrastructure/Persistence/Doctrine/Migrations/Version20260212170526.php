@@ -26,6 +26,9 @@ final class Version20260212170526 extends AbstractMigration
             price_amount BIGINT NOT NULL,
             price_currency VARCHAR(3) NOT NULL,
             status product_status NOT NULL,
+            version INT DEFAULT 1 NOT NULL,
+            created_by UUID NOT NULL,
+            updated_by UUID DEFAULT NULL,
             created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
             updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
             PRIMARY KEY (id)

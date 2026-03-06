@@ -6,7 +6,6 @@ namespace App\Catalog\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Catalog\Domain\Entity\Category;
 use App\Catalog\Domain\Repository\CategoryWriteRepositoryInterface;
-use App\Catalog\Domain\Service\CategoryPathGenerator;
 use App\Catalog\Domain\ValueObject\Category\Path;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmCategory;
 use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
@@ -50,9 +49,11 @@ final class CategoryWriteRepository extends BaseCategoryRepository implements Ca
             ->where('cw.path LIKE :oldPathPrefix')
             ->setParameter('newPath', $newPath->value())
             ->setParameter('oldPathLength', mb_strlen($oldPath->value()) + 1)
-            ->setParameter('oldPathPrefix', $oldPath->value().CategoryPathGenerator::PATH_SEPARATOR.'%')
+            ->setParameter('oldPathPrefix', $oldPath->value().Path::SEPARATOR.'%')
             ->getQuery()
             ->execute();
+
+        $this->getEntityManager()->clear();
     }
 
     protected function findOrmForUpdateFallback(string $stringId): ?OrmCategory

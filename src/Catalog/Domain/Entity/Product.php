@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\Entity;
 
+use App\Catalog\Domain\Exception\Product\InvalidProductVersionException;
+use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
 use App\Catalog\Domain\ValueObject\Product\Id;
 use App\Catalog\Domain\ValueObject\Product\Price;
@@ -11,6 +13,7 @@ use App\Catalog\Domain\ValueObject\Product\Sku;
 use App\Catalog\Domain\ValueObject\Product\Status;
 use App\Catalog\Domain\ValueObject\Product\Translations;
 use App\Catalog\Domain\ValueObject\Product\Ulid;
+use App\Catalog\Domain\ValueObject\Product\Version;
 
 class Product
 {
@@ -25,6 +28,9 @@ class Product
         private Price $price,
         private Status $status,
         private Translations $translations,
+        private Version $version,
+        private readonly AdminUlid $createdBy,
+        private ?AdminUlid $updatedBy = null,
         private array $categoryIds = [],
         private array $attributeValues = [],
     ) {
@@ -33,6 +39,8 @@ class Product
     /**
      * @param CategoryId[]            $categoryIds
      * @param ProductAttributeValue[] $attributeValues
+     *
+     * @throws InvalidProductVersionException
      */
     public static function create(
         Ulid $ulid,
@@ -40,6 +48,7 @@ class Product
         Price $price,
         Status $status,
         Translations $translations,
+        AdminUlid $createdBy,
         array $categoryIds = [],
         array $attributeValues = [],
     ): self {
@@ -50,6 +59,8 @@ class Product
             price: $price,
             status: $status,
             translations: $translations,
+            version: Version::initial(),
+            createdBy: $createdBy,
             categoryIds: $categoryIds,
             attributeValues: $attributeValues,
         );
@@ -85,6 +96,21 @@ class Product
         return $this->translations;
     }
 
+    public function getVersion(): Version
+    {
+        return $this->version;
+    }
+
+    public function getCreatedBy(): AdminUlid
+    {
+        return $this->createdBy;
+    }
+
+    public function getUpdatedBy(): ?AdminUlid
+    {
+        return $this->updatedBy;
+    }
+
     /**
      * @return CategoryId[]
      */
@@ -110,6 +136,7 @@ class Product
         Price $price,
         Status $status,
         Translations $translations,
+        AdminUlid $updatedBy,
         array $categoryIds,
         array $attributeValues = [],
     ): void {
@@ -117,6 +144,7 @@ class Product
         $this->price = $price;
         $this->status = $status;
         $this->translations = $translations;
+        $this->updatedBy = $updatedBy;
         $this->categoryIds = $categoryIds;
         $this->attributeValues = $attributeValues;
     }

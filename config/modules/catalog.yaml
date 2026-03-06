@@ -12,10 +12,13 @@ services:
     arguments:
       $referenceProvider: '@catalog.proxy_reference_provider'
 
-  App\Catalog\Domain\Service\AttributeFactoryInterface: '@App\Catalog\Infrastructure\Service\AttributeFactory'
+  App\Catalog\Domain\Service\CategoryManagerInterface: '@App\Catalog\Domain\Service\CategoryManager'
+
+  App\Catalog\Domain\Factory\Contract\AttributeFactoryInterface: '@App\Catalog\Domain\Factory\AttributeFactory'
   App\Catalog\Domain\Repository\AttributeReadRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\AttributeReadRepository'
   App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\AttributeWriteRepository'
 
+  App\Catalog\Domain\Factory\Contract\CategoryFactoryInterface: '@App\Catalog\Infrastructure\Service\CategoryFactory'
   App\Catalog\Domain\Repository\CategoryReadRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\CategoryReadRepository'
   App\Catalog\Domain\Repository\CategoryWriteRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\CategoryWriteRepository'
 

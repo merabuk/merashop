@@ -8,20 +8,20 @@ use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 use Stringable;
 
-final class SortOrder implements EquatableInterface, Stringable
+final readonly class SortOrder implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 
-    private int $sortOrder;
+    private int $value;
 
     public function __construct(int $sortOrder)
     {
-        $this->sortOrder = $sortOrder;
+        $this->value = $sortOrder;
     }
 
     public function value(): int
     {
-        return $this->sortOrder;
+        return $this->value;
     }
 
     public static function fromInt(int $sortOrder): self
@@ -31,7 +31,14 @@ final class SortOrder implements EquatableInterface, Stringable
 
     public function next(): self
     {
-        return new self($this->sortOrder + 1);
+        return new self($this->value + 1);
+    }
+
+    public function greaterThan(self|int $sortOrder): bool
+    {
+        $value = $sortOrder instanceof self ? $sortOrder->value() : (int) $sortOrder;
+
+        return $this->value > $value;
     }
 
     protected function getPrimitiveValue(): int

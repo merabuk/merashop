@@ -16,6 +16,7 @@ final readonly class CreateCategoryCommand implements CommandInterface
          * @var array<string, array{name: string, description?: string}>
          */
         public array $translations,
+        public string $adminUlid,
     ) {
     }
 }

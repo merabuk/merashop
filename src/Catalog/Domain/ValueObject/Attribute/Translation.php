@@ -10,12 +10,12 @@ use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Domain\Service\StringValidator;
 use App\Shared\Domain\ValueObject\Locale;
 
-final class Translation
+final readonly class Translation
 {
     public const int NAME_MAX_LENGTH = 255;
 
-    public readonly Locale $locale;
-    public readonly string $name;
+    public Locale $locale;
+    public string $name;
 
     /**
      * @throws InvalidAttributeNameException

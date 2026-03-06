@@ -8,6 +8,7 @@ use App\Catalog\Domain\Entity\Product;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
+use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
 use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
 use App\Catalog\Domain\ValueObject\Product\Id;
@@ -16,6 +17,7 @@ use App\Catalog\Domain\ValueObject\Product\Sku;
 use App\Catalog\Domain\ValueObject\Product\Status;
 use App\Catalog\Domain\ValueObject\Product\Translations;
 use App\Catalog\Domain\ValueObject\Product\Ulid;
+use App\Catalog\Domain\ValueObject\Product\Version;
 use App\Catalog\Domain\ValueObject\ProductAttribute\ArrayValue;
 use App\Catalog\Domain\ValueObject\ProductAttribute\BooleanValue;
 use App\Catalog\Domain\ValueObject\ProductAttribute\Id as ProductAttributeValueId;
@@ -51,7 +53,15 @@ class ProductMapper implements MapperInterface
      */
     public function toDoctrineOrm(object $domain): OrmProduct
     {
+        $this->assertIsType(Product::class, $domain);
+        /* @var Product $domain */
+
         $orm = new OrmProduct();
+
+        $orm->ulid = $domain->getUlid()->value();
+        $orm->version = $domain->getVersion()->value();
+        $orm->createdBy = $domain->getCreatedBy()->value();
+
         $this->mapToExistingOrm($domain, $orm);
 
         return $orm;
@@ -105,6 +115,9 @@ class ProductMapper implements MapperInterface
             price: new Price($orm->priceAmount, $orm->priceCurrency),
             status: Status::fromEnum($orm->status),
             translations: Translations::fromArray($translations),
+            version: Version::fromInt($orm->version),
+            createdBy: AdminUlid::fromString($orm->createdBy),
+            updatedBy: $orm->updatedBy ? AdminUlid::fromString($orm->updatedBy) : null,
             categoryIds: $categoryIds,
             attributeValues: $attributeValues
         );
@@ -120,11 +133,11 @@ class ProductMapper implements MapperInterface
         /* @var Product $domain */
         /* @var OrmProduct $orm */
 
-        $orm->ulid = $domain->getUlid()->value();
         $orm->sku = $domain->getSku()->value();
         $orm->priceAmount = $domain->getPrice()->getAmount();
         $orm->priceCurrency = $domain->getPrice()->getCurrency()->value;
         $orm->status = $domain->getStatus()->value();
+        $orm->updatedBy = $domain->getUpdatedBy()?->value();
 
         $this->mapCategories($domain, $orm);
         $this->mapTranslations($domain, $orm);

@@ -26,6 +26,8 @@ class UpdateProductCommand implements CommandInterface
          * @var array<string, array{name: string, description?: string}>
          */
         public array $translations,
+        public int $version,
+        public string $adminUlid,
     ) {
     }
 }

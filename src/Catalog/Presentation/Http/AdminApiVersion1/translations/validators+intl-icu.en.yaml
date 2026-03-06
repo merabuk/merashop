@@ -4,7 +4,15 @@ admin:
       attribute:
         type:
           invalid: "The selected attribute type is invalid. Allowed values are: {choices}"
-        translations:
+        translations: &translations
           empty: "Translations array cannot be empty"
-        locale:
+        locale: &locale
+          missing: "Missing translations for the following locales: {locales}"
           invalid: "The selected locale is invalid"
+      category:
+        status:
+          invalid: "The selected category status is invalid. Allowed values are: {choices}"
+        translations:
+          <<: *translations
+        locale:
+          <<: *locale

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\Entity;
 
+use App\Catalog\Domain\Exception\Category\InvalidCategoryVersionException;
+use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Category\Id;
 use App\Catalog\Domain\ValueObject\Category\Path;
 use App\Catalog\Domain\ValueObject\Category\Slug;
@@ -11,11 +13,11 @@ use App\Catalog\Domain\ValueObject\Category\SortOrder;
 use App\Catalog\Domain\ValueObject\Category\Status;
 use App\Catalog\Domain\ValueObject\Category\Translations;
 use App\Catalog\Domain\ValueObject\Category\Ulid;
+use App\Catalog\Domain\ValueObject\Category\Version;
 
 class Category
 {
     public function __construct(
-        private readonly ?Id $id,
         private readonly Ulid $ulid,
         private ?Id $parentId,
         private Path $path,
@@ -23,9 +25,16 @@ class Category
         private SortOrder $sortOrder,
         private Status $status,
         private Translations $translations,
+        private Version $version,
+        private readonly AdminUlid $createdBy,
+        private ?AdminUlid $updatedBy = null,
+        private readonly ?Id $id = null,
     ) {
     }
 
+    /**
+     * @throws InvalidCategoryVersionException
+     */
     public static function create(
         Ulid $ulid,
         ?Id $parentId,
@@ -34,9 +43,9 @@ class Category
         SortOrder $sortOrder,
         Status $status,
         Translations $translations,
+        AdminUlid $createdBy,
     ): self {
         return new self(
-            id: null,
             ulid: $ulid,
             parentId: $parentId,
             path: $path,
@@ -44,6 +53,8 @@ class Category
             sortOrder: $sortOrder,
             status: $status,
             translations: $translations,
+            version: Version::initial(),
+            createdBy: $createdBy,
         );
     }
 
@@ -87,19 +98,48 @@ class Category
         return $this->translations;
     }
 
+    public function getVersion(): Version
+    {
+        return $this->version;
+    }
+
+    public function getCreatedBy(): AdminUlid
+    {
+        return $this->createdBy;
+    }
+
+    public function getUpdatedBy(): ?AdminUlid
+    {
+        return $this->updatedBy;
+    }
+
     public function update(
-        ?Id $parentId,
-        Path $path,
-        Slug $slug,
-        SortOrder $sortOrder,
         Status $status,
         Translations $translations,
+        AdminUlid $updatedBy,
     ): void {
-        $this->parentId = $parentId;
-        $this->path = $path;
-        $this->slug = $slug;
-        $this->sortOrder = $sortOrder;
         $this->status = $status;
         $this->translations = $translations;
+        $this->updatedBy = $updatedBy;
+    }
+
+    public function updateSlug(Slug $slug): void
+    {
+        $this->slug = $slug;
+    }
+
+    public function updateParentId(?Id $parentId): void
+    {
+        $this->parentId = $parentId;
+    }
+
+    public function updatePath(Path $path): void
+    {
+        $this->path = $path;
+    }
+
+    public function updateSortOrder(SortOrder $sortOrder): void
+    {
+        $this->sortOrder = $sortOrder;
     }
 }

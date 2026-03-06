@@ -25,6 +25,7 @@ final readonly class CreateProductCommand implements CommandInterface
          * @var array<string, array{name: string, description?: string}>
          */
         public array $translations,
+        public string $adminUlid,
     ) {
     }
 }

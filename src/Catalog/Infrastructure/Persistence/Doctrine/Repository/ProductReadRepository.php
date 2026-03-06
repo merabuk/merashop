@@ -9,18 +9,24 @@ use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Exception\Product\ProductNotFoundException;
 use App\Catalog\Domain\Repository\ProductReadRepositoryInterface;
 use App\Catalog\Domain\ValueObject\Product\Id;
+use App\Catalog\Domain\ValueObject\Product\Sku;
 use App\Catalog\Domain\ValueObject\Product\Ulid;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProduct;
 use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
+use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
+use App\Shared\Infrastructure\Persistence\Doctrine\Repository\ReadRepositoryTrait;
 
 final class ProductReadRepository extends BaseProductRepository implements ProductReadRepositoryInterface
 {
+    use ReadRepositoryTrait;
+
     /**
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
      * @throws ProductNotFoundException
      * @throws InvalidCatalogValueObjectException
+     * @throws InvalidLocaleException
      */
     public function getById(Id $id): Product
     {
@@ -31,6 +37,7 @@ final class ProductReadRepository extends BaseProductRepository implements Produ
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCatalogValueObjectException
+     * @throws InvalidLocaleException
      */
     public function findById(Id $id): ?Product
     {
@@ -43,6 +50,7 @@ final class ProductReadRepository extends BaseProductRepository implements Produ
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCatalogValueObjectException
+     * @throws InvalidLocaleException
      */
     public function findByUlid(Ulid $ulid): ?Product
     {
@@ -51,10 +59,18 @@ final class ProductReadRepository extends BaseProductRepository implements Produ
         return $this->checkAndMapToDomain($orm);
     }
 
+    public function existsBySku(Sku $sku): bool
+    {
+        return $this->_existsBy([
+            $this->_makeCriterion(field: 'sku', value: $sku->value()),
+        ]);
+    }
+
     /**
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCatalogValueObjectException
+     * @throws InvalidLocaleException
      */
     private function checkAndMapToDomain(?object $orm): ?Product
     {

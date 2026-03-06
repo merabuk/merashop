@@ -22,6 +22,7 @@ use Faker\Generator;
 final readonly class AttributeMother
 {
     public const string DEFAULT_ULID = '01KHVRCA0FCCYAQT1P88R317DD';
+    public const string DEFAULT_ADMIN_ULID = '01KHVRCA679BJ6PBXX5N3G6RR5';
 
     public function __construct(
         private AttributeFactoryInterface $attributeFactory,
@@ -32,8 +33,6 @@ final readonly class AttributeMother
     }
 
     /**
-     * Static method for Unit-tests.
-     *
      * @param ?array<string, array{name: string}> $translations
      */
     public static function createWithData(
@@ -55,7 +54,7 @@ final readonly class AttributeMother
                 ? Translations::fromArray($translations)
                 : Translations::fromArray(self::makeFakeTranslations()),
             version: $version ? Version::fromInt($version) : Version::initial(),
-            createdBy: AdminUlid::fromString($createdByUlid ?? '01KHVRCA679BJ6PBXX5N3G6RR5'),
+            createdBy: AdminUlid::fromString($createdByUlid ?? self::DEFAULT_ADMIN_ULID),
             updatedBy: $updatedByUlid ? AdminUlid::fromString($updatedByUlid) : null
         );
     }

@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Catalog\Domain\Service;
 
 use App\Catalog\Domain\Entity\Category;
-use App\Catalog\Domain\Exception\Category\CategoryOwnDescendantConflictException;
-use App\Catalog\Domain\Exception\Category\CategoryOwnParentConflictException;
+use App\Catalog\Domain\Exception\Category\CategoryCannotBeParentOfItselfException;
+use App\Catalog\Domain\Exception\Category\CategoryMoveToChildConflictException;
 
-class CategoryValidator
+final readonly class CategoryValidator implements CategoryValidatorInterface
 {
     /**
-     * @throws CategoryOwnParentConflictException
-     * @throws CategoryOwnDescendantConflictException
+     * @throws CategoryCannotBeParentOfItselfException
+     * @throws CategoryMoveToChildConflictException
      */
     public function canBeAttachedParent(Category $category, ?Category $newParent): void
     {
@@ -21,12 +21,11 @@ class CategoryValidator
         }
 
         if ($newParent->getId()->equals($category->getId())) {
-            throw new CategoryOwnParentConflictException();
+            throw new CategoryCannotBeParentOfItselfException();
         }
 
-        $categoryPathPrefix = $category->getPath()->value().CategoryPathGenerator::PATH_SEPARATOR;
-        if (str_starts_with($newParent->getPath()->value(), $categoryPathPrefix)) {
-            throw new CategoryOwnDescendantConflictException();
+        if ($newParent->getPath()->startsWith($category->getPath())) {
+            throw new CategoryMoveToChildConflictException();
         }
     }
 }

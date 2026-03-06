@@ -11,7 +11,7 @@ use App\Shared\Domain\ValueObject\EquatableInterface;
 use App\Shared\Domain\ValueObject\IdInterface;
 use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
 
-final class Id implements EquatableInterface, IdInterface
+final readonly class Id implements EquatableInterface, IdInterface
 {
     use ValueObjectEqualityTrait;
 
