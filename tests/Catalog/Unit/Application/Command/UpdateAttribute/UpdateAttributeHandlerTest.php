@@ -33,7 +33,7 @@ final class UpdateAttributeHandlerTest extends TestCase
         $attribute = AttributeMother::createWithData(code: 'old-code', id: $fakeId);
 
         $this->readRepository->expects(self::once())->method('getById')->willReturn($attribute);
-        $this->readRepository->expects(self::never())->method('existsByCode');
+        $this->readRepository->expects(self::once())->method('existsByCode')->willReturn(false);
         $this->writeRepository->expects(self::once())
             ->method('save')
             ->with(self::callback(fn (Attribute $updatedAttribute) => $updatedAttribute->getCode()->value() === $newCode))

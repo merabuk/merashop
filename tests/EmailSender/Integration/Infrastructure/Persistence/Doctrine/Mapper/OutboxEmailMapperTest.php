@@ -125,7 +125,7 @@ final class OutboxEmailMapperTest extends KernelTestCase
         self::assertSame($domainOutboxEmail->getLockedAt()?->value(), $ormOutboxEmail->lockedAt);
         self::assertSame($domainOutboxEmail->getErrorMessage()?->value(), $ormOutboxEmail->errorMessage);
 
-        self::assertNull($ormOutboxEmail->driver);
+        self::assertSame(DriverEnum::Log, $ormOutboxEmail->driver);
         self::assertNull($ormOutboxEmail->from);
         self::assertNull($ormOutboxEmail->fromName);
         self::assertNull($ormOutboxEmail->to);

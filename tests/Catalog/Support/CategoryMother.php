@@ -87,7 +87,7 @@ final readonly class CategoryMother
 
         return $this->categoryFactory->createForTest(
             ulid: $ulid ?? $this->ulidGenerator->next(),
-            parentId: $parentId ? Id::fromInt($parentId) : null,
+            parentId: $parentId,
             path: $path ?? Path::SEPARATOR.$slug,
             slug: $slug,
             sortOrder: $sortOrder ?? 0,

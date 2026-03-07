@@ -19,10 +19,13 @@ abstract class BaseCategoryRequest
     #[Assert\Regex(pattern: Slug::REGEX)]
     public ?string $slug;
 
+    #[Assert\Positive]
+    public ?int $parentId = null;
+
     #[Assert\NotBlank]
     #[Assert\Choice(
         callback: 'getCategoryStatuses',
-        message: 'admin.api.v1.category.type.invalid'
+        message: 'admin.api.v1.category.status.invalid'
     )]
     public ?string $status;
 
@@ -39,7 +42,9 @@ abstract class BaseCategoryRequest
                     new Assert\Length(min: 1, max: Translation::NAME_MAX_LENGTH),
                 ],
                 'description' => [
-                    new Assert\Length(max: Translation::DESCRIPTION_MAX_LENGTH),
+                    new Assert\Optional([
+                        new Assert\Length(max: Translation::DESCRIPTION_MAX_LENGTH),
+                    ]),
                 ],
             ],
             allowExtraFields: false

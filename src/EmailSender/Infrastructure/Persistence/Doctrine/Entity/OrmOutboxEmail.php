@@ -42,18 +42,18 @@ class OrmOutboxEmail
     public DriverEnum $driver = DriverEnum::Log;
 
     #[ORM\Column(name: '`from`', type: Types::STRING, length: From::MAX_LENGTH)]
-    public string $from;
+    public ?string $from = null;
 
     #[ORM\Column(type: Types::STRING, length: FromName::MAX_LENGTH, nullable: true)]
     public ?string $fromName = null;
 
     #[ORM\Column(name: '`to`', type: Types::STRING, length: To::MAX_LENGTH)]
-    public string $to;
+    public ?string $to = null;
 
     #[ORM\Column(type: Types::STRING, length: Subject::MAX_LENGTH)]
-    public string $subject;
+    public ?string $subject = null;
     #[ORM\Column(type: Types::TEXT)]
-    public string $body;
+    public ?string $body = null;
 
     /**
      * @var ?array<string, mixed>

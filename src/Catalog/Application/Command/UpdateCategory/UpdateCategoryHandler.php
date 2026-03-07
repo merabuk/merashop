@@ -9,7 +9,7 @@ use App\Catalog\Domain\DTO\CategoryUpdateData;
 use App\Catalog\Domain\Event\CategoryMovedDomainEvent;
 use App\Catalog\Domain\Exception\Category\CategoryAlreadyExistsException;
 use App\Catalog\Domain\Exception\Category\CategoryCannotBeParentOfItselfException;
-use App\Catalog\Domain\Exception\Category\CategoryMoveToChildConflictException;
+use App\Catalog\Domain\Exception\Category\CategoryChildCanNotBeParentConflictException;
 use App\Catalog\Domain\Exception\Category\CategoryNotFoundException;
 use App\Catalog\Domain\Repository\CategoryReadRepositoryInterface;
 use App\Catalog\Domain\Repository\CategoryWriteRepositoryInterface;
@@ -36,7 +36,7 @@ readonly class UpdateCategoryHandler implements CommandHandlerInterface
     /**
      * @throws CategoryAlreadyExistsException
      * @throws CategoryNotFoundException
-     * @throws CategoryMoveToChildConflictException
+     * @throws CategoryChildCanNotBeParentConflictException
      * @throws CategoryCannotBeParentOfItselfException
      * @throws ConcurrencyException
      * @throws UpdateCategoryException
@@ -72,7 +72,7 @@ readonly class UpdateCategoryHandler implements CommandHandlerInterface
         } catch (
             CategoryAlreadyExistsException
             |CategoryNotFoundException
-            |CategoryMoveToChildConflictException
+            |CategoryChildCanNotBeParentConflictException
             |CategoryCannotBeParentOfItselfException
             |ConcurrencyException $e
         ) {

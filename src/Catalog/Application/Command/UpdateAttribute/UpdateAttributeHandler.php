@@ -47,7 +47,7 @@ readonly class UpdateAttributeHandler implements CommandHandlerInterface
             $newCode = Code::fromString($command->code);
 
             if (!$attribute->getCode()->equals($newCode) && $this->readRepository->existsByCode($newCode)) {
-                throw new AttributeAlreadyExistsException();
+                throw AttributeAlreadyExistsException::becauseAttributeCodeAlreadyExists($newCode->value());
             }
 
             $attribute->update(

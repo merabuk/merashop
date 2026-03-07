@@ -40,7 +40,7 @@ readonly class CreateAttributeHandler implements CommandHandlerInterface
             $code = Code::fromString($command->code);
 
             if ($this->readRepository->existsByCode($code)) {
-                throw new AttributeAlreadyExistsException();
+                throw AttributeAlreadyExistsException::becauseAttributeCodeAlreadyExists($code->value());
             }
 
             $ulid = $this->ulidGenerator->next();

@@ -16,7 +16,7 @@ enum ErrorCodeEnum: string
     case OneOfCategoriesNotFound = 'ONE_OF_CATEGORIES_NOT_FOUND';
     case CategoryParentNotFound = 'CATEGORY_PARENT_NOT_FOUND';
     case CategoryCannotBeParentOfItselfConflict = 'CATEGORY_CANNOT_BE_PARENT_OF_ITSELF_CONFLICT';
-    case CategoryMoveToChildConflictException = 'CATEGORY_MOVE_TO_CHILD_CONFLICT';
+    case CategoryChildCanNotBeParentConflictException = 'CATEGORY_MOVE_TO_CHILD_CONFLICT';
     case ProductNotFound = 'PRODUCT_NOT_FOUND';
     case ProductAlreadyExists = 'PRODUCT_ALREADY_EXISTS';
 }

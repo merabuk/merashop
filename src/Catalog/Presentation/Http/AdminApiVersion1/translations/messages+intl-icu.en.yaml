@@ -1,0 +1,13 @@
+admin:
+  api:
+    v1:
+      attribute:
+        create:
+          success: Attribute was successfully created
+        update:
+          success: Attribute was successfully updated
+      category:
+        create:
+          success: Category was successfully created
+        update:
+          success: Category was successfully updated

@@ -13,6 +13,11 @@ final class InvalidAttributeCodeException extends InvalidCatalogValueObjectExcep
         return new self('Attribute code cannot be empty');
     }
 
+    public static function becauseItIsTooLong(): self
+    {
+        return new self('Attribute code cannot be longer than 255 characters');
+    }
+
     public function getErrorCode(): string
     {
         return 'INVALID_ATTRIBUTE_CODE';

@@ -1,0 +1,7 @@
+common:
+  attribute:
+    entityName: Attribute
+  category:
+    entityName: Category
+  product:
+    entityName: Product

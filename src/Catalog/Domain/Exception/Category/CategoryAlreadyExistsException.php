@@ -9,8 +9,26 @@ use App\Catalog\Domain\Exception\CatalogConflictException;
 
 class CategoryAlreadyExistsException extends CatalogConflictException
 {
+    private string $slug = 'slug';
+
+    public static function becauseSlugAlreadyExists(string $slug): self
+    {
+        $exception = new self();
+        $exception->slug = $slug;
+
+        return $exception;
+    }
+
     public function getErrorCode(): string
     {
         return ErrorCodeEnum::CategoryAlreadyExists->value;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getMessageData(): array
+    {
+        return ['slug' => $this->slug];
     }
 }

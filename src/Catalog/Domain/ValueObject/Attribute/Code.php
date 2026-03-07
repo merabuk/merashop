@@ -26,6 +26,9 @@ final readonly class Code implements EquatableInterface, Stringable
         if ('' === $code) {
             throw InvalidAttributeCodeException::becauseItIsEmpty();
         }
+        if (mb_strlen($code) > self::MAX_LENGTH) {
+            throw InvalidAttributeCodeException::becauseItIsTooLong();
+        }
 
         $this->code = $code;
     }

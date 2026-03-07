@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Catalog\Unit\Domain\Service;
 
 use App\Catalog\Domain\Exception\Category\CategoryCannotBeParentOfItselfException;
-use App\Catalog\Domain\Exception\Category\CategoryMoveToChildConflictException;
+use App\Catalog\Domain\Exception\Category\CategoryChildCanNotBeParentConflictException;
 use App\Catalog\Domain\Service\CategoryValidator;
 use App\Tests\Catalog\Support\CategoryMother;
 use PHPUnit\Framework\TestCase;
@@ -48,7 +48,7 @@ final class CategoryValidatorTest extends TestCase
             id: 456
         );
 
-        $this->expectException(CategoryMoveToChildConflictException::class);
+        $this->expectException(CategoryChildCanNotBeParentConflictException::class);
 
         $this->categoryValidator->canBeAttachedParent(category: $category, newParent: $childCategory);
     }

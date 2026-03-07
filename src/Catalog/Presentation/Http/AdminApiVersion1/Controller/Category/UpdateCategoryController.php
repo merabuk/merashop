@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Catalog\Presentation\Http\AdminApiVersion1\Controller\Attribute;
+namespace App\Catalog\Presentation\Http\AdminApiVersion1\Controller\Category;
 
-use App\Catalog\Presentation\Http\AdminApiVersion1\Request\Attribute\UpdateAttributeRequest;
-use App\Catalog\Presentation\Http\AdminApiVersion1\Resource\Attribute\UpdateAttributeResponse;
+use App\Catalog\Presentation\Http\AdminApiVersion1\Request\Category\UpdateCategoryRequest;
+use App\Catalog\Presentation\Http\AdminApiVersion1\Resource\Category\UpdateCategoryResponse;
 use App\Shared\Application\Command\CommandBusInterface;
 use App\Shared\Application\Security\AuthIdentity;
 use App\Shared\Domain\Service\TranslationDomainResolverInterface;
@@ -16,27 +16,23 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
-use Symfony\Component\Messenger\Exception\HandlerFailedException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class UpdateAttributeController extends AbstractController
+class UpdateCategoryController extends AbstractController
 {
     use AuthIdentityAccessTrait;
 
-    public const string ROUTE_NAME = 'catalog.admin.api.v1.attributes.update';
+    public const string ROUTE_NAME = 'catalog.admin.api.v1.categories.update';
 
-    /**
-     * @throws HandlerFailedException
-     */
     #[Route(
-        path: '/attributes/{id}',
+        path: '/categories/{id}',
         name: self::ROUTE_NAME,
         requirements: ['id' => Requirement::POSITIVE_INT],
         defaults: [
-            ApiRouteParams::ENTITY_LABEL => 'common.attribute.entityName',
+            ApiRouteParams::ENTITY_LABEL => 'common.category.entityName',
             ApiRouteParams::ENTITY_DOMAIN => 'catalog',
         ],
         methods: [Request::METHOD_PUT],
@@ -44,7 +40,7 @@ class UpdateAttributeController extends AbstractController
     )]
     public function __invoke(
         int $id,
-        #[MapRequestPayload] UpdateAttributeRequest $request,
+        #[MapRequestPayload] UpdateCategoryRequest $request,
         #[CurrentAuthEntityIdentity] AuthIdentity $identity,
         CommandBusInterface $commandBus,
         TranslatorInterface $translator,
@@ -57,8 +53,8 @@ class UpdateAttributeController extends AbstractController
         $commandBus->execute($command);
 
         return new JsonResponse(
-            data: new UpdateAttributeResponse(message: $translator->trans(
-                id: 'admin.api.v1.attribute.update.success',
+            data: new UpdateCategoryResponse(message: $translator->trans(
+                id: 'admin.api.v1.category.update.success',
                 domain: $translationDomainResolver->resolveIcuDomain('messages')
             ))
         );

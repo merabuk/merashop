@@ -6,15 +6,18 @@ namespace App\Shared\Presentation\Http\EventListener;
 
 use App\Shared\Domain\Enum\ErrorCodeEnum;
 use App\Shared\Domain\Exception\Contracts\AppExceptionInterface;
+use App\Shared\Domain\Exception\Entity\EntityContextAwareExceptionInterface;
 use App\Shared\Domain\Exception\Markers\BadRequestExceptionInterface;
 use App\Shared\Domain\Exception\Markers\ConflictExceptionInterface;
 use App\Shared\Domain\Exception\Markers\ForbiddenExceptionInterface;
 use App\Shared\Domain\Exception\Markers\NotFoundExceptionInterface;
 use App\Shared\Domain\Exception\Markers\UnauthorizedExceptionInterface;
 use App\Shared\Domain\Service\TranslationDomainResolverInterface;
+use App\Shared\Presentation\Http\ApiRouteParams;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -53,7 +56,7 @@ class ApiExceptionListener
             return;
         }
 
-        $response = $this->determineResponse($exception);
+        $response = $this->determineResponse($exception, $request);
 
         $event->setResponse($response);
     }
@@ -65,13 +68,13 @@ class ApiExceptionListener
             || str_starts_with($path, self::INTERNAL_API_PREFIX);
     }
 
-    private function determineResponse(Throwable $exception): JsonResponse
+    private function determineResponse(Throwable $exception, Request $request): JsonResponse
     {
         return match (true) {
-            $exception instanceof AppExceptionInterface => $this->handleAppException($exception),
+            $exception instanceof AppExceptionInterface => $this->handleAppException($exception, $request),
             $exception instanceof AccessDeniedException => $this->handleAccessException($exception),
             $exception instanceof HttpExceptionInterface => $this->handleHttpException($exception),
-            $exception instanceof HandlerFailedException => $this->handleHandlerFailedException($exception),
+            $exception instanceof HandlerFailedException => $this->handleHandlerFailedException($exception, $request),
             default => $this->logAndResponseWithBaseUnexpectedError($exception),
         };
     }
@@ -147,22 +150,36 @@ class ApiExceptionListener
         );
     }
 
-    public function handleHandlerFailedException(HandlerFailedException $exception): JsonResponse
+    public function handleHandlerFailedException(HandlerFailedException $exception, Request $request): JsonResponse
     {
         $previousException = $exception->getPrevious();
 
         if ($previousException instanceof AppExceptionInterface) {
-            return $this->handleAppException($previousException);
+            return $this->handleAppException($previousException, $request);
         }
 
         return $this->logAndResponseWithBaseUnexpectedError($exception);
     }
 
-    public function handleAppException(AppExceptionInterface $exception): JsonResponse
+    public function handleAppException(AppExceptionInterface $exception, Request $request): JsonResponse
     {
         $statusCode = $this->getStatusCode($exception);
         $errorCode = $exception->getErrorCode();
         $errorMessageData = $exception->getMessageData();
+
+        if (
+            $exception instanceof EntityContextAwareExceptionInterface
+            && $request->attributes->has(ApiRouteParams::ENTITY_LABEL)
+        ) {
+            $labelKey = $request->attributes->get(ApiRouteParams::ENTITY_LABEL, 'entity');
+            $domain = $request->attributes->get(ApiRouteParams::ENTITY_DOMAIN, 'exceptions');
+            $translatedEntityName = $this->translator->trans(
+                id: $labelKey,
+                domain: $this->translationDomainResolver->resolveIcuDomain($domain)
+            );
+
+            $errorMessageData[$exception::getEntityNameKey()] = $translatedEntityName;
+        }
 
         return $this->baseResponse(
             errorCode: $errorCode,

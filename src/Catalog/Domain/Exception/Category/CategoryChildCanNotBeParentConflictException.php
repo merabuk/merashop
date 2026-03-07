@@ -6,10 +6,10 @@ use App\Catalog\Domain\Enum\ErrorCodeEnum;
 use App\Catalog\Domain\Exception\CatalogDomainException;
 use App\Shared\Domain\Exception\Markers\ConflictExceptionInterface;
 
-class CategoryMoveToChildConflictException extends CatalogDomainException implements ConflictExceptionInterface
+class CategoryChildCanNotBeParentConflictException extends CatalogDomainException implements ConflictExceptionInterface
 {
     public function getErrorCode(): string
     {
-        return ErrorCodeEnum::CategoryMoveToChildConflictException->value;
+        return ErrorCodeEnum::CategoryChildCanNotBeParentConflictException->value;
     }
 }

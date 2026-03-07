@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Catalog\Functional\Presentation\Http\AdminApiVersion1\Controller\Attribute;
 
+use App\Catalog\Domain\Enum\Attribute\TypeEnum;
+use App\Catalog\Domain\Enum\ErrorCodeEnum;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Presentation\Http\AdminApiVersion1\Controller\Attribute\UpdateAttributeController;
-use App\Shared\Domain\Enum\ErrorCodeEnum;
 use App\Shared\Domain\Enum\ErrorCodeEnum as SharedErrorCodeEnum;
 use App\Tests\Catalog\Support\Traits\AttributeFactoryTrait;
 use App\Tests\Shared\Support\Traits\ApiAuthTrait;
@@ -36,6 +37,25 @@ final class UpdateAttributeControllerTest extends WebTestCase
         parent::tearDown();
     }
 
+    public function testItReturnsForbiddenForGuests(): void
+    {
+        $client = self::createClient();
+
+        $this->requestJson(client: $client, method: self::METHOD, uri: $this->getUrl(['id' => 123]));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testItForbiddenForRegularUser(): void
+    {
+        $client = self::createClient();
+        $this->loginAsUser();
+
+        $this->requestJson(client: $client, method: self::METHOD, uri: $this->getUrl(['id' => 123]));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
     public function testItSuccessfullyUpdatesAttribute(): void
     {
         $client = self::createClient();
@@ -47,7 +67,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
             'code' => 'brand_updated',
             'type' => 'string',
             'version' => $attribute->getVersion()->value(),
-            'translations' => ['en' => ['name' => 'Brand Updated']],
+            'translations' => self::validTranslations(),
         ];
 
         $this->requestJson(
@@ -58,6 +78,10 @@ final class UpdateAttributeControllerTest extends WebTestCase
         );
 
         $this->assertResponseIsSuccessful();
+
+        $data = $this->getResponseData($client);
+        self::assertArrayHasKey('message', $data);
+        $this->assertStringContainsString('Attribute was successfully updated', $data['message']);
 
         $updated = $this->getReadRepository()->findById($attribute->getId());
         $this->assertSame('brand_updated', $updated->getCode()->value());
@@ -73,7 +97,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
         $payload = [
             'code' => 'new',
             'type' => 'string',
-            'translations' => ['en' => ['name' => 'Name']],
+            'translations' => self::validTranslations(),
             'version' => $attribute->getVersion()->value() + 1,
         ];
 
@@ -86,7 +110,43 @@ final class UpdateAttributeControllerTest extends WebTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
         $data = $this->getResponseData($client);
-        $this->assertSame(ErrorCodeEnum::ConcurrencyError->value, $data['code']);
+        $this->assertExceptionMessage(
+            data: $data,
+            expectedCode: SharedErrorCodeEnum::ConcurrencyError->value,
+            expectedContainMessage: 'The Attribute has been already modified. Please refresh the page and try again'
+        );
+    }
+
+    public function testItReturns409WhenCodeAlreadyExists(): void
+    {
+        $client = self::createClient();
+        $this->loginAsAdmin();
+
+        $existingAttribute = $this->getAttributeFixture()->create(code: 'existing');
+        $attribute = $this->getAttributeFixture()->create(code: 'old');
+
+        $payload = [
+            'code' => $existingAttribute->getCode()->value(),
+            'type' => TypeEnum::String->value,
+            'translations' => self::validTranslations(),
+            'version' => $attribute->getVersion()->value(),
+        ];
+
+        $this->requestJson(
+            client: $client,
+            method: self::METHOD,
+            uri: $this->getUrl(['id' => $attribute->getId()->value()]),
+            payload: $payload
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
+
+        $data = $this->getResponseData($client);
+        $this->assertExceptionMessage(
+            data: $data,
+            expectedCode: ErrorCodeEnum::AttributeAlreadyExists->value,
+            expectedContainMessage: sprintf('Attribute with code "%s" already exists', $payload['code'])
+        );
     }
 
     #[DataProvider('invalidAttributeProvider')]
@@ -117,19 +177,38 @@ final class UpdateAttributeControllerTest extends WebTestCase
     public static function invalidAttributeProvider(): iterable
     {
         yield 'empty code' => [
-            'payload' => ['code' => '', 'type' => 'string', 'translations' => ['en' => ['name' => 'Name']]],
+            'payload' => [
+                'code' => '',
+                'type' => 'string',
+                'translations' => self::validTranslations(),
+            ],
             'expectedErrorFields' => ['code'],
         ];
         yield 'invalid type' => [
-            'payload' => ['code' => 'brand', 'type' => 'wrong_type', 'translations' => ['en' => ['name' => 'Name']]],
+            'payload' => [
+                'code' => 'brand',
+                'type' => 'wrong_type',
+                'translations' => self::validTranslations(),
+            ],
             'expectedErrorFields' => ['type'],
         ];
-        yield 'invalid locale' => [
-            'payload' => ['code' => 'brand', 'type' => 'string', 'translations' => ['xx' => ['name' => 'Name']]],
-            'expectedErrorFields' => ['translations[xx]'],
+        yield 'invalid locale and missed required locales' => [
+            'payload' => [
+                'code' => 'brand',
+                'type' => 'string',
+                'translations' => [
+                    'xx' => ['name' => 'Name'],
+                ],
+            ],
+            'expectedErrorFields' => ['translations', 'translations[xx]'],
         ];
         yield 'invalid version' => [
-            'payload' => ['code' => 'brand', 'type' => 'string', 'version' => -1],
+            'payload' => [
+                'code' => 'brand',
+                'type' => 'string',
+                'version' => -1,
+                'translations' => self::validTranslations(),
+            ],
             'expectedErrorFields' => ['version'],
         ];
     }
@@ -154,13 +233,21 @@ final class UpdateAttributeControllerTest extends WebTestCase
         );
     }
 
+    private function getUrl(array $params = []): string
+    {
+        return $this->getBaseUrl(self::ROUTE_NAME, $params);
+    }
+
     private function getReadRepository(): AttributeReadRepositoryInterface
     {
         return self::getContainer()->get(AttributeReadRepositoryInterface::class);
     }
 
-    private function getUrl(array $params = []): string
+    private static function validTranslations(): array
     {
-        return $this->getBaseUrl(self::ROUTE_NAME, $params);
+        return [
+            'en' => ['name' => 'Brand'],
+            'uk' => ['name' => 'Бренд'],
+        ];
     }
 }

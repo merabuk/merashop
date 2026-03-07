@@ -8,7 +8,7 @@ use App\Catalog\Domain\DTO\CategoryUpdateData;
 use App\Catalog\Domain\Entity\Category;
 use App\Catalog\Domain\Exception\Category\CategoryAlreadyExistsException;
 use App\Catalog\Domain\Exception\Category\CategoryCannotBeParentOfItselfException;
-use App\Catalog\Domain\Exception\Category\CategoryMoveToChildConflictException;
+use App\Catalog\Domain\Exception\Category\CategoryChildCanNotBeParentConflictException;
 use App\Catalog\Domain\Exception\Category\InvalidCategoryPathException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Repository\CategoryReadRepositoryInterface;
@@ -31,7 +31,7 @@ final readonly class CategoryManager implements CategoryManagerInterface
 
     /**
      * @throws CategoryAlreadyExistsException
-     * @throws CategoryMoveToChildConflictException
+     * @throws CategoryChildCanNotBeParentConflictException
      * @throws CategoryCannotBeParentOfItselfException
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
@@ -54,7 +54,7 @@ final readonly class CategoryManager implements CategoryManagerInterface
 
     /**
      * @throws CategoryAlreadyExistsException
-     * @throws CategoryMoveToChildConflictException
+     * @throws CategoryChildCanNotBeParentConflictException
      * @throws CategoryCannotBeParentOfItselfException
      * @throws InvalidCategoryPathException
      */
@@ -92,7 +92,9 @@ final readonly class CategoryManager implements CategoryManagerInterface
         $slugChanged = !$category->getSlug()->equals($newSlug);
 
         if ($slugChanged) {
-            !$this->readRepository->existsBySlug($newSlug) ?: throw new CategoryAlreadyExistsException();
+            if ($this->readRepository->existsBySlug($newSlug)) {
+                throw CategoryAlreadyExistsException::becauseSlugAlreadyExists($newSlug->value());
+            }
 
             $category->updateSlug($newSlug);
         }

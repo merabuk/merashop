@@ -6,13 +6,13 @@ namespace App\Catalog\Domain\Service;
 
 use App\Catalog\Domain\Entity\Category;
 use App\Catalog\Domain\Exception\Category\CategoryCannotBeParentOfItselfException;
-use App\Catalog\Domain\Exception\Category\CategoryMoveToChildConflictException;
+use App\Catalog\Domain\Exception\Category\CategoryChildCanNotBeParentConflictException;
 
 final readonly class CategoryValidator implements CategoryValidatorInterface
 {
     /**
      * @throws CategoryCannotBeParentOfItselfException
-     * @throws CategoryMoveToChildConflictException
+     * @throws CategoryChildCanNotBeParentConflictException
      */
     public function canBeAttachedParent(Category $category, ?Category $newParent): void
     {
@@ -25,7 +25,7 @@ final readonly class CategoryValidator implements CategoryValidatorInterface
         }
 
         if ($newParent->getPath()->startsWith($category->getPath())) {
-            throw new CategoryMoveToChildConflictException();
+            throw new CategoryChildCanNotBeParentConflictException();
         }
     }
 }

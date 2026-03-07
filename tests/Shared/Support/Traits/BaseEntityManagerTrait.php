@@ -14,7 +14,7 @@ trait BaseEntityManagerTrait
 {
     abstract protected function getEntityManager(): EntityManager;
 
-    protected function findOrmEntity(string $entityClass, int|string $id): object
+    protected function findOrmEntity(string $entityClass, int|string $id): ?object
     {
         return $this->getEntityManager()->find($entityClass, $id);
     }

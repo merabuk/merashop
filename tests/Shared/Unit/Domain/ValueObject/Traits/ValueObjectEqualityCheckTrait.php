@@ -4,6 +4,7 @@ namespace App\Tests\Shared\Unit\Domain\ValueObject\Traits;
 
 use App\Shared\Domain\ValueObject\EquatableInterface;
 use BackedEnum;
+use DateTimeImmutable;
 use PHPUnit\Framework\Assert;
 
 trait ValueObjectEqualityCheckTrait
@@ -51,13 +52,18 @@ trait ValueObjectEqualityCheckTrait
         $this->baseEqualityCheckAssertion($vo1, $vo2, $vo3);
     }
 
-    protected function assertDateTimeVOProvidesEqualityCheck(string $className, string $value, string $anotherValue): void
-    {
+    protected function assertDateTimeVOProvidesEqualityCheck(
+        string $className,
+        string|DateTimeImmutable $value,
+        string|DateTimeImmutable $anotherValue,
+    ): void {
+        $data = is_string($value) ? new DateTimeImmutable($value) : $value;
+        $anotherData = is_string($anotherValue) ? new DateTimeImmutable($anotherValue) : $anotherValue;
         $this->assertHasStaticMethod($className, 'fromDateTime');
 
-        $vo1 = $className::fromDateTime($value);
-        $vo2 = $className::fromDateTime($value);
-        $vo3 = $className::fromDateTime($anotherValue);
+        $vo1 = $className::fromDateTime($data);
+        $vo2 = $className::fromDateTime($data);
+        $vo3 = $className::fromDateTime($anotherData);
 
         $this->assertVoProvidesEqualityCheck($vo1);
 

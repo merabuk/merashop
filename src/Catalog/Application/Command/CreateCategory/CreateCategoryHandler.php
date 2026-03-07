@@ -47,7 +47,7 @@ readonly class CreateCategoryHandler implements CommandHandlerInterface
             $slug = Slug::fromString($command->slug);
 
             if ($this->readRepository->existsBySlug($slug)) {
-                throw new CategoryAlreadyExistsException();
+                throw CategoryAlreadyExistsException::becauseSlugAlreadyExists($slug->value());
             }
 
             $path = Path::generate($slug, $parent?->getPath());

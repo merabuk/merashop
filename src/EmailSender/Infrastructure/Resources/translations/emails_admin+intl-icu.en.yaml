@@ -1,1 +1,1 @@
-admin_created.subject: 'Welcome to {{ appName }} admin panel'
+admin_created.subject: "Welcome to {appName} admin panel"

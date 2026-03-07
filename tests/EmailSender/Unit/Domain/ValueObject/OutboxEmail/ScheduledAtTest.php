@@ -24,12 +24,10 @@ final class ScheduledAtTest extends TestCase
 
     public function testItCanBeCreatedForNow(): void
     {
-        $before = new DateTimeImmutable();
-        $vo = ScheduledAt::now();
-        $after = new DateTimeImmutable();
+        $clock = new MockClock('2024-01-01 10:00:00');
+        $vo = ScheduledAt::now($clock);
 
-        self::assertGreaterThanOrEqual($before, $vo->value());
-        self::assertLessThanOrEqual($after, $vo->value());
+        self::assertTrue($vo->equalsWithDateTime($clock->now()));
     }
 
     public function testItProvidesEqualityCheck(): void

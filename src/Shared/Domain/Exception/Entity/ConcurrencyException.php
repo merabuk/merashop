@@ -8,8 +8,10 @@ use App\Shared\Domain\Enum\ErrorCodeEnum;
 use App\Shared\Domain\Exception\LogicException;
 use App\Shared\Domain\Exception\Markers\ConflictExceptionInterface;
 
-class ConcurrencyException extends LogicException implements ConflictExceptionInterface
+class ConcurrencyException extends LogicException implements ConflictExceptionInterface, EntityContextAwareExceptionInterface
 {
+    private const string ENTITY_NAME_KEY = 'entityName';
+
     private string $entityName = 'entity';
 
     public function getErrorCode(): string
@@ -30,7 +32,12 @@ class ConcurrencyException extends LogicException implements ConflictExceptionIn
     public function getMessageData(): array
     {
         return [
-            'entityName' => $this->entityName,
+            self::ENTITY_NAME_KEY => $this->entityName,
         ];
+    }
+
+    public static function getEntityNameKey(): string
+    {
+        return self::ENTITY_NAME_KEY;
     }
 }
