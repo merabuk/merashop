@@ -1,5 +1,7 @@
-.PHONY: help up down build app-sh grumphp php-cs-fixer phpstan test-prepare test init
+.PHONY: help init up down build app-sh grumphp php-cs-fixer phpstan test markdownlint
 .DEFAULT_GOAL := help
+SHELL := /usr/bin/env bash
+SCRIPT_DIR := ./scripts
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -36,3 +38,6 @@ phpstan:
 
 test:
 	docker compose exec app vendor/bin/phpunit
+
+markdownlint:
+	@bash $(SCRIPT_DIR)/lint-markdown.sh
