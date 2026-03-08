@@ -30,60 +30,73 @@ The system is divided into high-level modules located in `src/`:
 
 Every module within `src/` must follow this standardized structure:
 
-- **Domain**: Contains the core business logic.
-    - `Entity` - domain entities with business logic.
-    - `Enum` - common enumerations
-    - `Event` - domain events.
-    - `Exception` - domain exceptions and marker-interfaces.
-    - `Factory` - domain factories (simple implementations without external dependencies).
-        - `Contract` - domain factories contracts.
-    - `Repository` - interfaces (definitions only).
-    - `Service` - domain services (simple implementations without external dependencies, interfaces).
-    - `ValueObject` - value objects (primitives).
-- **Application**: Contains use cases and orchestration.
-    - `Command` - application commands and their handlers.
-    - `DTO` (Data Transfer Objects).
-    - `EventHandler` - application event listeners.
-    - `Query` - application queries and their handlers.
-    - `Scheduler` - application schedulers (cron tasks).
-    - `Exception` - application exceptions.
-    - `Service` - application services (simple implementations without external dependencies)
-- **Infrastructure**: External concerns and technical implementations.
-    - `Persistence` - database access.
-        - `Doctrine` - ORM implementation.
-            - `Entity` - ORM entities.
-            - `Mapper` - ORM <=> Domain mappers. Explicit field definitions
-            - `Migrations` - database migrations.
-            - `Repository` - implementations of domain repository interfaces.
-            - `Type` - custom DB datatypes.
-    - `Scheduler` - scheduler provider with configuration.
-    - `Service` - infrastructure services (complex implementations with external dependencies).
-    - `Adapter` for external services.
-- **Presentation**: Entry points to the module.
-    - `Console` - CLI commands, and Console-specific event listeners.
-        - `EventListener` - specific event listeners (Console command/response)
-    - `Http` - Web API controllers, requests, resources, and HTTP-specific event listeners.
-        - `AdminApiVersion<N>` - admin API versioning.
-        - `ApiVersion<N>` - API versioning.
-            - `Controller` - API controllers.
-            - `Request` - API requests and validation. 
-            - `Resource` - API resources and normalizers.
-        - `Web` - Http pages and views.
-        - `config` - API routing configuration.
-        - `EventListener` - specific event listeners (API request/response, KernelExceptions etc.).
+```bash
+src/ModuleName/Domain/ # Core business logic (Pure PHP)
+├── Entity             # Domain entities with invariants
+├── Enum               # Common enumerations
+├── Event              # Domain events (internal)
+├── Exception          # Domain exceptions & markers
+├── Factory            # Domain factories
+│   └── Contracts      # Factory interfaces
+├── Repository         # Repository interfaces (definitions only)
+├── Service            # Pure domain services (logic only)
+└── ValueObject        # Objects grouped by entities
+
+src/ModuleName/Application/ # Use cases and orchestration
+├── Command                 # Commands and their Handlers
+├── DTO                     # Simple data containers for input/output
+├── EventHandler            # Listeners for internal and shared events
+├── Exception               # Application-level exceptions
+├── Query                   # Queries and their Handlers
+└── Service                 # Simple app services (orchestrators)
+
+src/ModuleName/Infrastructure/ # Technical implementations
+├── Adapter                    # External API clients, wrappers
+├── Persistence                # Database logic
+│   └── Doctrine
+│       ├── Entity             # ORM mapping entities
+│       ├── Mapper             # Domain <=> ORM transformation logic
+│       ├── Repository         # Implementation of Domain Repositories
+│       └── Type               # Custom DB types (Enums, VOs)
+├── Scheduler                  # Cron/Scheduled tasks definitions
+└── Service                    # Services with external dependencies
+
+src/ModuleName/Presentation/ # Entry points
+├── Console                  # CLI Commands
+└── Http                     # Web API
+    ├── ApiVersion1          # Public API
+    │   ├── Controller       # Controllers
+    │   ├── Request          # Validated Request DTOs (MapRequestPayload)
+    │   ├── Resource         # Response formatters (JsonSerializable)
+    │   └── translations     # Local translations for this API version
+    ├── AdminApiVersion1     # Admin API
+    ├── InternalApiVersion1  # M2M/Internal API
+    └── EventListener        # Request/Response listeners, exception handling
+```
+
+Also, every module can have its own specific folders which are not listed above
+```bash
+src/EmailSender/Infrastructure/
+│ ...
+├── Mailer           # mailer implementation
+├── Resources        # resources for the module
+│   ├── templates    # templates for the module (emails)
+│   └── translations # translations for the module (emails)
+│ ...
+```
+```bash
+src/Shared/Domain/
+│ ...
+├── Bus           # common bus definitions
+├── Criteria      # base criteria for reusing in code
+│   ├── Filtering # filtering criteria
+│   ├── Listing   # listing criteria
+│   ├── Paging    # paging criteria
+│   └── Sorting   # sorting criteria
+│ ...
+```
 
 The translation folder can be located in various places (but correct ones) and named `translations`.
-Also, every module can have its own specific folders which are not listed above. (e.g. `src/EmailSender/Infrastructure/Resources`, `src/EmailSender/Infrastructure/Mailer`)
-
-- **Shared**
-    - **Domain**
-        - **Criteria**: Search & listing abstractions.
-            - `Listing`: Base `Criteria` object.
-            - `Paging`, `Sorting`, `Filtering`: Value objects for specific concerns.
-    - **Presentation**
-        - **Http**
-            - **Attribute**: Custom PHP attributes for controller arguments.
-            - **Resolver**: Symfony Value Resolvers logic.
 
 ## 3. Coding Standards & Constraints
 
