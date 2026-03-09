@@ -1,52 +1,41 @@
 ##################################
-# DEPENDENCIES STAGE
+# BASE STAGE (Extensions & OS Packages)
 ##################################
-FROM php:8.4-fpm-alpine3.21 AS dependencies
+FROM php:8.4-fpm-alpine3.21 AS base
 
 WORKDIR /var/www
 
-# Install system packages with cache mount for faster rebuilds
-RUN --mount=type=cache,target=/var/cache/apk \
-    apk add --no-cache \
-        $PHPIZE_DEPS \
-        curl-dev \
-        libxml2-dev \
-        oniguruma-dev \
-        postgresql-dev \
-        imagemagick-dev \
-        icu-dev \
-        libzip-dev \
-        libjpeg-turbo-dev \
-        libwebp-dev \
-        libpng \
-        libheif \
-        libde265 \
-        rabbitmq-c-dev
+# Copy the extension installer
+COPY --from=mlocati/php-extension-installer:latest /usr/bin/install-php-extensions /usr/bin/install-php-extensions
 
-# Install PHP extensions in parallel where possible (except imagick)
-RUN docker-php-ext-install -j$(nproc) \
-        exif \
-        pdo_pgsql \
-        intl \
-        zip \
-        opcache
+# Install ALL extensions
+# Create a single layer that will be cached
+RUN install-php-extensions \
+    exif \
+    pdo_pgsql \
+    intl \
+    zip \
+    opcache \
+    apcu \
+    amqp \
+    redis \
+    imagick \
+    gd \
+    bcmath
 
-RUN --mount=type=cache,target=/tmp/pear/cache \
-    pecl install \
-        apcu \
-        amqp \
-        redis \
-    && docker-php-ext-enable \
-        apcu \
-        amqp \
-        redis
+# System utilities required for operation (runtime)
+RUN apk add --no-cache \
+    su-exec \
+    fcgi \
+    imagemagick \
+    ghostscript \
+    bash \
+    icu-data-full
 
 ##################################
-# BUILD STAGE
+# BUILD STAGE (Composer & Code)
 ##################################
-FROM php:8.4-fpm-alpine3.21 AS build
-
-WORKDIR /var/www
+FROM base AS build
 
 ARG GROUP_ID=1337
 ARG GROUP_NAME=www
@@ -56,33 +45,9 @@ ARG USER_NAME=www
 RUN addgroup -g ${GROUP_ID} -S ${GROUP_NAME} && \
     adduser -u ${USER_ID} -D -S -G ${GROUP_NAME} ${USER_NAME}
 
-# Install runtime packages with cache mount
-RUN --mount=type=cache,target=/var/cache/apk \
-    apk add --no-cache \
-        icu-dev \
-        libpq \
-        libzip \
-        su-exec \
-        fcgi \
-        imagemagick \
-        libjpeg-turbo \
-        libwebp \
-        libpng \
-        libheif \
-        libde265 \
-        rabbitmq-c-dev
-
-# Copy dependencies from the dependencies stage early
-COPY --from=dependencies /usr/local/lib/php/extensions /usr/local/lib/php/extensions
-COPY --from=dependencies /usr/local/etc/php /usr/local/etc/php
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-RUN chmod u+s /sbin/su-exec
-
-# Use production PHP configuration
-RUN mv "${PHP_INI_DIR}/php.ini-production" "${PHP_INI_DIR}/php.ini"
-
-# Copy custom configurations
+# Copy PHP configurations
 COPY ./docker/app/php/conf.d/zzz-settings-override.ini /usr/local/etc/php/conf.d/zzz-settings-override.ini
 
 # Install composer dependencie packages with cache mount
@@ -91,15 +56,20 @@ RUN --mount=type=cache,target=/var/cache/apk \
       git \
       openssh
 
-# Copy composer files first for better caching
+# Copy composer files for dependency caching
 COPY composer.json composer.lock ./
 
 # Install composer dependencies with cache mount
 RUN --mount=type=cache,target=/root/.composer/cache \
-    composer install --no-interaction --no-scripts
+    composer install --no-interaction --no-scripts --no-autoloader
 
 # Copy application code after composer dependencies
 COPY --chown="${GROUP_NAME}:${USER_NAME}" ./ ./
+
+# Finalizing the bootloader
+RUN composer dump-autoload \
+      --optimize \
+      --classmap-authoritative
 
 # Make startup script executable
 RUN chmod +x "./docker/app/shell/php-fpm-healthcheck.sh"
@@ -112,34 +82,18 @@ FROM build AS local
 ARG APP_RUNTIME_ENV
 ENV APP_RUNTIME_ENV=${APP_RUNTIME_ENV}
 
+# create folder for xdebug logs
+RUN mkdir -p /var/log/xdebug && chmod 777 /var/log/xdebug
+
 COPY ./docker/app/php/conf.d/zzz-settings-override-local.ini /usr/local/etc/php/conf.d/zzz-settings-override.ini
+
+# Install XDebug
+RUN install-php-extensions xdebug
 
 # Optimize autoloader for local development
 RUN composer dump-autoload \
       --optimize \
       --classmap-authoritative
-
-## Install XDebug using php-extension-installer for faster installation
-#RUN --mount=type=bind,from=mlocati/php-extension-installer:latest,source=/usr/bin/install-php-extensions,target=/usr/local/bin/install-php-extensions \
-#    install-php-extensions xdebug
-
-RUN mkdir -p /var/log/xdebug \
-    && touch /var/log/xdebug/xdebug.log \
-    && chmod 777 /var/log/xdebug/xdebug.log
-
-# Set up dependencies for compilation
-RUN --mount=type=cache,target=/var/cache/apk \
-    apk add --no-cache --virtual .build-deps \
-        $PHPIZE_DEPS \
-        linux-headers
-
-# Install Xdebug using PECL (for Windows)
-RUN --mount=type=cache,target=/tmp/pear/cache \
-    pecl install xdebug \
-    && docker-php-ext-enable xdebug
-
-# Clean up the dependencies for compilation to reduce the image size
-RUN apk del .build-deps
 
 ENTRYPOINT ["sh", "./docker/app/shell/startup.sh"]
 

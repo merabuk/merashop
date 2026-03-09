@@ -11,3 +11,6 @@ admin:
           success: Category was successfully created
         update:
           success: Category was successfully updated
+      temporary_image:
+        upload:
+          success: Temporary image was successfully uploaded

@@ -20,6 +20,7 @@ class Product
     /**
      * @param CategoryId[]            $categoryIds
      * @param ProductAttributeValue[] $attributeValues
+     * @param ProductImage[]          $images
      */
     public function __construct(
         private readonly ?Id $id,
@@ -33,6 +34,7 @@ class Product
         private ?AdminUlid $updatedBy = null,
         private array $categoryIds = [],
         private array $attributeValues = [],
+        private array $images = [],
     ) {
     }
 
@@ -127,6 +129,12 @@ class Product
         return $this->attributeValues;
     }
 
+    /** @return ProductImage[] */
+    public function getImages(): array
+    {
+        return $this->images;
+    }
+
     /**
      * @param CategoryId[]            $categoryIds
      * @param ProductAttributeValue[] $attributeValues
@@ -152,5 +160,37 @@ class Product
     public function addAttributeValue(ProductAttributeValue $attributeValue): void
     {
         $this->attributeValues[] = $attributeValue;
+    }
+
+    public function addImage(ProductImage $image): void
+    {
+        if ($this->checkImagesContains($image)) {
+            return;
+        }
+
+        if ($image->isMain()->isTrue()) {
+            $this->resetMainImage();
+        }
+
+        if (empty($this->images)) {
+            $image->setAsMain();
+        }
+
+        $this->images[] = $image;
+    }
+
+    private function resetMainImage(): void
+    {
+        foreach ($this->images as $image) {
+            $image->unsetMain();
+        }
+    }
+
+    private function checkImagesContains(ProductImage $image): bool
+    {
+        return array_any(
+            array: $this->images,
+            callback: fn (ProductImage $existingImage) => $existingImage->getUlid()->equals($image->getUlid())
+        );
     }
 }

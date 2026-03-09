@@ -1,0 +1,14 @@
+# Read the documentation: https://github.com/1up-lab/OneupFlysystemBundle
+oneup_flysystem:
+  adapters:
+    catalog.adapter:
+      local:
+        location: '%kernel.project_dir%/var/storage/catalog'
+  filesystems:
+    catalog.filesystem:
+      adapter: catalog.adapter
+
+# need to config S3 adapter
+#when@prod:
+#  adapters:
+#    catalog.adapter:

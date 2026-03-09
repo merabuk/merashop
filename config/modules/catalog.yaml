@@ -1,4 +1,7 @@
 services:
+  catalog.storage.filesystem:
+    alias: 'oneup_flysystem.catalog.filesystem_filesystem'
+
   catalog.proxy_reference_provider:
     class: App\Shared\Infrastructure\Persistence\Doctrine\Provider\DoctrineProxyReferenceProvider
     arguments:
@@ -11,6 +14,10 @@ services:
   App\Catalog\Infrastructure\Persistence\Doctrine\Mapper\ProductMapper:
     arguments:
       $referenceProvider: '@catalog.proxy_reference_provider'
+
+  App\Catalog\Infrastructure\Service\CatalogFlysystemStorage:
+    arguments:
+      $filesystem: '@catalog.storage.filesystem'
 
   App\Catalog\Domain\Service\CategoryValidatorInterface: '@App\Catalog\Domain\Service\CategoryValidator'
   App\Catalog\Domain\Service\CategoryManagerInterface: '@App\Catalog\Domain\Service\CategoryManager'

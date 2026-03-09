@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Shared\Presentation\Http\Resolver;
 
+use App\Shared\Infrastructure\Exception\Traits\UnprocessableEntityErrorTrait;
 use App\Shared\Presentation\Http\Attribute\MapPagination;
 use App\Shared\Presentation\Http\Request\PaginationRequest;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final readonly class PaginationRequestResolver implements ValueResolverInterface
 {
+    use UnprocessableEntityErrorTrait;
+
     public function __construct(
         private ValidatorInterface $validator,
     ) {
@@ -47,7 +47,7 @@ final readonly class PaginationRequestResolver implements ValueResolverInterface
         $violations = $this->validator->validate($dto);
 
         if (count($violations) > 0) {
-            throw new HttpException(statusCode: Response::HTTP_UNPROCESSABLE_ENTITY, message: 'Validation failed', previous: new ValidationFailedException($dto, $violations));
+            throw $this->makeSystemValidationException(message: 'Map Pagination request validation failed', value: $dto, violations: $violations);
         }
 
         yield $dto;

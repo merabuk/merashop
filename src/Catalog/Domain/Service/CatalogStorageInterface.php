@@ -1,0 +1,19 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Catalog\Domain\Service;
+
+use App\Catalog\Domain\ValueObject\TemporaryImage\Ulid;
+use App\Shared\Domain\Exception\Services\Storage\FileStorageException;
+use App\Shared\Domain\Service\FileStorageInterface;
+use App\Shared\Domain\ValueObject\RawFile;
+use App\Shared\Domain\ValueObject\RelativeFilePath;
+
+interface CatalogStorageInterface extends FileStorageInterface
+{
+    /**
+     * @throws FileStorageException
+     */
+    public function generateTemporaryImageStoragePath(Ulid $ulid, RawFile $file): RelativeFilePath;
+}

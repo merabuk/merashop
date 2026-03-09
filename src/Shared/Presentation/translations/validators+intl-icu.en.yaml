@@ -1,1 +1,7 @@
-shared.v1.pagination.sort_field_invalid: "Sort field {value} is not allowed. Allowed fields: {choices}"
+shared:
+  v1:
+    pagination:
+      sort_field_invalid: "Sort field {value} is not allowed. Allowed fields: {choices}"
+    image:
+      upload:
+        error: "Uploaded file '{file}' is invalid or broken"
