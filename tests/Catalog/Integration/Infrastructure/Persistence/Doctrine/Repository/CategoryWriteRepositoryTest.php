@@ -14,7 +14,7 @@ use App\Tests\Shared\Support\Traits\EntityTechnicalMetadataTrait;
 use App\Tests\Shared\Support\Traits\ValueObjectAssertionTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-class CategoryWriteRepositoryTest extends KernelTestCase
+final class CategoryWriteRepositoryTest extends KernelTestCase
 {
     use CategoryFactoryTrait;
     use CatalogEntityManagerTrait;

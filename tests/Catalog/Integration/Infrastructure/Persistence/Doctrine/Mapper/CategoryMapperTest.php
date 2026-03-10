@@ -16,7 +16,7 @@ use App\Tests\Shared\Support\Traits\ValueObjectAssertionTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-class CategoryMapperTest extends KernelTestCase
+final class CategoryMapperTest extends KernelTestCase
 {
     use CatalogEntityManagerTrait;
     use ValueObjectAssertionTrait;
