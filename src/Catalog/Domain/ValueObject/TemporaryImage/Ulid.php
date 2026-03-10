@@ -6,7 +6,7 @@ namespace App\Catalog\Domain\ValueObject\TemporaryImage;
 
 use App\Catalog\Domain\Exception\TemporaryImage\InvalidTemporaryImageUlidException;
 use App\Shared\Domain\Exception\ValueObject\InvalidUlidException;
-use App\Shared\Domain\ValueObject\Ulid as BaseUlid;
+use App\Shared\Domain\ValueObject\Identity\Ulid as BaseUlid;
 
 final readonly class Ulid extends BaseUlid
 {

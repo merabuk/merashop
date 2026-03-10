@@ -6,7 +6,7 @@ namespace App\Catalog\Presentation\Http\AdminApiVersion1\Request\TemporaryImage;
 
 use App\Catalog\Application\Command\UploadTemporaryImage\UploadTemporaryImageCommand;
 use App\Catalog\Domain\Enum\TemporaryImage\ContextEnum;
-use App\Shared\Domain\ValueObject\RawFile;
+use App\Shared\Domain\ValueObject\File\RawFile;
 
 final readonly class UploadTemporaryImageRequest
 {

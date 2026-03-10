@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\EmailSender\Domain\ValueObject\OutboxEmail;
 
-use App\Shared\Domain\ValueObject\DateTimeValueObject;
+use App\Shared\Domain\ValueObject\Temporal\DateTimeValueObject;
 use DateTimeImmutable;
 
 final readonly class LockedAt extends DateTimeValueObject

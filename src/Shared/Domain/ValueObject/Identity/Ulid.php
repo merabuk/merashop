@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Shared\Domain\ValueObject;
+namespace App\Shared\Domain\ValueObject\Identity;
 
 use App\Shared\Domain\Exception\Services\InvalidUlidException as BaseInvalidUlidException;
 use App\Shared\Domain\Exception\ValueObject\InvalidUlidException;
 use App\Shared\Domain\Service\UlidValidator;
+use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
 use Stringable;
 
 readonly class Ulid implements EquatableInterface, Stringable

@@ -7,8 +7,8 @@ namespace App\Customer\Domain\ValueObject\CustomerProfile;
 use App\Customer\Domain\Exception\CustomerProfile\InvalidCustomerProfileIdException;
 use App\Shared\Domain\Exception\Services\IntegerIsNotUnsignedException;
 use App\Shared\Domain\Service\IntegerValidator;
-use App\Shared\Domain\ValueObject\EquatableInterface;
-use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
 use Stringable;
 
 final class Id implements EquatableInterface, Stringable

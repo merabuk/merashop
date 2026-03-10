@@ -6,7 +6,7 @@ namespace App\Catalog\Domain\ValueObject\Attribute;
 
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeVersionException;
 use App\Shared\Domain\Exception\Services\IntegerIsNotUnsignedException;
-use App\Shared\Domain\ValueObject\BaseVersionValueObject;
+use App\Shared\Domain\ValueObject\Temporal\BaseVersionValueObject;
 
 final readonly class Version extends BaseVersionValueObject
 {

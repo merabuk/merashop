@@ -8,7 +8,7 @@ use App\Customer\Domain\ValueObject\CustomerProfile\FirstName;
 use App\Customer\Domain\ValueObject\CustomerProfile\Id;
 use App\Customer\Domain\ValueObject\CustomerProfile\LastName;
 use App\Customer\Domain\ValueObject\CustomerProfile\PhoneNumber;
-use App\Shared\Domain\ValueObject\Ulid;
+use App\Shared\Domain\ValueObject\Identity\Ulid;
 
 class CustomerProfile
 {

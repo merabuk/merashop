@@ -6,7 +6,7 @@ namespace App\Shared\Infrastructure\Service;
 
 use App\Shared\Domain\Service\ImageConstraintsRegistryInterface;
 use App\Shared\Domain\Service\ImageValidatorInterface;
-use App\Shared\Domain\ValueObject\RawFile;
+use App\Shared\Domain\ValueObject\File\RawFile;
 use App\Shared\Infrastructure\Exception\Traits\UnprocessableEntityErrorTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Validator\ValidatorInterface;

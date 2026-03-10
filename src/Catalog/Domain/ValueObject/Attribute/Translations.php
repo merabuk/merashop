@@ -6,8 +6,8 @@ namespace App\Catalog\Domain\ValueObject\Attribute;
 
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeNameException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
-use App\Shared\Domain\ValueObject\EquatableInterface;
-use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
 use ArrayIterator;
 use Countable;
 use IteratorAggregate;

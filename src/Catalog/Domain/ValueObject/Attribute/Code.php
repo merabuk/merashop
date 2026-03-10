@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Catalog\Domain\ValueObject\Attribute;
 
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeCodeException;
-use App\Shared\Domain\ValueObject\EquatableInterface;
-use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
 use Stringable;
 
 final readonly class Code implements EquatableInterface, Stringable

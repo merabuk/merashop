@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Shared\Unit\Domain\ValueObject;
+namespace App\Tests\Shared\Unit\Domain\ValueObject\Identity;
 
 use App\Shared\Domain\Exception\ValueObject\InvalidTraceIdException;
-use App\Shared\Domain\ValueObject\TraceId;
+use App\Shared\Domain\ValueObject\Identity\TraceId;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;

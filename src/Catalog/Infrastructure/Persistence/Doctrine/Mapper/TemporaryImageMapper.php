@@ -14,7 +14,7 @@ use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmTemporaryImage;
 use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidRelativePathException;
-use App\Shared\Domain\ValueObject\RelativeFilePath;
+use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\MapperInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
 

@@ -4,7 +4,7 @@ namespace App\Catalog\Infrastructure\Service\ImageConstraints;
 
 use App\Catalog\Domain\Enum\TemporaryImage\ContextEnum;
 use App\Shared\Domain\Service\ImageConstraintsProviderInterface;
-use App\Shared\Domain\ValueObject\ImageConstraints;
+use App\Shared\Domain\ValueObject\File\ImageConstraints;
 
 final readonly class CategoryIconConstraints implements ImageConstraintsProviderInterface
 {

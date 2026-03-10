@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Shared\Domain\Service;
 
 use App\Shared\Domain\Exception\Services\Storage\FileStorageException;
-use App\Shared\Domain\ValueObject\RelativeFilePath;
+use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 
 interface FileStorageInterface
 {

@@ -6,7 +6,7 @@ namespace App\Customer\Domain\ValueObject\CustomerProfile;
 
 use App\Customer\Domain\Exception\CustomerProfile\InvalidCustomerProfileUlidException;
 use App\Shared\Domain\Exception\ValueObject\InvalidUlidException;
-use App\Shared\Domain\ValueObject\Ulid as BaseUlid;
+use App\Shared\Domain\ValueObject\Identity\Ulid as BaseUlid;
 
 final readonly class Ulid extends BaseUlid
 {

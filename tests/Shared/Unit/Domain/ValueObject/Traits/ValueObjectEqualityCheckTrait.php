@@ -2,7 +2,7 @@
 
 namespace App\Tests\Shared\Unit\Domain\ValueObject\Traits;
 
-use App\Shared\Domain\ValueObject\EquatableInterface;
+use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use BackedEnum;
 use DateTimeImmutable;
 use PHPUnit\Framework\Assert;

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\ValueObject\ProductImage;
 
-use App\Shared\Domain\ValueObject\EquatableInterface;
-use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
 use Stringable;
 
 class MainImageFlag implements EquatableInterface, Stringable

@@ -2,7 +2,7 @@
 
 namespace App\Catalog\Domain\ValueObject\ProductAttribute;
 
-use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
 
 final readonly class BooleanValue implements AttributeValueInterface
 {

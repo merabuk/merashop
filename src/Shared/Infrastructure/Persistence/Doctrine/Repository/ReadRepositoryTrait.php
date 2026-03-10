@@ -7,7 +7,7 @@ use App\Shared\Domain\Criteria\Paging\Cursor;
 use App\Shared\Domain\Criteria\Sorting\Sort;
 use App\Shared\Domain\Entity\HasIdInterface;
 use App\Shared\Domain\Exception\Database\OneOfEntitiesNotFoundException;
-use App\Shared\Domain\ValueObject\IdInterface;
+use App\Shared\Domain\ValueObject\Contract\IdInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Criteria\Restrictions\Criterion;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\QueryBuilder;

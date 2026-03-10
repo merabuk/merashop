@@ -2,8 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Shared\Domain\ValueObject;
+namespace App\Shared\Domain\ValueObject\Temporal;
 
+use App\Shared\Domain\ValueObject\Contract\EqualsWithDateTimeInterface;
+use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
 use DateTimeImmutable;
 use Stringable;
 

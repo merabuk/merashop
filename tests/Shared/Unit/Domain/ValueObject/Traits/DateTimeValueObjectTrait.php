@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Shared\Unit\Domain\ValueObject\Traits;
 
-use App\Shared\Domain\ValueObject\EqualsWithDateTimeInterface;
+use App\Shared\Domain\ValueObject\Contract\EqualsWithDateTimeInterface;
 use DateTimeImmutable;
 use PHPUnit\Framework\Assert;
 

@@ -7,8 +7,8 @@ namespace App\Catalog\Domain\Service;
 use App\Catalog\Domain\ValueObject\TemporaryImage\Ulid;
 use App\Shared\Domain\Exception\Services\Storage\FileStorageException;
 use App\Shared\Domain\Service\FileStorageInterface;
-use App\Shared\Domain\ValueObject\RawFile;
-use App\Shared\Domain\ValueObject\RelativeFilePath;
+use App\Shared\Domain\ValueObject\File\RawFile;
+use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 
 interface CatalogStorageInterface extends FileStorageInterface
 {

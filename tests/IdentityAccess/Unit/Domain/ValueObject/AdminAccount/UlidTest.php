@@ -6,9 +6,9 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\AdminAccount;
 
 use App\IdentityAccess\Domain\Exception\AdminAccount\InvalidAdminAccountUlidException;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\Ulid;
-use App\Shared\Domain\ValueObject\Ulid as SharedUlid;
+use App\Shared\Domain\ValueObject\Identity\Ulid as SharedUlid;
 use App\Tests\IdentityAccess\Support\AdminAccountMother;
-use App\Tests\Shared\Unit\Domain\ValueObject\UlidTest as SharedUlidTest;
+use App\Tests\Shared\Unit\Domain\ValueObject\Identity\UlidTest as SharedUlidTest;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 

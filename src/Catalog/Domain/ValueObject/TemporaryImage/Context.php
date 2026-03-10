@@ -6,8 +6,8 @@ namespace App\Catalog\Domain\ValueObject\TemporaryImage;
 
 use App\Catalog\Domain\Enum\TemporaryImage\ContextEnum;
 use App\Catalog\Domain\Exception\TemporaryImage\InvalidTemporaryImageContextException;
-use App\Shared\Domain\ValueObject\EquatableInterface;
-use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
 use Stringable;
 
 final readonly class Context implements EquatableInterface, Stringable

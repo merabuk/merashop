@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Domain\ValueObject\RefreshToken;
 
-use App\Shared\Domain\ValueObject\DateTimeValueObject;
+use App\Shared\Domain\ValueObject\Temporal\DateTimeValueObject;
 use DateTimeImmutable;
 use Symfony\Component\Clock\ClockInterface;
 

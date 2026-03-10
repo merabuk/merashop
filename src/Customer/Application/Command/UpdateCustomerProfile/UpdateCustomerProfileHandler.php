@@ -13,7 +13,7 @@ use App\Customer\Domain\ValueObject\CustomerProfile\LastName;
 use App\Customer\Domain\ValueObject\CustomerProfile\PhoneNumber;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
-use App\Shared\Domain\ValueObject\Ulid;
+use App\Shared\Domain\ValueObject\Identity\Ulid;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Throwable;
 

@@ -7,8 +7,8 @@ namespace App\EmailSender\Domain\ValueObject\OutboxEmail;
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailSubjectException;
 use App\Shared\Domain\Exception\InvalidStringException;
 use App\Shared\Domain\Service\StringValidator;
-use App\Shared\Domain\ValueObject\EquatableInterface;
-use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
 use Stringable;
 
 final readonly class ExternalId implements EquatableInterface, Stringable

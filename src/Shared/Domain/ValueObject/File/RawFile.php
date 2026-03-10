@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Shared\Domain\ValueObject;
+namespace App\Shared\Domain\ValueObject\File;
 
 use App\Shared\Domain\Exception\ValueObject\InvalidRawFileException;
 
@@ -35,10 +35,15 @@ final readonly class RawFile
     public static function fromPath(
         string $localPath,
         string $originalName,
-        ?string $extension = self::DEFAULT_EXTENSION,
-        ?string $mimeType = self::DEFAULT_MIME_TYPE,
+        ?string $extension = null,
+        ?string $mimeType = null,
     ): self {
-        return new self($localPath, $originalName, $extension, $mimeType);
+        return new self(
+            localPath: $localPath,
+            originalName: $originalName,
+            extension: $extension ?? self::DEFAULT_EXTENSION,
+            mimeType: $mimeType ?? self::DEFAULT_MIME_TYPE
+        );
     }
 
     public function getLocalPath(): string

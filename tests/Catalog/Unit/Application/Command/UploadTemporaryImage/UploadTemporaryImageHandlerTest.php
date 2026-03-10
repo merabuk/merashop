@@ -12,8 +12,8 @@ use App\Catalog\Domain\Repository\TemporaryImageWriteRepositoryInterface;
 use App\Catalog\Domain\Service\CatalogStorageInterface;
 use App\Catalog\Domain\ValueObject\TemporaryImage\Ulid;
 use App\Shared\Domain\Service\UlidGeneratorInterface;
-use App\Shared\Domain\ValueObject\RawFile;
-use App\Shared\Domain\ValueObject\RelativeFilePath;
+use App\Shared\Domain\ValueObject\File\RawFile;
+use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 use App\Tests\Catalog\Support\TemporaryImageMother;
 use App\Tests\Shared\Support\Traits\VfsStreamTrait;
 use PHPUnit\Framework\TestCase;
@@ -39,7 +39,7 @@ class UploadTemporaryImageHandlerTest extends TestCase
     public function testItHandleSuccess(): void
     {
         $fileName = 'product.jpg';
-        $localPath = $this->createVirtualFile($fileName, 'binary_content');
+        $localPath = $this->createVirtualFile(name: $fileName, content: 'binary_content');
 
         $file = RawFile::fromPath(
             localPath: $localPath,

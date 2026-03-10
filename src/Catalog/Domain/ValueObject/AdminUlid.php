@@ -6,7 +6,7 @@ namespace App\Catalog\Domain\ValueObject;
 
 use App\Catalog\Domain\Exception\InvalidAdminUlidException;
 use App\Shared\Domain\Exception\ValueObject\InvalidUlidException;
-use App\Shared\Domain\ValueObject\Ulid as BaseUlid;
+use App\Shared\Domain\ValueObject\Identity\Ulid as BaseUlid;
 
 final readonly class AdminUlid extends BaseUlid
 {

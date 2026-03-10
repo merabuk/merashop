@@ -9,7 +9,7 @@ use App\Customer\Domain\Entity\CustomerProfile;
 use App\Customer\Domain\Repository\CustomerProfileWriteRepositoryInterface;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
-use App\Shared\Domain\ValueObject\Ulid;
+use App\Shared\Domain\ValueObject\Identity\Ulid;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Throwable;
 

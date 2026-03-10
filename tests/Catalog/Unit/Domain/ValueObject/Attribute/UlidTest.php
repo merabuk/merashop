@@ -6,9 +6,9 @@ namespace App\Tests\Catalog\Unit\Domain\ValueObject\Attribute;
 
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeUlidException;
 use App\Catalog\Domain\ValueObject\Attribute\Ulid;
-use App\Shared\Domain\ValueObject\Ulid as SharedUlid;
+use App\Shared\Domain\ValueObject\Identity\Ulid as SharedUlid;
 use App\Tests\Catalog\Support\AttributeMother;
-use App\Tests\Shared\Unit\Domain\ValueObject\UlidTest as SharedUlidTest;
+use App\Tests\Shared\Unit\Domain\ValueObject\Identity\UlidTest as SharedUlidTest;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
 

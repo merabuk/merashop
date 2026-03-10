@@ -11,7 +11,7 @@ use App\Shared\Application\Bus\TransportNameEnum;
 use App\Shared\Domain\Event\EventHandlerInterface;
 use App\Shared\Domain\Event\UserRegisteredSharedEvent;
 use App\Shared\Domain\Exception\ValueObject\InvalidUlidException;
-use App\Shared\Domain\ValueObject\Ulid;
+use App\Shared\Domain\ValueObject\Identity\Ulid;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\ExceptionInterface;

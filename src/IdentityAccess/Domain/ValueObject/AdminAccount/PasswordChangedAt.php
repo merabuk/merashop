@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\IdentityAccess\Domain\ValueObject\AdminAccount;
 
-use App\Shared\Domain\ValueObject\DateTimeValueObject;
+use App\Shared\Domain\ValueObject\Temporal\DateTimeValueObject;
 use DateTimeImmutable;
 
 final readonly class PasswordChangedAt extends DateTimeValueObject

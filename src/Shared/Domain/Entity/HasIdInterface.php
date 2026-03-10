@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\Entity;
 
-use App\Shared\Domain\ValueObject\IdInterface;
+use App\Shared\Domain\ValueObject\Contract\IdInterface;
 
 interface HasIdInterface
 {

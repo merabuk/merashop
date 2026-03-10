@@ -12,7 +12,7 @@ use App\Customer\Domain\ValueObject\CustomerProfile\Id;
 use App\Customer\Infrastructure\Persistence\Doctrine\Entity\OrmCustomerProfile;
 use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
-use App\Shared\Domain\ValueObject\Ulid;
+use App\Shared\Domain\ValueObject\Identity\Ulid;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\ReadRepositoryTrait;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 use Symfony\Component\Uid\Ulid as SymfonyUlid;

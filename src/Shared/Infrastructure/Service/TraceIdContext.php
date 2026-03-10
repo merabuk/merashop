@@ -7,7 +7,7 @@ namespace App\Shared\Infrastructure\Service;
 use App\Shared\Domain\Exception\Services\TraceIdFactoryException;
 use App\Shared\Domain\Service\TraceIdContextInterface;
 use App\Shared\Domain\Service\TraceIdFactoryInterface;
-use App\Shared\Domain\ValueObject\TraceId;
+use App\Shared\Domain\ValueObject\Identity\TraceId;
 use Symfony\Contracts\Service\ResetInterface;
 
 final class TraceIdContext implements TraceIdContextInterface, ResetInterface

@@ -6,7 +6,7 @@ namespace App\Catalog\Infrastructure\Persistence\Doctrine\Entity;
 
 use App\Catalog\Domain\Enum\TemporaryImage\ContextEnum;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Type\TemporaryImage\ContextType;
-use App\Shared\Domain\ValueObject\RelativeFilePath;
+use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 use App\Shared\Infrastructure\Persistence\Doctrine\Entity\Traits\CreatedAtEntityTrait;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;

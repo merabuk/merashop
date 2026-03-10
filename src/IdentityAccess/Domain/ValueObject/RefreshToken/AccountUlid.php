@@ -6,7 +6,7 @@ namespace App\IdentityAccess\Domain\ValueObject\RefreshToken;
 
 use App\IdentityAccess\Domain\Exception\RefreshToken\InvalidRefreshTokenAccountUlidException;
 use App\Shared\Domain\Exception\ValueObject\InvalidUlidException;
-use App\Shared\Domain\ValueObject\Ulid as BaseUlid;
+use App\Shared\Domain\ValueObject\Identity\Ulid as BaseUlid;
 
 final readonly class AccountUlid extends BaseUlid
 {

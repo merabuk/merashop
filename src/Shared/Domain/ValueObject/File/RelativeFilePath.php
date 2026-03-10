@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Shared\Domain\ValueObject;
+namespace App\Shared\Domain\ValueObject\File;
 
 use App\Shared\Domain\Exception\ValueObject\InvalidRelativePathException;
+use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
 use Stringable;
 
 final readonly class RelativeFilePath implements EquatableInterface, Stringable

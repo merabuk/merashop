@@ -6,7 +6,7 @@ namespace App\Catalog\Application\Command\UploadTemporaryImage;
 
 use App\Catalog\Domain\Enum\TemporaryImage\ContextEnum;
 use App\Shared\Application\Command\CommandInterface;
-use App\Shared\Domain\ValueObject\RawFile;
+use App\Shared\Domain\ValueObject\File\RawFile;
 
 final readonly class UploadTemporaryImageCommand implements CommandInterface
 {

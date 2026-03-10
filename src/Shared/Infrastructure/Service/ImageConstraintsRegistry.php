@@ -6,7 +6,7 @@ namespace App\Shared\Infrastructure\Service;
 
 use App\Shared\Domain\Service\ImageConstraintsProviderInterface;
 use App\Shared\Domain\Service\ImageConstraintsRegistryInterface;
-use App\Shared\Domain\ValueObject\ImageConstraints;
+use App\Shared\Domain\ValueObject\File\ImageConstraints;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use RuntimeException;

@@ -5,8 +5,8 @@ namespace App\EmailSender\Domain\ValueObject\OutboxEmail;
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailToException;
 use App\Shared\Domain\Exception\InvalidEmailAddressException;
 use App\Shared\Domain\Service\EmailValidator;
-use App\Shared\Domain\ValueObject\EquatableInterface;
-use App\Shared\Domain\ValueObject\ValueObjectEqualityTrait;
+use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
 use Stringable;
 
 final readonly class To implements EquatableInterface, Stringable

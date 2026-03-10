@@ -8,7 +8,7 @@ use App\Catalog\Domain\ValueObject\ProductImage\Id;
 use App\Catalog\Domain\ValueObject\ProductImage\MainImageFlag;
 use App\Catalog\Domain\ValueObject\ProductImage\SortOrder;
 use App\Catalog\Domain\ValueObject\ProductImage\Ulid;
-use App\Shared\Domain\ValueObject\RelativeFilePath;
+use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 
 class ProductImage
 {

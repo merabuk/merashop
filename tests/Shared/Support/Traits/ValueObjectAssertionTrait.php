@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Shared\Support\Traits;
 
-use App\Shared\Domain\ValueObject\EquatableInterface;
+use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use PHPUnit\Framework\Assert;
 
 trait ValueObjectAssertionTrait

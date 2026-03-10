@@ -11,7 +11,7 @@ use App\Catalog\Domain\ValueObject\TemporaryImage\Context;
 use App\Catalog\Domain\ValueObject\TemporaryImage\Id;
 use App\Catalog\Domain\ValueObject\TemporaryImage\Ulid;
 use App\Shared\Domain\Service\UlidGeneratorInterface;
-use App\Shared\Domain\ValueObject\RelativeFilePath;
+use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 use Faker\Generator;
 
 final readonly class TemporaryImageMother

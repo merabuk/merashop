@@ -6,7 +6,7 @@ namespace App\Shared\Infrastructure\Service;
 
 use App\Shared\Domain\Exception\Services\Storage\FileStorageException;
 use App\Shared\Domain\Service\FileStorageInterface;
-use App\Shared\Domain\ValueObject\RelativeFilePath;
+use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 use League\Flysystem\FilesystemOperator;
 use Throwable;
 

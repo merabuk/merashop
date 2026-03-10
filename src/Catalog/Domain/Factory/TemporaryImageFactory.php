@@ -11,7 +11,7 @@ use App\Catalog\Domain\Factory\Contract\TemporaryImageFactoryInterface;
 use App\Catalog\Domain\ValueObject\TemporaryImage\Context;
 use App\Catalog\Domain\ValueObject\TemporaryImage\Ulid;
 use App\Shared\Domain\Exception\ValueObject\InvalidRelativePathException;
-use App\Shared\Domain\ValueObject\RelativeFilePath;
+use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 
 final readonly class TemporaryImageFactory implements TemporaryImageFactoryInterface
 {
