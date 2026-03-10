@@ -87,7 +87,7 @@ class UpdateCategoryHandlerTest extends TestCase
 
         $this->eventBus->expects(self::once())
             ->method('dispatch')
-            ->with(self::callback(function (object $event) use ($category): bool {
+            ->with(self::callback(function (object $event): bool {
                 if (false === $event instanceof CategoryMovedDomainEvent) {
                     return false;
                 }
@@ -133,7 +133,6 @@ class UpdateCategoryHandlerTest extends TestCase
             )
             ->willReturn(true);
 
-
         $this->writeRepository->expects(self::once())
             ->method('save')
             ->willReturn(CategoryMother::createWithData(
@@ -144,7 +143,7 @@ class UpdateCategoryHandlerTest extends TestCase
 
         $this->eventBus->expects(self::once())
             ->method('dispatch')
-            ->with(self::callback(function (object $event) use ($category): bool {
+            ->with(self::callback(function (object $event): bool {
                 if (false === $event instanceof CategoryMovedDomainEvent) {
                     return false;
                 }

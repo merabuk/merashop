@@ -31,7 +31,7 @@ class OrmCategory
     public private(set) ?int $id = null;
 
     #[ORM\Column(type: UlidType::NAME)]
-    public string $ulid;
+    public ?string $ulid = null;
 
     #[ORM\ManyToOne(targetEntity: self::class)]
     #[ORM\JoinColumn(
@@ -43,10 +43,10 @@ class OrmCategory
     public ?self $parent = null;
 
     #[ORM\Column(type: Types::STRING, length: Path::MAX_LENGTH)]
-    public string $path;
+    public ?string $path = null;
 
     #[ORM\Column(type: Types::STRING, length: Slug::MAX_LENGTH)]
-    public string $slug;
+    public ?string $slug = null;
 
     #[ORM\Column(type: Types::INTEGER)]
     public int $sortOrder = 0;

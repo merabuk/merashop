@@ -65,6 +65,17 @@ final readonly class Translations implements Countable, EquatableInterface, Iter
     }
 
     /**
+     * @return array<string, array{name: string, description?: string}>
+     */
+    public function toArray(): array
+    {
+        return array_map(fn (Translation $translation) => [
+            'name' => $translation->name,
+            'description' => $translation->description,
+        ], $this->data);
+    }
+
+    /**
      * @throws JsonException
      */
     protected function getPrimitiveValue(): string
