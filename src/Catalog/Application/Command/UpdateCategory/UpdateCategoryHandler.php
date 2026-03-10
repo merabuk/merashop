@@ -61,7 +61,7 @@ readonly class UpdateCategoryHandler implements CommandHandlerInterface
 
             $isMoved = $this->categoryManager->updateCategory(category: $category, data: $updateData);
 
-            $this->writeRepository->save($category);
+            $category = $this->writeRepository->save($category);
 
             if ($isMoved) {
                 $this->eventBus->dispatch(new CategoryMovedDomainEvent(

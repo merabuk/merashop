@@ -40,18 +40,15 @@ readonly class CreateCategoryHandler implements CommandHandlerInterface
     public function __invoke(CreateCategoryCommand $command): int
     {
         try {
-            $parentId = $command->parentId ? Id::fromInt($command->parentId) : null;
-            $parent = $parentId ? $this->readRepository->findById($parentId) : null;
-
-            $ulid = $this->ulidGenerator->next();
             $slug = Slug::fromString($command->slug);
-
             if ($this->readRepository->existsBySlug($slug)) {
                 throw CategoryAlreadyExistsException::becauseSlugAlreadyExists($slug->value());
             }
 
+            $ulid = $this->ulidGenerator->next();
+            $parentId = $command->parentId ? Id::fromInt($command->parentId) : null;
+            $parent = $parentId ? $this->readRepository->findById($parentId) : null;
             $path = Path::generate($slug, $parent?->getPath());
-
             $maxSortOrder = $this->readRepository->getMaxSortOrder($parentId);
 
             $category = Category::create(
