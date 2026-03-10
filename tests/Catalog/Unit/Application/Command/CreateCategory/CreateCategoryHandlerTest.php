@@ -16,7 +16,7 @@ use App\Shared\Domain\Service\UlidGeneratorInterface;
 use App\Tests\Catalog\Support\CategoryMother;
 use PHPUnit\Framework\TestCase;
 
-class CreateCategoryHandlerTest extends TestCase
+final class CreateCategoryHandlerTest extends TestCase
 {
     private UlidGeneratorInterface $ulidGenerator;
     private CategoryReadRepositoryInterface $readRepository;

@@ -25,7 +25,7 @@ use stdClass;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class UpdateCategoryHandlerTest extends TestCase
+final class UpdateCategoryHandlerTest extends TestCase
 {
     private CategoryReadRepositoryInterface $readRepository;
     private CategoryWriteRepositoryInterface $writeRepository;

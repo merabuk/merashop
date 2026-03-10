@@ -10,7 +10,7 @@ use App\Tests\Shared\Support\Traits\VfsStreamTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class RawFileTest extends TestCase
+final class RawFileTest extends TestCase
 {
     use VfsStreamTrait;
 

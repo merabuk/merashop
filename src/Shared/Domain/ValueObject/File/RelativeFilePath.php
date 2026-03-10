@@ -36,11 +36,7 @@ final readonly class RelativeFilePath implements EquatableInterface, Stringable
      */
     public static function fromString(?string $path): self
     {
-        if (empty($path)) {
-            throw InvalidRelativePathException::becauseItIsEmpty();
-        }
-
-        return new self($path);
+        return new self((string) $path);
     }
 
     public function value(): string
@@ -63,6 +59,7 @@ final readonly class RelativeFilePath implements EquatableInterface, Stringable
      */
     private function ensureIsValidPath(string $path): void
     {
+        // TODO: Improve validation
         if (empty($path)) {
             throw InvalidRelativePathException::becauseItIsEmpty();
         }
@@ -71,6 +68,10 @@ final readonly class RelativeFilePath implements EquatableInterface, Stringable
 
         if (preg_match(sprintf('/ |%s{2,}/', $separator), $path, $matches)) {
             throw InvalidRelativePathException::becauseItContainsInvalidCharacters();
+        }
+
+        if (preg_match(sprintf('/^%s|%s$/', $separator, $separator), $path, $matches)) {
+            throw InvalidRelativePathException::becauseItHasInvalidFormat();
         }
 
         if (mb_strlen($path) > self::MAX_LENGTH) {

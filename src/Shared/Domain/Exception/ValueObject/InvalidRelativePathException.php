@@ -16,6 +16,11 @@ final class InvalidRelativePathException extends InvalidValueObjectExceptionInte
         return new self('Relative path cannot contain invalid characters');
     }
 
+    public static function becauseItHasInvalidFormat(): self
+    {
+        return new self('Relative path has invalid format');
+    }
+
     public static function becauseItIsTooLong(int $maxLength): self
     {
         return new self(sprintf('Relative path is too long (max %d characters)', $maxLength));

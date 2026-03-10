@@ -18,7 +18,7 @@ use App\Tests\Catalog\Support\TemporaryImageMother;
 use App\Tests\Shared\Support\Traits\VfsStreamTrait;
 use PHPUnit\Framework\TestCase;
 
-class UploadTemporaryImageHandlerTest extends TestCase
+final class UploadTemporaryImageHandlerTest extends TestCase
 {
     use VfsStreamTrait;
 
