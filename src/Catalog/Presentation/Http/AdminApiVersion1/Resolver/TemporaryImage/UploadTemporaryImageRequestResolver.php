@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Catalog\Presentation\Http\AdminApiVersion1\Resolver\TemporaryImage;
 
-use App\Catalog\Domain\Enum\ImageContextEnum;
+use App\Catalog\Domain\Enum\TemporaryImage\ContextEnum;
 use App\Catalog\Presentation\Http\AdminApiVersion1\Request\TemporaryImage\UploadTemporaryImageRequest;
 use App\Shared\Domain\Exception\Services\Storage\InvalidImageException;
 use App\Shared\Domain\Exception\ValueObject\InvalidRawFileException;
@@ -70,7 +70,7 @@ final readonly class UploadTemporaryImageRequestResolver implements ValueResolve
             mimeType: $imageFile->getMimeType()
         );
 
-        $context = ImageContextEnum::from((string) $collection);
+        $context = ContextEnum::from((string) $collection);
         $this->imageValidator->validate(file: $rawFile, context: $context->value);
 
         yield new UploadTemporaryImageRequest(file: $rawFile, context: $context);

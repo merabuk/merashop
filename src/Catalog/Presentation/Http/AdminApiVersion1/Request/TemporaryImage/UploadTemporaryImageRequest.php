@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Catalog\Presentation\Http\AdminApiVersion1\Request\TemporaryImage;
 
 use App\Catalog\Application\Command\UploadTemporaryImage\UploadTemporaryImageCommand;
-use App\Catalog\Domain\Enum\ImageContextEnum;
+use App\Catalog\Domain\Enum\TemporaryImage\ContextEnum;
 use App\Shared\Domain\ValueObject\RawFile;
 
 final readonly class UploadTemporaryImageRequest
 {
     public function __construct(
         public RawFile $file,
-        public ImageContextEnum $context,
+        public ContextEnum $context,
     ) {
     }
 
@@ -26,6 +26,6 @@ final readonly class UploadTemporaryImageRequest
      */
     public static function getAvailableContexts(): array
     {
-        return ImageContextEnum::getValues();
+        return ContextEnum::getValues();
     }
 }

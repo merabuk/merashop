@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Catalog\Domain\Enum;
+namespace App\Catalog\Domain\Enum\TemporaryImage;
 
 use App\Shared\Domain\Enum\StringEnumTrait;
 
-enum ImageContextEnum: string
+enum ContextEnum: string
 {
     use StringEnumTrait;
 

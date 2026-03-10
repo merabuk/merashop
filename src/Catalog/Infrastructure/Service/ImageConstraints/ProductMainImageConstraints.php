@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Catalog\Infrastructure\Service\ImageConstraints;
 
-use App\Catalog\Domain\Enum\ImageContextEnum;
+use App\Catalog\Domain\Enum\TemporaryImage\ContextEnum;
 use App\Shared\Domain\Service\ImageConstraintsProviderInterface;
 use App\Shared\Domain\ValueObject\ImageConstraints;
 
@@ -12,7 +12,7 @@ final readonly class ProductMainImageConstraints implements ImageConstraintsProv
 {
     public static function getDefaultIndexName(): string
     {
-        return ImageContextEnum::ProductMain->value;
+        return ContextEnum::ProductMain->value;
     }
 
     public function getConstraints(): ImageConstraints

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Catalog\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\Catalog\Domain\Entity\TemporaryImage;
-use App\Catalog\Domain\Exception\TemporaryImage\InvalidTemporaryImageContextException;
 use App\Catalog\Domain\Exception\TemporaryImage\InvalidTemporaryImageIdException;
 use App\Catalog\Domain\Exception\TemporaryImage\InvalidTemporaryImageUlidException;
 use App\Catalog\Domain\ValueObject\TemporaryImage\Context;
@@ -37,7 +36,7 @@ class TemporaryImageMapper implements MapperInterface
 
         $orm->ulid = $domain->getUlid()->value();
         $orm->path = $domain->getPath()->value();
-        $orm->context = $domain->getContext()->value()->value;
+        $orm->context = $domain->getContext()->value();
 
         return $orm;
     }
@@ -46,7 +45,6 @@ class TemporaryImageMapper implements MapperInterface
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidRelativePathException
-     * @throws InvalidTemporaryImageContextException
      * @throws InvalidTemporaryImageIdException
      * @throws InvalidTemporaryImageUlidException
      */
@@ -59,7 +57,7 @@ class TemporaryImageMapper implements MapperInterface
         return new TemporaryImage(
             ulid: Ulid::fromString($orm->ulid),
             path: RelativeFilePath::fromString($orm->path),
-            context: Context::fromString($orm->context),
+            context: Context::fromEnum($orm->context),
             id: $id,
         );
     }

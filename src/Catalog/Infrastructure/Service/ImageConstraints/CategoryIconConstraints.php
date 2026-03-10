@@ -2,7 +2,7 @@
 
 namespace App\Catalog\Infrastructure\Service\ImageConstraints;
 
-use App\Catalog\Domain\Enum\ImageContextEnum;
+use App\Catalog\Domain\Enum\TemporaryImage\ContextEnum;
 use App\Shared\Domain\Service\ImageConstraintsProviderInterface;
 use App\Shared\Domain\ValueObject\ImageConstraints;
 
@@ -10,7 +10,7 @@ final readonly class CategoryIconConstraints implements ImageConstraintsProvider
 {
     public static function getDefaultIndexName(): string
     {
-        return ImageContextEnum::CategoryIcon->value;
+        return ContextEnum::CategoryIcon->value;
     }
 
     public function getConstraints(): ImageConstraints

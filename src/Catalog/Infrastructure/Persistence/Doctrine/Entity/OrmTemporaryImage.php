@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Catalog\Infrastructure\Persistence\Doctrine\Entity;
 
-use App\Catalog\Domain\ValueObject\TemporaryImage\Context;
+use App\Catalog\Domain\Enum\TemporaryImage\ContextEnum;
+use App\Catalog\Infrastructure\Persistence\Doctrine\Type\TemporaryImage\ContextType;
 use App\Shared\Domain\ValueObject\RelativeFilePath;
 use App\Shared\Infrastructure\Persistence\Doctrine\Entity\Traits\CreatedAtEntityTrait;
 use Doctrine\DBAL\Types\Types;
@@ -29,6 +30,6 @@ class OrmTemporaryImage
     #[ORM\Column(type: Types::STRING, length: RelativeFilePath::MAX_LENGTH)]
     public ?string $path = null;
 
-    #[ORM\Column(type: Types::STRING, length: Context::MAX_LENGTH)]
-    public ?string $context = null;
+    #[ORM\Column(type: ContextType::NAME)]
+    public ?ContextEnum $context = null;
 }

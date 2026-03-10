@@ -5,6 +5,7 @@ doctrine:
       category_status: App\Catalog\Infrastructure\Persistence\Doctrine\Type\Category\StatusType
       product_status: App\Catalog\Infrastructure\Persistence\Doctrine\Type\Product\StatusType
       attribute_type: App\Catalog\Infrastructure\Persistence\Doctrine\Type\Attribute\TypeType
+      temporary_image_context: App\Catalog\Infrastructure\Persistence\Doctrine\Type\TemporaryImage\ContextType
       # Email Sender Module
       outbox_email_status: App\EmailSender\Infrastructure\Persistence\Doctrine\Type\OutboxEmail\StatusType
       outbox_email_driver: App\EmailSender\Infrastructure\Persistence\Doctrine\Type\OutboxEmail\DriverType
@@ -20,6 +21,7 @@ doctrine:
           category_status: category_status
           product_status: product_status
           attribute_type: attribute_type
+          temporary_image_context: temporary_image_context
       customer:
         url: '%env(resolve:DATABASE_URL_CUSTOMER)%'
         profiling_collect_backtrace: '%kernel.debug%'
