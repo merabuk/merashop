@@ -62,7 +62,7 @@ final class PathTest extends TestCase
     }
 
     #[DataProvider('invalidPathProvider')]
-    public function testItThrowsExceptionForInvalidPath(string $invalidValue): void
+    public function testThrowsExceptionForInvalidPath(string $invalidValue): void
     {
         $this->expectException(InvalidCategoryPathException::class);
         Path::fromString($invalidValue);

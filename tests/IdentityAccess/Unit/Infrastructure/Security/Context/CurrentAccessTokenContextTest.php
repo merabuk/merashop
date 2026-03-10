@@ -22,7 +22,7 @@ class CurrentAccessTokenContextTest extends TestCase
         self::assertSame($expiresAt, $context->getExpiresAt());
     }
 
-    public function testItThrowsExceptionIfJtiNotSet(): void
+    public function testThrowsExceptionIfJtiNotSet(): void
     {
         $context = new CurrentAccessTokenContext();
 
@@ -30,7 +30,7 @@ class CurrentAccessTokenContextTest extends TestCase
         $context->getJti();
     }
 
-    public function testItThrowsExceptionIfExpiresAtNotSet(): void
+    public function testThrowsExceptionIfExpiresAtNotSet(): void
     {
         $context = new CurrentAccessTokenContext();
 

@@ -58,7 +58,7 @@ final class DriverTest extends TestCase
     }
 
     #[DataProvider('invalidDriverProvider')]
-    public function testItThrowsExceptionOnInvalidInput(string $invalidValue): void
+    public function testThrowsExceptionOnInvalidInput(string $invalidValue): void
     {
         $this->expectException(InvalidOutboxEmailDriverException::class);
         Driver::fromString($invalidValue);

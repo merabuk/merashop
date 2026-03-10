@@ -73,7 +73,7 @@ final class JwtAccessTokenHandlerTest extends TestCase
         self::assertSame($type->value.AuthEntityProvider::SEPARATOR.$ulid, $badge->getUserIdentifier());
     }
 
-    public function testItThrowsExceptionWhenTokenIsRevoked(): void
+    public function testThrowsExceptionWhenTokenIsRevoked(): void
     {
         $jti = 'revoked-id';
         $token = $this->createMock(UnencryptedToken::class);
@@ -93,7 +93,7 @@ final class JwtAccessTokenHandlerTest extends TestCase
         $handler->getUserBadgeFrom('some.token');
     }
 
-    public function testItThrowsExceptionOnInvalidTokenFormat(): void
+    public function testThrowsExceptionOnInvalidTokenFormat(): void
     {
         $this->parser->method('parse')->willThrowException(new RuntimeException());
 
@@ -106,7 +106,7 @@ final class JwtAccessTokenHandlerTest extends TestCase
     }
 
     #[DataProvider('invalidClaimsProvider')]
-    public function testItThrowsExceptionWhenRequiredClaimsAreMissing(array $claimsData, string $expectedMessage): void
+    public function testThrowsExceptionWhenRequiredClaimsAreMissing(array $claimsData, string $expectedMessage): void
     {
         $token = $this->createMock(UnencryptedToken::class);
         $token->method('claims')->willReturn(new DataSet($claimsData, ''));

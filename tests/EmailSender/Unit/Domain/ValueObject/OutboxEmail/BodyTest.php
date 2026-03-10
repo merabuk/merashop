@@ -40,7 +40,7 @@ final class BodyTest extends TestCase
     }
 
     #[DataProvider('invalidBodyProvider')]
-    public function testItThrowsExceptionOnInvalidInput(string $body): void
+    public function testThrowsExceptionOnInvalidInput(string $body): void
     {
         $this->expectException(InvalidOutboxEmailBodyException::class);
         Body::fromString($body);

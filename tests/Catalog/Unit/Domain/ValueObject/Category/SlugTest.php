@@ -39,7 +39,7 @@ final class SlugTest extends TestCase
     }
 
     #[DataProvider('invalidSlugProvider')]
-    public function testItThrowsExceptionForInvalidSlug(string $invalidValue): void
+    public function testThrowsExceptionForInvalidSlug(string $invalidValue): void
     {
         $this->expectException(InvalidCategorySlugException::class);
         Slug::fromString($invalidValue);

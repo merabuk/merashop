@@ -59,7 +59,7 @@ class CreateUserAccountHandlerTest extends TestCase
         $this->createHandler()($command);
     }
 
-    public function testItThrowsExceptionWhenUserAlreadyExists(): void
+    public function testThrowsExceptionWhenUserAlreadyExists(): void
     {
         $email = UserAccountMother::DEFAULT_EMAIL;
         $command = new CreateUserAccountCommand(

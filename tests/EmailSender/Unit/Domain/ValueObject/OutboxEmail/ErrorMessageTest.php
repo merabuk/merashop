@@ -39,7 +39,7 @@ final class ErrorMessageTest extends TestCase
     }
 
     #[DataProvider('invalidErrorMessageProvider')]
-    public function testItThrowsExceptionOnInvalidInput(string $invalidValue): void
+    public function testThrowsExceptionOnInvalidInput(string $invalidValue): void
     {
         $this->expectException(InvalidOutboxEmailErrorMessageException::class);
         ErrorMessage::fromString($invalidValue);

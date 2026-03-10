@@ -53,7 +53,7 @@ final class UpdateCustomerProfileHandlerTest extends TestCase
         self::assertSame($command->phoneNumber, $customerProfile->getPhoneNumber()->value());
     }
 
-    public function testItThrowsExceptionWhenCustomerProfileNotFound(): void
+    public function testThrowsExceptionWhenCustomerProfileNotFound(): void
     {
         $command = new UpdateCustomerProfileCommand(
             userUlid: CustomerProfileMother::DEFAULT_USER_ULID,

@@ -32,19 +32,19 @@ final class StringValidatorTest extends TestCase
         yield 'emoji support' => ['🚀', 2, 1, '🚀'];
     }
 
-    public function testItThrowsExceptionWhenEmptyAfterTrim(): void
+    public function testThrowsExceptionWhenEmptyAfterTrim(): void
     {
         $this->expectException(StringEmptyException::class);
         StringValidator::validate(rawValue: '   ', maxLength: 10, minLength: 0);
     }
 
-    public function testItThrowsExceptionWhenTooLong(): void
+    public function testThrowsExceptionWhenTooLong(): void
     {
         $this->expectException(StringMaxLengthException::class);
         StringValidator::validate(rawValue: 'Too Long String', maxLength: 5, minLength: 0);
     }
 
-    public function testItThrowsExceptionWhenTooShort(): void
+    public function testThrowsExceptionWhenTooShort(): void
     {
         $this->expectException(StringMinLengthException::class);
         StringValidator::validate(rawValue: 'Short', maxLength: 10, minLength: 8);

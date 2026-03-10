@@ -73,7 +73,7 @@ final class StatusTest extends TestCase
     }
 
     #[DataProvider('invalidStatusProvider')]
-    public function testItThrowsExceptionOnInvalidInput(string $invalidValue): void
+    public function testThrowsExceptionOnInvalidInput(string $invalidValue): void
     {
         $this->expectException(InvalidCategoryStatusException::class);
         Status::fromString($invalidValue);
