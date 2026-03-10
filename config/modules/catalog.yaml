@@ -17,6 +17,7 @@ services:
 
   App\Catalog\Infrastructure\Service\CatalogFlysystemStorage:
     arguments:
+      $clock: '@clock'
       $filesystem: '@catalog.storage.filesystem'
 
   App\Catalog\Domain\Service\CategoryValidatorInterface: '@App\Catalog\Domain\Service\CategoryValidator'

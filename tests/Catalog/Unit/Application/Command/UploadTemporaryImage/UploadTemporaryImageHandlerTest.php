@@ -89,7 +89,7 @@ final class UploadTemporaryImageHandlerTest extends TestCase
 
         $result = $this->createHandler()($command);
 
-        self::assertSame($expectedUlid, $result->value());
+        self::assertSame($expectedUlid, $result);
     }
 
     private function createHandler(): UploadTemporaryImageHandler

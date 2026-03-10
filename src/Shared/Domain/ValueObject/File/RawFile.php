@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\ValueObject\File;
 
+use App\Shared\Domain\Enum\MimeTypeEnum;
 use App\Shared\Domain\Exception\ValueObject\InvalidRawFileException;
 
 final readonly class RawFile
 {
     public const string DEFAULT_EXTENSION = 'bin';
-    public const string DEFAULT_MIME_TYPE = 'application/octet-stream';
+    public const string DEFAULT_MIME_TYPE = MimeTypeEnum::Unknown->value;
 
     /**
      * @throws InvalidRawFileException

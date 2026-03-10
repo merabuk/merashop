@@ -12,6 +12,8 @@ class ImageConstraints
     public function __construct(
         public int $maxSize,
         public array $allowedMimeTypes,
+        public ?int $minWidth = null,
+        public ?int $minHeight = null,
         public ?int $maxWidth = null,
         public ?int $maxHeight = null,
         public bool $detectCorrupted = true,

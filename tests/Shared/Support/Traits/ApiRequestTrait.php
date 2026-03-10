@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Shared\Support\Traits;
 
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 trait ApiRequestTrait
 {
@@ -31,6 +32,30 @@ trait ApiRequestTrait
                 ...$server,
             ],
             content: json_encode($payload)
+        );
+    }
+
+    /**
+     * @param array<string, UploadedFile> $files
+     * @param array<string, mixed>        $parameters
+     */
+    protected function requestMultipart(
+        KernelBrowser $client,
+        string $method,
+        string $uri,
+        array $files = [],
+        array $parameters = [],
+        array $server = [],
+    ): void {
+        $client->request(
+            method: $method,
+            uri: $uri,
+            parameters: $parameters,
+            files: $files,
+            server: [
+                'HTTP_ACCEPT' => 'application/json',
+                ...$server,
+            ]
         );
     }
 

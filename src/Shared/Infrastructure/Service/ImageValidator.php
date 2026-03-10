@@ -21,19 +21,25 @@ final readonly class ImageValidator implements ImageValidatorInterface
     ) {
     }
 
-    public function validate(RawFile $file, string $context): void
+    public function validate(RawFile $file, string $context, string $propertyPath = 'image'): void
     {
         $constraints = $this->registry->getConstraints($context);
 
-        $violations = $this->validator->validate($file->getLocalPath(), [
+        $validatorContext = $this->validator->startContext();
+
+        $validatorContext->atPath($propertyPath)->validate($file->getLocalPath(), [
             new Assert\Image(
                 maxSize: $constraints->maxSize,
                 mimeTypes: $constraints->allowedMimeTypes,
+                minWidth: $constraints->minWidth,
                 maxWidth: $constraints->maxWidth,
                 maxHeight: $constraints->maxHeight,
+                minHeight: $constraints->minHeight,
                 detectCorrupted: $constraints->detectCorrupted
             ),
         ]);
+
+        $violations = $validatorContext->getViolations();
 
         if ($violations->count() > 0) {
             throw $this->makeSystemValidationException(message: 'Image validation failed', value: $file->getLocalPath(), violations: $violations);

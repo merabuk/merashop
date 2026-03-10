@@ -8,5 +8,5 @@ use App\Shared\Domain\ValueObject\File\RawFile;
 
 interface ImageValidatorInterface
 {
-    public function validate(RawFile $file, string $context): void;
+    public function validate(RawFile $file, string $context, string $propertyPath = 'image'): void;
 }

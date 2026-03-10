@@ -29,7 +29,7 @@ readonly class UploadTemporaryImageHandler implements CommandHandlerInterface
     /**
      * @throws UploadTemporaryImageException
      */
-    public function __invoke(UploadTemporaryImageCommand $command): Ulid
+    public function __invoke(UploadTemporaryImageCommand $command): string
     {
         try {
             $file = $command->file;
@@ -49,7 +49,7 @@ readonly class UploadTemporaryImageHandler implements CommandHandlerInterface
 
             $temporaryImage = $this->writeRepository->save($temporaryImage);
 
-            return $temporaryImage->getUlid();
+            return $temporaryImage->getUlid()->value();
         } catch (Throwable $e) {
             throw new UploadTemporaryImageException(message: 'Fail to upload temporary image', previous: $e);
         }

@@ -12,10 +12,12 @@ use StringBackedEnum;
 trait StringEnumTrait
 {
     /**
+     * @param ?static[] $cases
+     *
      * @return string[]
      */
-    public static function getValues(): array
+    public static function getValues(?array $cases = null): array
     {
-        return array_column(static::cases(), 'value');
+        return array_column($cases ?? static::cases(), 'value');
     }
 }

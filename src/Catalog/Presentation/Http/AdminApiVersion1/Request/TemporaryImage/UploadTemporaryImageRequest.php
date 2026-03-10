@@ -28,4 +28,14 @@ final readonly class UploadTemporaryImageRequest
     {
         return ContextEnum::getValues();
     }
+
+    public static function getFileKey(): string
+    {
+        return 'image';
+    }
+
+    public static function getContextKey(): string
+    {
+        return 'collection';
+    }
 }
