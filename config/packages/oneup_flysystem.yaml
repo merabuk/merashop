@@ -8,7 +8,11 @@ oneup_flysystem:
     catalog.filesystem:
       adapter: catalog.adapter
 
+when@test:
+  oneup_flysystem:
+    adapters:
+      catalog.adapter:
+        memory: ~
+
 # need to config S3 adapter
 #when@prod:
-#  adapters:
-#    catalog.adapter:
