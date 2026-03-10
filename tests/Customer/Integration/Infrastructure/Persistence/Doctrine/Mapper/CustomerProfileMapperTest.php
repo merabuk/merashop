@@ -24,6 +24,8 @@ final class CustomerProfileMapperTest extends KernelTestCase
 
     protected function setUp(): void
     {
+        self::bootKernel();
+
         $this->em = $this->getCustomerEntityManager();
         $this->mapper = new CustomerProfileMapper();
     }

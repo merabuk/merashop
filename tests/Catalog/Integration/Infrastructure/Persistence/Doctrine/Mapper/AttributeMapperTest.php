@@ -25,6 +25,8 @@ final class AttributeMapperTest extends KernelTestCase
 
     protected function setUp(): void
     {
+        self::bootKernel();
+
         $this->em = $this->getCatalogEntityManager();
         $this->mapper = new AttributeMapper();
     }

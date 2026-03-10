@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Catalog\Integration\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
-use App\Catalog\Domain\Exception\Attribute\InvalidAttributeCodeException;
-use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
 use App\Catalog\Domain\Exception\Attribute\OneOfAttributesNotFoundException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
@@ -31,6 +29,7 @@ final class AttributeReadRepositoryTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
+
         $this->repository = self::getContainer()->get(AttributeReadRepositoryInterface::class);
     }
 
@@ -51,13 +50,11 @@ final class AttributeReadRepositoryTest extends KernelTestCase
             self::assertNotNull($foundTranslation);
             self::assertSame($translation->name, $foundTranslation->name);
         }
+        self::assertTrue($attribute->getVersion()->equals($found->getVersion()));
         self::assertTrue($attribute->getCreatedBy()->equals($found->getCreatedBy()));
         $this->assertVoEqualsOrNull($attribute->getUpdatedBy(), $found->getUpdatedBy());
     }
 
-    /**
-     * @throws InvalidAttributeIdException
-     */
     public function testGetByIdThrowsExceptionWhenNotFound(): void
     {
         $this->expectException(AttributeNotFoundException::class);
@@ -76,9 +73,6 @@ final class AttributeReadRepositoryTest extends KernelTestCase
         self::assertSame($attribute->getId()->value(), $found->getId()->value());
     }
 
-    /**
-     * @throws InvalidAttributeCodeException
-     */
     public function testExistsByCode(): void
     {
         $code = Code::fromString('unique_test_code');
@@ -90,9 +84,6 @@ final class AttributeReadRepositoryTest extends KernelTestCase
         self::assertTrue($this->repository->existsByCode($code));
     }
 
-    /**
-     * @throws OneOfAttributesNotFoundException
-     */
     public function testAssertAllExistByIds(): void
     {
         $attr1 = $this->getAttributeFixture()->create();
@@ -102,9 +93,6 @@ final class AttributeReadRepositoryTest extends KernelTestCase
         self::assertTrue(true);
     }
 
-    /**
-     * @throws InvalidAttributeIdException
-     */
     public function testAssertAllExistByIdsThrowsExceptionOnFailure(): void
     {
         $attr1 = $this->getAttributeFixture()->create();

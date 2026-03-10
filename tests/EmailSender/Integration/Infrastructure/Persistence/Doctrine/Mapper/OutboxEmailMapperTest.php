@@ -29,6 +29,8 @@ final class OutboxEmailMapperTest extends KernelTestCase
 
     protected function setUp(): void
     {
+        self::bootKernel();
+
         $this->em = $this->getEmailSenderEntityManager();
         $this->mapper = new OutboxEmailMapper();
     }

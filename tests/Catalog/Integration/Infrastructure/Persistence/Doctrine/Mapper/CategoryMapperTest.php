@@ -27,6 +27,8 @@ class CategoryMapperTest extends KernelTestCase
 
     protected function setUp(): void
     {
+        self::bootKernel();
+
         $this->em = $this->getCatalogEntityManager();
         $this->ulidGenerator = self::getContainer()->get(UlidGeneratorInterface::class);
         $this->mapper = self::getContainer()->get(CategoryMapper::class);
