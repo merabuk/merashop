@@ -10,27 +10,29 @@ COPY --from=mlocati/php-extension-installer:latest /usr/bin/install-php-extensio
 
 # Install ALL extensions
 # Create a single layer that will be cached
-RUN install-php-extensions \
-    exif \
-    pdo_pgsql \
-    intl \
-    zip \
-    opcache \
-    apcu \
-    amqp \
-    redis \
-    imagick \
-    gd \
-    bcmath
+RUN --mount=type=cache,target=/var/cache/apk \
+    install-php-extensions \
+        exif \
+        pdo_pgsql \
+        intl \
+        zip \
+        opcache \
+        apcu \
+        amqp \
+        redis \
+        imagick \
+        gd \
+        bcmath
 
 # System utilities required for operation (runtime)
-RUN apk add --no-cache \
-    su-exec \
-    fcgi \
-    imagemagick \
-    ghostscript \
-    bash \
-    icu-data-full
+RUN --mount=type=cache,target=/var/cache/apk \
+    apk add --no-cache \
+        su-exec \
+        fcgi \
+        imagemagick \
+        ghostscript \
+        bash \
+        icu-data-full
 
 ##################################
 # BUILD STAGE (Composer & Code)
@@ -82,13 +84,16 @@ FROM build AS local
 ARG APP_RUNTIME_ENV
 ENV APP_RUNTIME_ENV=${APP_RUNTIME_ENV}
 
-# create folder for xdebug logs
-RUN mkdir -p /var/log/xdebug && chmod 777 /var/log/xdebug
+# create folder and file for xdebug logs (to avoid access errors)
+RUN mkdir -p /var/log/xdebug && \
+    touch /var/log/xdebug/xdebug.log && \
+    chmod -R 777 /var/log/xdebug
 
 COPY ./docker/app/php/conf.d/zzz-settings-override-local.ini /usr/local/etc/php/conf.d/zzz-settings-override.ini
 
 # Install XDebug
-RUN install-php-extensions xdebug
+RUN --mount=type=cache,target=/var/cache/apk \
+    install-php-extensions xdebug
 
 # Optimize autoloader for local development
 RUN composer dump-autoload \

@@ -1,12 +1,6 @@
 x-queue-worker-defaults: &queue-worker-defaults-override
   platform: ${PLATFORM_ARCHITECTURE:-linux/amd64}
   pull_policy: never
-  build:
-    context: .
-    target: ${APP_RUNTIME_ENV}
-    dockerfile: ./docker/queue-worker/Dockerfile
-    tags:
-      - merashop/queue-worker:latest
   restart: on-failure
 
 services:

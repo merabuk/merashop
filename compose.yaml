@@ -1,5 +1,5 @@
 x-queue-worker-defaults: &queue-worker-defaults
-  image: merashop/queue-worker:latest
+  image: merashop/app:latest
   depends_on:
     pgsql:
       condition: service_healthy
