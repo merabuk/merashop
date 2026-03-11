@@ -11,7 +11,7 @@ use App\Customer\Domain\ValueObject\CustomerProfile\Id;
 use App\Customer\Domain\ValueObject\CustomerProfile\LastName;
 use App\Customer\Domain\ValueObject\CustomerProfile\PhoneNumber;
 use App\Customer\Domain\ValueObject\CustomerProfile\Ulid;
-use App\Shared\Domain\Service\UlidGeneratorInterface;
+use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use Faker\Generator;
 
 final readonly class CustomerProfileMother

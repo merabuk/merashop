@@ -10,7 +10,7 @@ use App\Catalog\Domain\Factory\Contract\TemporaryImageFactoryInterface;
 use App\Catalog\Domain\ValueObject\TemporaryImage\Context;
 use App\Catalog\Domain\ValueObject\TemporaryImage\Id;
 use App\Catalog\Domain\ValueObject\TemporaryImage\Ulid;
-use App\Shared\Domain\Service\UlidGeneratorInterface;
+use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 use Faker\Generator;
 

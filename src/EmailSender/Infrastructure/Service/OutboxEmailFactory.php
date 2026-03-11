@@ -28,7 +28,7 @@ use App\EmailSender\Domain\ValueObject\OutboxEmail\ScheduledAt;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Status;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Subject;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\To;
-use App\Shared\Domain\ValueObject\Identity\TraceId;
+use App\Shared\Domain\ValueObject\Tracing\TraceId;
 use DateTimeImmutable;
 use Twig\Environment;
 use Twig\Error\LoaderError;

@@ -6,7 +6,7 @@ namespace App\Catalog\Domain\Service;
 
 use App\Catalog\Domain\ValueObject\TemporaryImage\Ulid;
 use App\Shared\Domain\Exception\Services\Storage\FileStorageException;
-use App\Shared\Domain\Service\FileStorageInterface;
+use App\Shared\Domain\Service\Storage\FileStorageInterface;
 use App\Shared\Domain\ValueObject\File\RawFile;
 use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 

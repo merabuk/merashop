@@ -14,7 +14,7 @@ use App\IdentityAccess\Domain\Service\PasswordGeneratorInterface;
 use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
 use App\Shared\Domain\Enum\RoleEnum;
 use App\Shared\Domain\Event\AdminCreatedSharedEvent;
-use App\Shared\Domain\Service\UlidGeneratorInterface;
+use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use App\Tests\IdentityAccess\Support\AdminAccountMother;
 use PHPUnit\Framework\TestCase;
 use stdClass;

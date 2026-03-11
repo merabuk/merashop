@@ -22,8 +22,8 @@ use App\EmailSender\Domain\ValueObject\OutboxEmail\Status;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Subject;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\To;
 use App\Shared\Domain\Exception\Services\TraceIdFactoryException;
-use App\Shared\Domain\Service\TraceIdFactoryInterface;
-use App\Shared\Domain\ValueObject\Identity\TraceId;
+use App\Shared\Domain\Service\Tracing\TraceIdFactoryInterface;
+use App\Shared\Domain\ValueObject\Tracing\TraceId;
 use DateTimeImmutable;
 use Symfony\Component\Clock\ClockInterface;
 

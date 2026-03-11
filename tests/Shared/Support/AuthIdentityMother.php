@@ -7,7 +7,7 @@ namespace App\Tests\Shared\Support;
 use App\Shared\Application\Security\AuthIdentity;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 use App\Shared\Domain\Enum\RoleEnum;
-use App\Shared\Domain\Service\UlidGeneratorInterface;
+use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 
 final readonly class AuthIdentityMother
 {

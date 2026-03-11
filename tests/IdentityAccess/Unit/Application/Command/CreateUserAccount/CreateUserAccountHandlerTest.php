@@ -11,7 +11,7 @@ use App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\Repository\UserAccountWriteRepositoryInterface;
 use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
 use App\Shared\Domain\Event\UserRegisteredSharedEvent;
-use App\Shared\Domain\Service\UlidGeneratorInterface;
+use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use App\Tests\IdentityAccess\Support\UserAccountMother;
 use PHPUnit\Framework\TestCase;
 use stdClass;

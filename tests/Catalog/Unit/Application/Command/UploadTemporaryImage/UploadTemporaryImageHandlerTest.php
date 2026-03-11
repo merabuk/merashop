@@ -11,7 +11,7 @@ use App\Catalog\Domain\Enum\TemporaryImage\ContextEnum;
 use App\Catalog\Domain\Repository\TemporaryImageWriteRepositoryInterface;
 use App\Catalog\Domain\Service\CatalogStorageInterface;
 use App\Catalog\Domain\ValueObject\TemporaryImage\Ulid;
-use App\Shared\Domain\Service\UlidGeneratorInterface;
+use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use App\Shared\Domain\ValueObject\File\RawFile;
 use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 use App\Tests\Catalog\Support\TemporaryImageMother;

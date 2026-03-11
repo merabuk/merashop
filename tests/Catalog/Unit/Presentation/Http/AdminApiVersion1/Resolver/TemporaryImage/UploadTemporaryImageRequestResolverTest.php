@@ -7,7 +7,7 @@ namespace App\Tests\Catalog\Unit\Presentation\Http\AdminApiVersion1\Resolver\Tem
 use App\Catalog\Domain\Enum\TemporaryImage\ContextEnum;
 use App\Catalog\Presentation\Http\AdminApiVersion1\Request\TemporaryImage\UploadTemporaryImageRequest;
 use App\Catalog\Presentation\Http\AdminApiVersion1\Resolver\TemporaryImage\UploadTemporaryImageRequestResolver;
-use App\Shared\Domain\Service\ImageValidatorInterface;
+use App\Shared\Domain\Service\Validation\ImageValidatorInterface;
 use App\Tests\Shared\Support\Traits\VfsStreamTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;

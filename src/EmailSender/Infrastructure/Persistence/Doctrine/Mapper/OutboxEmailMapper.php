@@ -23,7 +23,7 @@ use App\EmailSender\Infrastructure\Persistence\Doctrine\Entity\OrmOutboxEmail;
 use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidTraceIdException;
-use App\Shared\Domain\ValueObject\Identity\TraceId;
+use App\Shared\Domain\ValueObject\Tracing\TraceId;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\MapperInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
 

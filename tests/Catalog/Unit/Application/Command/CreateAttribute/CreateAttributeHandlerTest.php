@@ -9,7 +9,7 @@ use App\Catalog\Application\Command\CreateAttribute\CreateAttributeHandler;
 use App\Catalog\Domain\Exception\Attribute\AttributeAlreadyExistsException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
-use App\Shared\Domain\Service\UlidGeneratorInterface;
+use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use App\Tests\Catalog\Support\AttributeMother;
 use PHPUnit\Framework\TestCase;
 

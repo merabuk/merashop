@@ -6,7 +6,7 @@ namespace App\EmailSender\Domain\Repository;
 
 use App\EmailSender\Domain\Entity\OutboxEmail;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Id;
-use App\Shared\Domain\ValueObject\Identity\TraceId;
+use App\Shared\Domain\ValueObject\Tracing\TraceId;
 use DateTimeImmutable;
 
 interface OutboxEmailReadRepositoryInterface

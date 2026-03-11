@@ -8,7 +8,7 @@ use App\Catalog\Domain\Exception\Product\InvalidProductDescriptionException;
 use App\Catalog\Domain\Exception\Product\InvalidProductNameException;
 use App\Shared\Domain\Exception\InvalidStringException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
-use App\Shared\Domain\Service\StringValidator;
+use App\Shared\Domain\Service\Validation\StringValidator;
 use App\Shared\Domain\ValueObject\Locale;
 
 final readonly class Translation

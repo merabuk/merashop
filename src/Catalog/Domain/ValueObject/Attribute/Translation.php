@@ -7,7 +7,7 @@ namespace App\Catalog\Domain\ValueObject\Attribute;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeNameException;
 use App\Shared\Domain\Exception\InvalidStringException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
-use App\Shared\Domain\Service\StringValidator;
+use App\Shared\Domain\Service\Validation\StringValidator;
 use App\Shared\Domain\ValueObject\Locale;
 
 final readonly class Translation

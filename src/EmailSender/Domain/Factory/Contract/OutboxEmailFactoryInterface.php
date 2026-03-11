@@ -5,7 +5,7 @@ namespace App\EmailSender\Domain\Factory\Contract;
 use App\EmailSender\Domain\Entity\OutboxEmail;
 use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;
 use App\EmailSender\Domain\Enum\OutboxEmail\StatusEnum;
-use App\Shared\Domain\ValueObject\Identity\TraceId;
+use App\Shared\Domain\ValueObject\Tracing\TraceId;
 use DateTimeImmutable;
 
 interface OutboxEmailFactoryInterface

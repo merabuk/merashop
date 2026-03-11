@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Bus\TraceId;
 
-use App\Shared\Domain\Service\TraceIdContextInterface;
+use App\Shared\Domain\Service\Tracing\TraceIdContextInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Middleware\MiddlewareInterface;
 use Symfony\Component\Messenger\Middleware\StackInterface;

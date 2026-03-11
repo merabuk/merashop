@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Shared\Unit\Presentation\Console\EventListener;
 
-use App\Shared\Domain\Service\TraceIdContextInterface;
-use App\Shared\Domain\Service\TraceIdFactoryInterface;
+use App\Shared\Domain\Service\Tracing\TraceIdContextInterface;
+use App\Shared\Domain\Service\Tracing\TraceIdFactoryInterface;
 use App\Shared\Presentation\Console\EventListener\ConsoleTraceIdListener;
 use App\Tests\Shared\Support\Traits\TraceIdHelperTrait;
 use PHPUnit\Framework\TestCase;

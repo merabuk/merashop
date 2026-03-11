@@ -8,7 +8,7 @@ use App\EmailSender\Domain\Entity\OutboxEmail;
 use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;
 use App\EmailSender\Domain\Enum\OutboxEmail\StatusEnum;
 use App\EmailSender\Domain\Repository\OutboxEmailWriteRepositoryInterface;
-use App\Shared\Domain\ValueObject\Identity\TraceId;
+use App\Shared\Domain\ValueObject\Tracing\TraceId;
 use DateTimeImmutable;
 
 final readonly class OutboxEmailFixture

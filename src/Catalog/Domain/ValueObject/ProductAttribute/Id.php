@@ -6,7 +6,7 @@ namespace App\Catalog\Domain\ValueObject\ProductAttribute;
 
 use App\Catalog\Domain\Exception\ProductAttribute\InvalidProductAttributeIdException;
 use App\Shared\Domain\Exception\Services\IntegerIsNotUnsignedException;
-use App\Shared\Domain\Service\IntegerValidator;
+use App\Shared\Domain\Service\Validation\IntegerValidator;
 use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
 use Stringable;

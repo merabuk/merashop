@@ -7,7 +7,7 @@ use App\EmailSender\Application\Service\ContentProvider\EmailContentProviderInte
 use App\EmailSender\Domain\Factory\Contract\OutboxEmailFactoryInterface;
 use App\EmailSender\Domain\Repository\OutboxEmailReadRepositoryInterface;
 use App\EmailSender\Domain\Repository\OutboxEmailWriteRepositoryInterface;
-use App\Shared\Domain\Service\TraceIdContextInterface;
+use App\Shared\Domain\Service\Tracing\TraceIdContextInterface;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;

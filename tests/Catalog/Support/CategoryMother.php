@@ -17,7 +17,7 @@ use App\Catalog\Domain\ValueObject\Category\Translations;
 use App\Catalog\Domain\ValueObject\Category\Ulid;
 use App\Catalog\Domain\ValueObject\Category\Version;
 use App\Shared\Domain\Enum\LocaleEnum;
-use App\Shared\Domain\Service\UlidGeneratorInterface;
+use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use Faker\Factory;
 use Faker\Generator;
 use phpDocumentor\Reflection\DocBlock\Description;

@@ -13,7 +13,7 @@ use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Id;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Ulid;
 use App\IdentityAccess\Domain\ValueObject\ScopeCollection;
 use App\Shared\Domain\Enum\RoleEnum;
-use App\Shared\Domain\Service\UlidGeneratorInterface;
+use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use Faker\Generator;
 
 final readonly class ModuleAccountMother

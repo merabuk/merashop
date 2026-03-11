@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Bus\TraceId;
 
-use App\Shared\Domain\ValueObject\Identity\TraceId;
+use App\Shared\Domain\ValueObject\Tracing\TraceId;
 use Symfony\Component\Messenger\Stamp\StampInterface;
 
 final readonly class TraceIdStamp implements StampInterface

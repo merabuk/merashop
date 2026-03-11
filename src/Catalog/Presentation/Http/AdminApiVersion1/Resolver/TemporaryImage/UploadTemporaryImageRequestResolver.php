@@ -8,7 +8,7 @@ use App\Catalog\Domain\Enum\TemporaryImage\ContextEnum;
 use App\Catalog\Presentation\Http\AdminApiVersion1\Request\TemporaryImage\UploadTemporaryImageRequest;
 use App\Shared\Domain\Exception\Services\Storage\InvalidImageException;
 use App\Shared\Domain\Exception\ValueObject\InvalidRawFileException;
-use App\Shared\Domain\Service\ImageValidatorInterface;
+use App\Shared\Domain\Service\Validation\ImageValidatorInterface;
 use App\Shared\Domain\ValueObject\File\RawFile;
 use App\Shared\Infrastructure\Exception\Traits\UnprocessableEntityErrorTrait;
 use Symfony\Component\HttpFoundation\Request;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Shared\Unit\Infrastructure\Bus\TraceId;
 
-use App\Shared\Domain\Service\TraceIdContextInterface;
+use App\Shared\Domain\Service\Tracing\TraceIdContextInterface;
 use App\Shared\Infrastructure\Bus\TraceId\TraceIdMiddleware;
 use App\Shared\Infrastructure\Bus\TraceId\TraceIdStamp;
 use App\Tests\Shared\Support\Traits\TraceIdHelperTrait;

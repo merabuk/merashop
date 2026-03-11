@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Shared\Support\Traits;
 
-use App\Shared\Domain\Service\EmailValidator;
+use App\Shared\Domain\Service\Validation\EmailValidator;
 
 trait EmailTestDataTrait
 {

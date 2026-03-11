@@ -9,7 +9,7 @@ use App\Catalog\Domain\Enum\Category\StatusEnum;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmCategory;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmCategoryTranslation;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Mapper\CategoryMapper;
-use App\Shared\Domain\Service\UlidGeneratorInterface;
+use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use App\Tests\Catalog\Support\CategoryMother;
 use App\Tests\Catalog\Support\Traits\CatalogEntityManagerTrait;
 use App\Tests\Shared\Support\Traits\ValueObjectAssertionTrait;

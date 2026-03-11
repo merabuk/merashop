@@ -6,8 +6,8 @@ namespace App\Shared\Presentation\Http\EventListener;
 
 use App\Shared\Domain\Exception\Request\InvalidRequestHeaderValueException;
 use App\Shared\Domain\Exception\Services\TraceIdFactoryException;
-use App\Shared\Domain\Service\TraceIdContextInterface;
-use App\Shared\Domain\Service\TraceIdFactoryInterface;
+use App\Shared\Domain\Service\Tracing\TraceIdContextInterface;
+use App\Shared\Domain\Service\Tracing\TraceIdFactoryInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;

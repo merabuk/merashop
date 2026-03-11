@@ -15,7 +15,7 @@ use App\Catalog\Domain\ValueObject\Attribute\Type;
 use App\Catalog\Domain\ValueObject\Attribute\Ulid;
 use App\Catalog\Domain\ValueObject\Attribute\Version;
 use App\Shared\Domain\Enum\LocaleEnum;
-use App\Shared\Domain\Service\UlidGeneratorInterface;
+use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use Faker\Factory;
 use Faker\Generator;
 

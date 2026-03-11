@@ -10,7 +10,7 @@ use App\Shared\Domain\Exception\Services\Storage\FileStorageException;
 use App\Shared\Domain\Exception\ValueObject\InvalidRelativePathException;
 use App\Shared\Domain\ValueObject\File\RawFile;
 use App\Shared\Domain\ValueObject\File\RelativeFilePath;
-use App\Shared\Infrastructure\Service\FlysystemStorage;
+use App\Shared\Infrastructure\Service\Storage\FlysystemStorage;
 use League\Flysystem\FilesystemOperator;
 use Symfony\Component\Clock\ClockInterface;
 

@@ -1,7 +1,7 @@
 parameters:
 
 services:
-  App\Shared\Infrastructure\Service\TraceIdContext:
+  App\Shared\Infrastructure\Service\Tracing\TraceIdContext:
     arguments:
       $traceIdFactory: '@App\Shared\Infrastructure\Service\TraceIdFactory'
     tags:
@@ -9,13 +9,15 @@ services:
 
   App\Shared\Domain\Service\TranslationDomainResolverInterface: '@App\Shared\Infrastructure\Service\TranslationDomainResolver'
 
-  App\Shared\Domain\Service\UlidGeneratorInterface: '@App\Shared\Infrastructure\Service\SymfonyUlidGenerator'
-  App\Shared\Domain\Service\UuidGeneratorInterface: '@App\Shared\Infrastructure\Service\SymfonyUuidGenerator'
+  App\Shared\Domain\Service\Identity\UlidGeneratorInterface: '@App\Shared\Infrastructure\Service\Identity\SymfonyUlidGenerator'
+  App\Shared\Domain\Service\Identity\UuidGeneratorInterface: '@App\Shared\Infrastructure\Service\Identity\SymfonyUuidGenerator'
 
-  App\Shared\Domain\Service\TraceIdFactoryInterface: '@App\Shared\Infrastructure\Service\TraceIdFactory'
-  App\Shared\Domain\Service\TraceIdContextInterface: '@App\Shared\Infrastructure\Service\TraceIdContext'
+  App\Shared\Domain\Service\Tracing\TraceIdFactoryInterface: '@App\Shared\Infrastructure\Service\Tracing\TraceIdFactory'
+  App\Shared\Domain\Service\Tracing\TraceIdContextInterface: '@App\Shared\Infrastructure\Service\Tracing\TraceIdContext'
 
-  App\Shared\Domain\Service\ImageValidatorInterface: '@App\Shared\Infrastructure\Service\ImageValidator'
+  App\Shared\Domain\Service\Validation\ImageValidatorInterface: '@App\Shared\Infrastructure\Service\Validation\ImageValidator'
+
+  App\Shared\Domain\Service\Image\ImageConstraintsRegistryInterface: '@App\Shared\Infrastructure\Service\Image\ImageConstraintsRegistry'
 
   App\Shared\Presentation\Http\Resolver\CurrentAuthEntityIdentityResolver:
     tags: [ 'controller.argument_value_resolver' ]

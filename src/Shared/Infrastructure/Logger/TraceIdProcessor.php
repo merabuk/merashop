@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Logger;
 
-use App\Shared\Domain\Service\TraceIdContextInterface;
+use App\Shared\Domain\Service\Tracing\TraceIdContextInterface;
 use Monolog\LogRecord;
 use Monolog\Processor\ProcessorInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;

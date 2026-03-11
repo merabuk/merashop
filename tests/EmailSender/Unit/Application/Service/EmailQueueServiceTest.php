@@ -11,7 +11,7 @@ use App\EmailSender\Domain\Entity\OutboxEmail;
 use App\EmailSender\Domain\Factory\Contract\OutboxEmailFactoryInterface;
 use App\EmailSender\Domain\Repository\OutboxEmailReadRepositoryInterface;
 use App\EmailSender\Domain\Repository\OutboxEmailWriteRepositoryInterface;
-use App\Shared\Domain\Service\TraceIdContextInterface;
+use App\Shared\Domain\Service\Tracing\TraceIdContextInterface;
 use App\Tests\EmailSender\Support\OutboxEmailMother;
 use App\Tests\Shared\Support\Traits\TraceIdHelperTrait;
 use Exception;

@@ -16,7 +16,7 @@ use App\IdentityAccess\Domain\ValueObject\AdminAccount\Status;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\Ulid;
 use App\IdentityAccess\Domain\ValueObject\RoleCollection;
 use App\Shared\Domain\Enum\RoleEnum;
-use App\Shared\Domain\Service\UlidGeneratorInterface;
+use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use DateTimeImmutable;
 use Faker\Generator;
 
