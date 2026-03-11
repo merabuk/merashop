@@ -8,6 +8,7 @@ use App\Shared\Domain\Exception\Services\Storage\FileStorageException;
 use App\Shared\Domain\Service\Storage\FileStorageInterface;
 use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 use League\Flysystem\FilesystemOperator;
+use RuntimeException;
 use Throwable;
 
 abstract readonly class FlysystemStorage implements FileStorageInterface
@@ -21,12 +22,18 @@ abstract readonly class FlysystemStorage implements FileStorageInterface
     {
         try {
             $stream = fopen($localPath, 'rb');
-            $this->filesystem->writeStream($targetPath, $stream);
-            if (is_resource($stream)) {
-                fclose($stream);
+
+            if (false === $stream) {
+                throw new RuntimeException('Fail opening file: '.$localPath);
             }
+
+            $this->filesystem->writeStream($targetPath, $stream);
         } catch (Throwable $e) {
             throw $this->makeException('Fail writing stream', $e);
+        } finally {
+            if (isset($stream) && is_resource($stream)) {
+                fclose($stream);
+            }
         }
     }
 
