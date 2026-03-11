@@ -107,8 +107,9 @@ final class CategoryReadRepositoryTest extends KernelTestCase
 
         self::assertFalse($this->repository->existsBySlug($slug));
 
-        $this->getCategoryFixture()->create(slug: $slug->value());
+        $category = $this->getCategoryFixture()->create(slug: $slug->value());
 
         self::assertTrue($this->repository->existsBySlug($slug));
+        self::assertFalse($this->repository->existsBySlug($slug, $category->getId()));
     }
 }

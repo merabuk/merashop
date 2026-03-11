@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\Entity;
 
+use App\Catalog\Domain\DTO\CategoryStructureResult;
+use App\Catalog\Domain\Exception\Category\CategoryCannotBeParentOfItselfException;
+use App\Catalog\Domain\Exception\Category\CategoryChildCanNotBeParentConflictException;
 use App\Catalog\Domain\Exception\Category\InvalidCategoryVersionException;
 use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Category\Id;
@@ -56,6 +59,54 @@ class Category
             version: Version::initial(),
             createdBy: $createdBy,
         );
+    }
+
+    public function update(
+        Status $status,
+        Translations $translations,
+        AdminUlid $updatedBy,
+        ?Slug $newSlug = null,
+        ?CategoryStructureResult $structure = null,
+    ): void {
+        $this->status = $status;
+        $this->translations = $translations;
+        $this->updatedBy = $updatedBy;
+
+        if (null !== $structure && null !== $newSlug) {
+            $this->slug = $newSlug;
+            $this->path = $structure->newPath;
+            $this->sortOrder = $structure->newSortOrder;
+            $this->parentId = $structure->newParentId;
+        }
+    }
+
+    public function isSlugDifferent(Slug $slug): bool
+    {
+        return false === $this->slug->equals($slug);
+    }
+
+    public function isParentDifferent(?Id $parentId): bool
+    {
+        return (string) $this->parentId !== (string) $parentId;
+    }
+
+    /**
+     * @throws CategoryCannotBeParentOfItselfException
+     * @throws CategoryChildCanNotBeParentConflictException
+     */
+    public function canBeAttachedTo(?Category $potentialParent): void
+    {
+        if (null === $potentialParent) {
+            return;
+        }
+
+        if ($this->id && $potentialParent->getId()->equals($this->id)) {
+            throw new CategoryCannotBeParentOfItselfException();
+        }
+
+        if ($potentialParent->getPath()->startsWith($this->path)) {
+            throw new CategoryChildCanNotBeParentConflictException();
+        }
     }
 
     public function getId(): ?Id
@@ -111,31 +162,6 @@ class Category
     public function getUpdatedBy(): ?AdminUlid
     {
         return $this->updatedBy;
-    }
-
-    public function update(
-        Status $status,
-        Translations $translations,
-        AdminUlid $updatedBy,
-    ): void {
-        $this->status = $status;
-        $this->translations = $translations;
-        $this->updatedBy = $updatedBy;
-    }
-
-    public function updateSlug(Slug $slug): void
-    {
-        $this->slug = $slug;
-    }
-
-    public function updateParentId(?Id $parentId): void
-    {
-        $this->parentId = $parentId;
-    }
-
-    public function updatePath(Path $path): void
-    {
-        $this->path = $path;
     }
 
     public function updateSortOrder(SortOrder $sortOrder): void

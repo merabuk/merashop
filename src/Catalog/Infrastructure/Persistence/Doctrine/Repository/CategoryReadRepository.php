@@ -17,6 +17,7 @@ use App\Shared\Domain\Exception\Database\OneOfEntitiesNotFoundException;
 use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
+use App\Shared\Infrastructure\Persistence\Doctrine\Criteria\Restrictions\ComparisonOperatorEnum;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\ReadRepositoryTrait;
 use Symfony\Bridge\Doctrine\Types\UlidType;
 
@@ -121,11 +122,21 @@ final class CategoryReadRepository extends BaseCategoryRepository implements Cat
         }
     }
 
-    public function existsBySlug(Slug $slug): bool
+    public function existsBySlug(Slug $slug, ?Id $excludeId = null): bool
     {
-        return $this->_existsBy([
+        $criteria = [
             $this->_makeCriterion(field: 'slug', value: $slug->value()),
-        ]);
+        ];
+
+        if (null !== $excludeId) {
+            $criteria[] = $this->_makeCriterion(
+                field: 'id',
+                value: $excludeId->value(),
+                operator: ComparisonOperatorEnum::NotEqual
+            );
+        }
+
+        return $this->_existsBy($criteria);
     }
 
     /**

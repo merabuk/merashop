@@ -13,6 +13,7 @@ use App\Catalog\Domain\Exception\Category\CategoryAlreadyExistsException;
 use App\Catalog\Domain\Exception\Category\CategoryCannotBeParentOfItselfException;
 use App\Catalog\Domain\Exception\Category\CategoryChildCanNotBeParentConflictException;
 use App\Catalog\Domain\Exception\Category\CategoryNotFoundException;
+use App\Catalog\Domain\Exception\Category\CategoryParentNotFoundException;
 use App\Catalog\Domain\Repository\CategoryReadRepositoryInterface;
 use App\Catalog\Domain\Repository\CategoryWriteRepositoryInterface;
 use App\Catalog\Domain\Service\CategoryManagerInterface;
@@ -243,6 +244,12 @@ final class UpdateCategoryHandlerTest extends TestCase
     {
         $category = CategoryMother::createWithData(id: 123);
 
+        yield 'category parent not found' => [
+            'category' => $category,
+            'slug' => 'new-category',
+            'parentId' => 456,
+            'exceptionClass' => CategoryParentNotFoundException::class,
+        ];
         yield 'slug already exists' => [
             'category' => $category,
             'slug' => 'existing-category',

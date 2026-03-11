@@ -11,6 +11,7 @@ use App\Catalog\Domain\Exception\Category\CategoryAlreadyExistsException;
 use App\Catalog\Domain\Exception\Category\CategoryCannotBeParentOfItselfException;
 use App\Catalog\Domain\Exception\Category\CategoryChildCanNotBeParentConflictException;
 use App\Catalog\Domain\Exception\Category\CategoryNotFoundException;
+use App\Catalog\Domain\Exception\Category\CategoryParentNotFoundException;
 use App\Catalog\Domain\Repository\CategoryReadRepositoryInterface;
 use App\Catalog\Domain\Repository\CategoryWriteRepositoryInterface;
 use App\Catalog\Domain\Service\CategoryManagerInterface;
@@ -38,6 +39,7 @@ readonly class UpdateCategoryHandler implements CommandHandlerInterface
      * @throws CategoryNotFoundException
      * @throws CategoryChildCanNotBeParentConflictException
      * @throws CategoryCannotBeParentOfItselfException
+     * @throws CategoryParentNotFoundException
      * @throws ConcurrencyException
      * @throws UpdateCategoryException
      */
@@ -72,6 +74,7 @@ readonly class UpdateCategoryHandler implements CommandHandlerInterface
         } catch (
             CategoryAlreadyExistsException
             |CategoryNotFoundException
+            |CategoryParentNotFoundException
             |CategoryChildCanNotBeParentConflictException
             |CategoryCannotBeParentOfItselfException
             |ConcurrencyException $e

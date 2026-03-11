@@ -8,6 +8,7 @@ use App\Shared\Domain\Criteria\Sorting\Sort;
 use App\Shared\Domain\Entity\HasIdInterface;
 use App\Shared\Domain\Exception\Database\OneOfEntitiesNotFoundException;
 use App\Shared\Domain\ValueObject\Contract\IdInterface;
+use App\Shared\Infrastructure\Persistence\Doctrine\Criteria\Restrictions\ComparisonOperatorEnum;
 use App\Shared\Infrastructure\Persistence\Doctrine\Criteria\Restrictions\Criterion;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\QueryBuilder;
@@ -24,12 +25,11 @@ trait ReadRepositoryTrait
 
         foreach ($criteria as $index => $criteriaItem) {
             $field = $criteriaItem->field;
-            $value = $criteriaItem->value;
-            $type = $criteriaItem->type;
+            $operator = $criteriaItem->operator->value;
             $paramName = $field.$index;
 
-            $qb->andWhere("e.{$field} = :{$paramName}")
-                ->setParameter(key: $paramName, value: $value, type: $type);
+            $qb->andWhere("e.{$field} {$operator} :{$paramName}")
+                ->setParameter(key: $paramName, value: $criteriaItem->value, type: $criteriaItem->type);
         }
 
         $result = $qb->setMaxResults(1)->getQuery()->getScalarResult();
@@ -114,9 +114,13 @@ trait ReadRepositoryTrait
         );
     }
 
-    protected function _makeCriterion(string $field, mixed $value, mixed $type = null): Criterion
-    {
-        return new Criterion(field: $field, value: $value, type: $type);
+    protected function _makeCriterion(
+        string $field,
+        mixed $value,
+        ComparisonOperatorEnum $operator = ComparisonOperatorEnum::Equal,
+        mixed $type = null,
+    ): Criterion {
+        return new Criterion(field: $field, value: $value, operator: $operator, type: $type);
     }
 
     protected function _prepareSearchValue(string $value): string

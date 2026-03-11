@@ -31,5 +31,5 @@ interface CategoryReadRepositoryInterface
      */
     public function assertAllExistByIds(array $ids): void;
 
-    public function existsBySlug(Slug $slug): bool;
+    public function existsBySlug(Slug $slug, ?Id $excludeId = null): bool;
 }

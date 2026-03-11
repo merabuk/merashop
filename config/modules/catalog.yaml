@@ -20,7 +20,7 @@ services:
       $clock: '@clock'
       $filesystem: '@catalog.storage.filesystem'
 
-  App\Catalog\Domain\Service\CategoryValidatorInterface: '@App\Catalog\Domain\Service\CategoryValidator'
+  App\Catalog\Domain\Service\CategoryStructureServiceInterface: '@App\Catalog\Domain\Service\CategoryStructureService'
   App\Catalog\Domain\Service\CategoryManagerInterface: '@App\Catalog\Domain\Service\CategoryManager'
 
   App\Catalog\Domain\Factory\Contract\AttributeFactoryInterface: '@App\Catalog\Domain\Factory\AttributeFactory'

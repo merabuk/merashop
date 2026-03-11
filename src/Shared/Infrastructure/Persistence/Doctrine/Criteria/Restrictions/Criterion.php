@@ -9,6 +9,7 @@ final readonly class Criterion
     public function __construct(
         public string $field,
         public mixed $value,
+        public ComparisonOperatorEnum $operator = ComparisonOperatorEnum::Equal,
         public mixed $type = null,
     ) {
     }
