@@ -15,12 +15,13 @@ use App\Catalog\Domain\Service\CategoryValidatorInterface;
 use App\Catalog\Domain\ValueObject\Category\Slug;
 use App\Tests\Catalog\Support\CategoryMother;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class CategoryManagerTest extends TestCase
 {
-    private CategoryReadRepositoryInterface $readRepository;
-    private CategoryValidatorInterface $validator;
+    private CategoryReadRepositoryInterface&MockObject $readRepository;
+    private CategoryValidatorInterface&MockObject $validator;
 
     public function setUp(): void
     {

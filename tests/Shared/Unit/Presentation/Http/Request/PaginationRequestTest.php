@@ -10,7 +10,7 @@ use App\Shared\Presentation\Http\Request\PaginationRequest;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class PaginationRequestTest extends TestCase
+final class PaginationRequestTest extends TestCase
 {
     public function testToCursor(): void
     {

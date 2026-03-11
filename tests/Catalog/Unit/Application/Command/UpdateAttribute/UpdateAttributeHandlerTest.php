@@ -13,12 +13,13 @@ use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
 use App\Shared\Domain\Exception\Entity\ConcurrencyException;
 use App\Tests\Catalog\Support\AttributeMother;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class UpdateAttributeHandlerTest extends TestCase
 {
-    private AttributeReadRepositoryInterface $readRepository;
-    private AttributeWriteRepositoryInterface $writeRepository;
+    private AttributeReadRepositoryInterface&MockObject $readRepository;
+    private AttributeWriteRepositoryInterface&MockObject $writeRepository;
 
     public function setUp(): void
     {

@@ -20,6 +20,7 @@ use App\Catalog\Domain\ValueObject\Category\Id;
 use App\Shared\Domain\Exception\Entity\ConcurrencyException;
 use App\Tests\Catalog\Support\CategoryMother;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Symfony\Component\Messenger\Envelope;
@@ -27,10 +28,10 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 final class UpdateCategoryHandlerTest extends TestCase
 {
-    private CategoryReadRepositoryInterface $readRepository;
-    private CategoryWriteRepositoryInterface $writeRepository;
-    private CategoryManagerInterface $categoryManager;
-    private MessageBusInterface $eventBus;
+    private CategoryReadRepositoryInterface&MockObject $readRepository;
+    private CategoryWriteRepositoryInterface&MockObject $writeRepository;
+    private CategoryManagerInterface&MockObject $categoryManager;
+    private MessageBusInterface&MockObject $eventBus;
 
     public function setUp(): void
     {

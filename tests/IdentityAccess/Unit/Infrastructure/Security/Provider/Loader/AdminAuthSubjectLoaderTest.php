@@ -9,11 +9,12 @@ use App\IdentityAccess\Domain\Repository\AdminAccountReadRepositoryInterface;
 use App\IdentityAccess\Infrastructure\Security\Provider\Loader\AdminAuthSubjectLoader;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 use App\Tests\IdentityAccess\Support\AdminAccountMother;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class AdminAuthSubjectLoaderTest extends TestCase
 {
-    private AdminAccountReadRepositoryInterface $repository;
+    private AdminAccountReadRepositoryInterface&MockObject $repository;
     private AdminAuthSubjectLoader $loader;
 
     protected function setUp(): void

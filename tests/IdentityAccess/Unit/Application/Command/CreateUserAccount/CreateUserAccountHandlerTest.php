@@ -13,18 +13,19 @@ use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
 use App\Shared\Domain\Event\UserRegisteredSharedEvent;
 use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use App\Tests\IdentityAccess\Support\UserAccountMother;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class CreateUserAccountHandlerTest extends TestCase
+final class CreateUserAccountHandlerTest extends TestCase
 {
-    private UserAccountReadRepositoryInterface $readRepository;
-    private PasswordHasherInterface $passwordHasher;
-    private UlidGeneratorInterface $ulidGenerator;
-    private UserAccountWriteRepositoryInterface $writeRepository;
-    private MessageBusInterface $eventBus;
+    private UserAccountReadRepositoryInterface&MockObject $readRepository;
+    private PasswordHasherInterface&MockObject $passwordHasher;
+    private UlidGeneratorInterface&MockObject $ulidGenerator;
+    private UserAccountWriteRepositoryInterface&MockObject $writeRepository;
+    private MessageBusInterface&MockObject $eventBus;
 
     protected function setUp(): void
     {

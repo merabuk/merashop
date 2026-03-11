@@ -10,7 +10,7 @@ use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrai
 use PHPUnit\Framework\TestCase;
 use Traversable;
 
-class ScopeCollectionTest extends TestCase
+final class ScopeCollectionTest extends TestCase
 {
     use ValueObjectEqualityCheckTrait;
 

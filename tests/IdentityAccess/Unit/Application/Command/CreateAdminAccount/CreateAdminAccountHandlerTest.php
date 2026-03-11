@@ -16,6 +16,7 @@ use App\Shared\Domain\Enum\RoleEnum;
 use App\Shared\Domain\Event\AdminCreatedSharedEvent;
 use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use App\Tests\IdentityAccess\Support\AdminAccountMother;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Symfony\Component\Messenger\Envelope;
@@ -23,12 +24,12 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 final class CreateAdminAccountHandlerTest extends TestCase
 {
-    private AdminAccountReadRepositoryInterface $readRepository;
-    private PasswordGeneratorInterface $passwordGenerator;
-    private AdminAccountWriteRepositoryInterface $writeRepository;
-    private PasswordHasherInterface $passwordHasher;
-    private UlidGeneratorInterface $ulidGenerator;
-    private MessageBusInterface $eventBus;
+    private AdminAccountReadRepositoryInterface&MockObject $readRepository;
+    private PasswordGeneratorInterface&MockObject $passwordGenerator;
+    private AdminAccountWriteRepositoryInterface&MockObject $writeRepository;
+    private PasswordHasherInterface&MockObject $passwordHasher;
+    private UlidGeneratorInterface&MockObject $ulidGenerator;
+    private MessageBusInterface&MockObject $eventBus;
 
     protected function setUp(): void
     {

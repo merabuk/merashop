@@ -12,11 +12,12 @@ use App\Shared\Domain\Criteria\Listing\Criteria;
 use App\Shared\Domain\Criteria\Listing\PaginatedResult;
 use App\Shared\Domain\Criteria\Paging\Cursor;
 use App\Tests\Catalog\Support\AttributeMother;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class GetAttributeListHandlerTest extends TestCase
 {
-    private AttributeReadRepositoryInterface $readRepository;
+    private AttributeReadRepositoryInterface&MockObject $readRepository;
 
     protected function setUp(): void
     {

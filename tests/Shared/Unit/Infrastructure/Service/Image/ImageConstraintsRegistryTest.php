@@ -8,13 +8,14 @@ use App\Shared\Domain\Enum\MimeTypeEnum;
 use App\Shared\Domain\Service\Image\ImageConstraintsProviderInterface;
 use App\Shared\Domain\ValueObject\File\ImageConstraints;
 use App\Shared\Infrastructure\Service\Image\ImageConstraintsRegistry;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use stdClass;
 
 final class ImageConstraintsRegistryTest extends TestCase
 {
-    private ContainerInterface $container;
+    private ContainerInterface&MockObject $container;
 
     public function setUp(): void
     {

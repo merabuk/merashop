@@ -15,6 +15,7 @@ use App\Tests\EmailSender\Support\OutboxEmailMother;
 use DateTimeImmutable;
 use Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Clock\ClockInterface;
@@ -22,10 +23,10 @@ use Symfony\Component\Clock\MockClock;
 
 final class SendOutboxEmailCommandHandlerTest extends TestCase
 {
-    private OutboxEmailReadRepositoryInterface $readRepository;
-    private OutboxEmailWriteRepositoryInterface $writeRepository;
-    private MailerServiceInterface $mailer;
-    private LoggerInterface $logger;
+    private OutboxEmailReadRepositoryInterface&MockObject $readRepository;
+    private OutboxEmailWriteRepositoryInterface&MockObject $writeRepository;
+    private MailerServiceInterface&MockObject $mailer;
+    private LoggerInterface&MockObject $logger;
     private OutboxRetryPolicy $retryPolicy;
 
     protected function setUp(): void

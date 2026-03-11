@@ -10,11 +10,12 @@ use App\EmailSender\Domain\ValueObject\OutboxEmail\Driver;
 use App\EmailSender\Infrastructure\Mailer\MailerFactoryInterface;
 use App\EmailSender\Infrastructure\Mailer\MailerInterface;
 use App\EmailSender\Infrastructure\Service\MailerService;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class MailerServiceTest extends TestCase
 {
-    private MailerFactoryInterface $factory;
+    private MailerFactoryInterface&MockObject $factory;
 
     protected function setUp(): void
     {

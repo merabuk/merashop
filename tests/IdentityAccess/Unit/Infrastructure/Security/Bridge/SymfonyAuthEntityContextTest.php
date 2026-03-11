@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class SymfonyAuthEntityContextTest extends TestCase
+final class SymfonyAuthEntityContextTest extends TestCase
 {
     private Security&MockObject $security;
 

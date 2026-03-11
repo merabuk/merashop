@@ -15,7 +15,7 @@ use App\Tests\Shared\Support\Traits\EntityTechnicalMetadataTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Clock\MockClock;
 
-class RefreshTokenWriteRepositoryTest extends KernelTestCase
+final class RefreshTokenWriteRepositoryTest extends KernelTestCase
 {
     use IdentityAccessEntityManagerTrait;
     use EntityTechnicalMetadataTrait;

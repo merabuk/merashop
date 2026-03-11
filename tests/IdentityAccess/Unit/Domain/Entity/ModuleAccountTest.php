@@ -8,7 +8,7 @@ use App\IdentityAccess\Domain\ValueObject\ScopeCollection;
 use App\Tests\IdentityAccess\Support\ModuleAccountMother;
 use PHPUnit\Framework\TestCase;
 
-class ModuleAccountTest extends TestCase
+final class ModuleAccountTest extends TestCase
 {
     public function testItUpdatesScopesCorrectly(): void
     {

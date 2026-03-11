@@ -11,13 +11,14 @@ use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
 use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use App\Tests\Catalog\Support\AttributeMother;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class CreateAttributeHandlerTest extends TestCase
 {
-    private AttributeReadRepositoryInterface $readRepository;
-    private AttributeWriteRepositoryInterface $writeRepository;
-    private UlidGeneratorInterface $ulidGenerator;
+    private AttributeReadRepositoryInterface&MockObject $readRepository;
+    private AttributeWriteRepositoryInterface&MockObject $writeRepository;
+    private UlidGeneratorInterface&MockObject $ulidGenerator;
 
     protected function setUp(): void
     {

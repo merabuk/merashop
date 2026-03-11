@@ -11,7 +11,7 @@ use App\Tests\Shared\Support\Traits\BaseUriTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 
-class HealthCheckTest extends WebTestCase
+final class HealthCheckTest extends WebTestCase
 {
     use ApiRequestTrait;
     use ApiResponseTrait;

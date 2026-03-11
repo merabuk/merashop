@@ -9,11 +9,12 @@ use App\Customer\Application\Command\CreateCustomerProfile\CreateCustomerProfile
 use App\Customer\Domain\Entity\CustomerProfile;
 use App\Customer\Domain\Repository\CustomerProfileWriteRepositoryInterface;
 use App\Tests\Customer\Support\CustomerProfileMother;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class CreateCustomerProfileHandlerTest extends TestCase
 {
-    private CustomerProfileWriteRepositoryInterface $writeRepository;
+    private CustomerProfileWriteRepositoryInterface&MockObject $writeRepository;
 
     public function setUp(): void
     {

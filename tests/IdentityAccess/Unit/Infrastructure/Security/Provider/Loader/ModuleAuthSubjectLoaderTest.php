@@ -10,11 +10,12 @@ use App\IdentityAccess\Infrastructure\Security\Provider\Loader\ModuleAuthSubject
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 use App\Shared\Domain\Enum\RoleEnum;
 use App\Tests\IdentityAccess\Support\ModuleAccountMother;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class ModuleAuthSubjectLoaderTest extends TestCase
 {
-    private ModuleAccountReadRepositoryInterface $repository;
+    private ModuleAccountReadRepositoryInterface&MockObject $repository;
     private ModuleAuthSubjectLoader $loader;
 
     protected function setUp(): void

@@ -13,15 +13,16 @@ use App\IdentityAccess\Domain\Service\PasswordGeneratorInterface;
 use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
 use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use App\Tests\IdentityAccess\Support\ModuleAccountMother;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-class CreateModuleAccountHandlerTest extends TestCase
+final class CreateModuleAccountHandlerTest extends TestCase
 {
-    private ModuleAccountReadRepositoryInterface $readRepository;
-    private PasswordGeneratorInterface $passwordGenerator;
-    private ModuleAccountWriteRepositoryInterface $writeRepository;
-    private PasswordHasherInterface $passwordHasher;
-    private UlidGeneratorInterface $ulidGenerator;
+    private ModuleAccountReadRepositoryInterface&MockObject $readRepository;
+    private PasswordGeneratorInterface&MockObject $passwordGenerator;
+    private ModuleAccountWriteRepositoryInterface&MockObject $writeRepository;
+    private PasswordHasherInterface&MockObject $passwordHasher;
+    private UlidGeneratorInterface&MockObject $ulidGenerator;
 
     protected function setUp(): void
     {

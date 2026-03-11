@@ -12,7 +12,7 @@ use App\Tests\IdentityAccess\Support\Traits\UserAccountFactoryTrait;
 use App\Tests\Shared\Support\Traits\EntityTechnicalMetadataTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-class UserAccountWriteRepositoryTest extends KernelTestCase
+final class UserAccountWriteRepositoryTest extends KernelTestCase
 {
     use EntityTechnicalMetadataTrait;
     use IdentityAccessEntityManagerTrait;

@@ -10,7 +10,7 @@ use App\Tests\IdentityAccess\Support\Traits\IdentityAccessEntityManagerTrait;
 use App\Tests\IdentityAccess\Support\Traits\UserAccountFactoryTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-class UserAccountReadRepositoryTest extends KernelTestCase
+final class UserAccountReadRepositoryTest extends KernelTestCase
 {
     use IdentityAccessEntityManagerTrait;
     use UserAccountFactoryTrait;

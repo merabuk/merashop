@@ -10,12 +10,13 @@ use App\IdentityAccess\Domain\Repository\AdminAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 use App\Tests\IdentityAccess\Support\AdminAccountMother;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-class AdminPasswordGrantAccountProviderTest extends TestCase
+final class AdminPasswordGrantAccountProviderTest extends TestCase
 {
-    private AdminAccountReadRepositoryInterface $readRepository;
-    private PasswordHasherInterface $passwordHasher;
+    private AdminAccountReadRepositoryInterface&MockObject $readRepository;
+    private PasswordHasherInterface&MockObject $passwordHasher;
     private AdminPasswordGrantAccountProvider $provider;
 
     protected function setUp(): void

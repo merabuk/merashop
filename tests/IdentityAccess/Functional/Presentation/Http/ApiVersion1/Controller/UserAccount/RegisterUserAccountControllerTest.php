@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class RegisterUserAccountControllerTest extends WebTestCase
+final class RegisterUserAccountControllerTest extends WebTestCase
 {
     use ApiRequestTrait;
     use ApiResponseTrait;

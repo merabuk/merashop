@@ -8,7 +8,7 @@ use App\IdentityAccess\Domain\ValueObject\RoleCollection;
 use App\Tests\IdentityAccess\Support\UserAccountMother;
 use PHPUnit\Framework\TestCase;
 
-class UserAccountTest extends TestCase
+final class UserAccountTest extends TestCase
 {
     public function testItUpdatesScopesCorrectly(): void
     {

@@ -15,7 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class RevokeTokenControllerTest extends WebTestCase
+final class RevokeTokenControllerTest extends WebTestCase
 {
     use ApiAuthTrait;
     use ApiRequestTrait;

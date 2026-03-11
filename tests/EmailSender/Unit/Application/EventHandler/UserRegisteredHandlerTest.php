@@ -7,11 +7,12 @@ namespace App\Tests\EmailSender\Unit\Application\EventHandler;
 use App\EmailSender\Application\EventHandler\UserRegisteredHandler;
 use App\EmailSender\Application\Service\EmailQueueServiceInterface;
 use App\Shared\Domain\Event\UserRegisteredSharedEvent;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class UserRegisteredHandlerTest extends TestCase
 {
-    private EmailQueueServiceInterface $notificationService;
+    private EmailQueueServiceInterface&MockObject $notificationService;
 
     public function setUp(): void
     {

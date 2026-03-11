@@ -9,11 +9,12 @@ use App\Catalog\Application\Query\GetAttributeItem\GetAttributeItemQuery;
 use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Tests\Catalog\Support\AttributeMother;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class GetAttributeItemHandlerTest extends TestCase
 {
-    private AttributeReadRepositoryInterface $readRepository;
+    private AttributeReadRepositoryInterface&MockObject $readRepository;
 
     public function setUp(): void
     {

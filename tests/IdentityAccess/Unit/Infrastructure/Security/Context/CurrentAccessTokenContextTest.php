@@ -8,7 +8,7 @@ use App\IdentityAccess\Infrastructure\Security\Context\CurrentAccessTokenContext
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
-class CurrentAccessTokenContextTest extends TestCase
+final class CurrentAccessTokenContextTest extends TestCase
 {
     public function testItSetsAndGetsTokenContext(): void
     {

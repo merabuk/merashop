@@ -11,6 +11,7 @@ use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 use App\Tests\Catalog\Support\TemporaryImageMother;
 use App\Tests\Shared\Support\Traits\VfsStreamTrait;
 use League\Flysystem\FilesystemOperator;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\Clock\MockClock;
@@ -19,7 +20,7 @@ final class CatalogFlysystemStorageTest extends TestCase
 {
     use VfsStreamTrait;
 
-    private FilesystemOperator $filesystem;
+    private FilesystemOperator&MockObject $filesystem;
 
     public function setUp(): void
     {

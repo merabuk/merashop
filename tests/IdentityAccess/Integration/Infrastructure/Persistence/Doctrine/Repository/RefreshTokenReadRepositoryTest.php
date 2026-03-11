@@ -10,7 +10,7 @@ use App\Tests\IdentityAccess\Support\Traits\RefreshTokenFactoryTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Clock\MockClock;
 
-class RefreshTokenReadRepositoryTest extends KernelTestCase
+final class RefreshTokenReadRepositoryTest extends KernelTestCase
 {
     use IdentityAccessEntityManagerTrait;
     use RefreshTokenFactoryTrait;

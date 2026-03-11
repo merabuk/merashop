@@ -8,6 +8,7 @@ use App\EmailSender\Application\Command\SendOutboxEmail\SendOutboxEmailCommand;
 use App\EmailSender\Application\Service\OutboxEmailRelayService;
 use App\EmailSender\Domain\Repository\OutboxEmailReadRepositoryInterface;
 use App\Tests\EmailSender\Support\OutboxEmailMother;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Symfony\Component\Clock\ClockInterface;
@@ -17,8 +18,8 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 final class OutboxEmailRelayServiceTest extends TestCase
 {
-    private OutboxEmailReadRepositoryInterface $readRepository;
-    private MessageBusInterface $commandBus;
+    private OutboxEmailReadRepositoryInterface&MockObject $readRepository;
+    private MessageBusInterface&MockObject $commandBus;
 
     public function setUp(): void
     {

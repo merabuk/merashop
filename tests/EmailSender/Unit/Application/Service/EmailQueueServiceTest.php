@@ -15,6 +15,7 @@ use App\Shared\Domain\Service\Tracing\TraceIdContextInterface;
 use App\Tests\EmailSender\Support\OutboxEmailMother;
 use App\Tests\Shared\Support\Traits\TraceIdHelperTrait;
 use Exception;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -27,13 +28,13 @@ final class EmailQueueServiceTest extends TestCase
 {
     use TraceIdHelperTrait;
 
-    private TraceIdContextInterface $traceIdContext;
-    private OutboxEmailReadRepositoryInterface $readRepository;
-    private LoggerInterface $logger;
-    private ContainerInterface $container;
-    private OutboxEmailFactoryInterface $factory;
-    private OutboxEmailWriteRepositoryInterface $writeRepository;
-    private MessageBusInterface $commandBus;
+    private TraceIdContextInterface&MockObject $traceIdContext;
+    private OutboxEmailReadRepositoryInterface&MockObject $readRepository;
+    private LoggerInterface&MockObject $logger;
+    private ContainerInterface&MockObject $container;
+    private OutboxEmailFactoryInterface&MockObject $factory;
+    private OutboxEmailWriteRepositoryInterface&MockObject $writeRepository;
+    private MessageBusInterface&MockObject $commandBus;
 
     public function setUp(): void
     {

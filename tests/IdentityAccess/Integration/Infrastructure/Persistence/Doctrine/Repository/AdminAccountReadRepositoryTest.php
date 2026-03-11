@@ -11,7 +11,7 @@ use App\Tests\IdentityAccess\Support\Traits\IdentityAccessEntityManagerTrait;
 use App\Tests\Shared\Support\Traits\ValueObjectAssertionTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-class AdminAccountReadRepositoryTest extends KernelTestCase
+final class AdminAccountReadRepositoryTest extends KernelTestCase
 {
     use IdentityAccessEntityManagerTrait;
     use AdminAccountFactoryTrait;

@@ -14,7 +14,7 @@ use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Middleware\MiddlewareInterface;
 use Symfony\Component\Messenger\Middleware\StackInterface;
 
-class TraceIdMiddlewareTest extends TestCase
+final class TraceIdMiddlewareTest extends TestCase
 {
     use TraceIdHelperTrait;
 

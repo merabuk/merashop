@@ -10,7 +10,7 @@ use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrai
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class RoleTest extends TestCase
+final class RoleTest extends TestCase
 {
     use ValueObjectEqualityCheckTrait;
 

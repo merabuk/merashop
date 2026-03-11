@@ -15,14 +15,15 @@ use App\IdentityAccess\Domain\Enum\GrantTypeEnum;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 use App\Shared\Domain\Enum\RoleEnum;
 use App\Tests\IdentityAccess\Support\ModuleAccountMother;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use stdClass;
 
-class ClientCredentialsGrantHandlerTest extends TestCase
+final class ClientCredentialsGrantHandlerTest extends TestCase
 {
-    private ContainerInterface $providers;
-    private TokenGeneratorInterface $tokenGenerator;
+    private ContainerInterface&MockObject $providers;
+    private TokenGeneratorInterface&MockObject $tokenGenerator;
     private ClientCredentialsGrantHandler $handler;
 
     protected function setUp(): void

@@ -21,19 +21,20 @@ use App\Shared\Domain\Enum\IdentityTypeEnum;
 use App\Shared\Domain\Enum\RoleEnum;
 use App\Tests\IdentityAccess\Support\RefreshTokenMother;
 use App\Tests\IdentityAccess\Support\UserAccountMother;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use stdClass;
 use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\Clock\MockClock;
 
-class RefreshTokenGrantHandlerTest extends TestCase
+final class RefreshTokenGrantHandlerTest extends TestCase
 {
-    private ContainerInterface $container;
-    private RefreshTokenReadRepositoryInterface $readRepository;
-    private TokenHasherInterface $tokenHasher;
-    private TokenGeneratorInterface $tokenGenerator;
-    private RefreshTokenServiceInterface $refreshTokenService;
+    private ContainerInterface&MockObject $container;
+    private RefreshTokenReadRepositoryInterface&MockObject $readRepository;
+    private TokenHasherInterface&MockObject $tokenHasher;
+    private TokenGeneratorInterface&MockObject $tokenGenerator;
+    private RefreshTokenServiceInterface&MockObject $refreshTokenService;
 
     protected function setUp(): void
     {

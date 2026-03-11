@@ -8,7 +8,7 @@ use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrai
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class ClientIdTest extends TestCase
+final class ClientIdTest extends TestCase
 {
     use ValueObjectEqualityCheckTrait;
 

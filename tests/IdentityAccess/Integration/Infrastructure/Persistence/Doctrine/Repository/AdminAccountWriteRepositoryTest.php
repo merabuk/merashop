@@ -13,7 +13,7 @@ use App\Tests\Shared\Support\Traits\EntityTechnicalMetadataTrait;
 use App\Tests\Shared\Support\Traits\ValueObjectAssertionTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-class AdminAccountWriteRepositoryTest extends KernelTestCase
+final class AdminAccountWriteRepositoryTest extends KernelTestCase
 {
     use AdminAccountFactoryTrait;
     use EntityTechnicalMetadataTrait;

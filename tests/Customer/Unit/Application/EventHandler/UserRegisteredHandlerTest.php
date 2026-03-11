@@ -9,6 +9,7 @@ use App\Customer\Application\EventHandler\UserRegisteredHandler;
 use App\Customer\Domain\Repository\CustomerProfileReadRepositoryInterface;
 use App\Shared\Domain\Event\UserRegisteredSharedEvent;
 use App\Tests\Customer\Support\CustomerProfileMother;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use stdClass;
@@ -17,9 +18,9 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 final class UserRegisteredHandlerTest extends TestCase
 {
-    private CustomerProfileReadRepositoryInterface $readRepository;
-    private LoggerInterface $logger;
-    private MessageBusInterface $commandBus;
+    private CustomerProfileReadRepositoryInterface&MockObject $readRepository;
+    private LoggerInterface&MockObject $logger;
+    private MessageBusInterface&MockObject $commandBus;
 
     protected function setUp(): void
     {

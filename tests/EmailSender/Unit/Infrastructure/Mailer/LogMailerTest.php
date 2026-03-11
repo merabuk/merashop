@@ -7,12 +7,13 @@ namespace App\Tests\EmailSender\Unit\Infrastructure\Mailer;
 use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;
 use App\EmailSender\Infrastructure\Mailer\LogMailer;
 use App\Tests\EmailSender\Support\OutboxEmailMother;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 final class LogMailerTest extends TestCase
 {
-    private LoggerInterface $logger;
+    private LoggerInterface&MockObject $logger;
 
     protected function setUp(): void
     {

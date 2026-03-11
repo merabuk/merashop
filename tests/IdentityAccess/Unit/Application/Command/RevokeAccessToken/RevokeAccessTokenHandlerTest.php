@@ -9,7 +9,7 @@ use App\IdentityAccess\Application\Command\RevokeAccessToken\RevokeAccessTokenHa
 use App\IdentityAccess\Domain\Security\AccessTokenBlacklistInterface;
 use PHPUnit\Framework\TestCase;
 
-class RevokeAccessTokenHandlerTest extends TestCase
+final class RevokeAccessTokenHandlerTest extends TestCase
 {
     public function testItDelegatesWorkToAccessTokenBlackListService(): void
     {

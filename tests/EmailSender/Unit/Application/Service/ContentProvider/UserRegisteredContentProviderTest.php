@@ -7,13 +7,14 @@ namespace App\Tests\EmailSender\Unit\Application\Service\ContentProvider;
 use App\EmailSender\Application\Service\ContentProvider\UserRegisteredContentProvider;
 use App\Shared\Domain\Enum\SharedEventNameEnum;
 use App\Shared\Domain\Service\TranslationDomainResolverInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class UserRegisteredContentProviderTest extends TestCase
 {
-    private TranslatorInterface $translator;
-    private TranslationDomainResolverInterface $translationDomainResolver;
+    private TranslatorInterface&MockObject $translator;
+    private TranslationDomainResolverInterface&MockObject $translationDomainResolver;
 
     protected function setUp(): void
     {

@@ -14,13 +14,14 @@ use App\Catalog\Domain\ValueObject\Category\Id;
 use App\Catalog\Domain\ValueObject\Category\Slug;
 use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use App\Tests\Catalog\Support\CategoryMother;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class CreateCategoryHandlerTest extends TestCase
 {
-    private UlidGeneratorInterface $ulidGenerator;
-    private CategoryReadRepositoryInterface $readRepository;
-    private CategoryWriteRepositoryInterface $writeRepository;
+    private UlidGeneratorInterface&MockObject $ulidGenerator;
+    private CategoryReadRepositoryInterface&MockObject $readRepository;
+    private CategoryWriteRepositoryInterface&MockObject $writeRepository;
 
     protected function setUp(): void
     {

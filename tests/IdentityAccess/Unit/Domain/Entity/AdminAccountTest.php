@@ -8,7 +8,7 @@ use App\IdentityAccess\Domain\ValueObject\AdminAccount\PasswordHash;
 use App\Tests\IdentityAccess\Support\AdminAccountMother;
 use PHPUnit\Framework\TestCase;
 
-class AdminAccountTest extends TestCase
+final class AdminAccountTest extends TestCase
 {
     public function testItChangesPasswordCorrectly(): void
     {

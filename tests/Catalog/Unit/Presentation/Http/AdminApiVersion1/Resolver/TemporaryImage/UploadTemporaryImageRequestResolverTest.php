@@ -9,6 +9,7 @@ use App\Catalog\Presentation\Http\AdminApiVersion1\Request\TemporaryImage\Upload
 use App\Catalog\Presentation\Http\AdminApiVersion1\Resolver\TemporaryImage\UploadTemporaryImageRequestResolver;
 use App\Shared\Domain\Service\Validation\ImageValidatorInterface;
 use App\Tests\Shared\Support\Traits\VfsStreamTrait;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,8 +21,8 @@ final class UploadTemporaryImageRequestResolverTest extends TestCase
 {
     use VfsStreamTrait;
 
-    private ValidatorInterface $validator;
-    private ImageValidatorInterface $imageValidator;
+    private ValidatorInterface&MockObject $validator;
+    private ImageValidatorInterface&MockObject $imageValidator;
 
     protected function setUp(): void
     {

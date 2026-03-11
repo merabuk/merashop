@@ -10,7 +10,7 @@ use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrai
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class CodeTest extends TestCase
+final class CodeTest extends TestCase
 {
     use ValueObjectEqualityCheckTrait;
 

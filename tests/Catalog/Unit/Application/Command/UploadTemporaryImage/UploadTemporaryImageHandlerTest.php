@@ -16,17 +16,16 @@ use App\Shared\Domain\ValueObject\File\RawFile;
 use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 use App\Tests\Catalog\Support\TemporaryImageMother;
 use App\Tests\Shared\Support\Traits\VfsStreamTrait;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class UploadTemporaryImageHandlerTest extends TestCase
 {
     use VfsStreamTrait;
 
-    private UlidGeneratorInterface $ulidGenerator;
-
-    private CatalogStorageInterface $catalogStorage;
-
-    private TemporaryImageWriteRepositoryInterface $writeRepository;
+    private UlidGeneratorInterface&MockObject $ulidGenerator;
+    private CatalogStorageInterface&MockObject $catalogStorage;
+    private TemporaryImageWriteRepositoryInterface&MockObject $writeRepository;
 
     public function setUp(): void
     {
