@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Service\Image;
 
+use App\Shared\Domain\Enum\MimeTypeEnum;
 use App\Shared\Domain\Service\Image\ImageConstraintsProviderInterface;
 use App\Shared\Domain\Service\Image\ImageConstraintsRegistryInterface;
 use App\Shared\Domain\ValueObject\File\ImageConstraints;
@@ -14,6 +15,15 @@ use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 
 final readonly class ImageConstraintsRegistry implements ImageConstraintsRegistryInterface
 {
+    public const int DEFAULT_MAX_SIZE = 5 * 1024 * 1024; // 5MB
+    public const int DEFAULT_MIN_DIMENSION = 100;
+    public const int DEFAULT_MAX_DIMENSION = 5000;
+    public const array DEFAULT_MIMES = [
+        MimeTypeEnum::Jpg->value,
+        MimeTypeEnum::Jpeg->value,
+        MimeTypeEnum::Png->value,
+    ];
+
     public function __construct(
         #[AutowireLocator(
             services: 'shared.image_constraints_provider',
@@ -45,10 +55,12 @@ final readonly class ImageConstraintsRegistry implements ImageConstraintsRegistr
     private function getDefaultImageConstraints(): ImageConstraints
     {
         return new ImageConstraints(
-            maxSize: 5 * 1024 * 1024, // 5MB,
-            allowedMimeTypes: ['image/jpeg', 'image/png'],
-            maxWidth: 5000,
-            maxHeight: 5000
+            maxSize: self::DEFAULT_MAX_SIZE,
+            allowedMimeTypes: self::DEFAULT_MIMES,
+            minWidth: self::DEFAULT_MIN_DIMENSION,
+            minHeight: self::DEFAULT_MIN_DIMENSION,
+            maxWidth: self::DEFAULT_MAX_DIMENSION,
+            maxHeight: self::DEFAULT_MAX_DIMENSION,
         );
     }
 }
