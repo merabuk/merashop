@@ -37,6 +37,15 @@ abstract readonly class FlysystemStorage implements FileStorageInterface
         }
     }
 
+    public function move(string $sourcePath, string $targetPath): void
+    {
+        try {
+            $this->filesystem->move($sourcePath, $targetPath);
+        } catch (Throwable $e) {
+            throw $this->makeException(sprintf('Fail moving file from %s to %s', $sourcePath, $targetPath), $e);
+        }
+    }
+
     /**
      * @param resource|string $content
      *

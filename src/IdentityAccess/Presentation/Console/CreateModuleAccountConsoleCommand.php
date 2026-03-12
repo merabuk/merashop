@@ -102,7 +102,7 @@ final class CreateModuleAccountConsoleCommand extends BaseConsoleCommand
             $plainSecret = ($this->handler)($command);
 
             $this->io->success('Module account created!');
-            $this->io->info("Secret: <fg=yellow;options=bold>{$plainSecret}</fg>");
+            $this->io->writeln("Secret: <fg=yellow;options=bold>{$plainSecret}</fg>");
 
             return self::SUCCESS;
         } catch (Throwable $e) {

@@ -116,7 +116,7 @@ final class CategoryReadRepository extends BaseCategoryRepository implements Cat
     public function assertAllExistByIds(array $ids): void
     {
         try {
-            $this->_assertAllExistByIds($ids);
+            $this->_assertAllExistByIds(ids: $ids, alias: 'c');
         } catch (OneOfEntitiesNotFoundException $e) {
             throw new OneOfCategoriesNotFoundException(previous: $e);
         }

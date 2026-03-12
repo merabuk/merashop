@@ -7,6 +7,7 @@ namespace App\Catalog\Domain\ValueObject\Product;
 use App\Catalog\Domain\Exception\Product\InvalidProductPriceAmountException;
 use App\Catalog\Domain\Exception\Product\InvalidProductPriceCurrencyException;
 use App\Shared\Domain\Enum\CurrencyEnum;
+use App\Shared\Domain\Service\Utility\CurrencyHelper;
 use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
 use Stringable;
@@ -15,28 +16,30 @@ final readonly class Price implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 
-    public const int CURRENCY_LENGTH = 3;
-
-    private int $amount;
-    private CurrencyEnum $currency;
-
     /**
      * @throws InvalidProductPriceAmountException
-     * @throws InvalidProductPriceCurrencyException
      */
-    public function __construct(int $amount, string $currency)
-    {
-        if ($amount < 0) {
+    public function __construct(
+        private int $amount,
+        private CurrencyEnum $currency,
+    ) {
+        if ($this->amount < 0) {
             throw InvalidProductPriceAmountException::becauseItMustBePositive();
         }
+    }
 
-        $currencyEnum = CurrencyEnum::tryFrom(mb_strtoupper($currency));
+    /**
+     * @throws InvalidProductPriceCurrencyException
+     * @throws InvalidProductPriceAmountException
+     */
+    public static function fromPrimitives(int $amount, string $currency): self
+    {
+        $currencyEnum = CurrencyEnum::tryFrom(mb_strtoupper(mb_trim($currency)));
         if (null === $currencyEnum) {
             throw InvalidProductPriceCurrencyException::becauseItIsNotAValidCurrencyCode();
         }
 
-        $this->amount = $amount;
-        $this->currency = $currencyEnum;
+        return new self($amount, $currencyEnum);
     }
 
     public function getAmount(): int
@@ -51,6 +54,11 @@ final readonly class Price implements EquatableInterface, Stringable
 
     protected function getPrimitiveValue(): string
     {
-        return sprintf('%d %s', $this->amount, $this->currency->value);
+        return sprintf('%d_%s', $this->amount, $this->currency->value);
+    }
+
+    public function __toString(): string
+    {
+        return CurrencyHelper::formatPrice($this->amount, $this->currency);
     }
 }

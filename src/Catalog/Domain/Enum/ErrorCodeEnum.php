@@ -19,4 +19,6 @@ enum ErrorCodeEnum: string
     case CategoryChildCanNotBeParentConflictException = 'CATEGORY_MOVE_TO_CHILD_CONFLICT';
     case ProductNotFound = 'PRODUCT_NOT_FOUND';
     case ProductAlreadyExists = 'PRODUCT_ALREADY_EXISTS';
+    case ProductPriceUniqueException = 'PRODUCT_PRICE_UNIQUE_EXCEPTION';
+    case OneOfTemporaryImagesNotFoundException = 'ONE_OF_TEMPORARY_IMAGES_NOT_FOUND';
 }

@@ -5,19 +5,15 @@ declare(strict_types=1);
 namespace App\Catalog\Application\Command\CreateProduct;
 
 use App\Catalog\Application\Exception\Product\CreateProductException;
-use App\Catalog\Application\Service\ProductDataFactory;
-use App\Catalog\Domain\Entity\Product;
+use App\Catalog\Application\Service\ProductApplicationFactoryInterface;
+use App\Catalog\Application\Service\ProductMediaManagerInterface;
 use App\Catalog\Domain\Exception\Attribute\OneOfAttributesNotFoundException;
 use App\Catalog\Domain\Exception\Category\OneOfCategoriesNotFoundException;
 use App\Catalog\Domain\Exception\Product\ProductAlreadyExistsException;
-use App\Catalog\Domain\Repository\ProductReadRepositoryInterface;
+use App\Catalog\Domain\Exception\TemporaryImage\OneOfTemporaryImagesNotFoundException;
 use App\Catalog\Domain\Repository\ProductWriteRepositoryInterface;
-use App\Catalog\Domain\ValueObject\AdminUlid;
-use App\Catalog\Domain\ValueObject\Product\Price;
+use App\Catalog\Domain\Service\Product\ProductValidatorInterface;
 use App\Catalog\Domain\ValueObject\Product\Sku;
-use App\Catalog\Domain\ValueObject\Product\Status;
-use App\Catalog\Domain\ValueObject\Product\Translations;
-use App\Catalog\Domain\ValueObject\Product\Ulid;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
 use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
@@ -28,9 +24,10 @@ use Throwable;
 readonly class CreateProductHandler implements CommandHandlerInterface
 {
     public function __construct(
-        private ProductReadRepositoryInterface $readRepository,
+        private ProductValidatorInterface $productValidator,
         private UlidGeneratorInterface $ulidGenerator,
-        private ProductDataFactory $productDataFactory,
+        private ProductApplicationFactoryInterface $productFactory,
+        private ProductMediaManagerInterface $productMediaManager,
         private ProductWriteRepositoryInterface $writeRepository,
     ) {
     }
@@ -39,37 +36,41 @@ readonly class CreateProductHandler implements CommandHandlerInterface
      * @throws CreateProductException
      * @throws OneOfAttributesNotFoundException
      * @throws OneOfCategoriesNotFoundException
+     * @throws OneOfTemporaryImagesNotFoundException
      * @throws ProductAlreadyExistsException
      */
     public function __invoke(CreateProductCommand $command): int
     {
         try {
             $sku = Sku::fromString($command->sku);
+            $categoryIds = $this->productFactory->mapCategoriesIds($command->categoryIds);
+            $attributeIds = $this->productFactory->mapAttributeIds($command->attributeValues);
+            $temporaryImagesUlids = $this->productMediaManager->mapTemporaryImagesUlids($command->images);
 
-            if ($this->readRepository->existsBySku($sku)) {
-                throw new ProductAlreadyExistsException();
-            }
+            $this->productValidator->validateCreation(
+                sku: $sku,
+                categoryIds: $categoryIds,
+                attributeIds: $attributeIds,
+                temporaryImagesUlids: $temporaryImagesUlids
+            );
 
             $ulid = $this->ulidGenerator->next();
 
-            $categoryIds = $this->productDataFactory->prepareCategories($command->categoryIds);
-            $attributeValues = $this->productDataFactory->prepareAttributes($command->attributeValues);
+            $product = $this->productFactory->createFromCommand($command, $ulid);
 
-            $product = Product::create(
-                ulid: Ulid::fromString($ulid),
-                sku: $sku,
-                price: new Price($command->priceAmount, $command->priceCurrency),
-                status: Status::fromString($command->status),
-                translations: Translations::fromArray($command->translations),
-                createdBy: AdminUlid::fromString($command->adminUlid),
-                categoryIds: $categoryIds,
-                attributeValues: $attributeValues,
-            );
+            $this->productMediaManager->activateImagesForProduct($product, $temporaryImagesUlids);
 
             $product = $this->writeRepository->save($product);
 
+            $this->productMediaManager->deleteTemporaryImages($temporaryImagesUlids);
+
             return $product->getId()->value();
-        } catch (OneOfAttributesNotFoundException|OneOfCategoriesNotFoundException|ProductAlreadyExistsException $e) {
+        } catch (
+            OneOfAttributesNotFoundException
+            |OneOfCategoriesNotFoundException
+            |OneOfTemporaryImagesNotFoundException
+            |ProductAlreadyExistsException $e
+        ) {
             throw $e;
         } catch (Throwable $e) {
             throw new CreateProductException(message: 'Error during creating product', previous: $e);

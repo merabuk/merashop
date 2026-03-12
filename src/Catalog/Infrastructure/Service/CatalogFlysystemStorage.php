@@ -16,6 +16,9 @@ use Symfony\Component\Clock\ClockInterface;
 
 final readonly class CatalogFlysystemStorage extends FlysystemStorage implements CatalogStorageInterface
 {
+    private const string TEMP_DIRECTORY = 'temp';
+    private const string PRODUCT_IMAGES_DIRECTORY = 'products';
+
     public function __construct(
         private ClockInterface $clock,
         FilesystemOperator $filesystem,
@@ -40,7 +43,7 @@ final readonly class CatalogFlysystemStorage extends FlysystemStorage implements
             $fileName = sprintf('%s.%s', $ulid->value(), $file->getExtension());
 
             $path = implode(RelativeFilePath::SEPARATOR, [
-                'temp',
+                self::TEMP_DIRECTORY,
                 $this->clock->now()->format('Y'),
                 $this->clock->now()->format('m'),
                 $this->clock->now()->format('d'),
@@ -52,5 +55,21 @@ final readonly class CatalogFlysystemStorage extends FlysystemStorage implements
         } catch (InvalidRelativePathException $e) {
             throw new FileStorageException(message: 'Failed to generate temporary image storage path', previous: $e);
         }
+    }
+
+    /**
+     * @throws InvalidRelativePathException
+     */
+    public function generateProductImageStoragePath(RelativeFilePath $relativeFilePath): RelativeFilePath
+    {
+        $separator = preg_quote(RelativeFilePath::SEPARATOR, '/');
+
+        $productPath = preg_replace(
+            pattern: sprintf('/^(%s)(%s)/', self::TEMP_DIRECTORY, $separator),
+            replacement: sprintf('%s$2', self::PRODUCT_IMAGES_DIRECTORY),
+            subject: $relativeFilePath->value(),
+        );
+
+        return RelativeFilePath::fromString($productPath);
     }
 }

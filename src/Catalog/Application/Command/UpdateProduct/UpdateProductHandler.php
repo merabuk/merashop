@@ -5,19 +5,18 @@ declare(strict_types=1);
 namespace App\Catalog\Application\Command\UpdateProduct;
 
 use App\Catalog\Application\Exception\Product\UpdateProductException;
-use App\Catalog\Application\Service\ProductDataFactory;
+use App\Catalog\Application\Service\ProductApplicationFactoryInterface;
+use App\Catalog\Application\Service\ProductMediaManagerInterface;
 use App\Catalog\Domain\Exception\Attribute\OneOfAttributesNotFoundException;
 use App\Catalog\Domain\Exception\Category\OneOfCategoriesNotFoundException;
 use App\Catalog\Domain\Exception\Product\ProductAlreadyExistsException;
 use App\Catalog\Domain\Exception\Product\ProductNotFoundException;
+use App\Catalog\Domain\Exception\TemporaryImage\OneOfTemporaryImagesNotFoundException;
 use App\Catalog\Domain\Repository\ProductReadRepositoryInterface;
 use App\Catalog\Domain\Repository\ProductWriteRepositoryInterface;
-use App\Catalog\Domain\ValueObject\AdminUlid;
+use App\Catalog\Domain\Service\Product\ProductValidatorInterface;
 use App\Catalog\Domain\ValueObject\Product\Id;
-use App\Catalog\Domain\ValueObject\Product\Price;
 use App\Catalog\Domain\ValueObject\Product\Sku;
-use App\Catalog\Domain\ValueObject\Product\Status;
-use App\Catalog\Domain\ValueObject\Product\Translations;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
 use App\Shared\Domain\Exception\Entity\ConcurrencyException;
@@ -29,7 +28,9 @@ readonly class UpdateProductHandler implements CommandHandlerInterface
 {
     public function __construct(
         private ProductReadRepositoryInterface $readRepository,
-        private ProductDataFactory $productDataFactory,
+        private ProductValidatorInterface $productValidator,
+        private ProductApplicationFactoryInterface $productFactory,
+        private ProductMediaManagerInterface $productMediaManager,
         private ProductWriteRepositoryInterface $writeRepository,
     ) {
     }
@@ -41,34 +42,31 @@ readonly class UpdateProductHandler implements CommandHandlerInterface
      * @throws ProductAlreadyExistsException
      * @throws ProductNotFoundException
      * @throws UpdateProductException
+     * @throws OneOfTemporaryImagesNotFoundException
      */
     public function __invoke(UpdateProductCommand $command): int
     {
         try {
             $product = $this->readRepository->getById(Id::fromInt($command->id));
 
-            if ($product->getVersion()->value() !== $command->version) {
-                throw new ConcurrencyException();
-            }
+            $newSku = Sku::fromString($command->sku);
+            $categoryIds = $this->productFactory->mapCategoriesIds($command->categoryIds);
+            $attributeValues = $this->productFactory->mapAttributeIds($command->attributeValues);
+            // TODO: need to separate existing and new images
+            $temporaryImagesUlids = $this->productMediaManager->mapTemporaryImagesUlids($command->images);
 
-            $sku = Sku::fromString($command->sku);
-
-            if (!$product->getSku()->equals($sku) && $this->readRepository->existsBySku($sku)) {
-                throw new ProductAlreadyExistsException();
-            }
-
-            $categoryIds = $this->productDataFactory->prepareCategories($command->categoryIds);
-            $attributeValues = $this->productDataFactory->prepareAttributes($command->attributeValues);
-
-            $product->update(
-                sku: $sku,
-                price: new Price($command->priceAmount, $command->priceCurrency),
-                status: Status::fromString($command->status),
-                translations: Translations::fromArray($command->translations),
-                updatedBy: AdminUlid::fromString($command->adminUlid),
+            $this->productValidator->validateUpdate(
+                product: $product,
+                version: $command->version,
+                newSku: $newSku,
                 categoryIds: $categoryIds,
-                attributeValues: $attributeValues
+                attributeIds: $attributeValues,
+                temporaryImagesUlids: $temporaryImagesUlids,
             );
+
+            $this->productFactory->updateFromCommand($product, $command);
+
+            // TODO: need implement method for product media manager
 
             $product = $this->writeRepository->save($product);
 
@@ -77,6 +75,7 @@ readonly class UpdateProductHandler implements CommandHandlerInterface
             ConcurrencyException
             |OneOfAttributesNotFoundException
             |OneOfCategoriesNotFoundException
+            |OneOfTemporaryImagesNotFoundException
             |ProductAlreadyExistsException
             |ProductNotFoundException $e
         ) {

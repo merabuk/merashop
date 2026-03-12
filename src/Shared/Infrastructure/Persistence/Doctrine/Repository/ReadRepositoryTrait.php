@@ -8,11 +8,13 @@ use App\Shared\Domain\Criteria\Sorting\Sort;
 use App\Shared\Domain\Entity\HasIdInterface;
 use App\Shared\Domain\Exception\Database\OneOfEntitiesNotFoundException;
 use App\Shared\Domain\ValueObject\Contract\IdInterface;
+use App\Shared\Domain\ValueObject\Identity\Ulid;
 use App\Shared\Infrastructure\Persistence\Doctrine\Criteria\Restrictions\ComparisonOperatorEnum;
 use App\Shared\Infrastructure\Persistence\Doctrine\Criteria\Restrictions\Criterion;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Symfony\Bridge\Doctrine\Types\UlidType;
 
 trait ReadRepositoryTrait
 {
@@ -42,11 +44,11 @@ trait ReadRepositoryTrait
      *
      * @throws OneOfEntitiesNotFoundException
      */
-    protected function _assertAllExistByIds(array $ids): void
+    protected function _assertAllExistByIds(array $ids, string $alias = 'e'): void
     {
-        $count = $this->createQueryBuilder('e')
-            ->select('COUNT(e.id)')
-            ->where('e.id IN (:ids)')
+        $count = $this->createQueryBuilder($alias)
+            ->select("COUNT({$alias}.id)")
+            ->where("{$alias}.id IN (:ids)")
             ->setParameter('ids', array_map(fn (IdInterface $id) => $id->value(), $ids))
             ->getQuery()
             ->getSingleScalarResult();
@@ -54,6 +56,61 @@ trait ReadRepositoryTrait
         if ((int) $count !== count($ids)) {
             throw new OneOfEntitiesNotFoundException('One or more entities not found');
         }
+    }
+
+    /**
+     * @param Ulid[]      $ulids
+     * @param Criterion[] $additionalCriteria
+     *
+     * @throws OneOfEntitiesNotFoundException
+     */
+    protected function _assertAllExistByUlids(
+        array $ulids,
+        array $additionalCriteria = [],
+        string $alias = 'e',
+    ): void {
+        $qb = $this->createQueryBuilder($alias)
+            ->select("COUNT({$alias}.ulid)")
+            ->where("{$alias}.ulid IN (:ulids)")
+            ->setParameter('ulids', array_map(fn (Ulid $ulid) => $ulid->value(), $ulids), UlidType::NAME);
+
+        foreach ($additionalCriteria as $index => $criterion) {
+            $field = $criterion->field;
+            $operator = $criterion->operator->value;
+            $paramName = $criterion->field.$index;
+
+            $qb->andWhere("{$alias}.{$field} {$operator} :{$paramName}")
+                ->setParameter(key: $paramName, value: $criterion->value, type: $criterion->type);
+        }
+
+        $count = $qb->getQuery()
+            ->getSingleScalarResult();
+
+        if ((int) $count !== count($ulids)) {
+            throw new OneOfEntitiesNotFoundException('One or more entities not found');
+        }
+    }
+
+    /**
+     * @template T
+     *
+     * @param Ulid[]              $ulids
+     * @param callable(object): T $mapCallback
+     *
+     * @return array<T>
+     */
+    protected function _findManyByUlids(
+        array $ulids,
+        callable $mapCallback,
+        string $alias = 'e',
+    ): array {
+        $result = $this->createQueryBuilder($alias)
+            ->where("{$alias}.ulid IN (:ulids)")
+            ->setParameter('ulids', array_map(fn (Ulid $ulid) => $ulid->value(), $ulids), UlidType::NAME)
+            ->getQuery()
+            ->getResult();
+
+        return array_map($mapCallback, $result);
     }
 
     protected function _findByIdForUpdate(int $id): ?object

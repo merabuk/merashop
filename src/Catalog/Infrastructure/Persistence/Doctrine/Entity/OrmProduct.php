@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Catalog\Infrastructure\Persistence\Doctrine\Entity;
 
 use App\Catalog\Domain\Enum\Product\StatusEnum;
-use App\Catalog\Domain\ValueObject\Product\Price;
 use App\Catalog\Domain\ValueObject\Product\Sku;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Type\Product\StatusType;
 use App\Shared\Domain\Criteria\Sorting\Sort;
@@ -36,11 +35,16 @@ class OrmProduct
     #[ORM\Column(type: Types::STRING, length: Sku::MAX_LENGTH)]
     public string $sku;
 
-    #[ORM\Column(type: Types::BIGINT)]
-    public int $priceAmount;
-
-    #[ORM\Column(type: Types::STRING, length: Price::CURRENCY_LENGTH)]
-    public string $priceCurrency;
+    /**
+     * @var Collection<int, OrmProductPrice>
+     */
+    #[ORM\OneToMany(
+        targetEntity: OrmProductPrice::class,
+        mappedBy: 'product',
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
+    public Collection $prices;
 
     #[ORM\Column(type: StatusType::NAME)]
     public StatusEnum $status = StatusEnum::Draft;
@@ -108,6 +112,7 @@ class OrmProduct
 
     public function __construct()
     {
+        $this->prices = new ArrayCollection();
         $this->translations = new ArrayCollection();
         $this->categories = new ArrayCollection();
         $this->attributeValues = new ArrayCollection();

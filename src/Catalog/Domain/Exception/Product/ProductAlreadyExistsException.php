@@ -9,6 +9,11 @@ use App\Catalog\Domain\Exception\CatalogConflictException;
 
 class ProductAlreadyExistsException extends CatalogConflictException
 {
+    public static function becauseSkuAlreadyExists(string $sku): self
+    {
+        return new self(sprintf('Product with sku "%s" already exists.', $sku));
+    }
+
     public function getErrorCode(): string
     {
         return ErrorCodeEnum::ProductAlreadyExists->value;

@@ -88,7 +88,7 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
     public function assertAllExistByIds(array $ids): void
     {
         try {
-            $this->_assertAllExistByIds($ids);
+            $this->_assertAllExistByIds(ids: $ids, alias: 'a');
         } catch (OneOfEntitiesNotFoundException $e) {
             throw new OneOfAttributesNotFoundException(previous: $e);
         }

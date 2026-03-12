@@ -119,7 +119,7 @@ final class CreateAdminAccountConsoleCommand extends BaseConsoleCommand
             $plainSecret = ($this->handler)($command);
 
             $this->io->success('Admin account created!');
-            $this->io->info("Temporary password: <fg=yellow;options=bold>{$plainSecret}</fg>");
+            $this->io->writeln("Temporary password: <fg=yellow;options=bold>{$plainSecret}</fg>");
 
             return self::SUCCESS;
         } catch (Throwable $e) {

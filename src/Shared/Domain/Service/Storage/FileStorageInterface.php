@@ -15,6 +15,11 @@ interface FileStorageInterface
     public function uploadFromLocalPath(string $localPath, string $targetPath): void;
 
     /**
+     * @throws FileStorageException
+     */
+    public function move(string $sourcePath, string $targetPath): void;
+
+    /**
      * @param resource|string $content
      *
      * @throws FileStorageException

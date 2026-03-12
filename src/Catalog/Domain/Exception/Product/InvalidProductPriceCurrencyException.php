@@ -8,6 +8,11 @@ use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 
 final class InvalidProductPriceCurrencyException extends InvalidCatalogValueObjectException
 {
+    public static function becauseItIsEmpty(): self
+    {
+        return new self('Product price currency cannot be empty');
+    }
+
     public static function becauseItIsNotAValidCurrencyCode(): self
     {
         return new self('Product price currency must be a 3-letter ISO code');
