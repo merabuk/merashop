@@ -22,10 +22,10 @@ class UploadTemporaryImageController extends AbstractController
 {
     use AuthIdentityAccessTrait;
 
-    public const string ROUTE_NAME = 'catalog.admin.api.v1.temporary_images.upload';
+    public const string ROUTE_NAME = 'catalog.admin.api.v1.temporary-images.upload';
 
     #[Route(
-        path: '/temporary_images/upload',
+        path: '/temporary-images/upload',
         name: self::ROUTE_NAME,
         methods: [Request::METHOD_POST],
         format: 'multipart/form-data',

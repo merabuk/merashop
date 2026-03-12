@@ -16,7 +16,7 @@ use App\Catalog\Domain\Exception\Category\CategoryNotFoundException;
 use App\Catalog\Domain\Exception\Category\CategoryParentNotFoundException;
 use App\Catalog\Domain\Repository\CategoryReadRepositoryInterface;
 use App\Catalog\Domain\Repository\CategoryWriteRepositoryInterface;
-use App\Catalog\Domain\Service\CategoryManagerInterface;
+use App\Catalog\Domain\Service\Category\CategoryManagerInterface;
 use App\Catalog\Domain\ValueObject\Category\Id;
 use App\Shared\Domain\Exception\Entity\ConcurrencyException;
 use App\Tests\Catalog\Support\CategoryMother;

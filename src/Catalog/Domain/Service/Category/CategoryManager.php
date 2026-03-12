@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Catalog\Domain\Service;
+namespace App\Catalog\Domain\Service\Category;
 
 use App\Catalog\Domain\DTO\CategoryUpdateData;
 use App\Catalog\Domain\Entity\Category;

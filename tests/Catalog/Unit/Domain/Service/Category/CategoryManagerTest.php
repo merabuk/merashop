@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Catalog\Unit\Domain\Service;
+namespace App\Tests\Catalog\Unit\Domain\Service\Category;
 
 use App\Catalog\Domain\DTO\CategoryStructureResult;
 use App\Catalog\Domain\DTO\CategoryUpdateData;
@@ -12,8 +12,8 @@ use App\Catalog\Domain\Exception\Category\CategoryCannotBeParentOfItselfExceptio
 use App\Catalog\Domain\Exception\Category\CategoryChildCanNotBeParentConflictException;
 use App\Catalog\Domain\Exception\Category\CategoryParentNotFoundException;
 use App\Catalog\Domain\Repository\CategoryReadRepositoryInterface;
-use App\Catalog\Domain\Service\CategoryManager;
-use App\Catalog\Domain\Service\CategoryStructureServiceInterface;
+use App\Catalog\Domain\Service\Category\CategoryManager;
+use App\Catalog\Domain\Service\Category\CategoryStructureServiceInterface;
 use App\Catalog\Domain\ValueObject\Category\Id;
 use App\Catalog\Domain\ValueObject\Category\Path;
 use App\Catalog\Domain\ValueObject\Category\Slug;

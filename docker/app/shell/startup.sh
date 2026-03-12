@@ -67,7 +67,7 @@ else
         # Before starting FPM, check the permissions for xdebug logs once again (FPM usually starts as root, then drops privileges)
         touch /var/log/xdebug/xdebug.log
         chmod 777 /var/log/xdebug/xdebug.log
-    else
+    fi
 
     sed "s/{{ static_php_fpm_pool_workers }}/${STATIC_PHP_FPM_POOL_WORKERS}/; s/{{ group_name }}/${USER_GROUP}/; s/{{ user_name }}/${USER_NAME}/" \
         ./docker/app/php/php-fpm.d/zz-docker.conf > /usr/local/etc/php-fpm.d/zz-docker.conf

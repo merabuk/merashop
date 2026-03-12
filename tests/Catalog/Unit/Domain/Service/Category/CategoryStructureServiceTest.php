@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Catalog\Unit\Domain\Service;
+namespace App\Tests\Catalog\Unit\Domain\Service\Category;
 
 use App\Catalog\Domain\Exception\Category\CategoryCannotBeParentOfItselfException;
 use App\Catalog\Domain\Exception\Category\CategoryChildCanNotBeParentConflictException;
 use App\Catalog\Domain\Exception\Category\CategoryNotFoundException;
 use App\Catalog\Domain\Exception\Category\CategoryParentNotFoundException;
 use App\Catalog\Domain\Repository\CategoryReadRepositoryInterface;
-use App\Catalog\Domain\Service\CategoryStructureService;
+use App\Catalog\Domain\Service\Category\CategoryStructureService;
 use App\Catalog\Domain\ValueObject\Category\Slug;
 use App\Tests\Catalog\Support\CategoryMother;
 use PHPUnit\Framework\MockObject\MockObject;
