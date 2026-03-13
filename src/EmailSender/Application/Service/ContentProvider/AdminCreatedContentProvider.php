@@ -27,9 +27,9 @@ final readonly class AdminCreatedContentProvider implements EmailContentProvider
     public function getSubject(array $params): string
     {
         return $this->translator->trans(
-            id: 'admin_created.subject',
+            id: 'admin_email.admin_created.subject',
             parameters: $params,
-            domain: $this->translationDomainResolver->resolveIcuDomain('emails_admin'),
+            domain: $this->translationDomainResolver->resolveIcuDomain('email_sender'),
         );
     }
 

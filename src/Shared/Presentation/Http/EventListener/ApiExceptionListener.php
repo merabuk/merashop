@@ -35,10 +35,10 @@ use Throwable;
 
 class ApiExceptionListener
 {
+    private const string DEFAULT_TRANSLATION_DOMAIN = 'exceptions';
     private const string PUBLIC_API_PREFIX = '/api/';
     private const string ADMIN_API_PREFIX = '/admin/api/';
     private const string INTERNAL_API_PREFIX = '/internal/api/';
-
     public function __construct(
         private readonly TranslatorInterface $translator,
         private readonly TranslationDomainResolverInterface $translationDomainResolver,
@@ -87,7 +87,7 @@ class ApiExceptionListener
             errorCode: $errorCode,
             errorMessage: $this->translator->trans(
                 id: $errorCode,
-                domain: $this->translationDomainResolver->resolveIcuDomain('exceptions'),
+                domain: $this->translationDomainResolver->resolveIcuDomain(self::DEFAULT_TRANSLATION_DOMAIN),
             ),
             statusCode: Response::HTTP_FORBIDDEN,
         );
@@ -143,7 +143,7 @@ class ApiExceptionListener
             errorMessage: $this->translator->trans(
                 id: $errorCode,
                 parameters: [],
-                domain: $this->translationDomainResolver->resolveIcuDomain('exceptions'),
+                domain: $this->translationDomainResolver->resolveIcuDomain(self::DEFAULT_TRANSLATION_DOMAIN),
             ),
             statusCode: Response::HTTP_UNPROCESSABLE_ENTITY,
             extraData: ['violations' => $errors],
@@ -166,13 +166,14 @@ class ApiExceptionListener
         $statusCode = $this->getStatusCode($exception);
         $errorCode = $exception->getErrorCode();
         $errorMessageData = $exception->getMessageData();
+        $domain = $exception->getTranslationDomain();
 
         if (
             $exception instanceof EntityContextAwareExceptionInterface
             && $request->attributes->has(ApiRouteParams::ENTITY_LABEL)
         ) {
             $labelKey = $request->attributes->get(ApiRouteParams::ENTITY_LABEL, 'entity');
-            $domain = $request->attributes->get(ApiRouteParams::ENTITY_DOMAIN, 'exceptions');
+            $domain = $request->attributes->get(ApiRouteParams::ENTITY_DOMAIN, self::DEFAULT_TRANSLATION_DOMAIN);
             $translatedEntityName = $this->translator->trans(
                 id: $labelKey,
                 domain: $this->translationDomainResolver->resolveIcuDomain($domain)
@@ -186,7 +187,7 @@ class ApiExceptionListener
             errorMessage: $this->translator->trans(
                 id: $errorCode,
                 parameters: $errorMessageData,
-                domain: $this->translationDomainResolver->resolveIcuDomain('exceptions'),
+                domain: $this->translationDomainResolver->resolveIcuDomain($domain),
             ),
             statusCode: $statusCode
         );
@@ -221,7 +222,7 @@ class ApiExceptionListener
             errorCode: $errorCode,
             errorMessage: $this->translator->trans(
                 id: $errorCode,
-                domain: $this->translationDomainResolver->resolveIcuDomain('exceptions'),
+                domain: $this->translationDomainResolver->resolveIcuDomain(self::DEFAULT_TRANSLATION_DOMAIN),
             ),
             statusCode: Response::HTTP_INTERNAL_SERVER_ERROR,
         );

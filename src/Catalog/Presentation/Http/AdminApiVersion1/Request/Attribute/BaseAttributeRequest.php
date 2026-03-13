@@ -21,7 +21,7 @@ abstract class BaseAttributeRequest
     #[Assert\NotBlank]
     #[Assert\Choice(
         callback: 'getAttributeTypes',
-        message: 'admin.api.v1.attribute.type.invalid'
+        message: 'catalog.attribute.type_invalid'
     )]
     public ?string $type;
 
@@ -29,7 +29,7 @@ abstract class BaseAttributeRequest
      * @var ?array<string, array{name: string}> $translations
      */
     #[Assert\NotBlank]
-    #[Assert\Count(min: 1, minMessage: 'admin.api.v1.attribute.translations.empty')]
+    #[Assert\Count(min: 1, minMessage: 'shared.common.translations_empty')]
     #[Assert\All([
         new Assert\Collection(
             fields: [
@@ -67,15 +67,5 @@ abstract class BaseAttributeRequest
     protected function getRequestTranslationKey(): string
     {
         return 'translations';
-    }
-
-    protected function getMissingTranslationKey(): string
-    {
-        return 'admin.api.v1.attribute.translations.missing';
-    }
-
-    protected function getInvalidTranslationKey(): string
-    {
-        return 'admin.api.v1.attribute.translations.invalid';
     }
 }

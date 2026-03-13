@@ -10,6 +10,7 @@ use App\Shared\Application\Command\CommandBusInterface;
 use App\Shared\Application\Security\AuthIdentity;
 use App\Shared\Domain\Service\TranslationDomainResolverInterface;
 use App\Shared\Presentation\Http\Attribute\CurrentAuthEntityIdentity;
+use App\Shared\Presentation\Http\Helper\Traits\ResponseMessageTrait;
 use App\Shared\Presentation\Http\Security\Controller\AuthIdentityAccessTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,6 +22,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class UploadTemporaryImageController extends AbstractController
 {
     use AuthIdentityAccessTrait;
+    use ResponseMessageTrait;
 
     public const string ROUTE_NAME = 'catalog.admin.api.v1.temporary-images.upload';
 
@@ -45,9 +47,12 @@ class UploadTemporaryImageController extends AbstractController
 
         return new JsonResponse(
             data: new UploadedTemporaryImageResponse(
-                message: $translator->trans(
-                    id: 'admin.api.v1.temporary_image.upload.success',
-                    domain: $translationDomainResolver->resolveIcuDomain('messages')
+                message: $this->makeSuccessMessageForEntity(
+                    translator: $translator,
+                    translationDomainResolver: $translationDomainResolver,
+                    messageKey: 'messages.temporary_image.upload_success',
+                    entityTranslationKey: 'common.temporary_image.entityName',
+                    moduleTranslationDomain: 'catalog',
                 ),
                 imageId: $imageId,
             ),

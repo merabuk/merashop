@@ -1,7 +1,10 @@
 shared:
-  v1:
-    pagination:
-      sort_field_invalid: "Sort field {value} is not allowed. Allowed fields: {choices}"
-    image:
-      upload:
-        error: "Uploaded file '{file}' is invalid or broken"
+  common:
+    locale_invalid: "The selected locale is invalid"
+    translations_empty: "Translations can't be empty"
+    translations_missing: "Translations missing for the following locales: {locales}"
+    translations_locale_invalid: "Translations locale {locale} is invalid"
+  pagination:
+    sort_field_invalid: "Sort field {value} is not allowed. Allowed fields: {choices}"
+  image:
+    broken: "Uploaded image '{file}' is invalid or broken"

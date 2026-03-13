@@ -21,7 +21,7 @@ final class PaginationRequest
     #[Assert\Type('string')]
     #[Assert\Choice(
         callback: 'getAllowedSortFields',
-        message: 'shared.v1.pagination.sort_field_invalid'
+        message: 'shared.pagination.sort_field_invalid'
     )]
     public ?string $sortField = null;
 

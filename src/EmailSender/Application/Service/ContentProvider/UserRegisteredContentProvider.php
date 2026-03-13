@@ -27,9 +27,9 @@ final readonly class UserRegisteredContentProvider implements EmailContentProvid
     public function getSubject(array $params): string
     {
         return $this->translator->trans(
-            id: 'user_registered.subject',
+            id: 'public_email.user_registered.subject',
             parameters: $params,
-            domain: $this->translationDomainResolver->resolveIcuDomain('emails_public'),
+            domain: $this->translationDomainResolver->resolveIcuDomain('email_sender'),
         );
     }
 

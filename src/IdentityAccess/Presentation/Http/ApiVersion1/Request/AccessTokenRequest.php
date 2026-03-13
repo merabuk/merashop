@@ -17,7 +17,7 @@ final readonly class AccessTokenRequest implements GroupSequenceProviderInterfac
         #[Assert\NotBlank]
         #[Assert\Choice(
             callback: 'getGrantTypes',
-            message: 'api.v1.auth.grant_type.invalid'
+            message: 'identity_access.grant_type.invalid'
         )]
         public ?string $grant_type,
 

@@ -67,11 +67,11 @@ src/ModuleName/Presentation/ # Entry points
     ├── ApiVersion1          # Public API
     │   ├── Controller       # Controllers
     │   ├── Request          # Validated Request DTOs (MapRequestPayload)
-    │   ├── Resource         # Response formatters (JsonSerializable)
-    │   └── translations     # Local translations for this API version
+    │   └── Resource         # Response formatters (JsonSerializable)
     ├── AdminApiVersion1     # Admin API
     ├── InternalApiVersion1  # M2M/Internal API
-    └── EventListener        # Request/Response listeners, exception handling
+    ├── EventListener        # Request/Response listeners, exception handling
+    └── translations         # Translations for the module (exceptions, validation, module-name)
 ```
 
 Also, every module can have its own specific folders which are not listed above
@@ -96,7 +96,7 @@ src/Shared/Domain/
 │ ...
 ```
 
-The translation folder can be located in various places (but correct ones) and named `translations`.
+The translation folder is standardized at `src/<ModuleName>/Presentation/Http/translations/`, except for infrastructure-specific translations (e.g., in `EmailSender`).
 
 ## 3. Coding Standards & Constraints
 
@@ -206,6 +206,25 @@ To ensure consistent data retrieval across all modules, the **Criteria Pattern**
     - When manual validation is performed within a custom Value Resolver (like `PaginationRequestResolver`), use the same exception pattern as Symfony's `#[MapRequestPayload]`.
     - Throw an `HttpException` with status **422** and pass a `ValidationFailedException` (containing the violations) as the **previous exception**.
     - This ensures that the `ApiExceptionListener` provides a unified error response structure across the entire API.
+
+### Translations
+- **Standard Locations**:
+    - Most modules: `src/<ModuleName>/Presentation/Http/translations/`.
+    - `EmailSender` module: `src/EmailSender/Infrastructure/Resources/translations/`.
+- **Naming Convention**: 
+    - Files must follow the format `{domain}+intl-icu.{locale}.{extension}` (e.g., `catalog+intl-icu.en.yaml`).
+    - **ICU Format**: All translation files MUST use the `+intl-icu` suffix to support ICU message formatting.
+- **Domains**:
+    - `{module_name}`: Main domain for general module messages (e.g., success messages, entity names). Use YAML for these.
+    - `{module_name}_exceptions`: Domain for exception messages. Use PHP for these to map `ErrorCodeEnum` values directly.
+    - `validators`: Domain for request validation messages. Use YAML for these.
+        - Content format: `[context].[group].[item]` (e.g., `catalog.attribute.status_invalid`).
+    - `email_sender` (`EmailSender` only): Email-specific messages.
+        - Content format: `[email_type].[template_name].[part]` (e.g., `public_email.user_registered.subject`).
+- **Exception Translations**: Every `ServerException` must implement `getTranslationDomain()` which defaults to `exceptions`. Override it in module-specific base exceptions (e.g., returning `catalog_exceptions`).
+- **Success Messages**: Use `App\Shared\Presentation\Http\Helper\Traits\ResponseMessageTrait` to create standardized success messages.
+    - Example: `common.messages.create_success` with an `{entity}` parameter.
+    - Entity names should be defined under `common.<entity>.entityName` in the module's main translation domain.
 
 ## 4. Reliability & Patterns
 

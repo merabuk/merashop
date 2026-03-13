@@ -1,0 +1,3 @@
+identity_access:
+  grant_type:
+    invalid: "The selected grant_type is invalid. Allowed values are: {choices}"

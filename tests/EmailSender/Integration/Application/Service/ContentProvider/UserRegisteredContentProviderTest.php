@@ -24,7 +24,7 @@ final class UserRegisteredContentProviderTest extends KernelTestCase
 
     public function testItTranslationsAndTemplatesExist(): void
     {
-        $translationKey = 'user_registered.subject';
+        $translationKey = 'public_email.user_registered.subject';
         $params = [
             'appName' => 'MeraShop',
             'userName' => 'Andrii',

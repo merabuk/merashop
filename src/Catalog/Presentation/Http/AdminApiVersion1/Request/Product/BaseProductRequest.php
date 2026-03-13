@@ -23,14 +23,14 @@ abstract class BaseProductRequest
      * @var ProductPriceRequest[] $prices
      */
     #[Assert\NotBlank]
-    #[Assert\Count(min: 1, minMessage: 'admin.api.v1.product.prices.empty')]
+    #[Assert\Count(min: 1, minMessage: 'catalog.product.prices_empty')]
     #[Assert\Valid]
     public ?array $prices;
 
     #[Assert\NotBlank]
     #[Assert\Choice(
         callback: 'getProductStatuses',
-        message: 'admin.api.v1.product.status.invalid'
+        message: 'catalog.product.status_invalid'
     )]
     public ?string $status;
 
@@ -38,7 +38,7 @@ abstract class BaseProductRequest
      * @var ?ProductTranslationRequest[] $translations
      */
     #[Assert\NotBlank]
-    #[Assert\Count(min: 1, minMessage: 'admin.api.v1.product.translations.empty')]
+    #[Assert\Count(min: 1, minMessage: 'shared.common.translations_empty')]
     #[Assert\Valid]
     public ?array $translations;
 
@@ -46,7 +46,7 @@ abstract class BaseProductRequest
      * @var ?int[]
      */
     #[Assert\NotBlank]
-    #[Assert\Count(min: 1, minMessage: 'admin.api.v1.product.categories.empty')]
+    #[Assert\Count(min: 1, minMessage: 'catalog.product.categories_empty')]
     #[Assert\All([
         new Assert\NotBlank(),
         new Assert\Positive(),
@@ -57,7 +57,7 @@ abstract class BaseProductRequest
      * @var ProductAttributeValueRequest[] $attributeValues
      */
     #[Assert\NotBlank]
-    #[Assert\Count(min: 1, minMessage: 'admin.api.v1.product.attribute_values.empty')]
+    #[Assert\Count(min: 1, minMessage: 'catalog.product.attribute_values_empty')]
     #[Assert\Valid]
     public ?array $attributeValues;
 
@@ -65,7 +65,7 @@ abstract class BaseProductRequest
      * @var ?string[]
      */
     #[Assert\NotBlank]
-    #[Assert\Count(min: 1, minMessage: 'admin.api.v1.product.images.empty')]
+    #[Assert\Count(min: 1, minMessage: 'catalog.product.images_empty')]
     #[Assert\All([
         new Assert\NotBlank(),
         new Assert\Ulid(),
@@ -88,9 +88,9 @@ abstract class BaseProductRequest
             $key = sprintf('%s_%s', strtoupper($price->currency), $price->type);
 
             if (isset($registry[$key])) {
-                $context->buildViolation('admin.api.v1.product.prices.duplicate')
+                $context->buildViolation('catalog.product.prices_duplicate')
                     ->atPath("prices[{$index}]")
-                    ->setParameter('{{ key }}', $key)
+                    ->setParameter('key', $key)
                     ->addViolation();
             }
             $registry[$key] = true;
@@ -121,15 +121,5 @@ abstract class BaseProductRequest
     protected function getRequestTranslationKey(): string
     {
         return 'translations';
-    }
-
-    protected function getMissingTranslationKey(): string
-    {
-        return 'admin.api.v1.product.translations.missing';
-    }
-
-    protected function getInvalidTranslationKey(): string
-    {
-        return 'admin.api.v1.product.translations.invalid';
     }
 }

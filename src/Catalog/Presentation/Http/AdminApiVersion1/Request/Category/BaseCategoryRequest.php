@@ -25,7 +25,7 @@ abstract class BaseCategoryRequest
     #[Assert\NotBlank]
     #[Assert\Choice(
         callback: 'getCategoryStatuses',
-        message: 'admin.api.v1.category.status.invalid'
+        message: 'catalog.category.status_invalid'
     )]
     public ?string $status;
 
@@ -33,7 +33,7 @@ abstract class BaseCategoryRequest
      * @var ?array<string, array{name: string, description?: string}> $translations
      */
     #[Assert\NotBlank]
-    #[Assert\Count(min: 1, minMessage: 'admin.api.v1.category.translations.empty')]
+    #[Assert\Count(min: 1, minMessage: 'shared.common.translations_empty')]
     #[Assert\All([
         new Assert\Collection(
             fields: [
@@ -74,15 +74,5 @@ abstract class BaseCategoryRequest
     protected function getRequestTranslationKey(): string
     {
         return 'translations';
-    }
-
-    protected function getMissingTranslationKey(): string
-    {
-        return 'admin.api.v1.category.translations.missing';
-    }
-
-    protected function getInvalidTranslationKey(): string
-    {
-        return 'admin.api.v1.category.translations.invalid';
     }
 }

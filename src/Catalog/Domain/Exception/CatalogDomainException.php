@@ -13,4 +13,9 @@ abstract class CatalogDomainException extends LogicException implements CatalogE
     {
         return ErrorCodeEnum::CatalogDomainError->value;
     }
+
+    public function getTranslationDomain(): string
+    {
+        return 'catalog_exceptions';
+    }
 }

@@ -1,7 +1,16 @@
+messages:
+  temporary_image:
+    upload_success: "{entity} was successfully uploaded"
+
 common:
+  messages:
+    create_success: "{entity} was successfully created"
+    update_success: "{entity} was successfully updated"
   attribute:
-    entityName: Attribute
+    entityName: "Attribute"
   category:
-    entityName: Category
+    entityName: "Category"
   product:
-    entityName: Product
+    entityName: "Product"
+  temporary_image:
+    entityName: "Temporary Image"

@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Catalog\Domain\Enum\ErrorCodeEnum;
 
 return [
+    ErrorCodeEnum::CatalogDomainError->value => 'Something went wrong in the catalog domain. Please try again later',
     ErrorCodeEnum::AttributeAlreadyExists->value => 'Attribute with code "{code}" already exists',
     ErrorCodeEnum::AttributeNotFound->value => 'Attribute not found',
     ErrorCodeEnum::OneOfAttributesNotFound->value => 'One or more attributes not found',

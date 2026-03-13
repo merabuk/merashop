@@ -24,15 +24,15 @@ trait ValidateLocalesTrait
         $missingLocales = array_diff($validLocales, $providedLocales);
         if (!empty($missingLocales)) {
             $context->buildViolation($this->getMissingTranslationKey())
-                ->setParameter('%locales%', implode(', ', $missingLocales))
+                ->setParameter('locales', implode(', ', $missingLocales))
                 ->atPath($this->getRequestTranslationKey())
                 ->addViolation();
         }
 
         $invalid = array_diff($providedLocales, $validLocales);
         foreach ($invalid as $locale) {
-            $context->buildViolation($this->getInvalidTranslationKey())
-                ->setParameter('%locale%', (string) $locale)
+            $context->buildViolation($this->getInvalidTranslationLocaleKey())
+                ->setParameter('locale', (string) $locale)
                 ->atPath(sprintf('%s[%s]', $this->getRequestTranslationKey(), (string) $locale))
                 ->addViolation();
         }
@@ -50,7 +50,13 @@ trait ValidateLocalesTrait
 
     abstract protected function getRequestTranslationKey(): string;
 
-    abstract protected function getMissingTranslationKey(): string;
+    protected function getMissingTranslationKey(): string
+    {
+        return 'shared.common.translations_missing';
+    }
 
-    abstract protected function getInvalidTranslationKey(): string;
+    protected function getInvalidTranslationLocaleKey(): string
+    {
+        return 'shared.common.translations_locale_invalid';
+    }
 }

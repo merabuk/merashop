@@ -24,7 +24,7 @@ final class AdminCreatedContentProviderTest extends KernelTestCase
 
     public function testItTranslationsAndTemplatesExist(): void
     {
-        $translationKey = 'admin_created.subject';
+        $translationKey = 'admin_email.admin_created.subject';
         $params = [
             'appName' => 'MeraShop',
             'adminName' => 'Andrii',

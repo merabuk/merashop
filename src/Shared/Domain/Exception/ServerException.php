@@ -18,4 +18,9 @@ abstract class ServerException extends Exception implements AppExceptionInterfac
     {
         return [];
     }
+
+    public function getTranslationDomain(): string
+    {
+        return 'exceptions';
+    }
 }

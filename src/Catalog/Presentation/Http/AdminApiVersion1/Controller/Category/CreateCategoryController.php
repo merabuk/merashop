@@ -10,6 +10,7 @@ use App\Shared\Application\Command\CommandBusInterface;
 use App\Shared\Application\Security\AuthIdentity;
 use App\Shared\Domain\Service\TranslationDomainResolverInterface;
 use App\Shared\Presentation\Http\Attribute\CurrentAuthEntityIdentity;
+use App\Shared\Presentation\Http\Helper\Traits\ResponseMessageTrait;
 use App\Shared\Presentation\Http\Security\Controller\AuthIdentityAccessTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,6 +24,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class CreateCategoryController extends AbstractController
 {
     use AuthIdentityAccessTrait;
+    use ResponseMessageTrait;
 
     public const string ROUTE_NAME = 'catalog.admin.api.v1.categories.create';
 
@@ -46,9 +48,12 @@ class CreateCategoryController extends AbstractController
         $commandBus->execute($command);
 
         return new JsonResponse(
-            data: new CreateCategoryResponse(message: $translator->trans(
-                id: 'admin.api.v1.category.create.success',
-                domain: $translationDomainResolver->resolveIcuDomain('messages')
+            data: new CreateCategoryResponse(message: $this->makeSuccessMessageForEntity(
+                translator: $translator,
+                translationDomainResolver: $translationDomainResolver,
+                messageKey: 'common.messages.create_success',
+                entityTranslationKey: 'common.category.entityName',
+                moduleTranslationDomain: 'catalog',
             )),
             status: Response::HTTP_CREATED
         );

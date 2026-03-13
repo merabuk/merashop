@@ -14,4 +14,6 @@ interface AppExceptionInterface extends Throwable
      * @return array<string, mixed>
      */
     public function getMessageData(): array;
+
+    public function getTranslationDomain(): string;
 }

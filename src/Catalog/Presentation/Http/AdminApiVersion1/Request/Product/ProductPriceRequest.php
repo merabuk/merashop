@@ -20,11 +20,17 @@ final class ProductPriceRequest
     public string $currency;
 
     #[Assert\NotBlank]
-    #[Assert\Choice(callback: 'getProductPriceTypes')]
+    #[Assert\Choice(
+        callback: 'getProductPriceTypes',
+        message: 'catalog.product_price.type_invalid'
+    )]
     public string $type;
 
     #[Assert\NotBlank]
-    #[Assert\Choice(callback: 'getProductPriceTaxTypes')]
+    #[Assert\Choice(
+        callback: 'getProductPriceTaxTypes',
+        message: 'catalog.product_price.tax_type_invalid'
+    )]
     public string $taxType;
 
     #[Assert\NotBlank]
@@ -34,7 +40,7 @@ final class ProductPriceRequest
             (this.taxType == 'percentage' and value >= 0 and value <= 100)
             or (this.taxType == 'fixed' and value >= 0 and value <= this.amount)
         ",
-        message: 'admin.api.v1.product.prices.tax.value.invalid'
+        message: 'catalog.product_price.tax_value_invalid'
     )]
     public float $taxValue;
 

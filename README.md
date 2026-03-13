@@ -16,6 +16,7 @@ Online store on Symfony.
 - [Development Workflow](#development-workflow)
   - [ORM & Mapping Standards](#orm--mapping-standards)
   - [Repository Standards](#repository-standards)
+  - [Translations](#translations)
   - [Code Quality Tools](#code-quality-tools)
 - [Tests](#tests)
 - [Infrastructure & Docker](#infrastructure--docker)
@@ -93,11 +94,11 @@ src/ModuleName/Presentation/ # Entry points
     ├── ApiVersion1          # Public API
     │   ├── Controller       # Controllers
     │   ├── Request          # Validated Request DTOs (MapRequestPayload)
-    │   ├── Resource         # Response formatters (JsonSerializable)
-    │   └── translations     # Local translations for this API version
+    │   └── Resource         # Response formatters (JsonSerializable)
     ├── AdminApiVersion1     # Admin API
     ├── InternalApiVersion1  # M2M/Internal API
-    └── EventListener        # Request/Response listeners, exception handling
+    ├── EventListener        # Request/Response listeners, exception handling
+    └── translations         # Translations for the module (exceptions, validation, module-name)
 ```
 
 Also, every module can have its own specific folders which are not listed above
@@ -122,7 +123,7 @@ src/Shared/Domain/
 │ ...
 ```
 
-The translation folder can be located in various places (but correct ones) and named `translations`.
+The translation folder is standardized at `src/<ModuleName>/Presentation/Http/translations/`, except for infrastructure-specific translations (e.g., in `EmailSender`).
 
 ## Databases & Migrations
 
@@ -278,6 +279,22 @@ This command:
         - (many relations, collections, translations, or special mapping rules)
         - MUST use dependency injection of `App\Shared\Infrastructure\Persistence\Doctrine\Interface\ProxyReferenceProviderInterface`
         - register interface implementation in a config file (e.g. `config/modules/catalog.yaml`).
+
+### Translations
+
+- **Standardization**:
+    - Most modules: `src/<ModuleName>/Presentation/Http/translations/`.
+    - `EmailSender` module: `src/EmailSender/Infrastructure/Resources/translations/`.
+- **Naming Convention**: Use the `{domain}+intl-icu.{locale}.{extension}` format (e.g., `catalog+intl-icu.en.yaml`).
+- **ICU Support**: The `+intl-icu` suffix is mandatory for all translation files to enable advanced message formatting.
+- **Domains**:
+    - `{module_name}`: General messages and entity names (YAML).
+    - `{module_name}_exceptions`: Domain exception messages (PHP).
+    - `validators`: Request validation messages (YAML).
+        - Content format: `[context].[group].[item]`.
+    - `email_sender` (`EmailSender` only): Email-specific messages (YAML).
+        - Content format: `[email_type].[template_name].[part]`.
+- **Consistency**: Use `ResponseMessageTrait` for standard success messages (e.g., `common.messages.create_success`) and define entity names under `common.<entity>.entityName`.
 
 ### Code Quality Tools
 
