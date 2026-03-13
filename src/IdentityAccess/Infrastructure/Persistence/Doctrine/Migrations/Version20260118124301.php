@@ -36,6 +36,6 @@ final class Version20260118124301 extends AbstractMigration
     {
         $this->addSql('DROP TABLE refresh_tokens');
 
-        $this->addSql('DROP TYPE refresh_token_account_type');
+        $this->addSql('DROP TYPE IF EXISTS refresh_token_account_type');
     }
 }

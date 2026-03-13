@@ -29,11 +29,13 @@ final readonly class ProductAttributeValueMapper
     {
         $id = $orm->id ?? throw EntityIdMissingException::forEntity($orm::class);
 
+        $value = $orm->valueJson['value'] ?? null;
+
         $value = match ($orm->attribute->type) {
-            TypeEnum::String => StringValue::fromString((string) $orm->valueString),
-            TypeEnum::Int => IntegerValue::fromInt((int) $orm->valueInt),
-            TypeEnum::Boolean => BooleanValue::fromBool((bool) $orm->valueBoolean),
-            TypeEnum::Select => ArrayValue::fromArray((array) $orm->valueJson),
+            TypeEnum::String => StringValue::fromString((string) $value),
+            TypeEnum::Int => IntegerValue::fromInt((int) $value),
+            TypeEnum::Boolean => BooleanValue::fromBool((bool) $value),
+            TypeEnum::Select => ArrayValue::fromArray((array) $value),
             null => throw $this->makeError(sprintf('%s with id %d has null type', $orm::class, (int) $orm->id)),
         };
 
@@ -48,16 +50,11 @@ final readonly class ProductAttributeValueMapper
     {
         $vo = $domain->getValue();
 
-        $orm->valueString = null;
-        $orm->valueInt = null;
-        $orm->valueBoolean = null;
-        $orm->valueJson = null;
-
-        match (true) {
-            $vo instanceof StringValue => $orm->valueString = $vo->value(),
-            $vo instanceof IntegerValue => $orm->valueInt = $vo->value(),
-            $vo instanceof BooleanValue => $orm->valueBoolean = $vo->value(),
-            $vo instanceof ArrayValue => $orm->valueJson = $vo->value(),
+        $orm->valueJson['value'] = match (true) {
+            $vo instanceof StringValue => $vo->value(),
+            $vo instanceof IntegerValue => $vo->value(),
+            $vo instanceof BooleanValue => $vo->value(),
+            $vo instanceof ArrayValue => $vo->value(),
             default => throw $this->makeError(sprintf('Unknown attribute value type: %s', get_debug_type($vo))),
         };
     }

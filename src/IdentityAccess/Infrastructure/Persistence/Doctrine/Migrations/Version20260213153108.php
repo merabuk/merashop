@@ -33,6 +33,6 @@ final class Version20260213153108 extends AbstractMigration
             USING account_type::text::refresh_token_account_type'
         );
 
-        $this->addSql('DROP TYPE refresh_token_account_type_old');
+        $this->addSql('DROP TYPE IF EXISTS refresh_token_account_type_old');
     }
 }

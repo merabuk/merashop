@@ -19,7 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'product_prices')]
-#[ORM\Index(name: 'idx_product_prices_lookup', columns: ['product_id', 'type', 'currency'])]
+#[ORM\Index(name: 'idx_product_prices_product_id_type_currency', columns: ['product_id', 'type', 'currency'])]
 class OrmProductPrice
 {
     use TimestampableEntityTrait;

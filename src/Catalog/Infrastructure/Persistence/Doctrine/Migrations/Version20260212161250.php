@@ -63,6 +63,6 @@ final class Version20260212161250 extends AbstractMigration
         $this->addSql('DROP TABLE category_translations');
         $this->addSql('DROP TABLE categories');
 
-        $this->addSql('DROP TYPE category_status');
+        $this->addSql('DROP TYPE IF EXISTS category_status');
     }
 }

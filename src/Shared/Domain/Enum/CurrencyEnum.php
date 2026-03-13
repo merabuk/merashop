@@ -11,8 +11,8 @@ enum CurrencyEnum: string
 {
     use StringEnumTrait;
 
-    case USD = 'USD';
     case UAH = 'UAH';
+    case USD = 'USD';
 
     public static function default(): self
     {

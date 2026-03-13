@@ -2,25 +2,31 @@ doctrine:
   dbal:
     types:
       # Catalog Module
-      category_status: App\Catalog\Infrastructure\Persistence\Doctrine\Type\Category\StatusType
-      product_status: App\Catalog\Infrastructure\Persistence\Doctrine\Type\Product\StatusType
       attribute_type: App\Catalog\Infrastructure\Persistence\Doctrine\Type\Attribute\TypeType
+      category_status: App\Catalog\Infrastructure\Persistence\Doctrine\Type\Category\StatusType
+      product_price_currency: App\Catalog\Infrastructure\Persistence\Doctrine\Type\ProductPrice\CurrencyType
+      product_price_tax_type: App\Catalog\Infrastructure\Persistence\Doctrine\Type\ProductPrice\TaxTypeType
+      product_price_type: App\Catalog\Infrastructure\Persistence\Doctrine\Type\ProductPrice\TypeType
+      product_status: App\Catalog\Infrastructure\Persistence\Doctrine\Type\Product\StatusType
       temporary_image_context: App\Catalog\Infrastructure\Persistence\Doctrine\Type\TemporaryImage\ContextType
       # Email Sender Module
-      outbox_email_status: App\EmailSender\Infrastructure\Persistence\Doctrine\Type\OutboxEmail\StatusType
       outbox_email_driver: App\EmailSender\Infrastructure\Persistence\Doctrine\Type\OutboxEmail\DriverType
+      outbox_email_status: App\EmailSender\Infrastructure\Persistence\Doctrine\Type\OutboxEmail\StatusType
       # Identity Access Module
-      refresh_token_account_type: App\IdentityAccess\Infrastructure\Persistence\Doctrine\Type\RefreshToken\AccountType
       admin_account_status: App\IdentityAccess\Infrastructure\Persistence\Doctrine\Type\AdminAccount\StatusType
+      refresh_token_account_type: App\IdentityAccess\Infrastructure\Persistence\Doctrine\Type\RefreshToken\AccountType
     default_connection: identity_access
     connections:
       catalog:
         url: '%env(resolve:DATABASE_URL_CATALOG)%'
         profiling_collect_backtrace: '%kernel.debug%'
         mapping_types:
-          category_status: category_status
-          product_status: product_status
           attribute_type: attribute_type
+          category_status: category_status
+          product_price_currency: product_price_currency
+          product_price_tax_type: product_price_tax_type
+          product_price_type: product_price_type
+          product_status: product_status
           temporary_image_context: temporary_image_context
       customer:
         url: '%env(resolve:DATABASE_URL_CUSTOMER)%'
@@ -29,14 +35,14 @@ doctrine:
         url: '%env(resolve:DATABASE_URL_EMAIL_SENDER)%'
         profiling_collect_backtrace: '%kernel.debug%'
         mapping_types:
-          outbox_email_status: outbox_email_status
           outbox_email_driver: outbox_email_driver
+          outbox_email_status: outbox_email_status
       identity_access:
         url: '%env(resolve:DATABASE_URL_IDENTITY_ACCESS)%'
         profiling_collect_backtrace: '%kernel.debug%'
         mapping_types:
-          refresh_token_account_type: refresh_token_account_type
           admin_account_status: admin_account_status
+          refresh_token_account_type: refresh_token_account_type
   orm:
     controller_resolver:
       auto_mapping: false

@@ -39,6 +39,7 @@ class ApiExceptionListener
     private const string PUBLIC_API_PREFIX = '/api/';
     private const string ADMIN_API_PREFIX = '/admin/api/';
     private const string INTERNAL_API_PREFIX = '/internal/api/';
+
     public function __construct(
         private readonly TranslatorInterface $translator,
         private readonly TranslationDomainResolverInterface $translationDomainResolver,

@@ -39,18 +39,9 @@ class OrmProductAttributeValue
     )]
     public OrmAttribute $attribute;
 
-    #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
-    public ?string $valueString = null;
-
-    #[ORM\Column(type: Types::INTEGER, nullable: true)]
-    public ?int $valueInt = null;
-
-    #[ORM\Column(type: Types::BOOLEAN, nullable: true)]
-    public ?bool $valueBoolean = null;
-
     /**
      * @var array<string, mixed>|null
      */
-    #[ORM\Column(type: Types::JSONB, nullable: true)]
+    #[ORM\Column(type: Types::JSONB)]
     public ?array $valueJson = null;
 }

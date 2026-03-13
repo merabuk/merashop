@@ -34,5 +34,7 @@ final class Version20260310072315 extends AbstractMigration
     public function down(Schema $schema): void
     {
         $this->addSql('DROP TABLE temporary_images');
+
+        $this->addSql('DROP TYPE IF EXISTS temporary_image_context');
     }
 }

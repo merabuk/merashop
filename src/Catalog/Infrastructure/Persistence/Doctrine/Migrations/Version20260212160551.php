@@ -55,6 +55,6 @@ final class Version20260212160551 extends AbstractMigration
         $this->addSql('DROP TABLE attribute_translations');
         $this->addSql('DROP TABLE attributes');
 
-        $this->addSql('DROP TYPE attribute_type');
+        $this->addSql('DROP TYPE IF EXISTS attribute_type');
     }
 }

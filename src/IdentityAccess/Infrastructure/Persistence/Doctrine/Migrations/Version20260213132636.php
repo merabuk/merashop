@@ -41,6 +41,6 @@ final class Version20260213132636 extends AbstractMigration
     {
         $this->addSql('DROP TABLE admin_accounts');
 
-        $this->addSql('DROP TYPE admin_account_status');
+        $this->addSql('DROP TYPE IF EXISTS admin_account_status');
     }
 }

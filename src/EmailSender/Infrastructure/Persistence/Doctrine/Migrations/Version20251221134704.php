@@ -55,7 +55,7 @@ final class Version20251221134704 extends AbstractMigration
     public function down(Schema $schema): void
     {
         $this->addSql('DROP TABLE outbox_emails');
-        $this->addSql('DROP TYPE outbox_email_status');
-        $this->addSql('DROP TYPE outbox_email_driver');
+        $this->addSql('DROP TYPE IF EXISTS outbox_email_status');
+        $this->addSql('DROP TYPE IF EXISTS outbox_email_driver');
     }
 }
