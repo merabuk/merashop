@@ -9,28 +9,25 @@ use App\Shared\Domain\Service\Image\ImageConstraintsRegistryInterface;
 use App\Shared\Domain\ValueObject\File\ImageConstraints;
 use App\Shared\Domain\ValueObject\File\RawFile;
 use App\Shared\Infrastructure\Service\Validation\ImageValidator;
+use App\Tests\Shared\Support\Traits\ValidatorHelperTrait;
 use App\Tests\Shared\Support\Traits\VfsStreamTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Validator\Constraints\Image;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
-use Symfony\Component\Validator\Validator\ContextualValidatorInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class ImageValidatorTest extends TestCase
 {
+    use ValidatorHelperTrait;
     use VfsStreamTrait;
 
-    private ValidatorInterface&MockObject $validator;
-    private ContextualValidatorInterface&MockObject $contextualValidator;
     private ImageConstraintsRegistryInterface&MockObject $registry;
 
     public function setUp(): void
     {
         $this->setupVfs('image_validator_test');
-        $this->validator = $this->createMock(ValidatorInterface::class);
-        $this->contextualValidator = $this->createMock(ContextualValidatorInterface::class);
+        $this->setValidator();
+        $this->setContextualValidator();
         $this->registry = $this->createMock(ImageConstraintsRegistryInterface::class);
     }
 
@@ -140,18 +137,10 @@ final class ImageValidatorTest extends TestCase
                 })
             )
             ->willReturnSelf();
+
         $this->contextualValidator->expects(self::once())
             ->method('getViolations')
             ->willReturn($this->makeViolations($violationsCount));
-    }
-
-    private function makeViolations(int $count = 0): ConstraintViolationListInterface
-    {
-        $mock = $this->createMock(ConstraintViolationListInterface::class);
-
-        $mock->method('count')->willReturn($count);
-
-        return $mock;
     }
 
     private function createValidator(): ImageValidator

@@ -30,7 +30,7 @@ final class CatalogFlysystemStorageTest extends TestCase
 
     public function testGetPublicUrl(): void
     {
-        $path = RelativeFilePath::fromString('/path/to/file.jpg');
+        $path = RelativeFilePath::fromString('path/to/file.jpg');
 
         $result = $this->createStorage()->getPublicUrl($path);
 

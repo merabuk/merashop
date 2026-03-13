@@ -45,19 +45,19 @@ final readonly class UploadTemporaryImageRequestResolver implements ValueResolve
         $imageFile = $request->files->get($fileKey);
         $collection = $request->request->get($contextKey);
 
-        $context = $this->validator->startContext();
+        $contextValidator = $this->validator->startContext();
 
-        $context->atPath($fileKey)->validate($imageFile, [
+        $contextValidator->atPath($fileKey)->validate($imageFile, [
             new Assert\NotBlank(),
             new Assert\File(),
         ]);
 
-        $context->atPath($contextKey)->validate($collection, [
+        $contextValidator->atPath($contextKey)->validate($collection, [
             new Assert\NotBlank(),
             new Assert\Choice(choices: UploadTemporaryImageRequest::getAvailableContexts()),
         ]);
 
-        $violations = $context->getViolations();
+        $violations = $contextValidator->getViolations();
 
         if ($violations->count() > 0) {
             throw $this->makeSystemValidationException(message: 'Upload temporary image request validation failed', value: $request, violations: $violations);
@@ -70,9 +70,9 @@ final readonly class UploadTemporaryImageRequestResolver implements ValueResolve
             mimeType: $imageFile->getMimeType()
         );
 
-        $context = ContextEnum::from((string) $collection);
-        $this->imageValidator->validate(file: $rawFile, context: $context->value, propertyPath: $fileKey);
+        $contextEnum = ContextEnum::from((string) $collection);
+        $this->imageValidator->validate(file: $rawFile, context: $contextEnum->value, propertyPath: $fileKey);
 
-        yield new UploadTemporaryImageRequest(file: $rawFile, context: $context);
+        yield new UploadTemporaryImageRequest(file: $rawFile, context: $contextEnum);
     }
 }

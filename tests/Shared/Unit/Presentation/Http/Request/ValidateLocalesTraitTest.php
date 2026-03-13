@@ -45,7 +45,7 @@ final class ValidateLocalesTraitTest extends TestCase
 
         $this->violationBuilder->expects(self::once())
             ->method('setParameter')
-            ->with('%locales%', 'uk')
+            ->with('locales', 'uk')
             ->willReturnSelf();
 
         $this->violationBuilder->expects(self::once())
@@ -70,7 +70,7 @@ final class ValidateLocalesTraitTest extends TestCase
 
         $this->violationBuilder->expects(self::once())
             ->method('setParameter')
-            ->with('%locale%', 'fr')
+            ->with('locale', 'fr')
             ->willReturnSelf();
 
         $this->violationBuilder->expects(self::once())
@@ -105,7 +105,7 @@ final class ValidateLocalesTraitTest extends TestCase
                 return 'translations.missing';
             }
 
-            protected function getInvalidTranslationKey(): string
+            protected function getInvalidTranslationLocaleKey(): string
             {
                 return 'translations.invalid';
             }

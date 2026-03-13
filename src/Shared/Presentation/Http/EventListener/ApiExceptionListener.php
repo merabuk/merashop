@@ -167,17 +167,20 @@ class ApiExceptionListener
         $statusCode = $this->getStatusCode($exception);
         $errorCode = $exception->getErrorCode();
         $errorMessageData = $exception->getMessageData();
-        $domain = $exception->getTranslationDomain();
+        $exceptionTranslationDomain = $exception->getTranslationDomain();
 
         if (
             $exception instanceof EntityContextAwareExceptionInterface
             && $request->attributes->has(ApiRouteParams::ENTITY_LABEL)
         ) {
             $labelKey = $request->attributes->get(ApiRouteParams::ENTITY_LABEL, 'entity');
-            $domain = $request->attributes->get(ApiRouteParams::ENTITY_DOMAIN, self::DEFAULT_TRANSLATION_DOMAIN);
+            $translationDomain = $request->attributes->get(
+                key: ApiRouteParams::ENTITY_DOMAIN,
+                default: self::DEFAULT_TRANSLATION_DOMAIN
+            );
             $translatedEntityName = $this->translator->trans(
                 id: $labelKey,
-                domain: $this->translationDomainResolver->resolveIcuDomain($domain)
+                domain: $this->translationDomainResolver->resolveIcuDomain($translationDomain)
             );
 
             $errorMessageData[$exception::getEntityNameKey()] = $translatedEntityName;
@@ -188,7 +191,7 @@ class ApiExceptionListener
             errorMessage: $this->translator->trans(
                 id: $errorCode,
                 parameters: $errorMessageData,
-                domain: $this->translationDomainResolver->resolveIcuDomain($domain),
+                domain: $this->translationDomainResolver->resolveIcuDomain($exceptionTranslationDomain),
             ),
             statusCode: $statusCode
         );
