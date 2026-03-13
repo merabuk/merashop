@@ -20,7 +20,7 @@ use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
 /**
  * @implements MapperInterface<RefreshToken, OrmRefreshToken>
  */
-class RefreshTokenMapper implements MapperInterface
+final readonly class RefreshTokenMapper implements MapperInterface
 {
     use TypeCheckTrait;
 

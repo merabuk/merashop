@@ -20,7 +20,7 @@ use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
 /**
  * @implements MapperInterface<UserAccount, OrmUserAccount>
  */
-class UserAccountMapper implements MapperInterface
+final readonly class UserAccountMapper implements MapperInterface
 {
     use TypeCheckTrait;
 

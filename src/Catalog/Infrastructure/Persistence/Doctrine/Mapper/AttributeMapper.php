@@ -24,7 +24,7 @@ use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
 /**
  * @implements MapperInterface<Attribute, OrmAttribute>
  */
-class AttributeMapper implements MapperInterface
+final readonly class AttributeMapper implements MapperInterface
 {
     use TypeCheckTrait;
 

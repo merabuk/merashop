@@ -27,12 +27,12 @@ use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
 /**
  * @implements MapperInterface<Category, OrmCategory>
  */
-class CategoryMapper implements MapperInterface
+final readonly class CategoryMapper implements MapperInterface
 {
     use TypeCheckTrait;
 
     public function __construct(
-        private readonly ProxyReferenceProviderInterface $referenceProvider,
+        private ProxyReferenceProviderInterface $referenceProvider,
     ) {
     }
 

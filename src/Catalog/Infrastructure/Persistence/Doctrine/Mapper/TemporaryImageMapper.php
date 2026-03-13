@@ -21,7 +21,7 @@ use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
 /**
  * @implements MapperInterface<TemporaryImage, OrmTemporaryImage>
  */
-class TemporaryImageMapper implements MapperInterface
+final readonly class TemporaryImageMapper implements MapperInterface
 {
     use TypeCheckTrait;
 

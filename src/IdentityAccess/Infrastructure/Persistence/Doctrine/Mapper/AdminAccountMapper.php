@@ -22,7 +22,7 @@ use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
 /**
  * @implements MapperInterface<AdminAccount, OrmAdminAccount>
  */
-class AdminAccountMapper implements MapperInterface
+final readonly class AdminAccountMapper implements MapperInterface
 {
     use TypeCheckTrait;
 

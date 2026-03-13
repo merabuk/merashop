@@ -30,7 +30,7 @@ use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
 /**
  * @implements MapperInterface<OutboxEmail, OrmOutboxEmail>
  */
-class OutboxEmailMapper implements MapperInterface
+final readonly class OutboxEmailMapper implements MapperInterface
 {
     use TypeCheckTrait;
 

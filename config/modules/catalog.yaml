@@ -31,7 +31,7 @@ services:
   App\Catalog\Domain\Repository\CategoryReadRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\CategoryReadRepository'
   App\Catalog\Domain\Repository\CategoryWriteRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\CategoryWriteRepository'
 
-  App\Catalog\Application\Service\ProductApplicationFactoryInterface: '@pp\Catalog\Application\Service\ProductApplicationFactory'
+  App\Catalog\Application\Service\ProductApplicationFactoryInterface: '@App\Catalog\Application\Service\ProductApplicationFactory'
   App\Catalog\Application\Service\ProductMediaManagerInterface: '@App\Catalog\Application\Service\ProductMediaManager'
   App\Catalog\Domain\Service\Product\ProductValidatorInterface: '@App\Catalog\Domain\Service\Product\ProductValidator'
 

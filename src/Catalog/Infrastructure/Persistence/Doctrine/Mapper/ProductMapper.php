@@ -8,12 +8,10 @@ use App\Catalog\Domain\Entity\Product;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Entity\ProductImage;
 use App\Catalog\Domain\Entity\ProductPrice;
-use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Exception\Category\InvalidCategoryIdException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Exception\Product\ProductPriceUniqueException;
 use App\Catalog\Domain\ValueObject\AdminUlid;
-use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
 use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
 use App\Catalog\Domain\ValueObject\Product\Id as ProductId;
 use App\Catalog\Domain\ValueObject\Product\Sku;
@@ -21,22 +19,6 @@ use App\Catalog\Domain\ValueObject\Product\Status;
 use App\Catalog\Domain\ValueObject\Product\Translations;
 use App\Catalog\Domain\ValueObject\Product\Ulid as ProductUlid;
 use App\Catalog\Domain\ValueObject\Product\Version;
-use App\Catalog\Domain\ValueObject\ProductAttribute\ArrayValue;
-use App\Catalog\Domain\ValueObject\ProductAttribute\BooleanValue;
-use App\Catalog\Domain\ValueObject\ProductAttribute\Id as ProductAttributeValueId;
-use App\Catalog\Domain\ValueObject\ProductAttribute\IntegerValue;
-use App\Catalog\Domain\ValueObject\ProductAttribute\StringValue;
-use App\Catalog\Domain\ValueObject\ProductImage\Id as ProductImageId;
-use App\Catalog\Domain\ValueObject\ProductImage\MainImageFlag;
-use App\Catalog\Domain\ValueObject\ProductImage\SortOrder;
-use App\Catalog\Domain\ValueObject\ProductImage\Ulid as ProductImageUlid;
-use App\Catalog\Domain\ValueObject\ProductPrice\Id as ProductPriceId;
-use App\Catalog\Domain\ValueObject\ProductPrice\Price;
-use App\Catalog\Domain\ValueObject\ProductPrice\Tax;
-use App\Catalog\Domain\ValueObject\ProductPrice\TaxIncludedFlag;
-use App\Catalog\Domain\ValueObject\ProductPrice\Type;
-use App\Catalog\Domain\ValueObject\ProductPrice\ValidFrom;
-use App\Catalog\Domain\ValueObject\ProductPrice\ValidTo;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttribute;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmCategory;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProduct;
@@ -48,22 +30,22 @@ use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Domain\Exception\ValueObject\InvalidRelativePathException;
-use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 use App\Shared\Infrastructure\Persistence\Doctrine\Interface\ProxyReferenceProviderInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\MapperInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
-use InvalidArgumentException;
 
 /**
  * @implements MapperInterface<Product, OrmProduct>
  */
-class ProductMapper implements MapperInterface
+final readonly class ProductMapper implements MapperInterface
 {
     use TypeCheckTrait;
 
     public function __construct(
-        private readonly ProxyReferenceProviderInterface $referenceProvider,
-        // TODO: move private methods to separate mappers by model type
+        private ProxyReferenceProviderInterface $referenceProvider,
+        private ProductPriceMapper $productPriceMapper,
+        private ProductImageMapper $productImageMapper,
+        private ProductAttributeValueMapper $productAttributeValueMapper,
     ) {
     }
 
@@ -153,20 +135,7 @@ class ProductMapper implements MapperInterface
     {
         $prices = [];
         foreach ($orm->prices as $ormPrice) {
-            $id = ProductPriceId::fromInt($ormPrice->id ?? throw EntityIdMissingException::forEntity($ormPrice::class));
-
-            $prices[] = new ProductPrice(
-                price: new Price(
-                    amount: $ormPrice->amount,
-                    currency: $ormPrice->currency,
-                ),
-                type: Type::fromEnum($ormPrice->type),
-                tax: new Tax(value: (float) $ormPrice->taxValue, type: $ormPrice->taxType),
-                taxIncluded: TaxIncludedFlag::fromBool($ormPrice->taxIncluded),
-                validFrom: $ormPrice->validFrom ? ValidFrom::fromDateTime($ormPrice->validFrom) : null,
-                validTo: $ormPrice->validTo ? ValidTo::fromDateTime($ormPrice->validTo) : null,
-                id: $id,
-            );
+            $prices[] = $this->productPriceMapper->toDomain($ormPrice);
         }
 
         return $prices;
@@ -193,20 +162,8 @@ class ProductMapper implements MapperInterface
                 $orm->prices->add($ormProductPrice);
             }
 
-            $this->mapPriceItemFromDomainToOrm($dp, $ormProductPrice);
+            $this->productPriceMapper->mapToExistingOrm($dp, $ormProductPrice);
         }
-    }
-
-    private function mapPriceItemFromDomainToOrm(ProductPrice $productPrice, OrmProductPrice $ormProductPrice): void
-    {
-        $ormProductPrice->amount = $productPrice->getPrice()->getAmount();
-        $ormProductPrice->currency = $productPrice->getPrice()->getCurrency();
-        $ormProductPrice->type = $productPrice->getType()->value();
-        $ormProductPrice->taxValue = (string) $productPrice->getTax()->getValue();
-        $ormProductPrice->taxType = $productPrice->getTax()->getType();
-        $ormProductPrice->taxIncluded = $productPrice->getTaxIncluded()->value();
-        $ormProductPrice->validFrom = $productPrice->getValidFrom()?->value();
-        $ormProductPrice->validTo = $productPrice->getValidTo()?->value();
     }
 
     /**
@@ -298,21 +255,7 @@ class ProductMapper implements MapperInterface
     {
         $attributeValues = [];
         foreach ($orm->attributeValues as $ormValue) {
-            $id = ProductAttributeValueId::fromInt($ormValue->id ?? throw EntityIdMissingException::forEntity($ormValue::class));
-
-            $value = match ($ormValue->attribute->type) {
-                TypeEnum::String => StringValue::fromString((string) $ormValue->valueString),
-                TypeEnum::Int => IntegerValue::fromInt((int) $ormValue->valueInt),
-                TypeEnum::Boolean => BooleanValue::fromBool((bool) $ormValue->valueBoolean),
-                TypeEnum::Select => ArrayValue::fromArray((array) $ormValue->valueJson),
-                null => throw new InvalidArgumentException(sprintf('%s with id %d has null type', OrmProductAttributeValue::class, (int) $ormValue->id)),
-            };
-
-            $attributeValues[] = new ProductAttributeValue(
-                id: $id,
-                attributeId: AttributeId::fromInt($ormValue->attribute->id),
-                value: $value
-            );
+            $attributeValues[] = $this->productAttributeValueMapper->toDomain($ormValue);
         }
 
         return $attributeValues;
@@ -349,28 +292,8 @@ class ProductMapper implements MapperInterface
                 $orm->attributeValues->add($ormValue);
             }
 
-            $this->mapAttributeValueFromDomainToOrm($dv, $ormValue);
+            $this->productAttributeValueMapper->mapToExistingOrm($dv, $ormValue);
         }
-    }
-
-    private function mapAttributeValueFromDomainToOrm(
-        ProductAttributeValue $domain,
-        OrmProductAttributeValue $orm,
-    ): void {
-        $vo = $domain->getValue();
-
-        $orm->valueString = null;
-        $orm->valueInt = null;
-        $orm->valueBoolean = null;
-        $orm->valueJson = null;
-
-        match (true) {
-            $vo instanceof StringValue => $orm->valueString = $vo->value(),
-            $vo instanceof IntegerValue => $orm->valueInt = $vo->value(),
-            $vo instanceof BooleanValue => $orm->valueBoolean = $vo->value(),
-            $vo instanceof ArrayValue => $orm->valueJson = $vo->value(),
-            default => throw new InvalidArgumentException('Unknown attribute value type'),
-        };
     }
 
     /**
@@ -384,15 +307,7 @@ class ProductMapper implements MapperInterface
     {
         $images = [];
         foreach ($orm->images as $ormImage) {
-            $id = ProductImageId::fromInt($ormImage->id ?? throw EntityIdMissingException::forEntity($ormImage::class));
-
-            $images[] = new ProductImage(
-                ulid: ProductImageUlid::fromString($ormImage->ulid),
-                path: RelativeFilePath::fromString($ormImage->path),
-                sortOrder: SortOrder::fromInt($ormImage->sortOrder),
-                isMain: MainImageFlag::fromBool($ormImage->isMain),
-                id: $id,
-            );
+            $images[] = $this->productImageMapper->toDomain($ormImage);
         }
 
         return $images;
@@ -423,14 +338,7 @@ class ProductMapper implements MapperInterface
                 $orm->images->add($ormImage);
             }
 
-            $this->mapImageItemFromDomainToOrm($di, $ormImage);
+            $this->productImageMapper->mapToExistingOrm($di, $ormImage);
         }
-    }
-
-    private function mapImageItemFromDomainToOrm(ProductImage $productImage, OrmProductImage $ormProductImage): void
-    {
-        $ormProductImage->path = $productImage->getPath()->value();
-        $ormProductImage->sortOrder = $productImage->getSortOrder()->value();
-        $ormProductImage->isMain = $productImage->isMain()->value();
     }
 }
