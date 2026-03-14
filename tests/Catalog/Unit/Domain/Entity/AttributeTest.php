@@ -10,25 +10,55 @@ use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Translations;
 use App\Catalog\Domain\ValueObject\Attribute\Type;
+use App\Catalog\Domain\ValueObject\Attribute\Ulid;
 use App\Tests\Catalog\Support\AttributeMother;
 use PHPUnit\Framework\TestCase;
 
 final class AttributeTest extends TestCase
 {
+    public function testItCreatesValidAttribute(): void
+    {
+        $ulid = Ulid::fromString(AttributeMother::DEFAULT_ULID);
+        $code = Code::fromString('color');
+        $type = Type::string();
+        $translations = Translations::fromArray(self::getValidTranslations());
+        $adminUlid = AdminUlid::fromString(AttributeMother::DEFAULT_ADMIN_ULID);
+
+        $attribute = Attribute::create(
+            ulid: $ulid,
+            code: $code,
+            type: $type,
+            translations: $translations,
+            createdBy: $adminUlid
+        );
+
+        self::assertNull($attribute->getId());
+        self::assertTrue($attribute->getUlid()->equals($ulid));
+        self::assertTrue($attribute->getCode()->equals($code));
+        self::assertTrue($attribute->getType()->equals($type));
+        self::assertCount($translations->count(), $attribute->getTranslations());
+        foreach ($translations as $locale => $translation) {
+            self::assertSame($translation->name, $attribute->getTranslations()->get($locale)->name);
+        }
+        self::assertSame(1, $attribute->getVersion()->value());
+        self::assertTrue($attribute->getCreatedBy()->equals($adminUlid));
+        self::assertNull($attribute->getUpdatedBy());
+    }
+
     public function testUpdateChangesState(): void
     {
-        $attribute = $this->makeAttribute(code: 'old_code');
+        $attribute = AttributeMother::createWithData(code: 'old_code');
 
         $newCode = Code::fromString('new_code');
         $newType = Type::fromEnum(TypeEnum::Int);
-        $newTranslations = Translations::fromArray(['en' => ['name' => 'New name']]);
-        $adminId = AdminUlid::fromString('01KHVRCC1Z9S7G603HEPK9MGEZ');
+        $newTranslations = Translations::fromArray(self::getValidTranslations());
+        $adminUlid = AdminUlid::fromString('01KHVRCC1Z9S7G603HEPK9MGEZ');
 
         $attribute->update(
             code: $newCode,
             type: $newType,
             translations: $newTranslations,
-            updatedBy: $adminId
+            updatedBy: $adminUlid
         );
 
         self::assertTrue($attribute->getCode()->equals($newCode));
@@ -37,11 +67,14 @@ final class AttributeTest extends TestCase
         foreach ($newTranslations as $locale => $translation) {
             self::assertSame($translation->name, $attribute->getTranslations()->get($locale)->name);
         }
-        self::assertTrue($attribute->getUpdatedBy()?->equals($adminId));
+        self::assertTrue($attribute->getUpdatedBy()?->equals($adminUlid));
     }
 
-    private function makeAttribute(string $code = 'code'): Attribute
+    private function getValidTranslations(): array
     {
-        return AttributeMother::createWithData(code: $code);
+        return [
+            'en' => ['name' => 'Color'],
+            'uk' => ['name' => 'Колір'],
+        ];
     }
 }

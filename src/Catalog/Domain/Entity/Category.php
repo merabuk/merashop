@@ -61,6 +61,9 @@ class Category
         );
     }
 
+    /**
+     * @throws CategoryCannotBeParentOfItselfException
+     */
     public function update(
         Status $status,
         Translations $translations,
@@ -73,6 +76,8 @@ class Category
         $this->updatedBy = $updatedBy;
 
         if (null !== $structure && null !== $newSlug) {
+            $this->ensureNotParentOfItself($structure->newParentId);
+
             $this->slug = $newSlug;
             $this->path = $structure->newPath;
             $this->sortOrder = $structure->newSortOrder;
@@ -87,7 +92,11 @@ class Category
 
     public function isParentDifferent(?Id $parentId): bool
     {
-        return (string) $this->parentId !== (string) $parentId;
+        if (null === $this->parentId || null === $parentId) {
+            return $this->parentId !== $parentId;
+        }
+
+        return !$this->parentId->equals($parentId);
     }
 
     /**
@@ -100,9 +109,7 @@ class Category
             return;
         }
 
-        if ($this->id && $potentialParent->getId()->equals($this->id)) {
-            throw new CategoryCannotBeParentOfItselfException();
-        }
+        $this->ensureNotParentOfItself($potentialParent->getId());
 
         if ($potentialParent->getPath()->startsWith($this->path)) {
             throw new CategoryChildCanNotBeParentConflictException();
@@ -167,5 +174,19 @@ class Category
     public function updateSortOrder(SortOrder $sortOrder): void
     {
         $this->sortOrder = $sortOrder;
+    }
+
+    /**
+     * @throws CategoryCannotBeParentOfItselfException
+     */
+    private function ensureNotParentOfItself(?Id $potentialParentId): void
+    {
+        if (null === $potentialParentId) {
+            return;
+        }
+
+        if ($this->id && $potentialParentId->equals($this->id)) {
+            throw new CategoryCannotBeParentOfItselfException();
+        }
     }
 }

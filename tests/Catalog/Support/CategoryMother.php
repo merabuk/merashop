@@ -111,7 +111,7 @@ final readonly class CategoryMother
     }
 
     /**
-     * @return array<string, array{name: string, ?description: string}>
+     * @return array<string, array{name: string, description?: string}>
      */
     private function makeTranslations(): array
     {

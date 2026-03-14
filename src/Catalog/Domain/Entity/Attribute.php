@@ -17,7 +17,6 @@ use App\Shared\Domain\Entity\HasIdInterface;
 class Attribute implements HasIdInterface
 {
     public function __construct(
-        private readonly ?Id $id,
         private readonly Ulid $ulid,
         private Code $code,
         private Type $type,
@@ -25,6 +24,7 @@ class Attribute implements HasIdInterface
         private Version $version,
         private readonly AdminUlid $createdBy,
         private ?AdminUlid $updatedBy = null,
+        private readonly ?Id $id = null,
     ) {
     }
 
@@ -39,7 +39,6 @@ class Attribute implements HasIdInterface
         AdminUlid $createdBy,
     ): self {
         return new self(
-            id: null,
             ulid: $ulid,
             code: $code,
             type: $type,
@@ -47,6 +46,18 @@ class Attribute implements HasIdInterface
             version: Version::initial(),
             createdBy: $createdBy,
         );
+    }
+
+    public function update(
+        Code $code,
+        Type $type,
+        Translations $translations,
+        AdminUlid $updatedBy,
+    ): void {
+        $this->code = $code;
+        $this->type = $type;
+        $this->translations = $translations;
+        $this->updatedBy = $updatedBy;
     }
 
     public function getId(): ?Id
@@ -87,17 +98,5 @@ class Attribute implements HasIdInterface
     public function getUpdatedBy(): ?AdminUlid
     {
         return $this->updatedBy;
-    }
-
-    public function update(
-        Code $code,
-        Type $type,
-        Translations $translations,
-        AdminUlid $updatedBy,
-    ): void {
-        $this->code = $code;
-        $this->type = $type;
-        $this->translations = $translations;
-        $this->updatedBy = $updatedBy;
     }
 }
