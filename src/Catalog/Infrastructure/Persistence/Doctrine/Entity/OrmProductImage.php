@@ -18,7 +18,7 @@ use Symfony\Bridge\Doctrine\Types\UlidType;
 #[ORM\UniqueConstraint(
     name: 'uniq_product_images_main',
     columns: ['product_id'],
-    options: ['where' => 'is_main = true']
+    options: ['where' => '(is_main = true)']
 )]
 class OrmProductImage
 {
