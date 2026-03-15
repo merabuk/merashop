@@ -6,8 +6,9 @@ namespace App\Catalog\Domain\Exception\Attribute;
 
 use App\Catalog\Domain\Enum\ErrorCodeEnum;
 use App\Catalog\Domain\Exception\CatalogConflictException;
+use App\Shared\Domain\Exception\Contracts\ClientFacingExceptionInterface;
 
-class AttributeAlreadyExistsException extends CatalogConflictException
+class AttributeAlreadyExistsException extends CatalogConflictException implements ClientFacingExceptionInterface
 {
     private string $attributeCode = 'code';
 

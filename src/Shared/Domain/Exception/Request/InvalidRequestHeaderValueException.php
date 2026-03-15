@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Shared\Domain\Exception\Request;
 
 use App\Shared\Domain\Enum\ErrorCodeEnum;
+use App\Shared\Domain\Exception\Contracts\ClientFacingExceptionInterface;
 use App\Shared\Domain\Exception\LogicException;
 use App\Shared\Domain\Exception\Markers\BadRequestExceptionInterface;
 
-class InvalidRequestHeaderValueException extends LogicException implements BadRequestExceptionInterface
+class InvalidRequestHeaderValueException extends LogicException implements ClientFacingExceptionInterface, BadRequestExceptionInterface
 {
     private string $requestName = 'unknown';
 

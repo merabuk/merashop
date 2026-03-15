@@ -6,6 +6,7 @@ namespace App\Shared\Presentation\Http\EventListener;
 
 use App\Shared\Domain\Enum\ErrorCodeEnum;
 use App\Shared\Domain\Exception\Contracts\AppExceptionInterface;
+use App\Shared\Domain\Exception\Contracts\ClientFacingExceptionInterface;
 use App\Shared\Domain\Exception\Entity\EntityContextAwareExceptionInterface;
 use App\Shared\Domain\Exception\Markers\BadRequestExceptionInterface;
 use App\Shared\Domain\Exception\Markers\ConflictExceptionInterface;
@@ -164,6 +165,10 @@ class ApiExceptionListener
 
     public function handleAppException(AppExceptionInterface $exception, Request $request): JsonResponse
     {
+        if (false === $exception instanceof ClientFacingExceptionInterface) {
+            return $this->logAndResponseWithBaseUnexpectedError($exception);
+        }
+
         $statusCode = $this->getStatusCode($exception);
         $errorCode = $exception->getErrorCode();
         $errorMessageData = $exception->getMessageData();

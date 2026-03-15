@@ -4,9 +4,10 @@ namespace App\Customer\Domain\Exception\CustomerProfile;
 
 use App\Customer\Domain\Enum\ErrorCodeEnum;
 use App\Customer\Domain\Exception\CustomerDomainException;
+use App\Shared\Domain\Exception\Contracts\ClientFacingExceptionInterface;
 use App\Shared\Domain\Exception\Markers\NotFoundExceptionInterface;
 
-class CustomerProfileNotFoundException extends CustomerDomainException implements NotFoundExceptionInterface
+class CustomerProfileNotFoundException extends CustomerDomainException implements ClientFacingExceptionInterface, NotFoundExceptionInterface
 {
     public function getErrorCode(): string
     {

@@ -6,5 +6,4 @@ namespace App\Shared\Domain\Exception\Contracts;
 
 interface ClientFacingExceptionInterface extends AppExceptionInterface
 {
-    public function getPublicMessage(): string;
 }

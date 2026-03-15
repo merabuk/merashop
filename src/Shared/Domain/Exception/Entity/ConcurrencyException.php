@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Shared\Domain\Exception\Entity;
 
 use App\Shared\Domain\Enum\ErrorCodeEnum;
+use App\Shared\Domain\Exception\Contracts\ClientFacingExceptionInterface;
 use App\Shared\Domain\Exception\LogicException;
 use App\Shared\Domain\Exception\Markers\ConflictExceptionInterface;
 
-class ConcurrencyException extends LogicException implements ConflictExceptionInterface, EntityContextAwareExceptionInterface
+class ConcurrencyException extends LogicException implements ClientFacingExceptionInterface, ConflictExceptionInterface, EntityContextAwareExceptionInterface
 {
     private const string ENTITY_NAME_KEY = 'entityName';
 
