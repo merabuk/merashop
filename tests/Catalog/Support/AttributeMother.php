@@ -46,16 +46,14 @@ final readonly class AttributeMother
         ?int $id = null,
     ): Attribute {
         return new Attribute(
-            id: $id ? Id::fromInt($id) : null,
             ulid: Ulid::fromString($ulid ?? self::DEFAULT_ULID),
             code: Code::fromString($code ?? 'test-code'),
             type: $type ? Type::fromEnum($type) : Type::string(),
-            translations: $translations
-                ? Translations::fromArray($translations)
-                : Translations::fromArray(self::makeFakeTranslations()),
+            translations: Translations::fromArray($translations ?: self::makeFakeTranslations()),
             version: $version ? Version::fromInt($version) : Version::initial(),
             createdBy: AdminUlid::fromString($createdByUlid ?? self::DEFAULT_ADMIN_ULID),
-            updatedBy: $updatedByUlid ? AdminUlid::fromString($updatedByUlid) : null
+            updatedBy: $updatedByUlid ? AdminUlid::fromString($updatedByUlid) : null,
+            id: $id ? Id::fromInt($id) : null,
         );
     }
 
