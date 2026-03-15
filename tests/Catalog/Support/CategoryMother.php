@@ -60,9 +60,7 @@ final readonly class CategoryMother
             slug: Slug::fromString($slug),
             sortOrder: SortOrder::fromInt($sortOrder ?? 0),
             status: Status::fromEnum($status ?? StatusEnum::Active),
-            translations: $translations
-                ? Translations::fromArray($translations)
-                : Translations::fromArray(self::makeFakeTranslations()),
+            translations: Translations::fromArray($translations ?: self::makeFakeTranslations()),
             version: $version ? Version::fromInt($version) : Version::initial(),
             createdBy: AdminUlid::fromString($createdByUlid ?? self::DEFAULT_ADMIN_ULID),
             updatedBy: $updatedByUlid ? AdminUlid::fromString($updatedByUlid) : null,

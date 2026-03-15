@@ -56,11 +56,14 @@ final class CategoryTest extends TestCase
         self::assertTrue($category->getStatus()->equals($status));
         self::assertCount($translations->count(), $category->getTranslations());
         foreach ($translations as $locale => $translation) {
-            self::assertSame($translation->name, $category->getTranslations()->get($locale)->name);
-            self::assertSame($translation->description, $category->getTranslations()->get($locale)->description);
+            $translation = $category->getTranslations()->get($locale);
+            self::assertNotNull($translation);
+            self::assertSame($translation->name, $translation->name);
+            self::assertSame($translation->description, $translation->description);
         }
         self::assertSame(1, $category->getVersion()->value());
         self::assertTrue($category->getCreatedBy()->equals($createdBy));
+        self::assertNull($category->getUpdatedBy());
     }
 
     public static function createData(): iterable
@@ -125,8 +128,10 @@ final class CategoryTest extends TestCase
         self::assertTrue($category->getStatus()->equals($status));
         self::assertCount($translations->count(), $category->getTranslations());
         foreach ($translations as $locale => $translation) {
-            self::assertSame($translation->name, $category->getTranslations()->get($locale)->name);
-            self::assertSame($translation->description, $category->getTranslations()->get($locale)->description);
+            $translation = $category->getTranslations()->get($locale);
+            self::assertNotNull($translation);
+            self::assertSame($translation->name, $translation->name);
+            self::assertSame($translation->description, $translation->description);
         }
         self::assertTrue($category->getUpdatedBy()->equals($adminUlid));
 
