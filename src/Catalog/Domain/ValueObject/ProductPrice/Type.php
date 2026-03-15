@@ -60,6 +60,11 @@ final readonly class Type implements EquatableInterface, Stringable
         return $this->type;
     }
 
+    public function asString(): string
+    {
+        return $this->__toString();
+    }
+
     public function isRegular(): bool
     {
         return TypeEnum::Regular === $this->type;
@@ -73,6 +78,11 @@ final readonly class Type implements EquatableInterface, Stringable
     public function isCost(): bool
     {
         return TypeEnum::Cost === $this->type;
+    }
+
+    public function isTimeLimited(): bool
+    {
+        return $this->isSale();
     }
 
     public function __toString(): string

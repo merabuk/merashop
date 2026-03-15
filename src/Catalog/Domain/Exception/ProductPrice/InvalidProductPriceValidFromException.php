@@ -7,7 +7,7 @@ namespace App\Catalog\Domain\Exception\ProductPrice;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use Throwable;
 
-class InvalidProductPriceValidFromException extends InvalidCatalogValueObjectException
+final class InvalidProductPriceValidFromException extends InvalidCatalogValueObjectException
 {
     public static function becauseItIsNotValidDateTimeString(Throwable $e): self
     {

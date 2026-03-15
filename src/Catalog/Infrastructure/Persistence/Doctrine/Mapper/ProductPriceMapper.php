@@ -7,7 +7,8 @@ namespace App\Catalog\Infrastructure\Persistence\Doctrine\Mapper;
 use App\Catalog\Domain\Entity\ProductPrice;
 use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceAmountException;
 use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceIdException;
-use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceTaxException;
+use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceTaxValueException;
+use App\Catalog\Domain\Exception\ProductPrice\ProductPriceStateException;
 use App\Catalog\Domain\ValueObject\ProductPrice\Id;
 use App\Catalog\Domain\ValueObject\ProductPrice\Price;
 use App\Catalog\Domain\ValueObject\ProductPrice\Tax;
@@ -23,8 +24,9 @@ final readonly class ProductPriceMapper
     /**
      * @throws InvalidProductPriceAmountException
      * @throws InvalidProductPriceIdException
-     * @throws InvalidProductPriceTaxException
+     * @throws InvalidProductPriceTaxValueException
      * @throws EntityIdMissingException
+     * @throws ProductPriceStateException
      */
     public function toDomain(OrmProductPrice $orm): ProductPrice
     {

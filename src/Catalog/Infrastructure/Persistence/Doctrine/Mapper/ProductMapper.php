@@ -328,7 +328,7 @@ final readonly class ProductMapper implements MapperInterface
         foreach ($domainImages as $di) {
             $ormImage = array_find(
                 $currentOrmImages,
-                fn (OrmProductImage $p) => $p->id === $di->getId()?->value()
+                fn (OrmProductImage $p) => $p->ulid === $di->getUlid()->value()
             ) ?? new OrmProductImage();
 
             if (null === $ormImage->id) {

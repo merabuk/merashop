@@ -18,6 +18,5 @@ return [
     ErrorCodeEnum::CategoryChildCanNotBeParentConflictException->value => 'A child category cannot be set as a parent',
     ErrorCodeEnum::ProductNotFound->value => 'Product not found',
     ErrorCodeEnum::ProductAlreadyExists->value => 'Product already exists',
-    ErrorCodeEnum::ProductPriceUniqueException->value => 'Product price type "{priceType}" for currency "{currency}" already exists',
     ErrorCodeEnum::OneOfTemporaryImagesNotFoundException->value => 'One or more temporary images not found',
 ];

@@ -15,7 +15,7 @@ final readonly class Sku implements EquatableInterface, Stringable
 
     public const int MAX_LENGTH = 50;
     public const int MIN_LENGTH = 8;
-    public const string REGEX = '/^(?!-{2,}|^-|-$|^\d)[\-A-Z\d]+$/';
+    public const string REGEX = '/^(?!-{2,}|^-|-$|^\d)[A-Z\d-]+$/';
 
     private string $sku;
 

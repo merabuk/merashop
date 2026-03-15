@@ -52,6 +52,11 @@ final readonly class Price implements EquatableInterface, Stringable
         return $this->currency;
     }
 
+    public function getCurrencyCode(): string
+    {
+        return $this->currency->value;
+    }
+
     protected function getPrimitiveValue(): string
     {
         return sprintf('%d_%s', $this->amount, $this->currency->value);

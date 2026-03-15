@@ -29,20 +29,40 @@ final readonly class ProductAttributeValueMapper
     {
         $id = $orm->id ?? throw EntityIdMissingException::forEntity($orm::class);
 
-        $value = $orm->valueJson['value'] ?? null;
+        $rawValue = $orm->valueJson['value'] ?? null;
+        $type = $orm->attribute->type;
 
-        $value = match ($orm->attribute->type) {
-            TypeEnum::String => StringValue::fromString((string) $value),
-            TypeEnum::Int => IntegerValue::fromInt((int) $value),
-            TypeEnum::Boolean => BooleanValue::fromBool((bool) $value),
-            TypeEnum::Select => ArrayValue::fromArray((array) $value),
-            null => throw $this->makeError(sprintf('%s with id %d has null type', $orm::class, (int) $orm->id)),
+        if (null === $type) {
+            throw $this->makeError(sprintf('%s Attribute type is null', $this->getLogPrefix($id)));
+        }
+
+        if (null === $rawValue) {
+            throw $this->makeError(sprintf('%s Value is missing for attribute ID %d', $this->getLogPrefix($id), $orm->attribute->id));
+        }
+
+        $value = match ($type) {
+            TypeEnum::String => is_string($rawValue)
+                ? StringValue::fromString($rawValue)
+                : throw $this->makeTypeError(id: $id, expected: 'string', actual: $rawValue),
+
+            TypeEnum::Int => is_int($rawValue)
+                ? IntegerValue::fromInt($rawValue)
+                : throw $this->makeTypeError(id: $id, expected: 'integer', actual: $rawValue),
+
+            TypeEnum::Boolean => is_bool($rawValue)
+                ? BooleanValue::fromBool($rawValue)
+                : throw $this->makeTypeError(id: $id, expected: 'boolean', actual: $rawValue),
+
+            // TODO[attribute value]: add items check in future
+            TypeEnum::Select => is_array($rawValue)
+                ? ArrayValue::fromArray($rawValue)
+                : throw $this->makeTypeError(id: $id, expected: 'array', actual: $rawValue),
         };
 
         return new ProductAttributeValue(
-            id: ProductAttributeValueId::fromInt($id),
             attributeId: AttributeId::fromInt($orm->attribute->id),
-            value: $value
+            value: $value,
+            id: ProductAttributeValueId::fromInt($id)
         );
     }
 
@@ -57,6 +77,21 @@ final readonly class ProductAttributeValueMapper
             $vo instanceof ArrayValue => $vo->value(),
             default => throw $this->makeError(sprintf('Unknown attribute value type: %s', get_debug_type($vo))),
         };
+    }
+
+    private function getLogPrefix(int $id): string
+    {
+        return sprintf('[%s::%d]', OrmProductAttributeValue::class, $id);
+    }
+
+    private function makeTypeError(int $id, string $expected, mixed $actual): InvalidArgumentException
+    {
+        return $this->makeError(sprintf(
+            '%s Expected %s for attribute value, got %s',
+            $this->getLogPrefix($id),
+            $expected,
+            get_debug_type($actual)
+        ));
     }
 
     private function makeError(string $message): InvalidArgumentException

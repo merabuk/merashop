@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Catalog\Domain\Entity;
 
 use App\Catalog\Domain\Exception\Product\InvalidProductVersionException;
+use App\Catalog\Domain\Exception\Product\ProductPricesEmptyException;
 use App\Catalog\Domain\Exception\Product\ProductPriceUniqueException;
 use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
@@ -25,10 +26,10 @@ class Product
      * @param ProductAttributeValue[] $attributeValues
      * @param ProductImage[]          $images
      *
+     * @throws ProductPricesEmptyException
      * @throws ProductPriceUniqueException
      */
     public function __construct(
-        private readonly ?Id $id,
         private readonly Ulid $ulid,
         private Sku $sku,
         private Status $status,
@@ -40,7 +41,9 @@ class Product
         private array $categoryIds = [],
         private array $attributeValues = [],
         private array $images = [],
+        private readonly ?Id $id = null,
     ) {
+        $this->ensurePricesAreNotEmpty();
         $this->ensurePricesAreUnique($this->prices);
     }
 
@@ -50,6 +53,8 @@ class Product
      * @param ProductAttributeValue[] $attributeValues
      *
      * @throws InvalidProductVersionException
+     * @throws ProductPricesEmptyException
+     * @throws ProductPriceUniqueException
      */
     public static function create(
         Ulid $ulid,
@@ -62,7 +67,6 @@ class Product
         array $attributeValues = [],
     ): self {
         return new self(
-            id: null,
             ulid: $ulid,
             sku: $sku,
             status: $status,
@@ -96,11 +100,6 @@ class Product
         $this->prices = $prices;
         $this->categoryIds = $categoryIds;
         $this->attributeValues = $attributeValues;
-    }
-
-    public function addAttributeValue(ProductAttributeValue $attributeValue): void
-    {
-        $this->attributeValues[] = $attributeValue;
     }
 
     public function addImage(ProductImage $image): void
@@ -184,7 +183,9 @@ class Product
         return $this->attributeValues;
     }
 
-    /** @return ProductImage[] */
+    /**
+     * @return ProductImage[]
+     */
     public function getImages(): array
     {
         return $this->images;
@@ -202,6 +203,16 @@ class Product
     }
 
     /**
+     * @throws ProductPricesEmptyException
+     */
+    private function ensurePricesAreNotEmpty(): void
+    {
+        if (empty($this->prices)) {
+            throw ProductPricesEmptyException::becauseItIsEmpty();
+        }
+    }
+
+    /**
      * @param ProductPrice[] $prices
      *
      * @throws ProductPriceUniqueException
@@ -210,9 +221,11 @@ class Product
     {
         $keys = [];
         foreach ($prices as $price) {
-            $key = sprintf('%s_%s', $price->getType()->value()->value, $price->getPrice()->getCurrency()->value);
+            $priceType = $price->getType()->asString();
+            $currency = $price->getPrice()->getCurrencyCode();
+            $key = sprintf('%s_%s', $priceType, $currency);
             if (isset($keys[$key])) {
-                throw ProductPriceUniqueException::duplicatePriceTypeForCurrency(priceType: $price->getType()->value()->value, currency: $price->getPrice()->getCurrency()->value);
+                throw ProductPriceUniqueException::duplicatePriceTypeForCurrency(priceType: $priceType, currency: $currency);
             }
             $keys[$key] = true;
         }

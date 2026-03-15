@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\ValueObject\ProductPrice;
 
-use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceTaxException;
-use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceTypeException;
+use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceTaxTypeException;
+use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceTaxValueException;
 use App\Shared\Domain\Enum\TaxTypeEnum;
 use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
@@ -16,20 +16,21 @@ final readonly class Tax implements EquatableInterface, Stringable
     use ValueObjectEqualityTrait;
 
     /**
-     * @throws InvalidProductPriceTaxException
+     * @throws InvalidProductPriceTaxValueException
      */
     public function __construct(
         private float $value,
         private TaxTypeEnum $type,
     ) {
+        $this->ensureIsValidTaxAmount();
         if ($this->value < 0) {
-            throw InvalidProductPriceTaxException::becauseItIsNotAValidTax();
+            throw InvalidProductPriceTaxValueException::becauseItIsNotAValidTax();
         }
     }
 
     /**
-     * @throws InvalidProductPriceTaxException
-     * @throws InvalidProductPriceTypeException
+     * @throws InvalidProductPriceTaxValueException
+     * @throws InvalidProductPriceTaxTypeException
      */
     public static function fromPrimitives(float $value, string $type): self
     {
@@ -38,12 +39,12 @@ final readonly class Tax implements EquatableInterface, Stringable
         return match (TaxTypeEnum::tryFrom($type)) {
             TaxTypeEnum::Percentage => self::percentage($value),
             TaxTypeEnum::Fixed => self::fixed($value),
-            default => throw InvalidProductPriceTypeException::becauseItIsNotAValidType($type, TaxTypeEnum::getValues()),
+            default => throw InvalidProductPriceTaxTypeException::becauseItIsNotAValidType($type, TaxTypeEnum::getValues()),
         };
     }
 
     /**
-     * @throws InvalidProductPriceTaxException
+     * @throws InvalidProductPriceTaxValueException
      */
     public static function percentage(float $rate): self
     {
@@ -51,7 +52,7 @@ final readonly class Tax implements EquatableInterface, Stringable
     }
 
     /**
-     * @throws InvalidProductPriceTaxException
+     * @throws InvalidProductPriceTaxValueException
      */
     public static function fixed(float $amount): self
     {
@@ -76,6 +77,16 @@ final readonly class Tax implements EquatableInterface, Stringable
         return $this->type;
     }
 
+    public function isPercentage(): bool
+    {
+        return TaxTypeEnum::Percentage === $this->type;
+    }
+
+    public function isFixed(): bool
+    {
+        return TaxTypeEnum::Fixed === $this->type;
+    }
+
     public function __toString(): string
     {
         return $this->getPrimitiveValue();
@@ -84,5 +95,18 @@ final readonly class Tax implements EquatableInterface, Stringable
     protected function getPrimitiveValue(): string
     {
         return sprintf('%s_%s', number_format($this->value, 2), $this->type->value);
+    }
+
+    /**
+     * @throws InvalidProductPriceTaxValueException
+     */
+    private function ensureIsValidTaxAmount(): void
+    {
+        match ($this->type) {
+            TaxTypeEnum::Percentage => ($this->value < 0 || $this->value > 100)
+                ? throw InvalidProductPriceTaxValueException::becauseItIsNotAValidPercentageValue($this->value) : null,
+            default => ($this->value < 0)
+                ? throw InvalidProductPriceTaxValueException::becauseItIsNotAValidTax() : null,
+        };
     }
 }

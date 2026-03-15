@@ -20,13 +20,12 @@ services:
       $clock: '@clock'
       $filesystem: '@catalog.storage.filesystem'
 
-  App\Catalog\Domain\Service\Category\CategoryStructureServiceInterface: '@App\Catalog\Domain\Service\Category\CategoryStructureService'
-  App\Catalog\Domain\Service\Category\CategoryManagerInterface: '@App\Catalog\Domain\Service\Category\CategoryManager'
-
   App\Catalog\Domain\Factory\Contract\AttributeFactoryInterface: '@App\Catalog\Domain\Factory\AttributeFactory'
   App\Catalog\Domain\Repository\AttributeReadRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\AttributeReadRepository'
   App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\AttributeWriteRepository'
 
+  App\Catalog\Domain\Service\Category\CategoryStructureServiceInterface: '@App\Catalog\Domain\Service\Category\CategoryStructureService'
+  App\Catalog\Domain\Service\Category\CategoryManagerInterface: '@App\Catalog\Domain\Service\Category\CategoryManager'
   App\Catalog\Domain\Factory\Contract\CategoryFactoryInterface: '@App\Catalog\Domain\Factory\CategoryFactory'
   App\Catalog\Domain\Repository\CategoryReadRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\CategoryReadRepository'
   App\Catalog\Domain\Repository\CategoryWriteRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\CategoryWriteRepository'
@@ -34,6 +33,6 @@ services:
   App\Catalog\Application\Service\ProductApplicationFactoryInterface: '@App\Catalog\Application\Service\ProductApplicationFactory'
   App\Catalog\Application\Service\ProductMediaManagerInterface: '@App\Catalog\Application\Service\ProductMediaManager'
   App\Catalog\Domain\Service\Product\ProductValidatorInterface: '@App\Catalog\Domain\Service\Product\ProductValidator'
-
+  App\Catalog\Domain\Factory\Contract\ProductFactoryInterface: '@App\Catalog\Domain\Factory\ProductFactory'
   App\Catalog\Domain\Repository\ProductReadRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\ProductReadRepository'
   App\Catalog\Domain\Repository\ProductWriteRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\ProductWriteRepository'

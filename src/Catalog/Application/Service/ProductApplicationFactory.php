@@ -15,6 +15,9 @@ use App\Catalog\Domain\Entity\ProductPrice;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
 use App\Catalog\Domain\Exception\Category\InvalidCategoryIdException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
+use App\Catalog\Domain\Exception\Product\ProductPricesEmptyException;
+use App\Catalog\Domain\Exception\Product\ProductPriceUniqueException;
+use App\Catalog\Domain\Exception\ProductAttribute\UnsupportedAttributeTypeException;
 use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
 use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
@@ -59,6 +62,9 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
     /**
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
+     * @throws ProductPricesEmptyException
+     * @throws ProductPriceUniqueException
+     * @throws UnsupportedAttributeTypeException
      */
     public function createFromCommand(CreateProductCommand $command, string $newUlid): Product
     {
@@ -130,6 +136,7 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
      * @return ProductAttributeValue[]
      *
      * @throws InvalidCatalogValueObjectException
+     * @throws UnsupportedAttributeTypeException
      */
     private function mapAttributeValues(array $values): array
     {

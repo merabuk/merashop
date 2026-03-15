@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\Entity;
 
+use App\Catalog\Domain\Exception\ProductPrice\ProductPriceStateException;
 use App\Catalog\Domain\ValueObject\ProductPrice\Id;
 use App\Catalog\Domain\ValueObject\ProductPrice\Price;
 use App\Catalog\Domain\ValueObject\ProductPrice\Tax;
@@ -15,6 +16,9 @@ use DateTimeImmutable;
 
 class ProductPrice
 {
+    /**
+     * @throws ProductPriceStateException
+     */
     public function __construct(
         private Price $price,
         private Type $type,
@@ -24,6 +28,7 @@ class ProductPrice
         private ?ValidTo $validTo = null,
         private readonly ?Id $id = null,
     ) {
+        $this->ensureIsValidState();
     }
 
     public function getAmountWithTax(): int
@@ -39,6 +44,10 @@ class ProductPrice
 
     public function isActive(DateTimeImmutable $now): bool
     {
+        if (false === $this->type->isTimeLimited()) {
+            return true;
+        }
+
         if ($this->validFrom && $this->validFrom->isAfter($now)) {
             return false;
         }
@@ -82,5 +91,27 @@ class ProductPrice
     public function getId(): ?Id
     {
         return $this->id;
+    }
+
+    /**
+     * @throws ProductPriceStateException
+     */
+    private function ensureIsValidState(): void
+    {
+        if (false === $this->type->isTimeLimited() && (null !== $this->validFrom || null !== $this->validTo)) {
+            throw ProductPriceStateException::becauseItIsNotTimeLimitedType(['validFrom', 'validTo']);
+        }
+
+        if ($this->type->isTimeLimited() && (null === $this->validFrom || null === $this->validTo)) {
+            throw ProductPriceStateException::becauseItIsTimeLimitedType(['validFrom', 'validTo']);
+        }
+
+        if (
+            null !== $this->validFrom
+            && null !== $this->validTo
+            && $this->validFrom->isAfter($this->validTo)
+        ) {
+            throw ProductPriceStateException::becauseItIsInvalidTimeLimitValues('validFrom', 'validTo');
+        }
     }
 }
