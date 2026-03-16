@@ -54,10 +54,10 @@ class ProductAttributeValue
     public static function resolveValue(mixed $value): AttributeValueInterface
     {
         return match (true) {
-            is_string($value) => new StringValue($value),
-            is_int($value) => new IntegerValue($value),
-            is_bool($value) => new BooleanValue($value),
-            is_array($value) => new ArrayValue($value),
+            is_string($value) => StringValue::fromString($value),
+            is_int($value) => IntegerValue::fromInt($value),
+            is_bool($value) => BooleanValue::fromBool($value),
+            is_array($value) => ArrayValue::fromArray($value),
             default => throw UnsupportedAttributeTypeException::becauseIsItNotSupportedType(get_debug_type($value)),
         };
     }

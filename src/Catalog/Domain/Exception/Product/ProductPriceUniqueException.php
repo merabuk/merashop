@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\Exception\Product;
 
-use App\Catalog\Domain\Exception\CatalogDomainException;
+use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 
-class ProductPriceUniqueException extends CatalogDomainException
+class ProductPriceUniqueException extends InvalidCatalogValueObjectException
 {
     public static function duplicatePriceTypeForCurrency(string $priceType, string $currency): self
     {

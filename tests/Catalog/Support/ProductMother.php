@@ -9,17 +9,14 @@ use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Entity\ProductPrice;
 use App\Catalog\Domain\Enum\Product\StatusEnum;
 use App\Catalog\Domain\Enum\ProductPrice\TypeEnum;
-use App\Catalog\Domain\Exception\InvalidAdminUlidException;
-use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
-use App\Catalog\Domain\Exception\Product\InvalidProductIdException;
-use App\Catalog\Domain\Exception\Product\InvalidProductSkuException;
-use App\Catalog\Domain\Exception\Product\InvalidProductUlidException;
-use App\Catalog\Domain\Exception\Product\InvalidProductVersionException;
-use App\Catalog\Domain\Exception\Product\ProductPriceUniqueException;
 use App\Catalog\Domain\Factory\Contract\ProductFactoryInterface;
 use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
+use App\Catalog\Domain\ValueObject\Product\AttributeValueCollection;
+use App\Catalog\Domain\ValueObject\Product\CategoryIdCollection;
 use App\Catalog\Domain\ValueObject\Product\Id as ProductId;
+use App\Catalog\Domain\ValueObject\Product\ImageCollection;
+use App\Catalog\Domain\ValueObject\Product\PriceCollection;
 use App\Catalog\Domain\ValueObject\Product\Sku;
 use App\Catalog\Domain\ValueObject\Product\Status;
 use App\Catalog\Domain\ValueObject\Product\Translations;
@@ -27,7 +24,6 @@ use App\Catalog\Domain\ValueObject\Product\Ulid;
 use App\Catalog\Domain\ValueObject\Product\Version;
 use App\Shared\Domain\Enum\CurrencyEnum;
 use App\Shared\Domain\Enum\LocaleEnum;
-use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use Faker\Factory;
 use Faker\Generator;
@@ -50,15 +46,6 @@ final readonly class ProductMother
      * @param ?ProductPrice[]                                           $prices
      * @param ?CategoryId[]                                             $categoryIds
      * @param ?ProductAttributeValue[]                                  $attributeValues
-     *
-     * @throws InvalidAdminUlidException
-     * @throws InvalidCatalogValueObjectException
-     * @throws InvalidLocaleException
-     * @throws ProductPriceUniqueException
-     * @throws InvalidProductIdException
-     * @throws InvalidProductSkuException
-     * @throws InvalidProductUlidException
-     * @throws InvalidProductVersionException
      */
     public static function createWithData(
         ?string $ulid = null,
@@ -71,6 +58,7 @@ final readonly class ProductMother
         ?string $updatedByUlid = null,
         ?array $categoryIds = null,
         ?array $attributeValues = null,
+        ?array $images = null,
         ?int $id = null,
     ): Product {
         return new Product(
@@ -80,10 +68,11 @@ final readonly class ProductMother
             translations: Translations::fromArray($translations ?: self::makeFakeTranslations()),
             version: $version ? Version::fromInt($version) : Version::initial(),
             createdBy: AdminUlid::fromString($createdByUlid ?? self::DEFAULT_ADMIN_ULID),
-            prices: $prices ?? self::makeFakePrices(),
+            prices: PriceCollection::fromArray($prices ?? self::makeFakePrices()),
+            categoryIds: CategoryIdCollection::fromArray($categoryIds ?? []),
+            attributeValues: AttributeValueCollection::fromArray($attributeValues ?? []),
+            images: ImageCollection::fromArray($images ?? []),
             updatedBy: $updatedByUlid ? AdminUlid::fromString($updatedByUlid) : null,
-            categoryIds: $categoryIds ?? [],
-            attributeValues: $attributeValues ?? [],
             id: $id ? ProductId::fromInt($id) : null,
         );
     }

@@ -15,7 +15,7 @@ final readonly class Sku implements EquatableInterface, Stringable
 
     public const int MAX_LENGTH = 50;
     public const int MIN_LENGTH = 8;
-    public const string REGEX = '/^(?!-{2,}|^-|-$|^\d)[A-Z\d-]+$/';
+    public const string REGEX = '/^(?![\d-])(?!.*--)[A-Z\d-]+(?<!-)$/';
 
     private string $sku;
 
@@ -63,10 +63,6 @@ final readonly class Sku implements EquatableInterface, Stringable
             throw InvalidProductSkuException::becauseItIsEmpty();
         }
 
-        if (!preg_match(self::REGEX, $sku)) {
-            throw InvalidProductSkuException::becauseItIsInvalidFormat();
-        }
-
         $length = mb_strlen($sku);
 
         if ($length < self::MIN_LENGTH) {
@@ -75,6 +71,10 @@ final readonly class Sku implements EquatableInterface, Stringable
 
         if ($length > self::MAX_LENGTH) {
             throw InvalidProductSkuException::becauseItIsTooLong(self::MAX_LENGTH);
+        }
+
+        if (!preg_match(self::REGEX, $sku)) {
+            throw InvalidProductSkuException::becauseItIsInvalidFormat();
         }
     }
 }

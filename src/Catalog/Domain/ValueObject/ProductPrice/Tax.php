@@ -61,10 +61,12 @@ final readonly class Tax implements EquatableInterface, Stringable
 
     public function calculateFor(int $baseAmount): int
     {
-        return match ($this->type) {
-            TaxTypeEnum::Percentage => (int) round($baseAmount * ($this->value / 100)),
-            TaxTypeEnum::Fixed => (int) round($this->value),
+        $value = match ($this->type) {
+            TaxTypeEnum::Percentage => $baseAmount * ($this->value / 100),
+            TaxTypeEnum::Fixed => $this->value,
         };
+
+        return (int) round($value, 0, PHP_ROUND_HALF_UP);
     }
 
     public function getValue(): float

@@ -14,7 +14,7 @@ abstract readonly class DateTimeValueObject implements EqualsWithDateTimeInterfa
 {
     use ValueObjectEqualityTrait;
 
-    private const string COMPARISON_FORMAT = 'Y-m-d H:i:s.u';
+    public const string COMPARISON_FORMAT = 'Y-m-d H:i:s.u';
     private const string OUTPUT_FORMAT = DateTimeImmutable::ATOM;
 
     private DateTimeImmutable $date;

@@ -12,8 +12,7 @@ use App\Catalog\Domain\ValueObject\ProductPrice\Price;
 use App\Catalog\Domain\ValueObject\ProductPrice\Tax;
 use App\Catalog\Domain\ValueObject\ProductPrice\TaxIncludedFlag;
 use App\Catalog\Domain\ValueObject\ProductPrice\Type;
-use App\Catalog\Domain\ValueObject\ProductPrice\ValidFrom;
-use App\Catalog\Domain\ValueObject\ProductPrice\ValidTo;
+use App\Catalog\Domain\ValueObject\ProductPrice\ValidityPeriod;
 use App\Shared\Domain\Enum\CurrencyEnum;
 use App\Shared\Domain\Enum\TaxTypeEnum;
 use DateTimeImmutable;
@@ -56,8 +55,9 @@ final readonly class ProductPriceMother
                 type: $taxType
             ),
             taxIncluded: TaxIncludedFlag::fromBool($taxIncluded ?? true),
-            validFrom: $validFrom ? ValidFrom::fromDateTime($validFrom) : null,
-            validTo: $validTo ? ValidTo::fromDateTime($validTo) : null,
+            validityPeriod: $validFrom && $validTo
+                ? ValidityPeriod::fromDateTimeRange($validFrom, $validTo)
+                : null,
             id: $id ? Id::fromInt($id) : null,
         );
     }

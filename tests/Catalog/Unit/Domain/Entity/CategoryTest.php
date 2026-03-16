@@ -56,10 +56,10 @@ final class CategoryTest extends TestCase
         self::assertTrue($category->getStatus()->equals($status));
         self::assertCount($translations->count(), $category->getTranslations());
         foreach ($translations as $locale => $translation) {
-            $translation = $category->getTranslations()->get($locale);
-            self::assertNotNull($translation);
-            self::assertSame($translation->name, $translation->name);
-            self::assertSame($translation->description, $translation->description);
+            $actualTranslation = $category->getTranslations()->get($locale);
+            self::assertNotNull($actualTranslation);
+            self::assertSame($translation->name, $actualTranslation->name);
+            self::assertSame($translation->description, $actualTranslation->description);
         }
         self::assertSame(1, $category->getVersion()->value());
         self::assertTrue($category->getCreatedBy()->equals($createdBy));
@@ -128,10 +128,10 @@ final class CategoryTest extends TestCase
         self::assertTrue($category->getStatus()->equals($status));
         self::assertCount($translations->count(), $category->getTranslations());
         foreach ($translations as $locale => $translation) {
-            $translation = $category->getTranslations()->get($locale);
-            self::assertNotNull($translation);
-            self::assertSame($translation->name, $translation->name);
-            self::assertSame($translation->description, $translation->description);
+            $actualTranslation = $category->getTranslations()->get($locale);
+            self::assertNotNull($actualTranslation);
+            self::assertSame($translation->name, $actualTranslation->name);
+            self::assertSame($translation->description, $actualTranslation->description);
         }
         self::assertTrue($category->getUpdatedBy()->equals($adminUlid));
 

@@ -51,5 +51,9 @@ final class SlugTest extends TestCase
         yield 'only spaces' => ['   '];
         yield 'regex mismatch' => ['S_L_U_G'];
         yield 'too long' => [str_repeat('a', Slug::MAX_LENGTH + 1)];
+        yield 'leading-digit' => ['123-slug'];
+        yield 'leading dash' => ['-slug'];
+        yield 'trailing dash' => ['slug-'];
+        yield 'multiple dashes' => ['slug--test'];
     }
 }

@@ -13,7 +13,7 @@ final readonly class Slug implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 
-    public const string REGEX = '/^[a-z\d-]+$/';
+    public const string REGEX = '/^(?![\d-])(?!.*--)[a-z\d-]+(?<!-)$/';
     public const int MAX_LENGTH = 255;
 
     private string $slug;
@@ -62,12 +62,12 @@ final readonly class Slug implements EquatableInterface, Stringable
             throw InvalidCategorySlugException::becauseItIsEmpty();
         }
 
-        if (!preg_match(self::REGEX, $slug)) {
-            throw InvalidCategorySlugException::becauseItDoesNotMatchRegex();
-        }
-
         if (mb_strlen($slug) > self::MAX_LENGTH) {
             throw InvalidCategorySlugException::becauseItIsTooLong(self::MAX_LENGTH);
+        }
+
+        if (!preg_match(self::REGEX, $slug)) {
+            throw InvalidCategorySlugException::becauseItDoesNotMatchRegex();
         }
     }
 }

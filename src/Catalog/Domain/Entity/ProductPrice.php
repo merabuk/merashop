@@ -10,8 +10,7 @@ use App\Catalog\Domain\ValueObject\ProductPrice\Price;
 use App\Catalog\Domain\ValueObject\ProductPrice\Tax;
 use App\Catalog\Domain\ValueObject\ProductPrice\TaxIncludedFlag;
 use App\Catalog\Domain\ValueObject\ProductPrice\Type;
-use App\Catalog\Domain\ValueObject\ProductPrice\ValidFrom;
-use App\Catalog\Domain\ValueObject\ProductPrice\ValidTo;
+use App\Catalog\Domain\ValueObject\ProductPrice\ValidityPeriod;
 use DateTimeImmutable;
 
 class ProductPrice
@@ -24,8 +23,7 @@ class ProductPrice
         private Type $type,
         private Tax $tax,
         private TaxIncludedFlag $taxIncluded,
-        private ?ValidFrom $validFrom = null,
-        private ?ValidTo $validTo = null,
+        private ?ValidityPeriod $validityPeriod = null,
         private readonly ?Id $id = null,
     ) {
         $this->ensureIsValidState();
@@ -48,14 +46,7 @@ class ProductPrice
             return true;
         }
 
-        if ($this->validFrom && $this->validFrom->isAfter($now)) {
-            return false;
-        }
-        if ($this->validTo && $this->validTo->isBefore($now)) {
-            return false;
-        }
-
-        return true;
+        return $this->validityPeriod->contains($now);
     }
 
     public function getPrice(): Price
@@ -78,14 +69,9 @@ class ProductPrice
         return $this->taxIncluded;
     }
 
-    public function getValidFrom(): ?ValidFrom
+    public function getValidityPeriod(): ?ValidityPeriod
     {
-        return $this->validFrom;
-    }
-
-    public function getValidTo(): ?ValidTo
-    {
-        return $this->validTo;
+        return $this->validityPeriod;
     }
 
     public function getId(): ?Id
@@ -98,20 +84,12 @@ class ProductPrice
      */
     private function ensureIsValidState(): void
     {
-        if (false === $this->type->isTimeLimited() && (null !== $this->validFrom || null !== $this->validTo)) {
-            throw ProductPriceStateException::becauseItIsNotTimeLimitedType(['validFrom', 'validTo']);
+        if (false === $this->type->isTimeLimited() && null !== $this->validityPeriod) {
+            throw ProductPriceStateException::becauseItIsNotTimeLimitedType(['validityPeriod']);
         }
 
-        if ($this->type->isTimeLimited() && (null === $this->validFrom || null === $this->validTo)) {
-            throw ProductPriceStateException::becauseItIsTimeLimitedType(['validFrom', 'validTo']);
-        }
-
-        if (
-            null !== $this->validFrom
-            && null !== $this->validTo
-            && $this->validFrom->isAfter($this->validTo)
-        ) {
-            throw ProductPriceStateException::becauseItIsInvalidTimeLimitValues('validFrom', 'validTo');
+        if ($this->type->isTimeLimited() && null === $this->validityPeriod) {
+            throw ProductPriceStateException::becauseItIsTimeLimitedType(['validityPeriod']);
         }
     }
 }

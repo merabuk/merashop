@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\Exception\Product;
 
-use App\Catalog\Domain\Exception\CatalogDomainException;
+use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 
-class ProductPricesEmptyException extends CatalogDomainException
+class ProductPricesEmptyException extends InvalidCatalogValueObjectException
 {
     public static function becauseItIsEmpty(): self
     {

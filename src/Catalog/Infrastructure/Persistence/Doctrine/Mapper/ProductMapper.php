@@ -10,10 +10,15 @@ use App\Catalog\Domain\Entity\ProductImage;
 use App\Catalog\Domain\Entity\ProductPrice;
 use App\Catalog\Domain\Exception\Category\InvalidCategoryIdException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
-use App\Catalog\Domain\Exception\Product\ProductPriceUniqueException;
+use App\Catalog\Domain\Exception\Product\InvalidProductCategoryIdItemException;
+use App\Catalog\Domain\Exception\ProductPrice\ProductPriceStateException;
 use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
+use App\Catalog\Domain\ValueObject\Product\AttributeValueCollection;
+use App\Catalog\Domain\ValueObject\Product\CategoryIdCollection;
 use App\Catalog\Domain\ValueObject\Product\Id as ProductId;
+use App\Catalog\Domain\ValueObject\Product\ImageCollection;
+use App\Catalog\Domain\ValueObject\Product\PriceCollection;
 use App\Catalog\Domain\ValueObject\Product\Sku;
 use App\Catalog\Domain\ValueObject\Product\Status;
 use App\Catalog\Domain\ValueObject\Product\Translations;
@@ -74,7 +79,7 @@ final readonly class ProductMapper implements MapperInterface
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
      * @throws InvalidRelativePathException
-     * @throws ProductPriceUniqueException
+     * @throws ProductPriceStateException
      */
     public function fromDoctrineOrm(object $orm): Product
     {
@@ -89,7 +94,6 @@ final readonly class ProductMapper implements MapperInterface
         $images = $this->mapImagesFromOrmToDomain($orm);
 
         return new Product(
-            id: $productId,
             ulid: ProductUlid::fromString($orm->ulid),
             sku: Sku::fromString($orm->sku),
             status: Status::fromEnum($orm->status),
@@ -97,10 +101,11 @@ final readonly class ProductMapper implements MapperInterface
             version: Version::fromInt($orm->version),
             createdBy: AdminUlid::fromString($orm->createdBy),
             prices: $prices,
-            updatedBy: $orm->updatedBy ? AdminUlid::fromString($orm->updatedBy) : null,
             categoryIds: $categoryIds,
             attributeValues: $attributeValues,
             images: $images,
+            updatedBy: $orm->updatedBy ? AdminUlid::fromString($orm->updatedBy) : null,
+            id: $productId,
         );
     }
 
@@ -126,24 +131,23 @@ final readonly class ProductMapper implements MapperInterface
     }
 
     /**
-     * @return ProductPrice[]
-     *
-     * @throws InvalidCatalogValueObjectException
      * @throws EntityIdMissingException
+     * @throws InvalidCatalogValueObjectException
+     * @throws ProductPriceStateException
      */
-    private function mapPricesFromOrmToDomain(OrmProduct $orm): array
+    private function mapPricesFromOrmToDomain(OrmProduct $orm): PriceCollection
     {
         $prices = [];
         foreach ($orm->prices as $ormPrice) {
             $prices[] = $this->productPriceMapper->toDomain($ormPrice);
         }
 
-        return $prices;
+        return PriceCollection::fromArray($prices);
     }
 
     private function mapPricesFromDomainToOrm(Product $domain, OrmProduct $orm): void
     {
-        $domainPrices = $domain->getPrices();
+        $domainPrices = $domain->getPrices()->all();
         $currentOrmPrices = $orm->prices->toArray();
 
         foreach ($currentOrmPrices as $ormPrice) {
@@ -167,23 +171,22 @@ final readonly class ProductMapper implements MapperInterface
     }
 
     /**
-     * @return CategoryId[]
-     *
      * @throws InvalidCategoryIdException
+     * @throws InvalidProductCategoryIdItemException
      */
-    private function mapCategoriesFromOrmToDomain(OrmProduct $orm): array
+    private function mapCategoriesFromOrmToDomain(OrmProduct $orm): CategoryIdCollection
     {
         $categoryIds = [];
         foreach ($orm->categories as $ormCategory) {
             $categoryIds[] = CategoryId::fromInt($ormCategory->id);
         }
 
-        return $categoryIds;
+        return CategoryIdCollection::fromArray($categoryIds);
     }
 
     private function mapCategoriesFromDomainToOrm(Product $domain, OrmProduct $orm): void
     {
-        $domainCategoryIds = array_map(fn ($id) => $id->value(), $domain->getCategoryIds());
+        $domainCategoryIds = array_map(fn (CategoryId $id) => $id->value(), $domain->getCategoryIds()->all());
 
         $check = array_combine($domainCategoryIds, $domainCategoryIds);
         foreach ($orm->categories as $ormCategory) {
@@ -246,19 +249,17 @@ final readonly class ProductMapper implements MapperInterface
     }
 
     /**
-     * @return ProductAttributeValue[]
-     *
      * @throws InvalidCatalogValueObjectException
      * @throws EntityIdMissingException
      */
-    private function mapAttributesFromOrmToDomain(OrmProduct $orm): array
+    private function mapAttributesFromOrmToDomain(OrmProduct $orm): AttributeValueCollection
     {
         $attributeValues = [];
         foreach ($orm->attributeValues as $ormValue) {
             $attributeValues[] = $this->productAttributeValueMapper->toDomain($ormValue);
         }
 
-        return $attributeValues;
+        return AttributeValueCollection::fromArray($attributeValues);
     }
 
     private function mapAttributesFromDomainToOrm(Product $domain, OrmProduct $orm): void
@@ -268,7 +269,7 @@ final readonly class ProductMapper implements MapperInterface
 
         foreach ($currentOrmValues as $ormValue) {
             $stillExists = array_any(
-                $domainValues,
+                $domainValues->all(),
                 fn (ProductAttributeValue $pav) => $pav->getId()?->value() === $ormValue->id
             );
             if (!$stillExists) {
@@ -297,20 +298,18 @@ final readonly class ProductMapper implements MapperInterface
     }
 
     /**
-     * @return ProductImage[]
-     *
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidRelativePathException
      * @throws EntityIdMissingException
      */
-    private function mapImagesFromOrmToDomain(OrmProduct $orm): array
+    private function mapImagesFromOrmToDomain(OrmProduct $orm): ImageCollection
     {
         $images = [];
         foreach ($orm->images as $ormImage) {
             $images[] = $this->productImageMapper->toDomain($ormImage);
         }
 
-        return $images;
+        return ImageCollection::fromArray($images);
     }
 
     private function mapImagesFromDomainToOrm(Product $domain, OrmProduct $orm): void
@@ -319,7 +318,7 @@ final readonly class ProductMapper implements MapperInterface
         $currentOrmImages = $orm->images->toArray();
 
         foreach ($currentOrmImages as $ormImage) {
-            $stillExists = array_any($domainImages, fn (ProductImage $pi) => $pi->getId()?->value() === $ormImage->id);
+            $stillExists = array_any($domainImages->all(), fn (ProductImage $pi) => $pi->getId()?->value() === $ormImage->id);
             if (!$stillExists) {
                 $orm->images->removeElement($ormImage);
             }

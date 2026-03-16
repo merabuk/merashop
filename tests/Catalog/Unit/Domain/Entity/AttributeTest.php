@@ -38,9 +38,9 @@ final class AttributeTest extends TestCase
         self::assertTrue($attribute->getType()->equals($type));
         self::assertCount($translations->count(), $attribute->getTranslations());
         foreach ($translations as $locale => $translation) {
-            $translation = $attribute->getTranslations()->get($locale);
-            self::assertNotNull($translation);
-            self::assertSame($translation->name, $translation->name);
+            $actualTranslation = $attribute->getTranslations()->get($locale);
+            self::assertNotNull($actualTranslation);
+            self::assertSame($translation->name, $actualTranslation->name);
         }
         self::assertSame(1, $attribute->getVersion()->value());
         self::assertTrue($attribute->getCreatedBy()->equals($adminUlid));
@@ -67,9 +67,9 @@ final class AttributeTest extends TestCase
         self::assertTrue($attribute->getType()->equals($newType));
         self::assertCount($newTranslations->count(), $attribute->getTranslations());
         foreach ($newTranslations as $locale => $translation) {
-            $translation = $attribute->getTranslations()->get($locale);
-            self::assertNotNull($translation);
-            self::assertSame($translation->name, $translation->name);
+            $actualTranslation = $attribute->getTranslations()->get($locale);
+            self::assertNotNull($actualTranslation);
+            self::assertSame($translation->name, $actualTranslation->name);
         }
         self::assertTrue($attribute->getUpdatedBy()?->equals($adminUlid));
     }

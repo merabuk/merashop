@@ -8,13 +8,14 @@ use App\Catalog\Domain\Entity\ProductPrice;
 use App\Catalog\Domain\Enum\ProductPrice\TypeEnum;
 use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceAmountException;
 use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceTaxValueException;
+use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceValidityPeriodException;
+use App\Catalog\Domain\Exception\ProductPrice\ProductPriceStateException;
 use App\Catalog\Domain\Factory\Contract\ProductPriceFactoryInterface;
 use App\Catalog\Domain\ValueObject\ProductPrice\Price;
 use App\Catalog\Domain\ValueObject\ProductPrice\Tax;
 use App\Catalog\Domain\ValueObject\ProductPrice\TaxIncludedFlag;
 use App\Catalog\Domain\ValueObject\ProductPrice\Type;
-use App\Catalog\Domain\ValueObject\ProductPrice\ValidFrom;
-use App\Catalog\Domain\ValueObject\ProductPrice\ValidTo;
+use App\Catalog\Domain\ValueObject\ProductPrice\ValidityPeriod;
 use App\Shared\Domain\Enum\CurrencyEnum;
 use App\Shared\Domain\Enum\TaxTypeEnum;
 use DateTimeImmutable;
@@ -24,6 +25,8 @@ final readonly class ProductPriceFactory implements ProductPriceFactoryInterface
     /**
      * @throws InvalidProductPriceAmountException
      * @throws InvalidProductPriceTaxValueException
+     * @throws InvalidProductPriceValidityPeriodException
+     * @throws ProductPriceStateException
      */
     public function createForTest(
         int $amount,
@@ -40,8 +43,9 @@ final readonly class ProductPriceFactory implements ProductPriceFactoryInterface
             type: Type::fromEnum($type),
             tax: new Tax(value: $taxValue, type: $taxType),
             taxIncluded: TaxIncludedFlag::fromBool($taxIncluded),
-            validFrom: $validFrom ? ValidFrom::fromDateTime($validFrom) : null,
-            validTo: $validTo ? ValidTo::fromDateTime($validTo) : null,
+            validityPeriod: $validFrom && $validTo
+                ? ValidityPeriod::fromDateTimeRange($validFrom, $validTo)
+                : null,
         );
     }
 }

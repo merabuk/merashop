@@ -7,6 +7,7 @@ namespace App\Catalog\Application\Service;
 use App\Catalog\Domain\Entity\Product;
 use App\Catalog\Domain\Entity\ProductImage;
 use App\Catalog\Domain\Entity\TemporaryImage;
+use App\Catalog\Domain\Exception\Product\InvalidProductImageItemException;
 use App\Catalog\Domain\Exception\ProductImage\InvalidProductImageUlidException;
 use App\Catalog\Domain\Exception\TemporaryImage\InvalidTemporaryImageUlidException;
 use App\Catalog\Domain\Repository\TemporaryImageReadRepositoryInterface;
@@ -43,6 +44,7 @@ final readonly class ProductMediaManager implements ProductMediaManagerInterface
      * @param TemporaryImageUlid[] $temporaryImagesUlids
      *
      * @throws FileStorageException
+     * @throws InvalidProductImageItemException
      * @throws InvalidProductImageUlidException
      */
     public function activateImagesForProduct(Product $product, array $temporaryImagesUlids): void
@@ -55,7 +57,9 @@ final readonly class ProductMediaManager implements ProductMediaManagerInterface
 
         $orderMap = array_flip(array_map(fn (TemporaryImageUlid $u) => $u->value(), $temporaryImagesUlids));
 
-        usort($temporaryImages, fn (TemporaryImage $a, TemporaryImage $b) => ($orderMap[$a->getUlid()->value()] ?? 999) <=> ($orderMap[$b->getUlid()->value()] ?? 999)
+        usort(
+            $temporaryImages,
+            fn (TemporaryImage $a, TemporaryImage $b) => ($orderMap[$a->getUlid()->value()] ?? 999) <=> ($orderMap[$b->getUlid()->value()] ?? 999)
         );
 
         foreach ($temporaryImages as $index => $tempImage) {

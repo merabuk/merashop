@@ -17,6 +17,7 @@ final readonly class ArrayValue implements AttributeValueInterface
     public function __construct(
         private array $values,
     ) {
+        // TODO: decide which value type use instead of mixed. Maybe only string?
     }
 
     /**
@@ -45,6 +46,10 @@ final readonly class ArrayValue implements AttributeValueInterface
      */
     protected function getPrimitiveValue(): string
     {
-        return json_encode($this->values, JSON_THROW_ON_ERROR);
+        $values = $this->values;
+
+        sort($values);
+
+        return json_encode($values, JSON_THROW_ON_ERROR);
     }
 }

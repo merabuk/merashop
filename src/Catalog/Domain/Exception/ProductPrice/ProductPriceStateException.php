@@ -30,13 +30,6 @@ final class ProductPriceStateException extends CatalogDomainException
         ));
     }
 
-    public static function becauseItIsInvalidTimeLimitValues(
-        string $fromField,
-        string $toField,
-    ): self {
-        return new self(sprintf('Property %s must be before than %s', $fromField, $toField));
-    }
-
     public function getErrorCode(): string
     {
         return 'PRODUCT_PRICE_STATE_EXCEPTION';

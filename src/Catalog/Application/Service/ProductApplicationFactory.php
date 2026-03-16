@@ -15,12 +15,14 @@ use App\Catalog\Domain\Entity\ProductPrice;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
 use App\Catalog\Domain\Exception\Category\InvalidCategoryIdException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
-use App\Catalog\Domain\Exception\Product\ProductPricesEmptyException;
-use App\Catalog\Domain\Exception\Product\ProductPriceUniqueException;
 use App\Catalog\Domain\Exception\ProductAttribute\UnsupportedAttributeTypeException;
+use App\Catalog\Domain\Exception\ProductPrice\ProductPriceStateException;
 use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
 use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
+use App\Catalog\Domain\ValueObject\Product\AttributeValueCollection;
+use App\Catalog\Domain\ValueObject\Product\CategoryIdCollection;
+use App\Catalog\Domain\ValueObject\Product\PriceCollection;
 use App\Catalog\Domain\ValueObject\Product\Sku;
 use App\Catalog\Domain\ValueObject\Product\Status;
 use App\Catalog\Domain\ValueObject\Product\Translations;
@@ -29,8 +31,7 @@ use App\Catalog\Domain\ValueObject\ProductPrice\Price;
 use App\Catalog\Domain\ValueObject\ProductPrice\Tax;
 use App\Catalog\Domain\ValueObject\ProductPrice\TaxIncludedFlag;
 use App\Catalog\Domain\ValueObject\ProductPrice\Type;
-use App\Catalog\Domain\ValueObject\ProductPrice\ValidFrom;
-use App\Catalog\Domain\ValueObject\ProductPrice\ValidTo;
+use App\Catalog\Domain\ValueObject\ProductPrice\ValidityPeriod;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 
 final readonly class ProductApplicationFactory implements ProductApplicationFactoryInterface
@@ -62,8 +63,7 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
     /**
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
-     * @throws ProductPricesEmptyException
-     * @throws ProductPriceUniqueException
+     * @throws ProductPriceStateException
      * @throws UnsupportedAttributeTypeException
      */
     public function createFromCommand(CreateProductCommand $command, string $newUlid): Product
@@ -75,7 +75,7 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
             translations: $this->mapTranslations($command->translations),
             prices: $this->mapPrices($command->prices),
             createdBy: AdminUlid::fromString($command->adminUlid),
-            categoryIds: $this->mapCategoriesIds($command->categoryIds),
+            categoryIds: CategoryIdCollection::fromArray($this->mapCategoriesIds($command->categoryIds)),
             attributeValues: $this->mapAttributeValues($command->attributeValues),
         );
     }
@@ -83,6 +83,8 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
     /**
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
+     * @throws ProductPriceStateException
+     * @throws UnsupportedAttributeTypeException
      */
     public function updateFromCommand(Product $product, UpdateProductCommand $command): void
     {
@@ -92,7 +94,7 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
             translations: $this->mapTranslations($command->translations),
             updatedBy: AdminUlid::fromString($command->adminUlid),
             prices: $this->mapPrices($command->prices),
-            categoryIds: $this->mapCategoriesIds($command->categoryIds),
+            categoryIds: CategoryIdCollection::fromArray($this->mapCategoriesIds($command->categoryIds)),
             attributeValues: $this->mapAttributeValues($command->attributeValues),
         );
     }
@@ -114,35 +116,35 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
     /**
      * @param ProductPriceData[] $prices
      *
-     * @return ProductPrice[]
-     *
      * @throws InvalidCatalogValueObjectException
+     * @throws ProductPriceStateException
      */
-    private function mapPrices(array $prices): array
+    private function mapPrices(array $prices): PriceCollection
     {
-        return array_map(fn (ProductPriceData $p) => new ProductPrice(
+        return PriceCollection::fromArray(array_map(fn (ProductPriceData $p) => new ProductPrice(
             price: Price::fromPrimitives($p->amount, $p->currency),
             type: Type::fromString($p->type),
             tax: Tax::fromPrimitives($p->taxValue, $p->taxType),
             taxIncluded: TaxIncludedFlag::fromBool($p->taxIncluded),
-            validFrom: $p->validFrom ? ValidFrom::fromString($p->validFrom) : null,
-            validTo: $p->validTo ? ValidTo::fromString($p->validTo) : null,
-        ), $prices);
+            validityPeriod: $p->validFrom && $p->validTo
+                ? ValidityPeriod::fromStrings(from: $p->validFrom, to: $p->validTo)
+                : null,
+        ), $prices));
     }
 
     /**
      * @param ProductAttributeValueData[] $values
      *
-     * @return ProductAttributeValue[]
-     *
      * @throws InvalidCatalogValueObjectException
      * @throws UnsupportedAttributeTypeException
      */
-    private function mapAttributeValues(array $values): array
+    private function mapAttributeValues(array $values): AttributeValueCollection
     {
-        return array_map(fn (ProductAttributeValueData $v) => ProductAttributeValue::createWithRawValue(
-            attributeId: AttributeId::fromInt($v->attributeId),
-            value: $v->value
-        ), $values);
+        return AttributeValueCollection::fromArray(
+            array_map(fn (ProductAttributeValueData $v) => ProductAttributeValue::createWithRawValue(
+                attributeId: AttributeId::fromInt($v->attributeId),
+                value: $v->value
+            ), $values)
+        );
     }
 }
