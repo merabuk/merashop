@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Catalog\Unit\Domain\ValueObject\Attribute;
+namespace App\Tests\Catalog\Unit\Domain\ValueObject\Product;
 
-use App\Catalog\Domain\Exception\Attribute\InvalidAttributeNameException;
-use App\Catalog\Domain\ValueObject\Attribute\Translation;
-use App\Catalog\Domain\ValueObject\Attribute\Translations;
+use App\Catalog\Domain\Exception\Product\InvalidProductDescriptionException;
+use App\Catalog\Domain\Exception\Product\InvalidProductNameException;
+use App\Catalog\Domain\ValueObject\Product\Translation;
+use App\Catalog\Domain\ValueObject\Product\Translations;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\TranslationsValueObjectTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -21,13 +22,14 @@ final class TranslationsTest extends TestCase
         int $expectedCount,
         string $expectedLocale,
         string $expectedName,
+        string $expectedDescription,
     ): void {
         $vo = Translations::fromArray($data);
 
         self::assertCount($expectedCount, $vo);
         $translationByLocale = $vo->get($expectedLocale);
-        self::assertNotNull($translationByLocale);
         self::assertSame($expectedName, $translationByLocale->name);
+        self::assertSame($expectedDescription, $translationByLocale->description);
     }
 
     public static function validTranslationsProvider(): iterable
@@ -39,12 +41,14 @@ final class TranslationsTest extends TestCase
             'expectedCount' => 2,
             'expectedLocale' => 'uk',
             'expectedName' => $data['uk']['name'],
+            'expectedDescription' => $data['uk']['description'],
         ];
         yield 'trimmed' => [
-            'data' => ['en' => ['name' => '  Color  ']],
+            'data' => ['en' => ['name' => '  Cup  ', 'description' => '  The best teacup  ']],
             'expectedCount' => 1,
             'expectedLocale' => 'en',
-            'expectedName' => 'Color',
+            'expectedName' => 'Cup',
+            'expectedDescription' => 'The best teacup',
         ];
     }
 
@@ -71,7 +75,7 @@ final class TranslationsTest extends TestCase
     #[DataProvider('invalidNameProvider')]
     public function testThrowsExceptionOnInvalidNameInput(array $invalidValue): void
     {
-        $this->expectException(InvalidAttributeNameException::class);
+        $this->expectException(InvalidProductNameException::class);
         Translations::fromArray($invalidValue);
     }
 
@@ -83,11 +87,24 @@ final class TranslationsTest extends TestCase
         yield 'too long' => [['en' => ['name' => str_repeat('a', Translation::NAME_MAX_LENGTH + 1)]]];
     }
 
-    private static function getValidTranslations(): array
+    #[DataProvider('invalidDescriptionProvider')]
+    public function testThrowsExceptionOnInvalidDescriptionInput(array $invalidValue): void
+    {
+        $this->expectException(InvalidProductDescriptionException::class);
+        Translations::fromArray($invalidValue);
+    }
+
+    public static function invalidDescriptionProvider(): iterable
+    {
+        yield 'only spaces' => [['en' => ['name' => 'Test', 'description' => '   ']]];
+        yield 'too long' => [['en' => ['name' => 'Test', 'description' => str_repeat('a', Translation::DESCRIPTION_MAX_LENGTH + 1)]]];
+    }
+
+    protected static function getValidTranslations(): array
     {
         return [
-            'en' => ['name' => 'Color'],
-            'uk' => ['name' => 'Колір'],
+            'en' => ['name' => 'Cup', 'description' => 'The best teacup'],
+            'uk' => ['name' => 'Чашка', 'description' => 'Найкраща чашка до чаю'],
         ];
     }
 }

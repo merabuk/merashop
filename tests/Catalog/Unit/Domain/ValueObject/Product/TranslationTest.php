@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Catalog\Unit\Domain\ValueObject\Category;
+namespace App\Tests\Catalog\Unit\Domain\ValueObject\Product;
 
-use App\Catalog\Domain\Exception\Category\InvalidCategoryDescriptionException;
-use App\Catalog\Domain\Exception\Category\InvalidCategoryNameException;
-use App\Catalog\Domain\ValueObject\Category\Translation;
+use App\Catalog\Domain\Exception\Product\InvalidProductDescriptionException;
+use App\Catalog\Domain\Exception\Product\InvalidProductNameException;
+use App\Catalog\Domain\ValueObject\Product\Translation;
 use App\Shared\Domain\Enum\LocaleEnum;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -28,12 +28,11 @@ final class TranslationTest extends TestCase
     {
         yield 'simple' => [
             'locale' => LocaleEnum::En->value,
-            'name' => 'Electronics',
-            'description' => 'All electronic devices',
-        ];
+            'name' => 'Cup',
+            'description' => 'The best teacup'];
         yield 'with null description' => [
             'locale' => LocaleEnum::En->value,
-            'name' => 'Electronics',
+            'name' => 'Mug',
             'description' => null,
         ];
     }
@@ -47,7 +46,7 @@ final class TranslationTest extends TestCase
     #[DataProvider('invalidNameProvider')]
     public function testThrowsExceptionOnInvalidName(string $invalidValue): void
     {
-        $this->expectException(InvalidCategoryNameException::class);
+        $this->expectException(InvalidProductNameException::class);
         new Translation(locale: LocaleEnum::En->value, name: $invalidValue);
     }
 
@@ -61,7 +60,7 @@ final class TranslationTest extends TestCase
     #[DataProvider('invalidDescriptionProvider')]
     public function testThrowsExceptionOnInvalidDescription(string $invalidValue): void
     {
-        $this->expectException(InvalidCategoryDescriptionException::class);
+        $this->expectException(InvalidProductDescriptionException::class);
         new Translation(locale: LocaleEnum::En->value, name: 'Name', description: $invalidValue);
     }
 
