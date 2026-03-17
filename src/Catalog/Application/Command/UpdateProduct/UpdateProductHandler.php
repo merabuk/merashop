@@ -61,7 +61,7 @@ readonly class UpdateProductHandler implements CommandHandlerInterface
                 newSku: $newSku,
                 categoryIds: $categoryIds,
                 attributeIds: $attributeValues,
-                temporaryImagesUlids: $temporaryImagesUlids,
+                temporaryImageUlids: $temporaryImagesUlids,
             );
 
             $this->productFactory->updateFromCommand($product, $command);

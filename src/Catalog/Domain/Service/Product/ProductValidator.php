@@ -33,7 +33,7 @@ final readonly class ProductValidator implements ProductValidatorInterface
     /**
      * @param CategoryId[]         $categoryIds
      * @param AttributeId[]        $attributeIds
-     * @param TemporaryImageUlid[] $temporaryImagesUlids
+     * @param TemporaryImageUlid[] $temporaryImageUlids
      *
      * @throws ProductAlreadyExistsException
      * @throws OneOfCategoriesNotFoundException
@@ -44,7 +44,7 @@ final readonly class ProductValidator implements ProductValidatorInterface
         Sku $sku,
         array $categoryIds,
         array $attributeIds,
-        array $temporaryImagesUlids,
+        array $temporaryImageUlids,
     ): void {
         if ($this->productReadRepository->existsBySku($sku)) {
             throw ProductAlreadyExistsException::becauseSkuAlreadyExists($sku->value());
@@ -53,7 +53,7 @@ final readonly class ProductValidator implements ProductValidatorInterface
         $this->categoryReadRepository->assertAllExistByIds($categoryIds);
         $this->attributeReadRepository->assertAllExistByIds($attributeIds);
 
-        $this->temporaryImageReadRepository->assertAllExistByUlidAndContext($temporaryImagesUlids, ContextEnum::ProductMain);
+        $this->temporaryImageReadRepository->assertAllExistByUlidAndContext($temporaryImageUlids, ContextEnum::ProductMain);
     }
 
     public function validateUpdate(
@@ -62,7 +62,7 @@ final readonly class ProductValidator implements ProductValidatorInterface
         Sku $newSku,
         array $categoryIds,
         array $attributeIds,
-        array $temporaryImagesUlids,
+        array $temporaryImageUlids,
     ): void {
         if ($product->getVersion()->value() !== $version) {
             throw new ConcurrencyException();
@@ -75,6 +75,6 @@ final readonly class ProductValidator implements ProductValidatorInterface
         $this->categoryReadRepository->assertAllExistByIds($categoryIds);
         $this->attributeReadRepository->assertAllExistByIds($attributeIds);
 
-        $this->temporaryImageReadRepository->assertAllExistByUlidAndContext($temporaryImagesUlids, ContextEnum::ProductMain);
+        $this->temporaryImageReadRepository->assertAllExistByUlidAndContext($temporaryImageUlids, ContextEnum::ProductMain);
     }
 }

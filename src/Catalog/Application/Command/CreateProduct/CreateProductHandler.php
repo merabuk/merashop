@@ -51,7 +51,7 @@ readonly class CreateProductHandler implements CommandHandlerInterface
                 sku: $sku,
                 categoryIds: $categoryIds,
                 attributeIds: $attributeIds,
-                temporaryImagesUlids: $temporaryImagesUlids
+                temporaryImageUlids: $temporaryImagesUlids
             );
 
             $ulid = $this->ulidGenerator->next();

@@ -20,7 +20,7 @@ interface ProductValidatorInterface
     /**
      * @param CategoryId[]         $categoryIds
      * @param AttributeId[]        $attributeIds
-     * @param TemporaryImageUlid[] $temporaryImagesUlids
+     * @param TemporaryImageUlid[] $temporaryImageUlids
      *
      * @throws ProductAlreadyExistsException
      * @throws OneOfCategoriesNotFoundException
@@ -31,13 +31,13 @@ interface ProductValidatorInterface
         Sku $sku,
         array $categoryIds,
         array $attributeIds,
-        array $temporaryImagesUlids,
+        array $temporaryImageUlids,
     ): void;
 
     /**
      * @param CategoryId[]         $categoryIds
      * @param AttributeId[]        $attributeIds
-     * @param TemporaryImageUlid[] $temporaryImagesUlids
+     * @param TemporaryImageUlid[] $temporaryImageUlids
      *
      * @throws ConcurrencyException
      * @throws ProductAlreadyExistsException
@@ -51,6 +51,6 @@ interface ProductValidatorInterface
         Sku $newSku,
         array $categoryIds,
         array $attributeIds,
-        array $temporaryImagesUlids,
+        array $temporaryImageUlids,
     ): void;
 }
