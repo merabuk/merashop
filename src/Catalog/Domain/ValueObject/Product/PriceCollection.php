@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Catalog\Domain\ValueObject\Product;
 
 use App\Catalog\Domain\Entity\ProductPrice;
+use App\Catalog\Domain\Enum\ProductPrice\TypeEnum;
 use App\Catalog\Domain\Exception\Product\InvalidProductPriceItemException;
 use App\Catalog\Domain\Exception\Product\ProductPricesEmptyException;
 use App\Catalog\Domain\Exception\Product\ProductPriceUniqueException;
@@ -47,6 +48,13 @@ final readonly class PriceCollection extends AbstractCollection
     public static function fromArray(array $items): self
     {
         return new self($items);
+    }
+
+    public function getCurrencyAndType(CurrencyEnum $currency, TypeEnum $type): ?ProductPrice
+    {
+        return array_find($this->items, fn (ProductPrice $p) => $p->getPrice()->getCurrency() === $currency
+            && $p->getType()->value() === $type
+        );
     }
 
     public function findActiveForCurrency(CurrencyEnum $currency, DateTimeImmutable $now): ?ProductPrice

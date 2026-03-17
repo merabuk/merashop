@@ -6,6 +6,7 @@ namespace App\Catalog\Domain\ValueObject\Product;
 
 use App\Catalog\Domain\Entity\ProductImage;
 use App\Catalog\Domain\Exception\Product\InvalidProductImageItemException;
+use App\Catalog\Domain\ValueObject\ProductImage\Ulid as ProductImageUlid;
 use App\Shared\Domain\Exception\ValueObject\InvalidAbstractCollectionItemException;
 use App\Shared\Domain\ValueObject\AbstractCollection;
 
@@ -37,6 +38,13 @@ final readonly class ImageCollection extends AbstractCollection
     public static function fromArray(array $items): self
     {
         return new self($items);
+    }
+
+    public function getByUlid(string|ProductImageUlid $ulid): ?ProductImage
+    {
+        $ulidValue = $ulid instanceof ProductImageUlid ? $ulid->value() : $ulid;
+
+        return array_find($this->items, fn (ProductImage $item) => $item->getUlid()->value() === $ulidValue);
     }
 
     /**

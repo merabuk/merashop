@@ -86,4 +86,9 @@ class OrmCategory
         $this->translations = new ArrayCollection();
         $this->products = new ArrayCollection();
     }
+
+    public function setId(?int $value): void
+    {
+        $this->id = $value;
+    }
 }

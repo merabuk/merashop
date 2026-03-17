@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace App\Catalog\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\Catalog\Domain\Entity\Product;
-use App\Catalog\Domain\Entity\ProductAttributeValue;
-use App\Catalog\Domain\Entity\ProductImage;
-use App\Catalog\Domain\Entity\ProductPrice;
 use App\Catalog\Domain\Exception\Category\InvalidCategoryIdException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Exception\Product\InvalidProductCategoryIdItemException;
@@ -126,7 +123,7 @@ final readonly class ProductMapper implements MapperInterface
         $this->mapPricesFromDomainToOrm($domain, $orm);
         $this->mapCategoriesFromDomainToOrm($domain, $orm);
         $this->mapTranslationsFromDomainToOrm($domain, $orm);
-        $this->mapAttributesFromDomainToOrm($domain, $orm);
+        $this->mapAttributeValuesFromDomainToOrm($domain, $orm);
         $this->mapImagesFromDomainToOrm($domain, $orm);
     }
 
@@ -147,21 +144,24 @@ final readonly class ProductMapper implements MapperInterface
 
     private function mapPricesFromDomainToOrm(Product $domain, OrmProduct $orm): void
     {
-        $domainPrices = $domain->getPrices()->all();
+        $domainPrices = $domain->getPrices();
         $currentOrmPrices = $orm->prices->toArray();
 
         foreach ($currentOrmPrices as $ormPrice) {
-            $stillExists = array_any($domainPrices, fn (ProductPrice $dp) => $dp->getId()?->value() === $ormPrice->id);
+            $stillExists = $domainPrices->getCurrencyAndType($ormPrice->currency, $ormPrice->type);
+
             if (!$stillExists) {
                 $orm->prices->removeElement($ormPrice);
             }
         }
 
         foreach ($domainPrices as $dp) {
-            $ormProductPrice = array_find($currentOrmPrices, fn (OrmProductPrice $p) => $p->id === $dp->getId()?->value()
-            ) ?? new OrmProductPrice();
+            $ormProductPrice = array_find($currentOrmPrices, fn (OrmProductPrice $p) => $p->type === $dp->getType()->value()
+                && $p->currency === $dp->getPrice()->getCurrency()
+            );
 
-            if (null === $ormProductPrice->id) {
+            if (!$ormProductPrice) {
+                $ormProductPrice = new OrmProductPrice();
                 $ormProductPrice->product = $orm;
                 $orm->prices->add($ormProductPrice);
             }
@@ -262,16 +262,13 @@ final readonly class ProductMapper implements MapperInterface
         return AttributeValueCollection::fromArray($attributeValues);
     }
 
-    private function mapAttributesFromDomainToOrm(Product $domain, OrmProduct $orm): void
+    private function mapAttributeValuesFromDomainToOrm(Product $domain, OrmProduct $orm): void
     {
         $domainValues = $domain->getAttributeValues();
         $currentOrmValues = $orm->attributeValues->toArray();
 
         foreach ($currentOrmValues as $ormValue) {
-            $stillExists = array_any(
-                $domainValues->all(),
-                fn (ProductAttributeValue $pav) => $pav->getId()?->value() === $ormValue->id
-            );
+            $stillExists = $domainValues->getByAttributeId($ormValue->attribute->id);
             if (!$stillExists) {
                 $orm->attributeValues->removeElement($ormValue);
             }
@@ -280,10 +277,11 @@ final readonly class ProductMapper implements MapperInterface
         foreach ($domainValues as $dv) {
             $ormValue = array_find(
                 $currentOrmValues,
-                fn (OrmProductAttributeValue $p) => $p->id === $dv->getId()?->value()
-            ) ?? new OrmProductAttributeValue();
+                fn (OrmProductAttributeValue $p) => $p->attribute->id === $dv->getAttributeId()->value()
+            );
 
-            if (null === $ormValue->id) {
+            if (!$ormValue) {
+                $ormValue = new OrmProductAttributeValue();
                 $ormValue->product = $orm;
                 $ormValue->attribute = $this->referenceProvider->getReference(
                     className: OrmAttribute::class,
@@ -318,7 +316,7 @@ final readonly class ProductMapper implements MapperInterface
         $currentOrmImages = $orm->images->toArray();
 
         foreach ($currentOrmImages as $ormImage) {
-            $stillExists = array_any($domainImages->all(), fn (ProductImage $pi) => $pi->getId()?->value() === $ormImage->id);
+            $stillExists = $domainImages->getByUlid($ormImage->ulid);
             if (!$stillExists) {
                 $orm->images->removeElement($ormImage);
             }

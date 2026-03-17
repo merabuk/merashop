@@ -39,6 +39,13 @@ final readonly class CategoryIdCollection extends AbstractCollection
         return new self($items);
     }
 
+    public function getByCategoryId(int|CategoryId $categoryId): ?CategoryId
+    {
+        $idValue = $categoryId instanceof CategoryId ? $categoryId->value() : $categoryId;
+
+        return array_find($this->items, fn (CategoryId $item) => $item->value() === $idValue);
+    }
+
     protected function getExpectedClass(): string
     {
         return CategoryId::class;

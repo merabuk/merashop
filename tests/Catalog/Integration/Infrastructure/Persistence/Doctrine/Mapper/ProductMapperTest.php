@@ -1,0 +1,348 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\Catalog\Integration\Infrastructure\Persistence\Doctrine\Mapper;
+
+use App\Catalog\Domain\Entity\Product;
+use App\Catalog\Domain\Enum\Attribute\TypeEnum as AttributeTypeEnum;
+use App\Catalog\Domain\Enum\Product\StatusEnum;
+use App\Catalog\Domain\Enum\ProductPrice\TypeEnum as ProductPriceTypeEnum;
+use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
+use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttribute;
+use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmCategory;
+use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProduct;
+use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductAttributeValue;
+use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductImage;
+use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductPrice;
+use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductTranslation;
+use App\Catalog\Infrastructure\Persistence\Doctrine\Mapper\ProductMapper;
+use App\Shared\Domain\Enum\CurrencyEnum;
+use App\Shared\Domain\Enum\TaxTypeEnum;
+use App\Tests\Catalog\Support\ProductAttributeValueMother;
+use App\Tests\Catalog\Support\ProductImageMother;
+use App\Tests\Catalog\Support\ProductMother;
+use App\Tests\Catalog\Support\ProductPriceMother;
+use App\Tests\Catalog\Support\Traits\AttributeFactoryTrait;
+use App\Tests\Catalog\Support\Traits\CatalogEntityManagerTrait;
+use App\Tests\Catalog\Support\Traits\CategoryFactoryTrait;
+use App\Tests\Catalog\Support\Traits\TemporaryImageFactoryTrait;
+use App\Tests\Shared\Support\Traits\ValueObjectAssertionTrait;
+use DateTimeImmutable;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+
+final class ProductMapperTest extends KernelTestCase
+{
+    use AttributeFactoryTrait;
+    use CategoryFactoryTrait;
+    use CatalogEntityManagerTrait;
+    use TemporaryImageFactoryTrait;
+    use ValueObjectAssertionTrait;
+
+    private EntityManagerInterface $em;
+    private ProductMapper $mapper;
+
+    protected function setUp(): void
+    {
+        self::bootKernel();
+
+        $this->em = $this->getCatalogEntityManager();
+        $this->mapper = self::getContainer()->get(ProductMapper::class);
+    }
+
+    public function testItSuccessfullyPerformsRoundTrip(): void
+    {
+        $prices = [];
+        $currencies = CurrencyEnum::cases();
+        $productPriceTypes = ProductPriceTypeEnum::cases();
+        foreach ($currencies as $currency) {
+            foreach ($productPriceTypes as $type) {
+                $isTimeLimited = ProductPriceTypeEnum::Sale === $type;
+                $prices[] = ProductPriceMother::createWithData(
+                    currency: $currency,
+                    type: $type,
+                    validFrom: $isTimeLimited ? new DateTimeImmutable('2024-01-01 00:00:00') : null,
+                    validTo: $isTimeLimited ? new DateTimeImmutable('2024-01-31 23:59:59') : null,
+                );
+            }
+        }
+
+        $category1 = $this->getCategoryFixture()->create();
+        $category2 = $this->getCategoryFixture()->create();
+        $categoryIds = [$category1->getId(), $category2->getId()];
+
+        $attribute1 = $this->getAttributeFixture()->create(type: AttributeTypeEnum::String);
+        $attribute2 = $this->getAttributeFixture()->create(type: AttributeTypeEnum::Int);
+        $attribute3 = $this->getAttributeFixture()->create(type: AttributeTypeEnum::Boolean);
+        $attribute4 = $this->getAttributeFixture()->create(type: AttributeTypeEnum::Select);
+
+        $attributeValues = [
+            ProductAttributeValueMother::createWithData(
+                attributeId: $attribute1->getId()->value(),
+                value: 'value1'
+            ),
+            ProductAttributeValueMother::createWithData(
+                attributeId: $attribute2->getId()->value(),
+                value: 123
+            ),
+            ProductAttributeValueMother::createWithData(
+                attributeId: $attribute3->getId()->value(),
+                value: true
+            ),
+            ProductAttributeValueMother::createWithData(
+                attributeId: $attribute4->getId()->value(),
+                value: ['option1', 'option2']
+            ),
+        ];
+
+        $temporaryImage1 = $this->getTemporaryImageFixture()->create();
+        $temporaryImage2 = $this->getTemporaryImageFixture()->create();
+
+        $images = [
+            ProductImageMother::createWithData(
+                ulid: $temporaryImage1->getUlid()->value(),
+                path: $temporaryImage1->getPath()->value(),
+                sortOrder: 1,
+                isMain: true
+            ),
+            ProductImageMother::createWithData(
+                ulid: $temporaryImage2->getUlid()->value(),
+                path: $temporaryImage2->getPath()->value(),
+                sortOrder: 2,
+                isMain: false
+            ),
+        ];
+
+        $domainProduct = ProductMother::createWithData(
+            prices: $prices,
+            categoryIds: $categoryIds,
+            attributeValues: $attributeValues,
+            images: $images,
+        );
+
+        $ormProduct = $this->mapper->toDoctrineOrm($domainProduct);
+
+        self::assertNull($ormProduct->id);
+        self::assertSame($domainProduct->getUlid()->value(), $ormProduct->ulid);
+        self::assertSame($domainProduct->getSku()->value(), $ormProduct->sku);
+        self::assertSame($domainProduct->getStatus()->value(), $ormProduct->status);
+        $this->assertOrmTranslationsMatch($domainProduct, $ormProduct);
+        self::assertSame($domainProduct->getVersion()->value(), $ormProduct->version);
+        self::assertSame($domainProduct->getCreatedBy()->value(), $ormProduct->createdBy);
+        $this->assertOrmPricesMatch($domainProduct, $ormProduct);
+        $this->assertOrmCategoriesMatch($domainProduct, $ormProduct);
+        $this->assertOrmAttributeValuesMatch($domainProduct, $ormProduct);
+        $this->assertOrmImagesMatch($domainProduct, $ormProduct);
+        self::assertSame($domainProduct->getUpdatedBy()?->value(), $ormProduct->updatedBy);
+
+        $this->em->persist($ormProduct);
+        $this->em->flush();
+
+        $generatedId = $ormProduct->id;
+        self::assertNotNull($generatedId, 'The ID must be generated by the database');
+
+        $this->em->clear();
+
+        $loadedOrm = $this->em->find(OrmProduct::class, $generatedId);
+        self::assertNotNull($loadedOrm);
+
+        $restoredDomain = $this->mapper->fromDoctrineOrm($loadedOrm);
+
+        self::assertSame($generatedId, $restoredDomain->getId()?->value());
+        self::assertTrue($domainProduct->getUlid()->equals($restoredDomain->getUlid()));
+        self::assertTrue($domainProduct->getSku()->equals($restoredDomain->getSku()));
+        self::assertTrue($domainProduct->getStatus()->equals($restoredDomain->getStatus()));
+        self::assertTrue($domainProduct->getTranslations()->equals($restoredDomain->getTranslations()));
+        self::assertTrue($domainProduct->getVersion()->equals($restoredDomain->getVersion()));
+        self::assertTrue($domainProduct->getCreatedBy()->equals($restoredDomain->getCreatedBy()));
+        foreach ($domainProduct->getPrices() as $domainPrice) {
+            $restoredPrice = $restoredDomain->getPrices()->getCurrencyAndType(
+                currency: $domainPrice->getPrice()->getCurrency(),
+                type: $domainPrice->getType()->value()
+            );
+            self::assertNotNull($restoredPrice);
+            self::assertNotNull($restoredDomain->getId());
+            self::assertTrue($domainPrice->getPrice()->equals($restoredPrice->getPrice()));
+            self::assertTrue($domainPrice->getTax()->equals($restoredPrice->getTax()));
+            self::assertTrue($domainPrice->getTaxIncluded()->equals($restoredPrice->getTaxIncluded()));
+            $this->assertVoEqualsOrNull($domainPrice->getValidityPeriod(), $restoredPrice->getValidityPeriod());
+        }
+        foreach ($domainProduct->getCategoryIds() as $domainCategoryId) {
+            $restoredCategoryId = $restoredDomain->getCategoryIds()->getByCategoryId($domainCategoryId);
+            self::assertNotNull($restoredCategoryId);
+        }
+        foreach ($domainProduct->getAttributeValues() as $domainAttributeValue) {
+            $restoredAttributeValue = $restoredDomain->getAttributeValues()->getByAttributeId($domainAttributeValue->getAttributeId());
+            self::assertNotNull($restoredAttributeValue);
+            self::assertNotNull($restoredDomain->getId());
+            self::assertTrue($domainAttributeValue->getValue()->equals($restoredAttributeValue->getValue()));
+        }
+        foreach ($domainProduct->getImages() as $domainImage) {
+            $restoredImage = $restoredDomain->getImages()->getByUlid($domainImage->getUlid());
+            self::assertNotNull($restoredImage);
+            self::assertNotNull($restoredDomain->getId());
+            self::assertTrue($domainImage->getPath()->equals($restoredImage->getPath()));
+            self::assertTrue($domainImage->getSortOrder()->equals($restoredImage->getSortOrder()));
+            self::assertTrue($domainImage->isMain()->equals($restoredImage->isMain()));
+        }
+        $this->assertVoEqualsOrNull($domainProduct->getUpdatedBy(), $restoredDomain->getUpdatedBy());
+    }
+
+    public function testItUpdatesExistingOrmEntity(): void
+    {
+        $domainProduct = ProductMother::createWithData(
+            sku: 'NEW-TEST-SKU',
+            status: StatusEnum::Active,
+            translations: ['en' => ['name' => 'New name', 'description' => 'New description']],
+            prices: [ProductPriceMother::createWithData(
+                amount: 2000,
+                currency: CurrencyEnum::USD,
+                type: ProductPriceTypeEnum::Sale,
+                taxValue: 20,
+                taxType: TaxTypeEnum::Fixed,
+                taxIncluded: true,
+                validFrom: new DateTimeImmutable('2024-01-01 00:00:00'),
+                validTo: new DateTimeImmutable('2024-01-31 23:59:59'),
+            )],
+            updatedByUlid: ProductMother::DEFAULT_ADMIN_ULID,
+            categoryIds: [CategoryId::fromInt(123)],
+            attributeValues: [ProductAttributeValueMother::createWithData(
+                attributeId: 456,
+                value: 'new_value'
+            )],
+            images: [ProductImageMother::createWithData()]
+        );
+
+        $ormProduct = new OrmProduct();
+        $ormProduct->sku = 'OLD-TEST-SKU';
+        $ormProduct->status = StatusEnum::Draft;
+        $ormProduct->updatedBy = 'old_ulid';
+
+        $translation = new OrmProductTranslation();
+        $translation->locale = 'en';
+        $translation->name = 'Old name';
+        $translation->description = 'Old description';
+        $ormProduct->translations->add($translation);
+
+        $price = new OrmProductPrice();
+        $price->amount = 1000;
+        $price->currency = CurrencyEnum::USD;
+        $price->type = ProductPriceTypeEnum::Sale;
+        $price->taxValue = '10';
+        $price->taxType = TaxTypeEnum::Percentage;
+        $price->taxIncluded = false;
+        $price->validFrom = new DateTimeImmutable('2023-12-01 00:00:00');
+        $price->validTo = new DateTimeImmutable('2023-12-31 23:59:59');
+        $ormProduct->prices->add($price);
+
+        $category = new OrmCategory();
+        $category->setId(321);
+        $ormProduct->categories->add($category);
+
+        $attribute = new OrmAttribute();
+        $attribute->setId(456);
+
+        $attributeValue = new OrmProductAttributeValue();
+        $attributeValue->attribute = $attribute;
+        $attributeValue->valueJson = ['value' => 'old_value'];
+        $ormProduct->attributeValues->add($attributeValue);
+
+        $image = new OrmProductImage();
+        $image->ulid = 'old_ulid';
+        $ormProduct->images->add($image);
+
+        $this->mapper->mapToExistingOrm($domainProduct, $ormProduct);
+
+        self::assertSame($domainProduct->getSku()->value(), $ormProduct->sku);
+        self::assertSame($domainProduct->getStatus()->value(), $ormProduct->status);
+        $this->assertOrmTranslationsMatch($domainProduct, $ormProduct);
+        $this->assertOrmPricesMatch($domainProduct, $ormProduct);
+        $this->assertOrmCategoriesMatch($domainProduct, $ormProduct);
+        $this->assertOrmAttributeValuesMatch($domainProduct, $ormProduct);
+        $this->assertOrmImagesMatch($domainProduct, $ormProduct);
+        self::assertSame($domainProduct->getUpdatedBy()->value(), $ormProduct->updatedBy);
+        self::assertNull($ormProduct->id);
+        self::assertNull($ormProduct->ulid);
+        self::assertNull($ormProduct->version);
+        self::assertNull($ormProduct->createdBy);
+    }
+
+    private function assertOrmTranslationsMatch(Product $domain, OrmProduct $orm): void
+    {
+        self::assertCount($domain->getTranslations()->count(), $orm->translations);
+
+        foreach ($domain->getTranslations() as $locale => $domainTranslation) {
+            $ormTranslation = $orm->translations->filter(
+                fn (OrmProductTranslation $t) => $t->locale === $locale
+            )->first();
+
+            self::assertNotNull($ormTranslation, sprintf('Translation for %s locale not found in ORM', $locale));
+            self::assertSame($domainTranslation->name, $ormTranslation->name);
+            self::assertSame($domainTranslation->description, $ormTranslation->description);
+        }
+    }
+
+    private function assertOrmPricesMatch(Product $domain, OrmProduct $orm): void
+    {
+        self::assertCount($domain->getPrices()->count(), $orm->prices);
+
+        foreach ($domain->getPrices() as $domainPrice) {
+            $ormPrice = $orm->prices->filter(
+                fn (OrmProductPrice $p) => $p->currency === $domainPrice->getPrice()->getCurrency()
+                    && $p->type === $domainPrice->getType()->value()
+            )->first();
+
+            self::assertNotNull($ormPrice, sprintf('Price for currency %s and type %s not found in ORM', $domainPrice->getPrice()->getCurrencyCode(), $domainPrice->getType()->asString()));
+            self::assertSame($domainPrice->getPrice()->getAmount(), $ormPrice->amount);
+            self::assertSame((string) $domainPrice->getTax()->getValue(), $ormPrice->taxValue);
+            self::assertSame($domainPrice->getTax()->getType(), $ormPrice->taxType);
+            self::assertSame($domainPrice->getTaxIncluded()->value(), $ormPrice->taxIncluded);
+            self::assertSame($domainPrice->getValidityPeriod()?->getFrom()->value(), $ormPrice->validFrom);
+            self::assertSame($domainPrice->getValidityPeriod()?->getTo()->value(), $ormPrice->validTo);
+        }
+    }
+
+    private function assertOrmCategoriesMatch(Product $domain, OrmProduct $orm): void
+    {
+        self::assertCount($domain->getCategoryIds()->count(), $orm->categories);
+
+        foreach ($domain->getCategoryIds() as $domainCategoryId) {
+            $ormCategory = $orm->categories->filter(
+                fn (OrmCategory $c) => $c->id === $domainCategoryId->value()
+            )->first();
+
+            self::assertNotNull($ormCategory, sprintf('Category with id %s not found in ORM', $domainCategoryId->value()));
+        }
+    }
+
+    private function assertOrmAttributeValuesMatch(Product $domain, OrmProduct $orm): void
+    {
+        self::assertCount($domain->getAttributeValues()->count(), $orm->attributeValues);
+
+        foreach ($domain->getAttributeValues() as $domainAttributeValue) {
+            $ormAttributeValue = $orm->attributeValues->filter(
+                fn (OrmProductAttributeValue $av) => $av->attribute->id === $domainAttributeValue->getAttributeId()->value()
+            )->first();
+
+            self::assertNotNull($ormAttributeValue, sprintf('Attribute value for attribute id %s not found in ORM', $domainAttributeValue->getAttributeId()->value()));
+            self::assertSame($domainAttributeValue->getValue()->value(), $ormAttributeValue->valueJson['value'] ?? null);
+        }
+    }
+
+    private function assertOrmImagesMatch(Product $domain, OrmProduct $orm): void
+    {
+        self::assertCount($domain->getImages()->count(), $orm->images);
+
+        foreach ($domain->getImages() as $domainImage) {
+            $ormImage = $orm->images->filter(
+                fn (OrmProductImage $i) => $i->ulid === $domainImage->getUlid()->value()
+            )->first();
+
+            self::assertNotNull($ormImage, sprintf('Image with ulid %s not found in ORM', $domainImage->getUlid()->value()));
+            self::assertSame($domainImage->getPath()->value(), $ormImage->path);
+            self::assertSame($domainImage->getSortOrder()->value(), $ormImage->sortOrder);
+            self::assertSame($domainImage->isMain()->value(), $ormImage->isMain);
+        }
+    }
+}

@@ -30,10 +30,10 @@ class OrmProduct
     public private(set) ?int $id = null;
 
     #[ORM\Column(type: UlidType::NAME)]
-    public string $ulid;
+    public ?string $ulid = null;
 
     #[ORM\Column(type: Types::STRING, length: Sku::MAX_LENGTH)]
-    public string $sku;
+    public ?string $sku = null;
 
     /**
      * @var Collection<int, OrmProductPrice>

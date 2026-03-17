@@ -14,6 +14,9 @@ services:
   App\Catalog\Infrastructure\Persistence\Doctrine\Mapper\ProductMapper:
     arguments:
       $referenceProvider: '@catalog.proxy_reference_provider'
+      $productPriceMapper: '@App\Catalog\Infrastructure\Persistence\Doctrine\Mapper\ProductPriceMapper'
+      $productImageMapper: '@App\Catalog\Infrastructure\Persistence\Doctrine\Mapper\ProductImageMapper'
+      $productAttributeValueMapper: '@App\Catalog\Infrastructure\Persistence\Doctrine\Mapper\ProductAttributeValueMapper'
 
   App\Catalog\Infrastructure\Service\CatalogFlysystemStorage:
     arguments:
