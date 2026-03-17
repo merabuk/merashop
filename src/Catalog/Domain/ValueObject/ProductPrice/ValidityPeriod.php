@@ -23,7 +23,10 @@ final readonly class ValidityPeriod implements EquatableInterface, Stringable
         private ValidFrom $from,
         private ValidTo $to,
     ) {
-        if ($this->from->isAfter($this->to)) {
+        if (
+            $this->from->isAfter($this->to)
+            || $this->from->equalsWithDateTime($this->to)
+        ) {
             throw InvalidProductPriceValidityPeriodException::becauseItIsInvalidValidityPeriod('validFrom', 'validTo');
         }
     }
@@ -66,6 +69,14 @@ final readonly class ValidityPeriod implements EquatableInterface, Stringable
     public function getTo(): ValidTo
     {
         return $this->to;
+    }
+
+    public function __toString(): string
+    {
+        $from = $this->from->value()->format($this->from::OUTPUT_FORMAT);
+        $to = $this->to->value()->format($this->to::OUTPUT_FORMAT);
+
+        return $from.' - '.$to;
     }
 
     protected function getPrimitiveValue(): string

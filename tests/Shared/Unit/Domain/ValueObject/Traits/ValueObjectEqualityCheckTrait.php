@@ -35,6 +35,18 @@ trait ValueObjectEqualityCheckTrait
         $this->baseEqualityCheckAssertion($vo1, $vo2, $vo3);
     }
 
+    protected function assertBooleanVOProvidesEqualityCheck(string $className, bool $value, bool $anotherValue): void
+    {
+        $this->assertHasStaticMethod($className, 'fromBool');
+
+        $vo1 = $className::fromBool($value);
+        $vo2 = $className::fromBool($value);
+        $vo3 = $className::fromBool($anotherValue);
+
+        $this->assertVoProvidesEqualityCheck($vo1);
+        $this->baseEqualityCheckAssertion($vo1, $vo2, $vo3);
+    }
+
     protected function assertArrayVOProvidesEqualityCheck(
         string $className,
         array $value,

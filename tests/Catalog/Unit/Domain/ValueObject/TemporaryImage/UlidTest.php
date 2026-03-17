@@ -7,7 +7,7 @@ namespace App\Tests\Catalog\Unit\Domain\ValueObject\TemporaryImage;
 use App\Catalog\Domain\Exception\TemporaryImage\InvalidTemporaryImageUlidException;
 use App\Catalog\Domain\ValueObject\TemporaryImage\Ulid;
 use App\Shared\Domain\ValueObject\Identity\Ulid as SharedUlid;
-use App\Tests\Catalog\Support\AttributeMother;
+use App\Tests\Catalog\Support\TemporaryImageMother;
 use App\Tests\Shared\Unit\Domain\ValueObject\Identity\UlidTest as SharedUlidTest;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
@@ -16,7 +16,7 @@ final class UlidTest extends TestCase
 {
     public function testItCreatesValidUlid(): void
     {
-        $ulid = AttributeMother::DEFAULT_ULID;
+        $ulid = TemporaryImageMother::DEFAULT_ULID;
         $vo = Ulid::fromString($ulid);
 
         self::assertSame($ulid, $vo->value());
@@ -32,7 +32,7 @@ final class UlidTest extends TestCase
 
     public function testItIsStrictlyTyped(): void
     {
-        $ulid = AttributeMother::DEFAULT_ULID;
+        $ulid = TemporaryImageMother::DEFAULT_ULID;
         $adminUlid = Ulid::fromString($ulid);
         $sharedUlid = SharedUlid::fromString($ulid);
 

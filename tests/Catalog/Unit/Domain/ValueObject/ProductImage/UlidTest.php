@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Catalog\Unit\Domain\ValueObject\Category;
+namespace App\Tests\Catalog\Unit\Domain\ValueObject\ProductImage;
 
-use App\Catalog\Domain\Exception\Category\InvalidCategoryUlidException;
-use App\Catalog\Domain\ValueObject\Category\Ulid;
+use App\Catalog\Domain\Exception\ProductImage\InvalidProductImageUlidException;
+use App\Catalog\Domain\ValueObject\ProductImage\Ulid;
 use App\Shared\Domain\ValueObject\Identity\Ulid as SharedUlid;
-use App\Tests\Catalog\Support\CategoryMother;
+use App\Tests\Catalog\Support\ProductImageMother;
 use App\Tests\Shared\Unit\Domain\ValueObject\Identity\UlidTest as SharedUlidTest;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
 use PHPUnit\Framework\TestCase;
@@ -16,7 +16,7 @@ final class UlidTest extends TestCase
 {
     public function testItCreatesValidUlid(): void
     {
-        $ulid = CategoryMother::DEFAULT_ULID;
+        $ulid = ProductImageMother::DEFAULT_ULID;
         $vo = Ulid::fromString($ulid);
 
         self::assertSame($ulid, $vo->value());
@@ -26,13 +26,13 @@ final class UlidTest extends TestCase
     #[DataProviderExternal(SharedUlidTest::class, 'invalidUlidProvider')]
     public function testThrowsExceptionOnInvalidInput(string $invalidValue): void
     {
-        $this->expectException(InvalidCategoryUlidException::class);
+        $this->expectException(InvalidProductImageUlidException::class);
         Ulid::fromString($invalidValue);
     }
 
     public function testItIsStrictlyTyped(): void
     {
-        $ulid = CategoryMother::DEFAULT_ULID;
+        $ulid = ProductImageMother::DEFAULT_ULID;
         $adminUlid = Ulid::fromString($ulid);
         $sharedUlid = SharedUlid::fromString($ulid);
 

@@ -16,6 +16,8 @@ final readonly class Price implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 
+    public const int MIN_AMOUNT = 0;
+
     /**
      * @throws InvalidProductPriceAmountException
      */
@@ -23,7 +25,7 @@ final readonly class Price implements EquatableInterface, Stringable
         private int $amount,
         private CurrencyEnum $currency,
     ) {
-        if ($this->amount < 0) {
+        if ($this->amount < self::MIN_AMOUNT) {
             throw InvalidProductPriceAmountException::becauseItMustBePositive();
         }
     }

@@ -12,6 +12,9 @@ readonly class BaseFlag implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 
+    public const string TRUE_STRING = 'true';
+    public const string FALSE_STRING = 'false';
+
     public function __construct(
         private bool $value,
     ) {
@@ -34,7 +37,7 @@ readonly class BaseFlag implements EquatableInterface, Stringable
 
     public function __toString(): string
     {
-        return $this->value ? 'true' : 'false';
+        return $this->value ? static::TRUE_STRING : static::FALSE_STRING;
     }
 
     protected function getPrimitiveValue(): bool

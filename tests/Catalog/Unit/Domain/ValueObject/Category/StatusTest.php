@@ -41,7 +41,7 @@ final class StatusTest extends TestCase
     }
 
     #[DataProvider('factoryMethodProvider')]
-    public function testItCreatesCorrectTypeFromFactoryMethods(
+    public function testItCreatesCorrectStatusFromFactoryMethods(
         Status $vo,
         StatusEnum $expectedEnum,
         string $checkMethod,

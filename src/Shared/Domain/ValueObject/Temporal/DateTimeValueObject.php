@@ -15,7 +15,7 @@ abstract readonly class DateTimeValueObject implements EqualsWithDateTimeInterfa
     use ValueObjectEqualityTrait;
 
     public const string COMPARISON_FORMAT = 'Y-m-d H:i:s.u';
-    private const string OUTPUT_FORMAT = DateTimeImmutable::ATOM;
+    public const string OUTPUT_FORMAT = DateTimeImmutable::ATOM;
 
     private DateTimeImmutable $date;
 
@@ -39,8 +39,10 @@ abstract readonly class DateTimeValueObject implements EqualsWithDateTimeInterfa
         return $this->date->format(self::COMPARISON_FORMAT);
     }
 
-    public function equalsWithDateTime(DateTimeImmutable $other): bool
+    public function equalsWithDateTime(EqualsWithDateTimeInterface|DateTimeImmutable $other): bool
     {
+        $other = $other instanceof EqualsWithDateTimeInterface ? $other->value() : $other;
+
         return $this->date->format(self::COMPARISON_FORMAT) === $other->format(self::COMPARISON_FORMAT);
     }
 

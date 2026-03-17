@@ -15,6 +15,10 @@ final readonly class Tax implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 
+    public const int MIN_FIXED_TAX_VALUE = 0;
+    public const int MIN_PERCENTAGE_TAX_VALUE = 0;
+    public const int MAX_PERCENTAGE_TAX_VALUE = 100;
+
     /**
      * @throws InvalidProductPriceTaxValueException
      */
@@ -23,9 +27,6 @@ final readonly class Tax implements EquatableInterface, Stringable
         private TaxTypeEnum $type,
     ) {
         $this->ensureIsValidTaxAmount();
-        if ($this->value < 0) {
-            throw InvalidProductPriceTaxValueException::becauseItIsNotAValidTax();
-        }
     }
 
     /**
@@ -105,9 +106,14 @@ final readonly class Tax implements EquatableInterface, Stringable
     private function ensureIsValidTaxAmount(): void
     {
         match ($this->type) {
-            TaxTypeEnum::Percentage => ($this->value < 0 || $this->value > 100)
+            TaxTypeEnum::Percentage => (
+                $this->value < self::MIN_PERCENTAGE_TAX_VALUE
+                || $this->value > self::MAX_PERCENTAGE_TAX_VALUE
+            )
                 ? throw InvalidProductPriceTaxValueException::becauseItIsNotAValidPercentageValue($this->value) : null,
-            default => ($this->value < 0)
+            default => (
+                $this->value < self::MIN_FIXED_TAX_VALUE
+            )
                 ? throw InvalidProductPriceTaxValueException::becauseItIsNotAValidTax() : null,
         };
     }

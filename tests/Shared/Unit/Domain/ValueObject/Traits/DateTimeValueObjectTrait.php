@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Shared\Unit\Domain\ValueObject\Traits;
 
 use App\Shared\Domain\ValueObject\Contract\EqualsWithDateTimeInterface;
+use App\Shared\Domain\ValueObject\Temporal\DateTimeValueObject;
 use DateTimeImmutable;
 use PHPUnit\Framework\Assert;
 
@@ -15,7 +16,7 @@ trait DateTimeValueObjectTrait
     protected function assertCreatesValidDateTime(
         string $className,
         ?DateTimeImmutable $dateTime = null,
-        string $toStringFormat = DateTimeImmutable::ATOM,
+        string $toStringFormat = DateTimeValueObject::OUTPUT_FORMAT,
     ): void {
         $this->assertHasStaticMethod($className, 'fromDateTime');
 
@@ -24,6 +25,21 @@ trait DateTimeValueObjectTrait
 
         Assert::assertSame($dateTime, $vo->value());
         Assert::assertSame($dateTime->format($toStringFormat), (string) $vo);
+    }
+
+    protected function assertCreatesValidDateTimeFromString(
+        string $className,
+        ?string $dateTimeString = null,
+        string $toStringFormat = DateTimeValueObject::OUTPUT_FORMAT,
+    ): void {
+        $this->assertHasStaticMethod($className, 'fromString');
+
+        $dateTimeString ??= '1989-11-10 09:30:00.123456';
+        $dateTimeObject = new DateTimeImmutable($dateTimeString);
+        $vo = $className::fromString($dateTimeString);
+
+        Assert::assertEquals($dateTimeObject, $vo->value());
+        Assert::assertSame($dateTimeObject->format($toStringFormat), (string) $vo);
     }
 
     protected function assertDateTimeEquality(string $className): void
