@@ -25,12 +25,33 @@ final readonly class CategoryStructureService implements CategoryStructureServic
     }
 
     /**
+     * @throws CategoryParentNotFoundException
+     * @throws InvalidCategoryPathException
+     */
+    public function prepareStructure(Slug $slug, ?Id $parentId): CategoryStructureResult
+    {
+        try {
+            $parent = $parentId ? $this->readRepository->getById($parentId) : null;
+        } catch (CategoryNotFoundException) {
+            throw new CategoryParentNotFoundException();
+        }
+
+        $maxSortOrder = $this->readRepository->getMaxSortOrder($parentId);
+
+        return new CategoryStructureResult(
+            path: Path::generate($slug, $parent?->getPath()),
+            sortOrder: SortOrder::fromInt($maxSortOrder)->next(),
+            parentId: $parentId
+        );
+    }
+
+    /**
      * @throws CategoryCannotBeParentOfItselfException
      * @throws CategoryChildCanNotBeParentConflictException
      * @throws CategoryParentNotFoundException
      * @throws InvalidCategoryPathException
      */
-    public function prepareNewStructure(Category $category, Slug $newSlug, ?Id $newParentId): CategoryStructureResult
+    public function prepareStructureUpdate(Category $category, Slug $newSlug, ?Id $newParentId): CategoryStructureResult
     {
         try {
             $parent = $newParentId ? $this->readRepository->getById($newParentId) : null;
@@ -49,9 +70,9 @@ final readonly class CategoryStructureService implements CategoryStructureServic
         }
 
         return new CategoryStructureResult(
-            newPath: $newPath,
-            newSortOrder: $newSortOrder,
-            newParentId: $newParentId
+            path: $newPath,
+            sortOrder: $newSortOrder,
+            parentId: $newParentId
         );
     }
 }

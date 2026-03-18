@@ -6,12 +6,11 @@ namespace App\Tests\Catalog\Unit\Domain\Service\Category;
 
 use App\Catalog\Domain\DTO\CategoryStructureResult;
 use App\Catalog\Domain\DTO\CategoryUpdateData;
+use App\Catalog\Domain\Entity\Category;
 use App\Catalog\Domain\Enum\Category\StatusEnum;
-use App\Catalog\Domain\Exception\Category\CategoryAlreadyExistsException;
 use App\Catalog\Domain\Exception\Category\CategoryCannotBeParentOfItselfException;
 use App\Catalog\Domain\Exception\Category\CategoryChildCanNotBeParentConflictException;
 use App\Catalog\Domain\Exception\Category\CategoryParentNotFoundException;
-use App\Catalog\Domain\Repository\CategoryReadRepositoryInterface;
 use App\Catalog\Domain\Service\Category\CategoryManager;
 use App\Catalog\Domain\Service\Category\CategoryStructureServiceInterface;
 use App\Catalog\Domain\ValueObject\Category\Id;
@@ -28,12 +27,10 @@ final class CategoryManagerTest extends TestCase
 {
     use ValueObjectAssertionTrait;
 
-    private CategoryReadRepositoryInterface&MockObject $readRepository;
     private CategoryStructureServiceInterface&MockObject $structureService;
 
     public function setUp(): void
     {
-        $this->readRepository = $this->createMock(CategoryReadRepositoryInterface::class);
         $this->structureService = $this->createMock(CategoryStructureServiceInterface::class);
     }
 
@@ -53,32 +50,25 @@ final class CategoryManagerTest extends TestCase
 
         $data = $this->getCategoryUpdateData(slug: $newSlug->value(), parentId: null);
 
-        $this->readRepository->expects(self::once())
-            ->method('existsBySlug')
-            ->with(self::equalTo($newSlug))
-            ->willReturn(false);
-
         $newStructure = $this->getCategoryStructureResult(
             newSlug: $newSlug,
             parentPath: null,
             parentId: null
         );
 
-        $this->structureService->expects(self::once())
-            ->method('prepareNewStructure')
-            ->with(
-                self::equalTo($category),
-                self::equalTo($newSlug),
-                self::equalTo(null)
-            )
-            ->willReturn($newStructure);
+        $this->expectGenerateStructure(
+            category: $category,
+            newSlug: $newSlug,
+            newParentId: null,
+            newStructure: $newStructure
+        );
 
         $this->createManager()->updateCategory(category: $category, data: $data);
 
         self::assertTrue($newSlug->equals($category->getSlug()));
-        $this->assertVoEqualsOrNull($newStructure->newParentId, $category->getParentId());
-        self::assertTrue($newStructure->newPath->equals($category->getPath()));
-        self::assertTrue($newStructure->newSortOrder->equals($category->getSortOrder()));
+        $this->assertVoEqualsOrNull($newStructure->parentId, $category->getParentId());
+        self::assertTrue($newStructure->path->equals($category->getPath()));
+        self::assertTrue($newStructure->sortOrder->equals($category->getSortOrder()));
         self::assertSame($data->status, $category->getStatus()->value()->value);
         self::assertSame(1, $category->getVersion()->value());
         self::assertCount(count($data->translations), $category->getTranslations());
@@ -109,49 +99,24 @@ final class CategoryManagerTest extends TestCase
 
         $data = $this->getCategoryUpdateData(slug: $newSlug->value(), parentId: $parent->getId()->value());
 
-        $this->readRepository->expects(self::once())
-            ->method('existsBySlug')
-            ->with(self::equalTo($newSlug))
-            ->willReturn(false);
-
         $newStructure = $this->getCategoryStructureResult(
             newSlug: $newSlug,
             parentPath: $parent->getPath(),
             parentId: $parent->getId()
         );
 
-        $this->structureService->expects(self::once())
-            ->method('prepareNewStructure')
-            ->with(
-                self::equalTo($category),
-                self::equalTo($newSlug),
-                self::equalTo($parent->getId()),
-            )
-            ->willReturn($newStructure);
+        $this->expectGenerateStructure(
+            category: $category,
+            newSlug: $newSlug,
+            newParentId: $parent->getId(),
+            newStructure: $newStructure
+        );
 
         $this->createManager()->updateCategory(category: $category, data: $data);
 
         self::assertTrue($newSlug->equals($category->getSlug()));
-        $this->assertVoEqualsOrNull($newStructure->newParentId, $category->getParentId());
-        self::assertTrue($newStructure->newPath->equals($category->getPath()));
-    }
-
-    public function testThrowsExceptionWhenSlugAlreadyExists(): void
-    {
-        $category = CategoryMother::createWithData();
-
-        $data = $this->getCategoryUpdateData(slug: 'existing-slug', parentId: null);
-
-        $this->readRepository->expects(self::once())
-            ->method('existsBySlug')
-            ->with(self::callback(fn (Slug $slug) => $slug->value() === $data->slug))
-            ->willReturn(true);
-
-        $this->structureService->expects(self::never())->method('prepareNewStructure');
-
-        $this->expectException(CategoryAlreadyExistsException::class);
-
-        $this->createManager()->updateCategory(category: $category, data: $data);
+        $this->assertVoEqualsOrNull($newStructure->parentId, $category->getParentId());
+        self::assertTrue($newStructure->path->equals($category->getPath()));
     }
 
     /**
@@ -164,12 +129,8 @@ final class CategoryManagerTest extends TestCase
 
         $data = $this->getCategoryUpdateData(slug: 'slug', parentId: 789);
 
-        $this->readRepository->expects(self::once())
-            ->method('existsBySlug')
-            ->willReturn(false);
-
         $this->structureService->expects(self::once())
-            ->method('prepareNewStructure')
+            ->method('prepareStructureUpdate')
             ->willThrowException(new $exceptionClass());
 
         $this->expectException($exceptionClass);
@@ -193,7 +154,7 @@ final class CategoryManagerTest extends TestCase
     private function getCategoryUpdateData(string $slug, ?int $parentId): CategoryUpdateData
     {
         return new CategoryUpdateData(
-            slug: $slug,
+            slug: Slug::fromString($slug),
             parentId: $parentId,
             status: StatusEnum::Active->value,
             translations: ['en' => ['name' => 'New name', 'description' => 'New description']],
@@ -207,17 +168,32 @@ final class CategoryManagerTest extends TestCase
         ?Id $parentId,
     ): CategoryStructureResult {
         return new CategoryStructureResult(
-            newPath: Path::generate($newSlug, $parentPath),
-            newSortOrder: SortOrder::fromInt(6),
-            newParentId: $parentId
+            path: Path::generate($newSlug, $parentPath),
+            sortOrder: SortOrder::fromInt(6),
+            parentId: $parentId
         );
     }
 
     private function createManager(): CategoryManager
     {
         return new CategoryManager(
-            readRepository: $this->readRepository,
             structureService: $this->structureService
         );
+    }
+
+    private function expectGenerateStructure(
+        Category $category,
+        Slug $newSlug,
+        ?Id $newParentId,
+        CategoryStructureResult $newStructure,
+    ): void {
+        $this->structureService->expects(self::once())
+            ->method('prepareStructureUpdate')
+            ->with(
+                self::equalTo($category),
+                self::equalTo($newSlug),
+                self::equalTo($newParentId)
+            )
+            ->willReturn($newStructure);
     }
 }

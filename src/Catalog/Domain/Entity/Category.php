@@ -76,12 +76,12 @@ class Category
         $this->updatedBy = $updatedBy;
 
         if (null !== $structure && null !== $newSlug) {
-            $this->ensureNotParentOfItself($structure->newParentId);
+            $this->ensureNotParentOfItself($structure->parentId);
 
             $this->slug = $newSlug;
-            $this->path = $structure->newPath;
-            $this->sortOrder = $structure->newSortOrder;
-            $this->parentId = $structure->newParentId;
+            $this->path = $structure->path;
+            $this->sortOrder = $structure->sortOrder;
+            $this->parentId = $structure->parentId;
         }
     }
 

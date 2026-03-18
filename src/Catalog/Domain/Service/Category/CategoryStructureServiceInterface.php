@@ -15,9 +15,14 @@ use App\Catalog\Domain\ValueObject\Category\Slug;
 interface CategoryStructureServiceInterface
 {
     /**
+     * @throws CategoryParentNotFoundException
+     */
+    public function prepareStructure(Slug $slug, ?Id $parentId): CategoryStructureResult;
+
+    /**
      * @throws CategoryCannotBeParentOfItselfException
      * @throws CategoryChildCanNotBeParentConflictException
      * @throws CategoryParentNotFoundException
      */
-    public function prepareNewStructure(Category $category, Slug $newSlug, ?Id $newParentId): CategoryStructureResult;
+    public function prepareStructureUpdate(Category $category, Slug $newSlug, ?Id $newParentId): CategoryStructureResult;
 }

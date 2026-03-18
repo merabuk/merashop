@@ -11,9 +11,9 @@ use App\Catalog\Domain\ValueObject\Category\SortOrder;
 final readonly class CategoryStructureResult
 {
     public function __construct(
-        public Path $newPath,
-        public SortOrder $newSortOrder,
-        public ?Id $newParentId,
+        public Path $path,
+        public SortOrder $sortOrder,
+        public ?Id $parentId,
     ) {
     }
 }

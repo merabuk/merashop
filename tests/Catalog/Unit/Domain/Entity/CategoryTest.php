@@ -137,9 +137,9 @@ final class CategoryTest extends TestCase
 
         if (null !== $newSlug && null !== $structure) {
             self::assertTrue($category->getSlug()->equals($newSlug));
-            self::assertTrue($category->getPath()->equals(Path::fromString($structure->newPath->value())));
-            self::assertTrue($category->getSortOrder()->equals($structure->newSortOrder));
-            $this->assertVoEqualsOrNull($structure->newParentId, $category->getParentId());
+            self::assertTrue($category->getPath()->equals(Path::fromString($structure->path->value())));
+            self::assertTrue($category->getSortOrder()->equals($structure->sortOrder));
+            $this->assertVoEqualsOrNull($structure->parentId, $category->getParentId());
         } else {
             self::assertTrue($category->getSlug()->equals($oldSlug));
             self::assertTrue($category->getPath()->equals($oldPath));
@@ -313,9 +313,9 @@ final class CategoryTest extends TestCase
         ?int $newParentId,
     ): CategoryStructureResult {
         return new CategoryStructureResult(
-            newPath: Path::fromString($newPath),
-            newSortOrder: SortOrder::fromInt($newSortOrder),
-            newParentId: $newParentId ? Id::fromInt($newParentId) : null,
+            path: Path::fromString($newPath),
+            sortOrder: SortOrder::fromInt($newSortOrder),
+            parentId: $newParentId ? Id::fromInt($newParentId) : null,
         );
     }
 

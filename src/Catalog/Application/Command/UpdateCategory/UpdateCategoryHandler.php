@@ -15,7 +15,9 @@ use App\Catalog\Domain\Exception\Category\CategoryParentNotFoundException;
 use App\Catalog\Domain\Repository\CategoryReadRepositoryInterface;
 use App\Catalog\Domain\Repository\CategoryWriteRepositoryInterface;
 use App\Catalog\Domain\Service\Category\CategoryManagerInterface;
+use App\Catalog\Domain\Service\Category\CategoryValidatorInterface;
 use App\Catalog\Domain\ValueObject\Category\Id;
+use App\Catalog\Domain\ValueObject\Category\Slug;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
 use App\Shared\Domain\Exception\Entity\ConcurrencyException;
@@ -29,6 +31,7 @@ readonly class UpdateCategoryHandler implements CommandHandlerInterface
     public function __construct(
         private CategoryReadRepositoryInterface $readRepository,
         private CategoryWriteRepositoryInterface $writeRepository,
+        private CategoryValidatorInterface $categoryValidator,
         private CategoryManagerInterface $categoryManager,
         private MessageBusInterface $eventBus,
     ) {
@@ -47,14 +50,17 @@ readonly class UpdateCategoryHandler implements CommandHandlerInterface
     {
         try {
             $category = $this->readRepository->getById(Id::fromInt($command->id));
+            $newSlug = Slug::fromString($command->slug);
 
-            if ($category->getVersion()->value() !== $command->version) {
-                throw new ConcurrencyException();
-            }
+            $this->categoryValidator->validateUpdate(
+                category: $category,
+                version: $command->version,
+                newSlug: $newSlug
+            );
 
             $oldPath = $category->getPath();
             $updateData = new CategoryUpdateData(
-                slug: $command->slug,
+                slug: $newSlug,
                 parentId: $command->parentId,
                 status: $command->status,
                 translations: $command->translations,
