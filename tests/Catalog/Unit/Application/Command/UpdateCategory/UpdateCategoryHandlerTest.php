@@ -17,7 +17,9 @@ use App\Catalog\Domain\Exception\Category\CategoryParentNotFoundException;
 use App\Catalog\Domain\Repository\CategoryReadRepositoryInterface;
 use App\Catalog\Domain\Repository\CategoryWriteRepositoryInterface;
 use App\Catalog\Domain\Service\Category\CategoryManagerInterface;
+use App\Catalog\Domain\Service\Category\CategoryValidatorInterface;
 use App\Catalog\Domain\ValueObject\Category\Id;
+use App\Catalog\Domain\ValueObject\Category\Slug;
 use App\Shared\Domain\Exception\Entity\ConcurrencyException;
 use App\Tests\Catalog\Support\CategoryMother;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -26,11 +28,13 @@ use PHPUnit\Framework\TestCase;
 use stdClass;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Throwable;
 
 final class UpdateCategoryHandlerTest extends TestCase
 {
     private CategoryReadRepositoryInterface&MockObject $readRepository;
     private CategoryWriteRepositoryInterface&MockObject $writeRepository;
+    private CategoryValidatorInterface&MockObject $categoryValidator;
     private CategoryManagerInterface&MockObject $categoryManager;
     private MessageBusInterface&MockObject $eventBus;
 
@@ -38,164 +42,77 @@ final class UpdateCategoryHandlerTest extends TestCase
     {
         $this->readRepository = $this->createMock(CategoryReadRepositoryInterface::class);
         $this->writeRepository = $this->createMock(CategoryWriteRepositoryInterface::class);
+        $this->categoryValidator = $this->createMock(CategoryValidatorInterface::class);
         $this->categoryManager = $this->createMock(CategoryManagerInterface::class);
         $this->eventBus = $this->createMock(MessageBusInterface::class);
     }
 
     public function testHandleSuccessWithParent(): void
     {
-        $oldParentId = 456;
-        $fakeId = 123;
+        $oldPath = '/old-parent/category';
+        $expectedNewPath = '/new-parent/new-slug';
         $category = CategoryMother::createWithData(
-            parentId: $oldParentId,
-            path: '/old-parent/category',
+            parentId: 456,
+            path: $oldPath,
             slug: 'category',
-            id: $fakeId
+            id: 123
         );
-        $newParentId = 789;
+        $command = $this->fillAndGetCommand(category: $category, slug: 'new-slug', parentId: 789);
 
-        $command = $this->fillAndGetCommand(
-            category: $category,
-            slug: 'new-slug',
-            parentId: $newParentId,
-        );
-
-        $this->readRepository->expects(self::once())
-            ->method('getById')
-            ->with(self::callback(fn (Id $id) => $id->value() === $command->id))
-            ->willReturn($category);
-
-        $this->categoryManager->expects(self::once())
-            ->method('updateCategory')
-            ->with(
-                self::equalTo($category),
-                self::callback(function (CategoryUpdateData $data) use ($command): bool {
-                    $correctSlug = $command->slug == $data->slug;
-                    $correctParent = $command->parentId == $data->parentId;
-
-                    return $correctSlug && $correctParent;
-                })
-            )
-            ->willReturn(true);
-
-        $this->writeRepository->expects(self::once())
-            ->method('save')
-            ->willReturn(CategoryMother::createWithData(
-                parentId: $newParentId,
-                path: '/new-parent/new-slug',
-                slug: 'new-slug',
-                id: $fakeId,
-            ));
-
-        $this->eventBus->expects(self::once())
-            ->method('dispatch')
-            ->with(self::callback(function (object $event): bool {
-                if (false === $event instanceof CategoryMovedDomainEvent) {
-                    return false;
-                }
-
-                $oldPathCorrect = '/old-parent/category' === $event->oldPath;
-                $newPathCorrect = '/new-parent/new-slug' === $event->newPath;
-
-                return $oldPathCorrect && $newPathCorrect;
-            }))
-            ->willReturn(new Envelope(new stdClass()));
+        $this->expectCategoryFound($category, $command->id);
+        $this->givenSlugIsAvailable($category, $command->version, $command->slug);
+        $this->expectCategoryManagerUpdate($category, $command);
+        $this->expectSaveCategory($command, $expectedNewPath);
+        $this->expectEventDispatched($oldPath, $expectedNewPath);
 
         $this->createHandler()($command);
     }
 
     public function testHandleSuccessWithoutParent(): void
     {
-        $oldParentId = 456;
-        $fakeId = 123;
+        $oldPath = '/old-parent/category';
+        $expectedNewPath = '/new-slug';
         $category = CategoryMother::createWithData(
-            parentId: $oldParentId,
-            path: '/old-parent/category',
+            parentId: 456,
+            path: $oldPath,
             slug: 'category',
-            id: $fakeId
+            id: 123
         );
-
         $command = $this->fillAndGetCommand(category: $category, slug: 'new-slug');
 
-        $this->readRepository->expects(self::once())
-            ->method('getById')
-            ->with(self::callback(fn (Id $id) => $id->value() === $command->id))
-            ->willReturn($category);
-
-        $this->categoryManager->expects(self::once())
-            ->method('updateCategory')
-            ->with(
-                self::equalTo($category),
-                self::callback(function (CategoryUpdateData $data) use ($command): bool {
-                    $correctSlug = $command->slug == $data->slug;
-                    $correctParent = $command->parentId == $data->parentId;
-
-                    return $correctSlug && $correctParent;
-                })
-            )
-            ->willReturn(true);
-
-        $this->writeRepository->expects(self::once())
-            ->method('save')
-            ->willReturn(CategoryMother::createWithData(
-                path: '/new-slug',
-                slug: 'new-slug',
-                id: $fakeId,
-            ));
-
-        $this->eventBus->expects(self::once())
-            ->method('dispatch')
-            ->with(self::callback(function (object $event): bool {
-                if (false === $event instanceof CategoryMovedDomainEvent) {
-                    return false;
-                }
-
-                $oldPathCorrect = '/old-parent/category' === $event->oldPath;
-                $newPathCorrect = '/new-slug' === $event->newPath;
-
-                return $oldPathCorrect && $newPathCorrect;
-            }))
-            ->willReturn(new Envelope(new stdClass()));
+        $this->expectCategoryFound($category, $command->id);
+        $this->givenSlugIsAvailable($category, $command->version, $command->slug);
+        $this->expectCategoryManagerUpdate($category, $command);
+        $this->expectSaveCategory($command, $expectedNewPath);
+        $this->expectEventDispatched($oldPath, $expectedNewPath);
 
         $this->createHandler()($command);
     }
 
     public function testHandleSuccessWithoutMoving(): void
     {
-        $fakeId = 123;
-        $category = CategoryMother::createWithData(id: $fakeId);
-
+        $category = CategoryMother::createWithData(id: 123);
         $command = $this->fillAndGetCommand(category: $category);
 
-        $this->readRepository->expects(self::once())
-            ->method('getById')
-            ->with(self::callback(fn (Id $id) => $id->value() === $command->id))
-            ->willReturn($category);
-
-        $this->categoryManager->expects(self::once())->method('updateCategory')->willReturn(false);
-
-        $this->writeRepository->expects(self::once())->method('save')->willReturn($category);
-
-        $this->eventBus->expects(self::never())->method('dispatch');
+        $this->expectCategoryFound($category, $command->id);
+        $this->givenSlugIsAvailable($category, $command->version, $command->slug);
+        $this->expectCategoryManagerUpdate($category, $command, false);
+        $this->expectSaveCategory($command, $category->getPath()->value());
+        $this->eventBusNeverCalled();
 
         $this->createHandler()($command);
     }
 
     public function testThrowsExceptionIfCategoryDoesNotExist(): void
     {
-        $fakeId = 123;
-        $category = CategoryMother::createWithData(id: $fakeId);
-
+        $category = CategoryMother::createWithData(id: 123);
         $command = $this->fillAndGetCommand(category: $category);
 
-        $this->readRepository->expects(self::once())
-            ->method('getById')
-            ->with(self::callback(fn (Id $id) => $id->value() === $command->id))
-            ->willThrowException(new CategoryNotFoundException());
-
-        $this->categoryManager->expects(self::never())->method('updateCategory');
-        $this->writeRepository->expects(self::never())->method('save');
-        $this->eventBus->expects(self::never())->method('dispatch');
+        $this->expectCategoryNotFound($category->getId());
+        $this->categoryValidatorNeverCalled();
+        $this->categoryManagerNeverCalled();
+        $this->saveCategoryNeverCalled();
+        $this->eventBusNeverCalled();
 
         $this->expectException(CategoryNotFoundException::class);
 
@@ -204,17 +121,32 @@ final class UpdateCategoryHandlerTest extends TestCase
 
     public function testThrowsConcurrencyExceptionOnVersionMismatch(): void
     {
-        $fakeId = 123;
-        $category = CategoryMother::createWithData(version: 2, id: $fakeId);
-
+        $category = CategoryMother::createWithData(version: 2, id: 123);
         $command = $this->fillAndGetCommand(category: $category, version: 1);
 
-        $this->readRepository->expects(self::once())->method('getById')->willReturn($category);
-        $this->categoryManager->expects(self::never())->method('updateCategory');
-        $this->writeRepository->expects(self::never())->method('save');
-        $this->eventBus->expects(self::never())->method('dispatch');
+        $this->expectCategoryFound($category, $command->id);
+        $this->givenVersionIsInvalid($category, $command->version, $command->slug);
+        $this->categoryManagerNeverCalled();
+        $this->saveCategoryNeverCalled();
+        $this->eventBusNeverCalled();
 
         $this->expectException(ConcurrencyException::class);
+
+        $this->createHandler()($command);
+    }
+
+    public function testThrowsExceptionIfSlugCategoryExists(): void
+    {
+        $category = CategoryMother::createWithData(slug: 'slug', id: 123);
+        $command = $this->fillAndGetCommand(category: $category, slug: 'existing-slug');
+
+        $this->expectCategoryFound($category, $command->id);
+        $this->givenSlugIsTaken($category, $command->version, $command->slug);
+        $this->categoryManagerNeverCalled();
+        $this->saveCategoryNeverCalled();
+        $this->eventBusNeverCalled();
+
+        $this->expectException(CategoryAlreadyExistsException::class);
 
         $this->createHandler()($command);
     }
@@ -228,12 +160,11 @@ final class UpdateCategoryHandlerTest extends TestCase
     ): void {
         $command = $this->fillAndGetCommand(category: $category, slug: $slug, parentId: $parentId);
 
-        $this->readRepository->expects(self::once())->method('getById')->willReturn($category);
-        $this->categoryManager->expects(self::once())
-            ->method('updateCategory')
-            ->willThrowException(new $exceptionClass());
-        $this->writeRepository->expects(self::never())->method('save');
-        $this->eventBus->expects(self::never())->method('dispatch');
+        $this->expectCategoryFound($category, $command->id);
+        $this->givenSlugIsAvailable($category, $command->version, $command->slug);
+        $this->expectCategoryManagerThrowsException($exceptionClass);
+        $this->saveCategoryNeverCalled();
+        $this->eventBusNeverCalled();
 
         $this->expectException($exceptionClass);
 
@@ -249,12 +180,6 @@ final class UpdateCategoryHandlerTest extends TestCase
             'slug' => 'new-category',
             'parentId' => 456,
             'exceptionClass' => CategoryParentNotFoundException::class,
-        ];
-        yield 'slug already exists' => [
-            'category' => $category,
-            'slug' => 'existing-category',
-            'parentId' => null,
-            'exceptionClass' => CategoryAlreadyExistsException::class,
         ];
         yield 'try attach parent to itself' => [
             'category' => $category,
@@ -292,8 +217,134 @@ final class UpdateCategoryHandlerTest extends TestCase
         return new UpdateCategoryHandler(
             readRepository: $this->readRepository,
             writeRepository: $this->writeRepository,
+            categoryValidator: $this->categoryValidator,
             categoryManager: $this->categoryManager,
             eventBus: $this->eventBus,
         );
+    }
+
+    private function expectCategoryFound(Category $category, int $categoryId): void
+    {
+        $this->readRepository->expects(self::once())
+            ->method('getById')
+            ->with(self::callback(fn (Id $id) => $id->equals($category->getId())))
+            ->willReturn($category);
+    }
+
+    private function expectCategoryNotFound(Id $categoryId): void
+    {
+        $this->readRepository->expects(self::once())
+            ->method('getById')
+            ->with(self::callback(fn (Id $id) => $id->equals($categoryId)))
+            ->willThrowException(new CategoryNotFoundException());
+    }
+
+    private function givenSlugIsAvailable(Category $category, int $version, string $slug): void
+    {
+        $this->expectValidationCheck($category, $version, $slug);
+    }
+
+    private function givenSlugIsTaken(Category $category, int $version, string $slug): void
+    {
+        $this->expectValidationCheck($category, $version, $slug, new CategoryAlreadyExistsException());
+    }
+
+    private function givenVersionIsInvalid(Category $category, int $version, string $slug): void
+    {
+        $this->expectValidationCheck($category, $version, $slug, new ConcurrencyException());
+    }
+
+    private function expectValidationCheck(
+        Category $category,
+        int $version,
+        string $slug,
+        ?Throwable $exception = null,
+    ): void {
+        $invokeContext = $this->categoryValidator->expects(self::once())
+            ->method('validateUpdate')
+            ->with(
+                self::equalTo($category),
+                self::equalTo($version),
+                self::callback(fn (Slug $s) => $s->value() === $slug)
+            );
+
+        if ($exception) {
+            $invokeContext->willThrowException($exception);
+        }
+    }
+
+    private function categoryValidatorNeverCalled(): void
+    {
+        $this->categoryValidator->expects(self::never())->method('validateUpdate');
+    }
+
+    private function expectCategoryManagerUpdate(
+        Category $category,
+        UpdateCategoryCommand $command,
+        bool $expectedResult = true,
+    ): void {
+        $this->categoryManager->expects(self::once())
+            ->method('updateCategory')
+            ->with(
+                self::equalTo($category),
+                self::callback(function (CategoryUpdateData $data) use ($command): bool {
+                    $correctSlug = $command->slug == $data->slug;
+                    $correctParent = $command->parentId == $data->parentId;
+
+                    return $correctSlug && $correctParent;
+                })
+            )
+            ->willReturn($expectedResult);
+    }
+
+    private function expectCategoryManagerThrowsException(string $exceptionClass): void
+    {
+        $this->categoryManager->expects(self::once())
+            ->method('updateCategory')
+            ->willThrowException(new $exceptionClass());
+    }
+
+    private function categoryManagerNeverCalled(): void
+    {
+        $this->categoryManager->expects(self::never())->method('updateCategory');
+    }
+
+    private function expectSaveCategory(UpdateCategoryCommand $command, string $expectedPath): void
+    {
+        $this->writeRepository->expects(self::once())
+            ->method('save')
+            ->willReturn(CategoryMother::createWithData(
+                parentId: $command->parentId,
+                path: $expectedPath,
+                slug: $command->slug,
+                id: $command->id,
+            ));
+    }
+
+    private function saveCategoryNeverCalled(): void
+    {
+        $this->writeRepository->expects(self::never())->method('save');
+    }
+
+    private function expectEventDispatched(string $oldPath, string $newPath): void
+    {
+        $this->eventBus->expects(self::once())
+            ->method('dispatch')
+            ->with(self::callback(function (object $event) use ($oldPath, $newPath): bool {
+                if (false === $event instanceof CategoryMovedDomainEvent) {
+                    return false;
+                }
+
+                $oldPathCorrect = $oldPath === $event->oldPath;
+                $newPathCorrect = $newPath === $event->newPath;
+
+                return $oldPathCorrect && $newPathCorrect;
+            }))
+            ->willReturn(new Envelope(new stdClass()));
+    }
+
+    private function eventBusNeverCalled(): void
+    {
+        $this->eventBus->expects(self::never())->method('dispatch');
     }
 }

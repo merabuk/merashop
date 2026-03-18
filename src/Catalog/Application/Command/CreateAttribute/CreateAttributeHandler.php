@@ -7,8 +7,8 @@ namespace App\Catalog\Application\Command\CreateAttribute;
 use App\Catalog\Application\Exception\Attribute\CreateAttributeException;
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Exception\Attribute\AttributeAlreadyExistsException;
-use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
+use App\Catalog\Domain\Service\Attribute\AttributeValidatorInterface;
 use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Translations;
@@ -24,7 +24,7 @@ use Throwable;
 readonly class CreateAttributeHandler implements CommandHandlerInterface
 {
     public function __construct(
-        private AttributeReadRepositoryInterface $readRepository,
+        private AttributeValidatorInterface $attributeValidator,
         private UlidGeneratorInterface $ulidGenerator,
         private AttributeWriteRepositoryInterface $writeRepository,
     ) {
@@ -39,9 +39,7 @@ readonly class CreateAttributeHandler implements CommandHandlerInterface
         try {
             $code = Code::fromString($command->code);
 
-            if ($this->readRepository->existsByCode($code)) {
-                throw AttributeAlreadyExistsException::becauseAttributeCodeAlreadyExists($code->value());
-            }
+            $this->attributeValidator->validateCreation($code);
 
             $ulid = $this->ulidGenerator->next();
 

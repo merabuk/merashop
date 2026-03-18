@@ -6,9 +6,11 @@ namespace App\Tests\Catalog\Unit\Application\Command\CreateAttribute;
 
 use App\Catalog\Application\Command\CreateAttribute\CreateAttributeCommand;
 use App\Catalog\Application\Command\CreateAttribute\CreateAttributeHandler;
+use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Exception\Attribute\AttributeAlreadyExistsException;
-use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
+use App\Catalog\Domain\Service\Attribute\AttributeValidatorInterface;
+use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use App\Tests\Catalog\Support\AttributeMother;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -16,13 +18,13 @@ use PHPUnit\Framework\TestCase;
 
 final class CreateAttributeHandlerTest extends TestCase
 {
-    private AttributeReadRepositoryInterface&MockObject $readRepository;
+    private AttributeValidatorInterface&MockObject $attributeValidator;
     private AttributeWriteRepositoryInterface&MockObject $writeRepository;
     private UlidGeneratorInterface&MockObject $ulidGenerator;
 
     protected function setUp(): void
     {
-        $this->readRepository = $this->createMock(AttributeReadRepositoryInterface::class);
+        $this->attributeValidator = $this->createMock(AttributeValidatorInterface::class);
         $this->writeRepository = $this->createMock(AttributeWriteRepositoryInterface::class);
         $this->ulidGenerator = $this->createMock(UlidGeneratorInterface::class);
     }
@@ -39,9 +41,9 @@ final class CreateAttributeHandlerTest extends TestCase
             adminUlid: $attribute->getCreatedBy()->value()
         );
 
-        $this->readRepository->expects(self::once())->method('existsByCode')->willReturn(false);
-        $this->ulidGenerator->expects(self::once())->method('next')->willReturn($attribute->getUlid()->value());
-        $this->writeRepository->expects(self::once())->method('save')->willReturn($attribute);
+        $this->givenCodeIsAvailable($attribute->getCode());
+        $this->expectGenerateUlid($attribute->getUlid()->value());
+        $this->expectSaveAttribute($attribute);
 
         $resultId = $this->createHandler()($command);
 
@@ -57,9 +59,9 @@ final class CreateAttributeHandlerTest extends TestCase
             adminUlid: '01KHVRCA679BJ6PBXX5N3G6RR5'
         );
 
-        $this->readRepository->expects(self::once())->method('existsByCode')->willReturn(true);
-        $this->ulidGenerator->expects(self::never())->method('next');
-        $this->writeRepository->expects(self::never())->method('save');
+        $this->givenCodeIsTaken($command->code);
+        $this->generateUlidNeverCalled();
+        $this->saveAttributeNeverCalled();
 
         $this->expectException(AttributeAlreadyExistsException::class);
 
@@ -69,9 +71,57 @@ final class CreateAttributeHandlerTest extends TestCase
     private function createHandler(): CreateAttributeHandler
     {
         return new CreateAttributeHandler(
-            readRepository: $this->readRepository,
+            attributeValidator: $this->attributeValidator,
             ulidGenerator: $this->ulidGenerator,
             writeRepository: $this->writeRepository
         );
+    }
+
+    private function givenCodeIsAvailable(Code $code): void
+    {
+        $this->attributeValidator->expects(self::once())
+            ->method('validateCreation')
+            ->with(self::equalTo($code));
+    }
+
+    private function givenCodeIsTaken(string $code): void
+    {
+        $this->attributeValidator->expects(self::once())
+            ->method('validateCreation')
+            ->with(self::callback(fn (Code $c) => $c->value() === $code))
+            ->willThrowException(new AttributeAlreadyExistsException());
+    }
+
+    private function expectGenerateUlid(string $expectedUlid): void
+    {
+        $this->ulidGenerator->expects(self::once())
+            ->method('next')
+            ->willReturn($expectedUlid);
+    }
+
+    private function generateUlidNeverCalled(): void
+    {
+        $this->ulidGenerator->expects(self::never())->method('next');
+    }
+
+    private function expectSaveAttribute(Attribute $attribute): void
+    {
+        $this->writeRepository->expects(self::once())
+            ->method('save')
+            ->with(self::callback(function (Attribute $updatedAttribute) use ($attribute): bool {
+                $ulidCorrect = $attribute->getUlid()->equals($updatedAttribute->getUlid());
+                $codeCorrect = $attribute->getCode()->equals($updatedAttribute->getCode());
+                $typeCorrect = $attribute->getType()->equals($updatedAttribute->getType());
+                $translationsCorrect = $attribute->getTranslations()->equals($updatedAttribute->getTranslations());
+                $createdByCorrect = $attribute->getCreatedBy()->equals($updatedAttribute->getCreatedBy());
+
+                return $ulidCorrect && $codeCorrect && $typeCorrect && $translationsCorrect && $createdByCorrect;
+            }))
+            ->willReturn($attribute);
+    }
+
+    private function saveAttributeNeverCalled(): void
+    {
+        $this->writeRepository->expects(self::never())->method('save');
     }
 }

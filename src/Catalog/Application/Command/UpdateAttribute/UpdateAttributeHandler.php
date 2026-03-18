@@ -9,6 +9,7 @@ use App\Catalog\Domain\Exception\Attribute\AttributeAlreadyExistsException;
 use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
+use App\Catalog\Domain\Service\Attribute\AttributeValidatorInterface;
 use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Id;
@@ -25,6 +26,7 @@ readonly class UpdateAttributeHandler implements CommandHandlerInterface
 {
     public function __construct(
         private AttributeReadRepositoryInterface $readRepository,
+        private AttributeValidatorInterface $attributeValidator,
         private AttributeWriteRepositoryInterface $writeRepository,
     ) {
     }
@@ -39,16 +41,9 @@ readonly class UpdateAttributeHandler implements CommandHandlerInterface
     {
         try {
             $attribute = $this->readRepository->getById(Id::fromInt($command->id));
-
-            if ($attribute->getVersion()->value() !== $command->version) {
-                throw new ConcurrencyException();
-            }
-
             $newCode = Code::fromString($command->code);
 
-            if (!$attribute->getCode()->equals($newCode) && $this->readRepository->existsByCode($newCode)) {
-                throw AttributeAlreadyExistsException::becauseAttributeCodeAlreadyExists($newCode->value());
-            }
+            $this->attributeValidator->validateUpdate($attribute, $command->version, $newCode);
 
             $attribute->update(
                 code: $newCode,

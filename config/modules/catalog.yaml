@@ -23,12 +23,14 @@ services:
       $clock: '@clock'
       $filesystem: '@catalog.storage.filesystem'
 
+  App\Catalog\Domain\Service\Attribute\AttributeValidatorInterface: '@App\Catalog\Domain\Service\Attribute\AttributeValidator'
   App\Catalog\Domain\Factory\Contract\AttributeFactoryInterface: '@App\Catalog\Domain\Factory\AttributeFactory'
   App\Catalog\Domain\Repository\AttributeReadRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\AttributeReadRepository'
   App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\AttributeWriteRepository'
 
-  App\Catalog\Domain\Service\Category\CategoryStructureServiceInterface: '@App\Catalog\Domain\Service\Category\CategoryStructureService'
   App\Catalog\Domain\Service\Category\CategoryManagerInterface: '@App\Catalog\Domain\Service\Category\CategoryManager'
+  App\Catalog\Domain\Service\Category\CategoryStructureServiceInterface: '@App\Catalog\Domain\Service\Category\CategoryStructureService'
+  App\Catalog\Domain\Service\Category\CategoryValidatorInterface: '@App\Catalog\Domain\Service\Category\CategoryValidator'
   App\Catalog\Domain\Factory\Contract\CategoryFactoryInterface: '@App\Catalog\Domain\Factory\CategoryFactory'
   App\Catalog\Domain\Repository\CategoryReadRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\CategoryReadRepository'
   App\Catalog\Domain\Repository\CategoryWriteRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\CategoryWriteRepository'

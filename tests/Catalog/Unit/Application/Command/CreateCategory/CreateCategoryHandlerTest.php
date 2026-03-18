@@ -183,11 +183,11 @@ final class CreateCategoryHandlerTest extends TestCase
     ): void {
         $this->writeRepository->expects(self::once())
             ->method('save')
-            ->with(self::callback(function (Category $savedCategory) use ($slug, $structure): bool {
-                $slugCorrect = $slug === $savedCategory->getSlug()->value();
-                $pathCorrect = $structure->path->equals($savedCategory->getPath());
-                $sortOrderCorrect = $structure->sortOrder->equals($savedCategory->getSortOrder());
-                $parentIdCorrect = $structure->parentId?->equals($savedCategory->getParentId()) ?? true;
+            ->with(self::callback(function (Category $updatedCategory) use ($slug, $structure): bool {
+                $slugCorrect = $slug === $updatedCategory->getSlug()->value();
+                $pathCorrect = $structure->path->equals($updatedCategory->getPath());
+                $sortOrderCorrect = $structure->sortOrder->equals($updatedCategory->getSortOrder());
+                $parentIdCorrect = $structure->parentId?->equals($updatedCategory->getParentId()) ?? true;
 
                 return $slugCorrect && $pathCorrect && $sortOrderCorrect && $parentIdCorrect;
             }))
