@@ -6,6 +6,8 @@ namespace App\Tests\Catalog\Unit\Domain\ValueObject\Product;
 
 use App\Catalog\Domain\Entity\ProductImage;
 use App\Catalog\Domain\Exception\Product\InvalidProductImageItemException;
+use App\Catalog\Domain\Exception\Product\ProductImagesMainImageException;
+use App\Catalog\Domain\Exception\Product\ProductImageUniqueException;
 use App\Catalog\Domain\ValueObject\Product\ImageCollection;
 use App\Tests\Catalog\Support\ProductImageMother;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
@@ -56,6 +58,42 @@ final class ImageCollectionTest extends TestCase
             'invalidValue' => [new stdClass()],
             'exceptionClass' => InvalidProductImageItemException::class,
         ];
+        yield 'has duplicate image' => [
+            'invalidValue' => [
+                ProductImageMother::createWithData(isMain: true),
+                ProductImageMother::createWithData(),
+            ],
+            'exceptionClass' => ProductImageUniqueException::class,
+        ];
+        yield 'does not have main image' => [
+            'invalidValue' => [ProductImageMother::createWithData(isMain: false)],
+            'exceptionClass' => ProductImagesMainImageException::class,
+        ];
+        yield 'has more than one main image' => [
+            'invalidValue' => [
+                ProductImageMother::createWithData(
+                    ulid: '01KKTVY7D6D7S1BCSBB3GQA8B3',
+                    isMain: true
+                ),
+                ProductImageMother::createWithData(
+                    ulid: '01KKTVY7D6D7S1BCSBB3GQA8B4',
+                    isMain: true
+                ),
+            ],
+            'exceptionClass' => ProductImagesMainImageException::class,
+        ];
+    }
+
+    public function testItGetsByUlid(): void
+    {
+        $images = self::getValidImages();
+        $vo = ImageCollection::fromArray($images);
+
+        foreach ($images as $image) {
+            $foundImage = $vo->getByUlid($image->getUlid()->value());
+            self::assertNotNull($foundImage);
+            self::assertSame($image, $foundImage);
+        }
     }
 
     public function testItAddsNewImage(): void
@@ -78,6 +116,7 @@ final class ImageCollectionTest extends TestCase
             [
                 'id' => 123,
                 'ulid' => '01KKTVY7D6D7S1BCSBB3GQA8B3',
+                'isMain' => true,
             ],
             [
                 'id' => 456,
@@ -89,6 +128,10 @@ final class ImageCollectionTest extends TestCase
             ],
         ];
 
-        return array_map(fn (array $i) => ProductImageMother::createWithData(ulid: $i['ulid'], id: $i['id']), $data);
+        return array_map(fn (array $i) => ProductImageMother::createWithData(
+            ulid: $i['ulid'],
+            isMain: $i['isMain'] ?? false,
+            id: $i['id']
+        ), $data);
     }
 }

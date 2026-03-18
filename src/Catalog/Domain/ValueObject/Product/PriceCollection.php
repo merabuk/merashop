@@ -28,14 +28,14 @@ final readonly class PriceCollection extends AbstractCollection
      */
     public function __construct(array $items)
     {
-        $this->ensureNotEmpty($items);
         try {
+            $this->ensureNotEmpty($items);
             $this->ensureDataType($items);
+            $this->ensureUnique($items);
+            parent::__construct($items);
         } catch (InvalidAbstractCollectionItemException $e) {
             throw InvalidProductPriceItemException::fromBase($e);
         }
-        $this->ensureUnique($items);
-        parent::__construct($items);
     }
 
     /**
@@ -50,7 +50,7 @@ final readonly class PriceCollection extends AbstractCollection
         return new self($items);
     }
 
-    public function getCurrencyAndType(CurrencyEnum $currency, TypeEnum $type): ?ProductPrice
+    public function getByCurrencyAndType(CurrencyEnum $currency, TypeEnum $type): ?ProductPrice
     {
         return array_find($this->items, fn (ProductPrice $p) => $p->getPrice()->getCurrency() === $currency
             && $p->getType()->value() === $type
@@ -93,7 +93,7 @@ final readonly class PriceCollection extends AbstractCollection
             $currency = $price->getPrice()->getCurrencyCode();
             $key = sprintf('%s_%s', $priceType, $currency);
             if (isset($keys[$key])) {
-                throw ProductPriceUniqueException::duplicatePriceTypeForCurrency(priceType: $priceType, currency: $currency);
+                throw ProductPriceUniqueException::becauseDuplicatePriceTypeForCurrency(priceType: $priceType, currency: $currency);
             }
             $keys[$key] = true;
         }

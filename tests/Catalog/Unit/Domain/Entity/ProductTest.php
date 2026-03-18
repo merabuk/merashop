@@ -13,6 +13,7 @@ use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
 use App\Catalog\Domain\ValueObject\Product\AttributeValueCollection;
 use App\Catalog\Domain\ValueObject\Product\CategoryIdCollection;
+use App\Catalog\Domain\ValueObject\Product\ImageCollection;
 use App\Catalog\Domain\ValueObject\Product\PriceCollection;
 use App\Catalog\Domain\ValueObject\Product\Sku;
 use App\Catalog\Domain\ValueObject\Product\Status;
@@ -207,6 +208,24 @@ final class ProductTest extends TestCase
         self::assertSame($image2, $product->getImages()->all()[1]);
         self::assertTrue($image1->isMain()->isFalse());
         self::assertTrue($image2->isMain()->isTrue());
+    }
+
+    public function testItSetsImages(): void
+    {
+        $product = ProductMother::createWithData();
+
+        self::assertCount(0, $product->getImages());
+
+        $images = ImageCollection::fromArray([
+            ProductImageMother::createWithData(
+                isMain: true
+            ),
+        ]);
+
+        $product->setImages($images);
+
+        self::assertCount(1, $product->getImages());
+        self::assertTrue($product->getImages()->equals($images));
     }
 
     /**

@@ -8,7 +8,7 @@ use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 
 class ProductPriceUniqueException extends InvalidCatalogValueObjectException
 {
-    public static function duplicatePriceTypeForCurrency(string $priceType, string $currency): self
+    public static function becauseDuplicatePriceTypeForCurrency(string $priceType, string $currency): self
     {
         return new self(sprintf("Product price type '%s' for currency '%s' already exists", $priceType, $currency));
     }

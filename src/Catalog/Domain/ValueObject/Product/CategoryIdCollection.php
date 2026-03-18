@@ -23,10 +23,10 @@ final readonly class CategoryIdCollection extends AbstractCollection
     {
         try {
             $this->ensureDataType($items);
+            parent::__construct($items);
         } catch (InvalidAbstractCollectionItemException $e) {
             throw InvalidProductCategoryIdItemException::fromBase($e);
         }
-        parent::__construct($items);
     }
 
     /**

@@ -42,10 +42,23 @@ final class CategoryIdCollectionTest extends TestCase
         );
     }
 
-    #[DataProvider('invalidCategoryIdCollectionProvider')]
-    public function testThrowsExceptionOnInvalidInput(array $invalidValue, string $exceptionClass): void
+    public function testItGetsByCategoryId(): void
     {
-        $this->expectException($exceptionClass);
+        $categoryIds = self::getValidCategoryIds();
+
+        $vo = CategoryIdCollection::fromArray($categoryIds);
+
+        foreach ($categoryIds as $categoryId) {
+            $foundCategoryId = $vo->getByCategoryId($categoryId);
+            self::assertNotNull($foundCategoryId);
+            self::assertSame($categoryId, $foundCategoryId);
+        }
+    }
+
+    #[DataProvider('invalidCategoryIdCollectionProvider')]
+    public function testThrowsExceptionOnInvalidInput(array $invalidValue): void
+    {
+        $this->expectException(InvalidProductCategoryIdItemException::class);
         CategoryIdCollection::fromArray($invalidValue);
     }
 
@@ -53,7 +66,6 @@ final class CategoryIdCollectionTest extends TestCase
     {
         yield 'invalid type in array' => [
             'invalidValue' => [new stdClass()],
-            'exceptionClass' => InvalidProductCategoryIdItemException::class,
         ];
     }
 

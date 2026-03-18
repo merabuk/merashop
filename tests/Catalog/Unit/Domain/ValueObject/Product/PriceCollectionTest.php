@@ -74,6 +74,18 @@ final class PriceCollectionTest extends TestCase
         ];
     }
 
+    public function testItGetsByCurrencyAndType(): void
+    {
+        $prices = self::getValidPrices();
+        $vo = PriceCollection::fromArray($prices);
+
+        foreach ($prices as $price) {
+            $foundPrice = $vo->getByCurrencyAndType($price->getPrice()->getCurrency(), $price->getType()->value());
+            self::assertNotNull($foundPrice);
+            self::assertSame($price, $foundPrice);
+        }
+    }
+
     public function testItFindsActivePriceForCurrency(): void
     {
         $clock = new MockClock('2024-01-01 10:00:00');

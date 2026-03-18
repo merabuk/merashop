@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Catalog\Integration\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\Catalog\Domain\Entity\Product;
-use App\Catalog\Domain\Enum\Attribute\TypeEnum as AttributeTypeEnum;
 use App\Catalog\Domain\Enum\Product\StatusEnum;
 use App\Catalog\Domain\Enum\ProductPrice\TypeEnum as ProductPriceTypeEnum;
 use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
@@ -23,10 +22,8 @@ use App\Tests\Catalog\Support\ProductAttributeValueMother;
 use App\Tests\Catalog\Support\ProductImageMother;
 use App\Tests\Catalog\Support\ProductMother;
 use App\Tests\Catalog\Support\ProductPriceMother;
-use App\Tests\Catalog\Support\Traits\AttributeFactoryTrait;
 use App\Tests\Catalog\Support\Traits\CatalogEntityManagerTrait;
-use App\Tests\Catalog\Support\Traits\CategoryFactoryTrait;
-use App\Tests\Catalog\Support\Traits\TemporaryImageFactoryTrait;
+use App\Tests\Catalog\Support\Traits\ProductFactoryTrait;
 use App\Tests\Shared\Support\Traits\ValueObjectAssertionTrait;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
@@ -34,10 +31,8 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 final class ProductMapperTest extends KernelTestCase
 {
-    use AttributeFactoryTrait;
-    use CategoryFactoryTrait;
     use CatalogEntityManagerTrait;
-    use TemporaryImageFactoryTrait;
+    use ProductFactoryTrait;
     use ValueObjectAssertionTrait;
 
     private EntityManagerInterface $em;
@@ -53,73 +48,7 @@ final class ProductMapperTest extends KernelTestCase
 
     public function testItSuccessfullyPerformsRoundTrip(): void
     {
-        $prices = [];
-        $currencies = CurrencyEnum::cases();
-        $productPriceTypes = ProductPriceTypeEnum::cases();
-        foreach ($currencies as $currency) {
-            foreach ($productPriceTypes as $type) {
-                $isTimeLimited = ProductPriceTypeEnum::Sale === $type;
-                $prices[] = ProductPriceMother::createWithData(
-                    currency: $currency,
-                    type: $type,
-                    validFrom: $isTimeLimited ? new DateTimeImmutable('2024-01-01 00:00:00') : null,
-                    validTo: $isTimeLimited ? new DateTimeImmutable('2024-01-31 23:59:59') : null,
-                );
-            }
-        }
-
-        $category1 = $this->getCategoryFixture()->create();
-        $category2 = $this->getCategoryFixture()->create();
-        $categoryIds = [$category1->getId(), $category2->getId()];
-
-        $attribute1 = $this->getAttributeFixture()->create(type: AttributeTypeEnum::String);
-        $attribute2 = $this->getAttributeFixture()->create(type: AttributeTypeEnum::Int);
-        $attribute3 = $this->getAttributeFixture()->create(type: AttributeTypeEnum::Boolean);
-        $attribute4 = $this->getAttributeFixture()->create(type: AttributeTypeEnum::Select);
-
-        $attributeValues = [
-            ProductAttributeValueMother::createWithData(
-                attributeId: $attribute1->getId()->value(),
-                value: 'value1'
-            ),
-            ProductAttributeValueMother::createWithData(
-                attributeId: $attribute2->getId()->value(),
-                value: 123
-            ),
-            ProductAttributeValueMother::createWithData(
-                attributeId: $attribute3->getId()->value(),
-                value: true
-            ),
-            ProductAttributeValueMother::createWithData(
-                attributeId: $attribute4->getId()->value(),
-                value: ['option1', 'option2']
-            ),
-        ];
-
-        $temporaryImage1 = $this->getTemporaryImageFixture()->create();
-        $temporaryImage2 = $this->getTemporaryImageFixture()->create();
-
-        $images = [
-            ProductImageMother::createWithData(
-                ulid: $temporaryImage1->getUlid()->value(),
-                path: $temporaryImage1->getPath()->value(),
-                sortOrder: 1,
-                isMain: true
-            ),
-            ProductImageMother::createWithData(
-                ulid: $temporaryImage2->getUlid()->value(),
-                path: $temporaryImage2->getPath()->value(),
-                sortOrder: 2,
-                isMain: false
-            ),
-        ];
-
-        $domainProduct = ProductMother::createWithData(
-            prices: $prices,
-            categoryIds: $categoryIds,
-            attributeValues: $attributeValues,
-            images: $images,
-        );
+        $domainProduct = $this->getProductMother()->createFullFeatured();
 
         $ormProduct = $this->mapper->toDoctrineOrm($domainProduct);
 
@@ -156,36 +85,10 @@ final class ProductMapperTest extends KernelTestCase
         self::assertTrue($domainProduct->getTranslations()->equals($restoredDomain->getTranslations()));
         self::assertTrue($domainProduct->getVersion()->equals($restoredDomain->getVersion()));
         self::assertTrue($domainProduct->getCreatedBy()->equals($restoredDomain->getCreatedBy()));
-        foreach ($domainProduct->getPrices() as $domainPrice) {
-            $restoredPrice = $restoredDomain->getPrices()->getCurrencyAndType(
-                currency: $domainPrice->getPrice()->getCurrency(),
-                type: $domainPrice->getType()->value()
-            );
-            self::assertNotNull($restoredPrice);
-            self::assertNotNull($restoredDomain->getId());
-            self::assertTrue($domainPrice->getPrice()->equals($restoredPrice->getPrice()));
-            self::assertTrue($domainPrice->getTax()->equals($restoredPrice->getTax()));
-            self::assertTrue($domainPrice->getTaxIncluded()->equals($restoredPrice->getTaxIncluded()));
-            $this->assertVoEqualsOrNull($domainPrice->getValidityPeriod(), $restoredPrice->getValidityPeriod());
-        }
-        foreach ($domainProduct->getCategoryIds() as $domainCategoryId) {
-            $restoredCategoryId = $restoredDomain->getCategoryIds()->getByCategoryId($domainCategoryId);
-            self::assertNotNull($restoredCategoryId);
-        }
-        foreach ($domainProduct->getAttributeValues() as $domainAttributeValue) {
-            $restoredAttributeValue = $restoredDomain->getAttributeValues()->getByAttributeId($domainAttributeValue->getAttributeId());
-            self::assertNotNull($restoredAttributeValue);
-            self::assertNotNull($restoredDomain->getId());
-            self::assertTrue($domainAttributeValue->getValue()->equals($restoredAttributeValue->getValue()));
-        }
-        foreach ($domainProduct->getImages() as $domainImage) {
-            $restoredImage = $restoredDomain->getImages()->getByUlid($domainImage->getUlid());
-            self::assertNotNull($restoredImage);
-            self::assertNotNull($restoredDomain->getId());
-            self::assertTrue($domainImage->getPath()->equals($restoredImage->getPath()));
-            self::assertTrue($domainImage->getSortOrder()->equals($restoredImage->getSortOrder()));
-            self::assertTrue($domainImage->isMain()->equals($restoredImage->isMain()));
-        }
+        $this->assertRestoredPricesMatch($domainProduct, $restoredDomain);
+        $this->assertRestoredCategoryIdsMatch($domainProduct, $restoredDomain);
+        $this->assertRestoredAttributeValuesMatch($domainProduct, $restoredDomain);
+        $this->assertRestoredImagesMatch($domainProduct, $restoredDomain);
         $this->assertVoEqualsOrNull($domainProduct->getUpdatedBy(), $restoredDomain->getUpdatedBy());
     }
 
@@ -211,7 +114,7 @@ final class ProductMapperTest extends KernelTestCase
                 attributeId: 456,
                 value: 'new_value'
             )],
-            images: [ProductImageMother::createWithData()]
+            images: [ProductImageMother::createWithData(isMain: true)]
         );
 
         $ormProduct = new OrmProduct();
@@ -303,6 +206,22 @@ final class ProductMapperTest extends KernelTestCase
         }
     }
 
+    private function assertRestoredPricesMatch(Product $domain, Product $restored): void
+    {
+        foreach ($domain->getPrices() as $domainPrice) {
+            $restoredPrice = $restored->getPrices()->getByCurrencyAndType(
+                currency: $domainPrice->getPrice()->getCurrency(),
+                type: $domainPrice->getType()->value()
+            );
+            self::assertNotNull($restoredPrice);
+            self::assertNotNull($restoredPrice->getId());
+            self::assertTrue($domainPrice->getPrice()->equals($restoredPrice->getPrice()));
+            self::assertTrue($domainPrice->getTax()->equals($restoredPrice->getTax()));
+            self::assertTrue($domainPrice->getTaxIncluded()->equals($restoredPrice->getTaxIncluded()));
+            $this->assertVoEqualsOrNull($domainPrice->getValidityPeriod(), $restoredPrice->getValidityPeriod());
+        }
+    }
+
     private function assertOrmCategoriesMatch(Product $domain, OrmProduct $orm): void
     {
         self::assertCount($domain->getCategoryIds()->count(), $orm->categories);
@@ -313,6 +232,14 @@ final class ProductMapperTest extends KernelTestCase
             )->first();
 
             self::assertNotNull($ormCategory, sprintf('Category with id %s not found in ORM', $domainCategoryId->value()));
+        }
+    }
+
+    private function assertRestoredCategoryIdsMatch(Product $domain, Product $restored): void
+    {
+        foreach ($domain->getCategoryIds() as $domainCategoryId) {
+            $restoredCategoryId = $restored->getCategoryIds()->getByCategoryId($domainCategoryId);
+            self::assertNotNull($restoredCategoryId);
         }
     }
 
@@ -330,6 +257,16 @@ final class ProductMapperTest extends KernelTestCase
         }
     }
 
+    private function assertRestoredAttributeValuesMatch(Product $domain, Product $restored): void
+    {
+        foreach ($domain->getAttributeValues() as $domainAttributeValue) {
+            $restoredAttributeValue = $restored->getAttributeValues()->getByAttributeId($domainAttributeValue->getAttributeId());
+            self::assertNotNull($restoredAttributeValue);
+            self::assertNotNull($restoredAttributeValue->getId());
+            self::assertTrue($domainAttributeValue->getValue()->equals($restoredAttributeValue->getValue()));
+        }
+    }
+
     private function assertOrmImagesMatch(Product $domain, OrmProduct $orm): void
     {
         self::assertCount($domain->getImages()->count(), $orm->images);
@@ -343,6 +280,18 @@ final class ProductMapperTest extends KernelTestCase
             self::assertSame($domainImage->getPath()->value(), $ormImage->path);
             self::assertSame($domainImage->getSortOrder()->value(), $ormImage->sortOrder);
             self::assertSame($domainImage->isMain()->value(), $ormImage->isMain);
+        }
+    }
+
+    private function assertRestoredImagesMatch(Product $domain, Product $restored): void
+    {
+        foreach ($domain->getImages() as $domainImage) {
+            $restoredImage = $restored->getImages()->getByUlid($domainImage->getUlid());
+            self::assertNotNull($restoredImage);
+            self::assertNotNull($restoredImage->getId());
+            self::assertTrue($domainImage->getPath()->equals($restoredImage->getPath()));
+            self::assertTrue($domainImage->getSortOrder()->equals($restoredImage->getSortOrder()));
+            self::assertTrue($domainImage->isMain()->equals($restoredImage->isMain()));
         }
     }
 }

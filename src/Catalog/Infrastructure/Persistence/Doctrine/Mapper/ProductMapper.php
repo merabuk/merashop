@@ -148,7 +148,7 @@ final readonly class ProductMapper implements MapperInterface
         $currentOrmPrices = $orm->prices->toArray();
 
         foreach ($currentOrmPrices as $ormPrice) {
-            $stillExists = $domainPrices->getCurrencyAndType($ormPrice->currency, $ormPrice->type);
+            $stillExists = $domainPrices->getByCurrencyAndType($ormPrice->currency, $ormPrice->type);
 
             if (!$stillExists) {
                 $orm->prices->removeElement($ormPrice);
@@ -326,9 +326,10 @@ final readonly class ProductMapper implements MapperInterface
             $ormImage = array_find(
                 $currentOrmImages,
                 fn (OrmProductImage $p) => $p->ulid === $di->getUlid()->value()
-            ) ?? new OrmProductImage();
+            );
 
-            if (null === $ormImage->id) {
+            if (!$ormImage) {
+                $ormImage = new OrmProductImage();
                 $ormImage->product = $orm;
                 $ormImage->ulid = $di->getUlid()->value();
 

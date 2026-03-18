@@ -43,6 +43,18 @@ final class AttributeValueCollectionTest extends TestCase
         );
     }
 
+    public function testItGetsByAttributeId(): void
+    {
+        $attributeValues = self::getValidAttributeValues();
+        $vo = AttributeValueCollection::fromArray($attributeValues);
+
+        foreach ($attributeValues as $attributeValue) {
+            $foundAttributeValue = $vo->getByAttributeId($attributeValue->getAttributeId());
+            self::assertNotNull($foundAttributeValue);
+            self::assertSame($attributeValue, $foundAttributeValue);
+        }
+    }
+
     #[DataProvider('invalidProductAttributeValueCollectionProvider')]
     public function testThrowsExceptionOnInvalidInput(array $invalidValue, string $exceptionClass): void
     {

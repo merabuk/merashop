@@ -6,9 +6,11 @@ namespace App\Tests\Catalog\Support;
 
 use App\Catalog\Domain\Entity\Product;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
+use App\Catalog\Domain\Entity\ProductImage;
 use App\Catalog\Domain\Entity\ProductPrice;
+use App\Catalog\Domain\Enum\Attribute\TypeEnum as AttributeTypeEnum;
 use App\Catalog\Domain\Enum\Product\StatusEnum;
-use App\Catalog\Domain\Enum\ProductPrice\TypeEnum;
+use App\Catalog\Domain\Enum\ProductPrice\TypeEnum as ProductPriceTypeEnum;
 use App\Catalog\Domain\Factory\Contract\ProductFactoryInterface;
 use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
@@ -25,8 +27,10 @@ use App\Catalog\Domain\ValueObject\Product\Version;
 use App\Shared\Domain\Enum\CurrencyEnum;
 use App\Shared\Domain\Enum\LocaleEnum;
 use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
+use DateTimeImmutable;
 use Faker\Factory;
 use Faker\Generator;
+use RuntimeException;
 
 final readonly class ProductMother
 {
@@ -38,6 +42,9 @@ final readonly class ProductMother
         private UlidGeneratorInterface $ulidGenerator,
         private Generator $faker,
         private Factory $fakerFactory,
+        private CategoryFixture $categoryFixture,
+        private AttributeFixture $attributeFixture,
+        private ProductAttributeValueMother $productAttributeValueMother,
     ) {
     }
 
@@ -82,6 +89,7 @@ final readonly class ProductMother
      * @param ?ProductPrice[]                                           $prices
      * @param ?CategoryId[]                                             $categoryIds
      * @param ?ProductAttributeValue[]                                  $attributeValues
+     * @param ?ProductImage[]                                           $images
      */
     public function create(
         ?string $ulid = null,
@@ -92,17 +100,42 @@ final readonly class ProductMother
         ?string $createdByUlid = null,
         ?array $categoryIds = null,
         ?array $attributeValues = null,
+        ?array $images = null,
     ): Product {
-        return $this->productFactory->createForTest(
+        $product = $this->productFactory->createForTest(
             ulid: $ulid ?? $this->ulidGenerator->next(),
             sku: $sku ?? $this->faker->unique()->regexify('[A-Z]{3}-\d{2}-[A-Z]{3}-\d{2}'),
             status: $status ?? StatusEnum::Active,
             translations: $translations ?? $this->makeTranslations(),
-            prices: $prices ?? self::makeFakePrices(),
+            prices: $prices ?? $this->makePrices(),
             createdByUlid: $createdByUlid ?? $this->ulidGenerator->next(),
             categoryIds: $categoryIds ?? [],
             attributeValues: $attributeValues ?? [],
         );
+
+        if ($images) {
+            $product->setImages(ImageCollection::fromArray($images));
+        }
+
+        return $product;
+    }
+
+    public function createFullFeatured(): Product
+    {
+        $product = $this->productFactory->createForTest(
+            ulid: $this->ulidGenerator->next(),
+            sku: $this->faker->unique()->regexify('[A-Z]{3}-\d{2}-[A-Z]{3}-\d{2}'),
+            status: StatusEnum::Active,
+            translations: $this->makeTranslations(),
+            prices: $this->makePrices(),
+            createdByUlid: $this->ulidGenerator->next(),
+            categoryIds: $this->makeCategoryIds(),
+            attributeValues: $this->makeAttributeValues(),
+        );
+
+        $product->setImages(ImageCollection::fromArray($this->makeImages()));
+
+        return $product;
     }
 
     /**
@@ -166,10 +199,47 @@ final readonly class ProductMother
     /**
      * @return ProductPrice[]
      */
+    private function makePrices(): array
+    {
+        $currencies = CurrencyEnum::cases();
+        $productPriceTypes = ProductPriceTypeEnum::cases();
+
+        $prices = [];
+        foreach ($currencies as $currency) {
+            foreach ($productPriceTypes as $type) {
+                $isTimeLimited = ProductPriceTypeEnum::Sale === $type;
+
+                if ($isTimeLimited) {
+                    $format = DateTimeImmutable::ATOM;
+                    $validFrom = new DateTimeImmutable(
+                        $this->faker->dateTimeBetween('now', '+1 month')->format($format)
+                    );
+                    $validTo = new DateTimeImmutable(
+                        $this->faker->dateTimeBetween($validFrom->format($format), '+2 month')->format($format)
+                    );
+                }
+
+                $prices[] = ProductPriceMother::createWithData(
+                    currency: $currency,
+                    type: $type,
+                    validFrom: $validFrom ?? null,
+                    validTo: $validTo ?? null,
+                );
+
+                unset($validFrom, $validTo);
+            }
+        }
+
+        return $prices;
+    }
+
+    /**
+     * @return ProductPrice[]
+     */
     private static function makeFakePrices(): array
     {
         $currencies = CurrencyEnum::cases();
-        $productPriceTypes = [TypeEnum::Regular, TypeEnum::Cost];
+        $productPriceTypes = [ProductPriceTypeEnum::Regular, ProductPriceTypeEnum::Cost];
 
         $prices = [];
         foreach ($currencies as $currency) {
@@ -179,5 +249,56 @@ final readonly class ProductMother
         }
 
         return $prices;
+    }
+
+    /**
+     * @return CategoryId[]
+     */
+    private function makeCategoryIds(): array
+    {
+        $ids = [];
+        for ($i = 0; $i < 3; ++$i) {
+            $category = $this->categoryFixture->create();
+            $ids[] = $category->getId() ?? throw new RuntimeException('Category ID is null');
+        }
+
+        return $ids;
+    }
+
+    /**
+     * @return ProductAttributeValue[]
+     */
+    private function makeAttributeValues(): array
+    {
+        $attributeTypes = AttributeTypeEnum::cases();
+
+        $values = [];
+        foreach ($attributeTypes as $type) {
+            $attribute = $this->attributeFixture->create(type: $type);
+            $values[] = $this->productAttributeValueMother->create(
+                attributeId: $attribute->getId()?->value() ?? throw new RuntimeException('Attribute ID is null'),
+                attributeType: $attribute->getType()->value()
+            );
+        }
+
+        return $values;
+    }
+
+    /**
+     * @return ProductImage[]
+     */
+    private function makeImages(): array
+    {
+        $images = [];
+        for ($i = 0; $i < 3; ++$i) {
+            $image = ProductImageMother::createWithData(
+                ulid: $this->ulidGenerator->next(),
+                sortOrder: $i + 1,
+                isMain: 0 === $i,
+            );
+            $images[] = $image;
+        }
+
+        return $images;
     }
 }

@@ -6,6 +6,8 @@ namespace App\Catalog\Domain\Entity;
 
 use App\Catalog\Domain\Exception\Product\InvalidProductImageItemException;
 use App\Catalog\Domain\Exception\Product\InvalidProductVersionException;
+use App\Catalog\Domain\Exception\Product\ProductImagesMainImageException;
+use App\Catalog\Domain\Exception\Product\ProductImageUniqueException;
 use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Product\AttributeValueCollection;
 use App\Catalog\Domain\ValueObject\Product\CategoryIdCollection;
@@ -38,6 +40,8 @@ class Product
 
     /**
      * @throws InvalidProductImageItemException
+     * @throws ProductImagesMainImageException
+     * @throws ProductImageUniqueException
      * @throws InvalidProductVersionException
      */
     public static function create(
@@ -88,6 +92,11 @@ class Product
     public function addImage(ProductImage $image): void
     {
         $this->images = $this->images->add($image);
+    }
+
+    public function setImages(ImageCollection $images): void
+    {
+        $this->images = $images;
     }
 
     public function getId(): ?Id
