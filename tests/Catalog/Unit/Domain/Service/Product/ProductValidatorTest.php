@@ -428,7 +428,7 @@ final class ProductValidatorTest extends TestCase
     private function givenTemporaryImagesExist(array $temporaryImageUlids): void
     {
         $this->temporaryImageReadRepository->expects(self::once())
-            ->method('assertAllExistByUlidAndContext')
+            ->method('assertAllExistByUlidsAndContext')
             ->with(
                 self::equalTo($temporaryImageUlids),
                 self::equalTo(ContextEnum::ProductMain)
@@ -441,7 +441,7 @@ final class ProductValidatorTest extends TestCase
     private function oneOfGivenTemporaryImagesDoesNotExists(array $temporaryImageUlids): void
     {
         $this->temporaryImageReadRepository->expects(self::once())
-            ->method('assertAllExistByUlidAndContext')
+            ->method('assertAllExistByUlidsAndContext')
             ->with(
                 self::equalTo($temporaryImageUlids),
                 self::equalTo(ContextEnum::ProductMain)
@@ -451,6 +451,6 @@ final class ProductValidatorTest extends TestCase
 
     private function checkTemporaryImagesNeverCalled(): void
     {
-        $this->temporaryImageReadRepository->expects(self::never())->method('assertAllExistByUlidAndContext');
+        $this->temporaryImageReadRepository->expects(self::never())->method('assertAllExistByUlidsAndContext');
     }
 }

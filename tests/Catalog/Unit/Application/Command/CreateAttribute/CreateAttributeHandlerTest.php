@@ -11,22 +11,23 @@ use App\Catalog\Domain\Exception\Attribute\AttributeAlreadyExistsException;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
 use App\Catalog\Domain\Service\Attribute\AttributeValidatorInterface;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
-use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use App\Tests\Catalog\Support\AttributeMother;
+use App\Tests\Shared\Support\Traits\UlidGenerationTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class CreateAttributeHandlerTest extends TestCase
 {
+    use UlidGenerationTrait;
+
     private AttributeValidatorInterface&MockObject $attributeValidator;
     private AttributeWriteRepositoryInterface&MockObject $writeRepository;
-    private UlidGeneratorInterface&MockObject $ulidGenerator;
 
     protected function setUp(): void
     {
+        $this->setUlidGenerator();
         $this->attributeValidator = $this->createMock(AttributeValidatorInterface::class);
         $this->writeRepository = $this->createMock(AttributeWriteRepositoryInterface::class);
-        $this->ulidGenerator = $this->createMock(UlidGeneratorInterface::class);
     }
 
     public function testItHandleSuccess(): void
@@ -90,18 +91,6 @@ final class CreateAttributeHandlerTest extends TestCase
             ->method('validateCreation')
             ->with(self::callback(fn (Code $c) => $c->value() === $code))
             ->willThrowException(new AttributeAlreadyExistsException());
-    }
-
-    private function expectGenerateUlid(string $expectedUlid): void
-    {
-        $this->ulidGenerator->expects(self::once())
-            ->method('next')
-            ->willReturn($expectedUlid);
-    }
-
-    private function generateUlidNeverCalled(): void
-    {
-        $this->ulidGenerator->expects(self::never())->method('next');
     }
 
     private function expectSaveAttribute(Attribute $attribute): void

@@ -10,11 +10,12 @@ use App\Catalog\Domain\ValueObject\TemporaryImage\Ulid;
 use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\Markers\ValueObjectExceptionInterface;
+use App\Shared\Infrastructure\Persistence\Doctrine\Helper\UlidPersistenceHelper;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait;
 use DateTimeImmutable;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
-use Symfony\Bridge\Doctrine\Types\UlidType;
 
 final class TemporaryImageWriteRepository extends BaseTemporaryImageRepository implements TemporaryImageWriteRepositoryInterface
 {
@@ -47,21 +48,37 @@ final class TemporaryImageWriteRepository extends BaseTemporaryImageRepository i
      */
     public function deleteByUlids(array $ulids): int
     {
-        return (int) $this->createQueryBuilder('ti')
+        if (empty($ulids)) {
+            return 0;
+        }
+
+        $result = $this->createQueryBuilder('ti')
             ->delete()
             ->where('ti.ulid IN (:ulids)')
-            ->setParameter('ulids', $ulids, UlidType::NAME)
+            ->setParameter(
+                key: 'ulids',
+                value: UlidPersistenceHelper::toBaseStrings($ulids),
+                type: ArrayParameterType::STRING
+            )
             ->getQuery()
             ->execute();
+
+        $this->getEntityManager()->clear();
+
+        return (int) $result;
     }
 
     public function deleteOlderThan(DateTimeImmutable $date): int
     {
-        return (int) $this->createQueryBuilder('ti')
+        $result = $this->createQueryBuilder('ti')
             ->delete()
             ->where('ti.createdAt < :date')
             ->setParameter('date', $date)
             ->getQuery()
             ->execute();
+
+        $this->getEntityManager()->clear();
+
+        return (int) $result;
     }
 }

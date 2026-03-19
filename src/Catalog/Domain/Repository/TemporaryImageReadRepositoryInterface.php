@@ -28,5 +28,5 @@ interface TemporaryImageReadRepositoryInterface
      *
      * @throws OneOfTemporaryImagesNotFoundException
      */
-    public function assertAllExistByUlidAndContext(array $ulids, ContextEnum $context): void;
+    public function assertAllExistByUlidsAndContext(array $ulids, ContextEnum $context): void;
 }

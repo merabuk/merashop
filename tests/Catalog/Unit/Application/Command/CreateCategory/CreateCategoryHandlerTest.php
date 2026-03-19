@@ -16,21 +16,22 @@ use App\Catalog\Domain\ValueObject\Category\Id;
 use App\Catalog\Domain\ValueObject\Category\Path;
 use App\Catalog\Domain\ValueObject\Category\Slug;
 use App\Catalog\Domain\ValueObject\Category\SortOrder;
-use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use App\Tests\Catalog\Support\CategoryMother;
+use App\Tests\Shared\Support\Traits\UlidGenerationTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class CreateCategoryHandlerTest extends TestCase
 {
-    private UlidGeneratorInterface&MockObject $ulidGenerator;
+    use UlidGenerationTrait;
+
     private CategoryValidatorInterface&MockObject $categoryValidator;
     private CategoryStructureServiceInterface&MockObject $categoryStructureService;
     private CategoryWriteRepositoryInterface&MockObject $writeRepository;
 
     protected function setUp(): void
     {
-        $this->ulidGenerator = $this->createMock(UlidGeneratorInterface::class);
+        $this->setUlidGenerator();
         $this->categoryValidator = $this->createMock(CategoryValidatorInterface::class);
         $this->categoryStructureService = $this->createMock(CategoryStructureServiceInterface::class);
         $this->writeRepository = $this->createMock(CategoryWriteRepositoryInterface::class);
@@ -146,18 +147,6 @@ final class CreateCategoryHandlerTest extends TestCase
             ->method('validateCreation')
             ->with(self::callback(fn (Slug $s) => $s->value() === $slug))
             ->willThrowException(new CategoryAlreadyExistsException());
-    }
-
-    private function expectGenerateUlid(string $expectedUlid): void
-    {
-        $this->ulidGenerator->expects(self::once())
-            ->method('next')
-            ->willReturn($expectedUlid);
-    }
-
-    private function generateUlidNeverCalled(): void
-    {
-        $this->ulidGenerator->expects(self::never())->method('next');
     }
 
     private function expectGenerateStructure(string $slug, ?int $parentId, CategoryStructureResult $structure): void

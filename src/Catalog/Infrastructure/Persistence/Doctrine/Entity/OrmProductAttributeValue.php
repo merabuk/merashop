@@ -44,4 +44,9 @@ class OrmProductAttributeValue
      */
     #[ORM\Column(type: Types::JSONB)]
     public ?array $valueJson = null;
+
+    public function setId(?int $value): void
+    {
+        $this->id = $value;
+    }
 }

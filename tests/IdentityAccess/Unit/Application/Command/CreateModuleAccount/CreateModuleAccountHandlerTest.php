@@ -11,18 +11,19 @@ use App\IdentityAccess\Domain\Repository\ModuleAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\Repository\ModuleAccountWriteRepositoryInterface;
 use App\IdentityAccess\Domain\Service\PasswordGeneratorInterface;
 use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
-use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use App\Tests\IdentityAccess\Support\ModuleAccountMother;
+use App\Tests\Shared\Support\Traits\UlidGenerationTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class CreateModuleAccountHandlerTest extends TestCase
 {
+    use UlidGenerationTrait;
+
     private ModuleAccountReadRepositoryInterface&MockObject $readRepository;
     private PasswordGeneratorInterface&MockObject $passwordGenerator;
     private ModuleAccountWriteRepositoryInterface&MockObject $writeRepository;
     private PasswordHasherInterface&MockObject $passwordHasher;
-    private UlidGeneratorInterface&MockObject $ulidGenerator;
 
     protected function setUp(): void
     {
@@ -30,7 +31,7 @@ final class CreateModuleAccountHandlerTest extends TestCase
         $this->passwordGenerator = $this->createMock(PasswordGeneratorInterface::class);
         $this->writeRepository = $this->createMock(ModuleAccountWriteRepositoryInterface::class);
         $this->passwordHasher = $this->createMock(PasswordHasherInterface::class);
-        $this->ulidGenerator = $this->createMock(UlidGeneratorInterface::class);
+        $this->setUlidGenerator();
     }
 
     public function testItSuccessfullyCreateModuleAccount(): void
@@ -44,7 +45,7 @@ final class CreateModuleAccountHandlerTest extends TestCase
         $this->readRepository->method('existsByClientId')->willReturn(false);
         $this->passwordGenerator->method('generateClientSecret')->willReturn('plain_secret');
         $this->passwordHasher->method('hash')->willReturn('hashed_secret');
-        $this->ulidGenerator->method('next')->willReturn(ModuleAccountMother::DEFAULT_ULID);
+        $this->expectGenerateUlid(ModuleAccountMother::DEFAULT_ULID);
 
         $this->writeRepository->expects(self::once())
             ->method('save')

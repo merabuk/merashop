@@ -18,7 +18,7 @@ interface ProductApplicationFactoryInterface
      *
      * @return CategoryId[]
      */
-    public function mapCategoriesIds(array $categoryIds): array;
+    public function mapCategoryIds(array $categoryIds): array;
 
     /**
      * @param ProductAttributeValueData[] $attributeValues

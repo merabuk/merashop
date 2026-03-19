@@ -237,6 +237,8 @@ final class ProductMapperTest extends KernelTestCase
 
     private function assertRestoredCategoryIdsMatch(Product $domain, Product $restored): void
     {
+        self::assertCount($domain->getCategoryIds()->count(), $restored->getCategoryIds());
+
         foreach ($domain->getCategoryIds() as $domainCategoryId) {
             $restoredCategoryId = $restored->getCategoryIds()->getByCategoryId($domainCategoryId);
             self::assertNotNull($restoredCategoryId);

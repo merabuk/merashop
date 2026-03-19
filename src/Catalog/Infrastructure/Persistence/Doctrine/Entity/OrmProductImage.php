@@ -49,4 +49,9 @@ class OrmProductImage
 
     #[ORM\Column(type: Types::BOOLEAN)]
     public ?bool $isMain = MainImageFlag::DEFAULT_VALUE;
+
+    public function setId(?int $value): void
+    {
+        $this->id = $value;
+    }
 }

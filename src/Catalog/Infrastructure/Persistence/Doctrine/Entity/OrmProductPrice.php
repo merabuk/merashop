@@ -61,4 +61,9 @@ class OrmProductPrice
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     public ?DateTimeImmutable $validTo = null;
+
+    public function setId(?int $value): void
+    {
+        $this->id = $value;
+    }
 }

@@ -11,10 +11,10 @@ use App\Catalog\Domain\Enum\TemporaryImage\ContextEnum;
 use App\Catalog\Domain\Repository\TemporaryImageWriteRepositoryInterface;
 use App\Catalog\Domain\Service\CatalogStorageInterface;
 use App\Catalog\Domain\ValueObject\TemporaryImage\Ulid;
-use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use App\Shared\Domain\ValueObject\File\RawFile;
 use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 use App\Tests\Catalog\Support\TemporaryImageMother;
+use App\Tests\Shared\Support\Traits\UlidGenerationTrait;
 use App\Tests\Shared\Support\Traits\VfsStreamTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -22,15 +22,15 @@ use PHPUnit\Framework\TestCase;
 final class UploadTemporaryImageHandlerTest extends TestCase
 {
     use VfsStreamTrait;
+    use UlidGenerationTrait;
 
-    private UlidGeneratorInterface&MockObject $ulidGenerator;
     private CatalogStorageInterface&MockObject $catalogStorage;
     private TemporaryImageWriteRepositoryInterface&MockObject $writeRepository;
 
     public function setUp(): void
     {
         $this->setupVfs('catalog_uploads');
-        $this->ulidGenerator = $this->createMock(UlidGeneratorInterface::class);
+        $this->setUlidGenerator();
         $this->catalogStorage = $this->createMock(CatalogStorageInterface::class);
         $this->writeRepository = $this->createMock(TemporaryImageWriteRepositoryInterface::class);
     }
@@ -52,9 +52,7 @@ final class UploadTemporaryImageHandlerTest extends TestCase
         $exceptedContext = ContextEnum::ProductMain;
         $command = new UploadTemporaryImageCommand(file: $file, context: $exceptedContext);
 
-        $this->ulidGenerator->expects(self::once())
-            ->method('next')
-            ->willReturn($expectedUlid);
+        $this->expectGenerateUlid($expectedUlid);
 
         $this->catalogStorage->expects(self::once())
             ->method('generateTemporaryImageStoragePath')

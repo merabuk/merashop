@@ -60,6 +60,11 @@ final readonly class Status implements EquatableInterface, Stringable
         return $this->status;
     }
 
+    public function asString(): string
+    {
+        return $this->status->value;
+    }
+
     public function isDraft(): bool
     {
         return StatusEnum::Draft === $this->status;
@@ -77,11 +82,11 @@ final readonly class Status implements EquatableInterface, Stringable
 
     public function __toString(): string
     {
-        return $this->value()->value;
+        return $this->asString();
     }
 
     protected function getPrimitiveValue(): string
     {
-        return $this->value()->value;
+        return $this->asString();
     }
 }

@@ -67,7 +67,10 @@ final readonly class ProductMother
         ?array $attributeValues = null,
         ?array $images = null,
         ?int $id = null,
+        bool $withFakeIds = false,
     ): Product {
+        $id ??= $withFakeIds ? 123 : null;
+
         return new Product(
             ulid: Ulid::fromString($ulid ?? self::DEFAULT_ULID),
             sku: $sku ? Sku::fromString($sku) : Sku::fromString('TEST-SKU'),
@@ -75,10 +78,10 @@ final readonly class ProductMother
             translations: Translations::fromArray($translations ?: self::makeFakeTranslations()),
             version: $version ? Version::fromInt($version) : Version::initial(),
             createdBy: AdminUlid::fromString($createdByUlid ?? self::DEFAULT_ADMIN_ULID),
-            prices: PriceCollection::fromArray($prices ?? self::makeFakePrices()),
-            categoryIds: CategoryIdCollection::fromArray($categoryIds ?? []),
-            attributeValues: AttributeValueCollection::fromArray($attributeValues ?? []),
-            images: ImageCollection::fromArray($images ?? []),
+            prices: PriceCollection::fromArray($prices ?? self::makeFakePrices($withFakeIds)),
+            categoryIds: CategoryIdCollection::fromArray($categoryIds ?? self::makeFakeCategoryIds()),
+            attributeValues: AttributeValueCollection::fromArray($attributeValues ?? self::makeFakeAttributeValues()),
+            images: ImageCollection::fromArray($images ?? self::makeFakeImages($withFakeIds)),
             updatedBy: $updatedByUlid ? AdminUlid::fromString($updatedByUlid) : null,
             id: $id ? ProductId::fromInt($id) : null,
         );
@@ -236,15 +239,30 @@ final readonly class ProductMother
     /**
      * @return ProductPrice[]
      */
-    private static function makeFakePrices(): array
+    private static function makeFakePrices(bool $withFakeIds): array
     {
         $currencies = CurrencyEnum::cases();
         $productPriceTypes = [ProductPriceTypeEnum::Regular, ProductPriceTypeEnum::Cost];
 
         $prices = [];
+        $i = 0;
         foreach ($currencies as $currency) {
             foreach ($productPriceTypes as $type) {
-                $prices[] = ProductPriceMother::createWithData(currency: $currency, type: $type);
+                $isTimeLimited = ProductPriceTypeEnum::Sale === $type;
+
+                if ($isTimeLimited) {
+                    $validFrom = new DateTimeImmutable('2024-01-01 00:00:00');
+                    $validTo = new DateTimeImmutable('2024-01-31 23:59:59');
+                }
+
+                $prices[] = ProductPriceMother::createWithData(
+                    currency: $currency,
+                    type: $type,
+                    validFrom: $validFrom ?? null,
+                    validTo: $validTo ?? null,
+                    id: $withFakeIds ? 3330 + $i : null
+                );
+                ++$i;
             }
         }
 
@@ -260,6 +278,16 @@ final readonly class ProductMother
         for ($i = 0; $i < 3; ++$i) {
             $category = $this->categoryFixture->create();
             $ids[] = $category->getId() ?? throw new RuntimeException('Category ID is null');
+        }
+
+        return $ids;
+    }
+
+    private static function makeFakeCategoryIds(): array
+    {
+        $ids = [];
+        for ($i = 0; $i < 3; ++$i) {
+            $ids[] = CategoryId::fromInt(4440 + $i);
         }
 
         return $ids;
@@ -284,6 +312,21 @@ final readonly class ProductMother
         return $values;
     }
 
+    private static function makeFakeAttributeValues(): array
+    {
+        $attributeTypes = AttributeTypeEnum::cases();
+
+        $attributeValues = [];
+        foreach ($attributeTypes as $i => $type) {
+            $attributeValues[] = ProductAttributeValueMother::createWithData(
+                attributeId: 5550 + $i,
+                attributeType: $type,
+            );
+        }
+
+        return $attributeValues;
+    }
+
     /**
      * @return ProductImage[]
      */
@@ -297,6 +340,27 @@ final readonly class ProductMother
                 isMain: 0 === $i,
             );
             $images[] = $image;
+        }
+
+        return $images;
+    }
+
+    private static function makeFakeImages(bool $withFakeIds): array
+    {
+        $ulids = [
+            '01KKTVY7D6D7S1BCSBB3GQA8B3',
+            '01KKTVY7D6D7S1BCSBB3GQA8B4',
+            '01KKTVY7D6D7S1BCSBB3GQA8B5',
+        ];
+
+        $images = [];
+        foreach ($ulids as $i => $ulid) {
+            $images[] = ProductImageMother::createWithData(
+                ulid: $ulid,
+                sortOrder: $i + 1,
+                isMain: 0 === $i,
+                id: $withFakeIds ? 2220 + $i : null
+            );
         }
 
         return $images;

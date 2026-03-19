@@ -11,6 +11,7 @@ use App\Tests\Catalog\Support\Traits\CatalogEntityManagerTrait;
 use App\Tests\Catalog\Support\Traits\TemporaryImageFactoryTrait;
 use App\Tests\Shared\Support\Traits\EntityTechnicalMetadataTrait;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Clock\MockClock;
 
 final class TemporaryImageWriteRepositoryTest extends KernelTestCase
 {
@@ -47,6 +48,53 @@ final class TemporaryImageWriteRepositoryTest extends KernelTestCase
         $this->repository->delete($temporaryImage);
 
         self::assertNull($this->getReadRepository()->findById($temporaryImage->getId()));
+    }
+
+    public function testDeleteByUlids(): void
+    {
+        $image1 = $this->getTemporaryImageFixture()->create();
+        $image2 = $this->getTemporaryImageFixture()->create();
+
+        $stayingImage = $this->getTemporaryImageFixture()->create();
+
+        $this->clearEntityManager();
+
+        $ulidsToDelete = [$image1->getUlid(), $image2->getUlid()];
+        $result = $this->repository->deleteByUlids($ulidsToDelete);
+
+        self::assertSame(2, $result);
+        self::assertEmpty($this->getReadRepository()->findByUlids($ulidsToDelete));
+
+        self::assertNotNull($this->getReadRepository()->findByUlid($stayingImage->getUlid()));
+    }
+
+    public function testDeleteOlderThan(): void
+    {
+        $clock = new MockClock();
+
+        $em = $this->getCatalogEntityManager();
+        $connection = $em->getConnection();
+
+        $oldImage = $this->getTemporaryImageFixture()->create();
+        $newImage = $this->getTemporaryImageFixture()->create();
+
+        $connection->executeStatement(
+            'UPDATE temporary_images SET created_at = :date WHERE id = :id',
+            [
+                'date' => $clock->now()->modify('-2 days')->format('Y-m-d H:i:s'),
+                'id' => $oldImage->getId()->value(),
+            ]
+        );
+
+        $this->clearEntityManager();
+
+        $deletedCount = $this->repository->deleteOlderThan($clock->now()->modify('-1 day'));
+
+        self::assertSame(1, $deletedCount, 'Should delete exactly one old image');
+
+        $readRepository = $this->getReadRepository();
+        self::assertNull($readRepository->findById($oldImage->getId()), 'Old image should be gone');
+        self::assertNotNull($readRepository->findById($newImage->getId()), 'New image should still exist');
     }
 
     public function testItSetsTechnicalMetadataOnSave(): void

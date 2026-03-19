@@ -11,10 +11,11 @@ use App\Shared\Domain\ValueObject\Contract\IdInterface;
 use App\Shared\Domain\ValueObject\Identity\Ulid;
 use App\Shared\Infrastructure\Persistence\Doctrine\Criteria\Restrictions\ComparisonOperatorEnum;
 use App\Shared\Infrastructure\Persistence\Doctrine\Criteria\Restrictions\Criterion;
+use App\Shared\Infrastructure\Persistence\Doctrine\Helper\UlidPersistenceHelper;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use Symfony\Bridge\Doctrine\Types\UlidType;
 
 trait ReadRepositoryTrait
 {
@@ -69,10 +70,18 @@ trait ReadRepositoryTrait
         array $additionalCriteria = [],
         string $alias = 'e',
     ): void {
+        if (empty($ulids)) {
+            return;
+        }
+
         $qb = $this->createQueryBuilder($alias)
             ->select("COUNT({$alias}.ulid)")
             ->where("{$alias}.ulid IN (:ulids)")
-            ->setParameter('ulids', array_map(fn (Ulid $ulid) => $ulid->value(), $ulids), UlidType::NAME);
+            ->setParameter(
+                key: 'ulids',
+                value: UlidPersistenceHelper::toBaseStrings($ulids),
+                type: ArrayParameterType::STRING
+            );
 
         foreach ($additionalCriteria as $index => $criterion) {
             $field = $criterion->field;
@@ -104,9 +113,18 @@ trait ReadRepositoryTrait
         callable $mapCallback,
         string $alias = 'e',
     ): array {
+        if (empty($ulids)) {
+            return [];
+        }
+
         $result = $this->createQueryBuilder($alias)
             ->where("{$alias}.ulid IN (:ulids)")
-            ->setParameter('ulids', array_map(fn (Ulid $ulid) => $ulid->value(), $ulids), UlidType::NAME)
+            ->setParameter(
+                key: 'ulids',
+                value: UlidPersistenceHelper::toBaseStrings($ulids),
+                type: ArrayParameterType::STRING
+            )
+            ->orderBy("{$alias}.ulid", Sort::ASC)
             ->getQuery()
             ->getResult();
 

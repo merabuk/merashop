@@ -71,7 +71,7 @@ final class TemporaryImageReadRepository extends BaseTemporaryImageRepository im
      *
      * @throws OneOfTemporaryImagesNotFoundException
      */
-    public function assertAllExistByUlidAndContext(array $ulids, ContextEnum $context): void
+    public function assertAllExistByUlidsAndContext(array $ulids, ContextEnum $context): void
     {
         $criteria[] = $this->_makeCriterion(
             field: 'context',

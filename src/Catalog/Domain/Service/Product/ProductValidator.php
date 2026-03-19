@@ -53,7 +53,7 @@ final readonly class ProductValidator implements ProductValidatorInterface
         $this->categoryReadRepository->assertAllExistByIds($categoryIds);
         $this->attributeReadRepository->assertAllExistByIds($attributeIds);
 
-        $this->temporaryImageReadRepository->assertAllExistByUlidAndContext($temporaryImageUlids, ContextEnum::ProductMain);
+        $this->temporaryImageReadRepository->assertAllExistByUlidsAndContext($temporaryImageUlids, ContextEnum::ProductMain);
     }
 
     public function validateUpdate(
@@ -75,6 +75,6 @@ final readonly class ProductValidator implements ProductValidatorInterface
         $this->categoryReadRepository->assertAllExistByIds($categoryIds);
         $this->attributeReadRepository->assertAllExistByIds($attributeIds);
 
-        $this->temporaryImageReadRepository->assertAllExistByUlidAndContext($temporaryImageUlids, ContextEnum::ProductMain);
+        $this->temporaryImageReadRepository->assertAllExistByUlidsAndContext($temporaryImageUlids, ContextEnum::ProductMain);
     }
 }

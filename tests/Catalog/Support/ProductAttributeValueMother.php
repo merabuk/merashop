@@ -21,10 +21,17 @@ final readonly class ProductAttributeValueMother
 
     public static function createWithData(
         int $attributeId,
+        ?AttributeTypeEnum $attributeType = null,
         mixed $value = null,
         ?int $id = null,
     ): ProductAttributeValue {
-        $value ??= 'product attribute string value';
+        $value = match ($attributeType) {
+            AttributeTypeEnum::String => 'string value',
+            AttributeTypeEnum::Int => 123456789,
+            AttributeTypeEnum::Boolean => true,
+            AttributeTypeEnum::Select => ['option1', 'option2', 'option3'],
+            default => $value ?? 'product attribute string value',
+        };
         $valueObject = ProductAttributeValue::resolveValue($value);
 
         return new ProductAttributeValue(

@@ -43,7 +43,7 @@ readonly class CreateProductHandler implements CommandHandlerInterface
     {
         try {
             $sku = Sku::fromString($command->sku);
-            $categoryIds = $this->productFactory->mapCategoriesIds($command->categoryIds);
+            $categoryIds = $this->productFactory->mapCategoryIds($command->categoryIds);
             $attributeIds = $this->productFactory->mapAttributeIds($command->attributeValues);
             $temporaryImagesUlids = $this->productMediaManager->mapTemporaryImagesUlids($command->images);
 

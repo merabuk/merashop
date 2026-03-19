@@ -80,6 +80,11 @@ final readonly class Tax implements EquatableInterface, Stringable
         return $this->type;
     }
 
+    public function getTypeAsString(): string
+    {
+        return $this->type->value;
+    }
+
     public function isPercentage(): bool
     {
         return TaxTypeEnum::Percentage === $this->type;

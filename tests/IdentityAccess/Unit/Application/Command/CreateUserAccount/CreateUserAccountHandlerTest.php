@@ -11,8 +11,8 @@ use App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\Repository\UserAccountWriteRepositoryInterface;
 use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
 use App\Shared\Domain\Event\UserRegisteredSharedEvent;
-use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use App\Tests\IdentityAccess\Support\UserAccountMother;
+use App\Tests\Shared\Support\Traits\UlidGenerationTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -21,9 +21,10 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 final class CreateUserAccountHandlerTest extends TestCase
 {
+    use UlidGenerationTrait;
+
     private UserAccountReadRepositoryInterface&MockObject $readRepository;
     private PasswordHasherInterface&MockObject $passwordHasher;
-    private UlidGeneratorInterface&MockObject $ulidGenerator;
     private UserAccountWriteRepositoryInterface&MockObject $writeRepository;
     private MessageBusInterface&MockObject $eventBus;
 
@@ -31,7 +32,7 @@ final class CreateUserAccountHandlerTest extends TestCase
     {
         $this->readRepository = $this->createMock(UserAccountReadRepositoryInterface::class);
         $this->passwordHasher = $this->createMock(PasswordHasherInterface::class);
-        $this->ulidGenerator = $this->createMock(UlidGeneratorInterface::class);
+        $this->setUlidGenerator();
         $this->writeRepository = $this->createMock(UserAccountWriteRepositoryInterface::class);
         $this->eventBus = $this->createMock(MessageBusInterface::class);
     }
@@ -46,7 +47,7 @@ final class CreateUserAccountHandlerTest extends TestCase
 
         $this->readRepository->method('existsByEmail')->willReturn(false);
         $this->passwordHasher->method('hash')->willReturn('hashed_password');
-        $this->ulidGenerator->method('next')->willReturn(UserAccountMother::DEFAULT_ULID);
+        $this->expectGenerateUlid(UserAccountMother::DEFAULT_ULID);
 
         $this->writeRepository->expects(self::once())
             ->method('save')

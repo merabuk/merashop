@@ -43,7 +43,7 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
      *
      * @throws InvalidCategoryIdException
      */
-    public function mapCategoriesIds(array $categoryIds): array
+    public function mapCategoryIds(array $categoryIds): array
     {
         return array_map(fn (int $id) => CategoryId::fromInt($id), $categoryIds);
     }
@@ -75,7 +75,7 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
             translations: $this->mapTranslations($command->translations),
             prices: $this->mapPrices($command->prices),
             createdBy: AdminUlid::fromString($command->adminUlid),
-            categoryIds: CategoryIdCollection::fromArray($this->mapCategoriesIds($command->categoryIds)),
+            categoryIds: CategoryIdCollection::fromArray($this->mapCategoryIds($command->categoryIds)),
             attributeValues: $this->mapAttributeValues($command->attributeValues),
         );
     }
@@ -94,7 +94,7 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
             translations: $this->mapTranslations($command->translations),
             updatedBy: AdminUlid::fromString($command->adminUlid),
             prices: $this->mapPrices($command->prices),
-            categoryIds: CategoryIdCollection::fromArray($this->mapCategoriesIds($command->categoryIds)),
+            categoryIds: CategoryIdCollection::fromArray($this->mapCategoryIds($command->categoryIds)),
             attributeValues: $this->mapAttributeValues($command->attributeValues),
         );
     }

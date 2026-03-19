@@ -50,7 +50,7 @@ readonly class UpdateProductHandler implements CommandHandlerInterface
             $product = $this->readRepository->getById(Id::fromInt($command->id));
 
             $newSku = Sku::fromString($command->sku);
-            $categoryIds = $this->productFactory->mapCategoriesIds($command->categoryIds);
+            $categoryIds = $this->productFactory->mapCategoryIds($command->categoryIds);
             $attributeValues = $this->productFactory->mapAttributeIds($command->attributeValues);
             // TODO: need to separate existing and new images
             $temporaryImagesUlids = $this->productMediaManager->mapTemporaryImagesUlids($command->images);
