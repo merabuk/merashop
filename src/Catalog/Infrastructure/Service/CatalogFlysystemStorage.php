@@ -59,15 +59,20 @@ final readonly class CatalogFlysystemStorage extends FlysystemStorage implements
 
     /**
      * @throws InvalidRelativePathException
+     * @throws FileStorageException
      */
-    public function generateProductImageStoragePath(RelativeFilePath $relativeFilePath): RelativeFilePath
+    public function generateProductImageStoragePath(RelativeFilePath $temporaryImageStoragePath): RelativeFilePath
     {
+        if (!str_starts_with($temporaryImageStoragePath->value(), self::TEMP_DIRECTORY.RelativeFilePath::SEPARATOR)) {
+            throw new FileStorageException('Given path is not a temporary image storage path');
+        }
+
         $separator = preg_quote(RelativeFilePath::SEPARATOR, '/');
 
         $productPath = preg_replace(
             pattern: sprintf('/^(%s)(%s)/', self::TEMP_DIRECTORY, $separator),
             replacement: sprintf('%s$2', self::PRODUCT_IMAGES_DIRECTORY),
-            subject: $relativeFilePath->value(),
+            subject: $temporaryImageStoragePath->value(),
         );
 
         return RelativeFilePath::fromString($productPath);

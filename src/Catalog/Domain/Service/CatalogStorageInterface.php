@@ -17,5 +17,5 @@ interface CatalogStorageInterface extends FileStorageInterface
      */
     public function generateTemporaryImageStoragePath(Ulid $ulid, RawFile $file): RelativeFilePath;
 
-    public function generateProductImageStoragePath(RelativeFilePath $relativeFilePath): RelativeFilePath;
+    public function generateProductImageStoragePath(RelativeFilePath $temporaryImageStoragePath): RelativeFilePath;
 }

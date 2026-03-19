@@ -6,6 +6,7 @@ namespace App\Tests\Catalog\Unit\Infrastructure\Service;
 
 use App\Catalog\Domain\ValueObject\TemporaryImage\Ulid;
 use App\Catalog\Infrastructure\Service\CatalogFlysystemStorage;
+use App\Shared\Domain\Exception\Services\Storage\FileStorageException;
 use App\Shared\Domain\ValueObject\File\RawFile;
 use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 use App\Tests\Catalog\Support\TemporaryImageMother;
@@ -62,6 +63,26 @@ final class CatalogFlysystemStorageTest extends TestCase
         ]);
 
         self::assertSame($expectedPath, $result->value());
+    }
+
+    public function testGenerateProductImageStoragePath(): void
+    {
+        $path = RelativeFilePath::fromString('temp/valid/path/to/temp/file.jpg');
+
+        $result = $this->createStorage()->generateProductImageStoragePath($path);
+
+        self::assertTrue(str_starts_with($result->value(), 'products/'));
+        $expectedPath = preg_replace('/^temp\//', 'products/', $path->value());
+        self::assertSame($expectedPath, $result->value());
+    }
+
+    public function testGenerateProductImageStoragePathThrowsException(): void
+    {
+        $path = RelativeFilePath::fromString('not/temporary/path/to/file.jpg');
+
+        $this->expectException(FileStorageException::class);
+
+        $this->createStorage()->generateProductImageStoragePath($path);
     }
 
     private function createStorage(?ClockInterface $clock = null): CatalogFlysystemStorage
