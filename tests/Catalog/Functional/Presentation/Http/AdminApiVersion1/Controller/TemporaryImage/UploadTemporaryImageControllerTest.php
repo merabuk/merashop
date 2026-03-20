@@ -10,13 +10,13 @@ use App\Catalog\Domain\ValueObject\TemporaryImage\Ulid;
 use App\Catalog\Presentation\Http\AdminApiVersion1\Controller\TemporaryImage\UploadTemporaryImageController;
 use App\Catalog\Presentation\Http\AdminApiVersion1\Request\TemporaryImage\UploadTemporaryImageRequest;
 use App\Shared\Domain\Enum\MimeTypeEnum;
+use App\Tests\Catalog\Support\Traits\CatalogStorageTestTrait;
 use App\Tests\Catalog\Support\Traits\TemporaryImageFactoryTrait;
 use App\Tests\Shared\Support\Traits\ApiAuthTrait;
 use App\Tests\Shared\Support\Traits\ApiFileUploadTrait;
 use App\Tests\Shared\Support\Traits\ApiRequestTrait;
 use App\Tests\Shared\Support\Traits\ApiResponseTrait;
 use App\Tests\Shared\Support\Traits\BaseUriTrait;
-use League\Flysystem\FilesystemOperator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,6 +29,7 @@ final class UploadTemporaryImageControllerTest extends WebTestCase
     use ApiRequestTrait;
     use ApiResponseTrait;
     use BaseUriTrait;
+    use CatalogStorageTestTrait;
     use TemporaryImageFactoryTrait;
 
     private const string ROUTE_NAME = UploadTemporaryImageController::ROUTE_NAME;
@@ -87,10 +88,8 @@ final class UploadTemporaryImageControllerTest extends WebTestCase
 
         self::assertArrayHasKey('imageId', $data);
 
-        /** @var FilesystemOperator $filesystem */
-        $filesystem = self::getContainer()->get('catalog.storage.filesystem');
         $storagePath = $this->getReadRepository()->findByUlid(Ulid::fromString($data['imageId']))->getPath();
-        self::assertTrue($filesystem->has($storagePath->value()), 'File was not found in memory storage');
+        $this->assertStorageHas($storagePath->value());
     }
 
     #[DataProvider('invalidParametersTemporaryFileProvider')]

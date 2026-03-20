@@ -10,9 +10,11 @@ use App\Catalog\Domain\Factory\Contract\TemporaryImageFactoryInterface;
 use App\Catalog\Domain\ValueObject\TemporaryImage\Context;
 use App\Catalog\Domain\ValueObject\TemporaryImage\Id;
 use App\Catalog\Domain\ValueObject\TemporaryImage\Ulid;
+use App\Shared\Domain\Enum\MimeTypeEnum;
 use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 use Faker\Generator;
+use Symfony\Component\Clock\ClockInterface;
 
 final readonly class TemporaryImageMother
 {
@@ -22,6 +24,7 @@ final readonly class TemporaryImageMother
         private TemporaryImageFactoryInterface $temporaryImageFactory,
         private UlidGeneratorInterface $ulidGenerator,
         private Generator $faker,
+        private ClockInterface $clock,
     ) {
     }
 
@@ -43,10 +46,14 @@ final readonly class TemporaryImageMother
         ?string $ulid = null,
         ?string $path = null,
         ?ContextEnum $context = null,
+        ?MimeTypeEnum $mimeType = null,
+        ?ClockInterface $clock = null,
     ): TemporaryImage {
+        $ulid ??= $this->ulidGenerator->next();
+
         return $this->temporaryImageFactory->createForTest(
-            ulid: $ulid ?? $this->ulidGenerator->next(),
-            path: $path ?? 'temp/image.jpg',
+            ulid: $ulid,
+            path: $path ?? $this->generateValidPath($ulid, $mimeType, $clock),
             context: $context ?? $this->faker->randomElement(ContextEnum::cases()),
         );
     }
@@ -62,5 +69,24 @@ final readonly class TemporaryImageMother
         }
 
         return $attributes;
+    }
+
+    private function generateValidPath(
+        string $ulid,
+        ?MimeTypeEnum $mimeType = null,
+        ?ClockInterface $clock = null,
+    ): string {
+        $clock ??= $this->clock;
+        $mimeType ??= MimeTypeEnum::Jpeg;
+        $fileName = $ulid.'.'.$mimeType->toExtension();
+
+        return implode(RelativeFilePath::SEPARATOR, [
+            'temp',
+            $clock->now()->format('Y'),
+            $clock->now()->format('m'),
+            $clock->now()->format('d'),
+            $ulid,
+            $fileName,
+        ]);
     }
 }

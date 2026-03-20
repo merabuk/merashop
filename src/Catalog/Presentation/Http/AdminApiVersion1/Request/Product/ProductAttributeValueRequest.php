@@ -10,9 +10,9 @@ final class ProductAttributeValueRequest
 {
     #[Assert\NotBlank]
     #[Assert\Positive]
-    public int $attributeId;
+    public ?int $attributeId = null;
 
     #[Assert\NotNull]
-    #[Assert\Type(['string', 'int', 'bool', 'array'])]
+    #[Assert\Type(type: ['string', 'int', 'bool', 'array'])]
     public mixed $value;
 }

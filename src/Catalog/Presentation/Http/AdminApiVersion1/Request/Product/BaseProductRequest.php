@@ -9,15 +9,27 @@ use App\Catalog\Domain\ValueObject\Product\Sku;
 use App\Shared\Presentation\Http\Request\ValidateLocalesTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Component\Validator\GroupSequenceProviderInterface;
 
-abstract class BaseProductRequest
+#[Assert\GroupSequenceProvider]
+abstract class BaseProductRequest implements GroupSequenceProviderInterface
 {
     use ValidateLocalesTrait;
+
+    private const string BASE_GROUP = 'BaseProductRequest';
+    private const string FULL_GROUP = 'Full';
 
     #[Assert\NotBlank]
     #[Assert\Length(min: Sku::MIN_LENGTH, max: Sku::MAX_LENGTH)]
     #[Assert\Regex(pattern: Sku::REGEX)]
     public ?string $sku;
+
+    #[Assert\NotBlank]
+    #[Assert\Choice(
+        callback: 'getProductStatuses',
+        message: 'catalog.product.status_invalid'
+    )]
+    public ?string $status;
 
     /**
      * @var ProductPriceRequest[] $prices
@@ -26,13 +38,6 @@ abstract class BaseProductRequest
     #[Assert\Count(min: 1, minMessage: 'catalog.product.prices_empty')]
     #[Assert\Valid]
     public ?array $prices;
-
-    #[Assert\NotBlank]
-    #[Assert\Choice(
-        callback: 'getProductStatuses',
-        message: 'catalog.product.status_invalid'
-    )]
-    public ?string $status;
 
     /**
      * @var ?ProductTranslationRequest[] $translations
@@ -45,8 +50,8 @@ abstract class BaseProductRequest
     /**
      * @var ?int[]
      */
-    #[Assert\NotBlank]
-    #[Assert\Count(min: 1, minMessage: 'catalog.product.categories_empty')]
+    #[Assert\NotBlank(groups: [self::FULL_GROUP])]
+    #[Assert\Count(min: 1, minMessage: 'catalog.product.categories_empty', groups: [self::FULL_GROUP])]
     #[Assert\All([
         new Assert\NotBlank(),
         new Assert\Positive(),
@@ -56,16 +61,16 @@ abstract class BaseProductRequest
     /**
      * @var ProductAttributeValueRequest[] $attributeValues
      */
-    #[Assert\NotBlank]
-    #[Assert\Count(min: 1, minMessage: 'catalog.product.attribute_values_empty')]
+    #[Assert\NotBlank(groups: [self::FULL_GROUP])]
+    #[Assert\Count(min: 1, minMessage: 'catalog.product.attribute_values_empty', groups: [self::FULL_GROUP])]
     #[Assert\Valid]
     public ?array $attributeValues;
 
     /**
      * @var ?string[]
      */
-    #[Assert\NotBlank]
-    #[Assert\Count(min: 1, minMessage: 'catalog.product.images_empty')]
+    #[Assert\NotBlank(groups: [self::FULL_GROUP])]
+    #[Assert\Count(min: 1, minMessage: 'catalog.product.images_empty', groups: [self::FULL_GROUP])]
     #[Assert\All([
         new Assert\NotBlank(),
         new Assert\Ulid(),
@@ -95,6 +100,17 @@ abstract class BaseProductRequest
             }
             $registry[$key] = true;
         }
+    }
+
+    public function getGroupSequence(): array
+    {
+        $groups = [self::BASE_GROUP];
+
+        if ($this->status === StatusEnum::Active->value) {
+            $groups[] = self::FULL_GROUP;
+        }
+
+        return $groups;
     }
 
     /**

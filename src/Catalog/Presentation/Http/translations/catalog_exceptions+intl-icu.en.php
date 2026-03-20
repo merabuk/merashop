@@ -17,6 +17,6 @@ return [
     ErrorCodeEnum::CategoryCannotBeParentOfItselfConflict->value => 'Category cannot be parent to itself',
     ErrorCodeEnum::CategoryChildCanNotBeParentConflictException->value => 'A child category cannot be set as a parent',
     ErrorCodeEnum::ProductNotFound->value => 'Product not found',
-    ErrorCodeEnum::ProductAlreadyExists->value => 'Product already exists',
+    ErrorCodeEnum::ProductAlreadyExists->value => 'Product with sku "{sku}" already exists',
     ErrorCodeEnum::OneOfTemporaryImagesNotFoundException->value => 'One or more temporary images not found',
 ];

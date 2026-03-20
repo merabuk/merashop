@@ -1,5 +1,7 @@
 shared:
   common:
+    field_required: "This {field} field is required"
+    field_must_be_blank: "This {field} field must be blank"
     locale_invalid: "The selected locale is invalid"
     translations_empty: "Translations can't be empty"
     translations_missing: "Translations missing for the following locales: {locales}"
@@ -8,3 +10,7 @@ shared:
     sort_field_invalid: "Sort field {value} is not allowed. Allowed fields: {choices}"
   image:
     broken: "Uploaded image '{file}' is invalid or broken"
+  datetime:
+    invalid_format: "The date format is invalid"
+    before: "The {before} must be before {after}"
+    after: "The {after} must be after {before}"

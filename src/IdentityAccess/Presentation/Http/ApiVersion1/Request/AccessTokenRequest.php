@@ -13,6 +13,8 @@ use Symfony\Component\Validator\GroupSequenceProviderInterface;
 #[Assert\GroupSequenceProvider]
 final readonly class AccessTokenRequest implements GroupSequenceProviderInterface
 {
+    private const string BASE_GROUP = 'AccessTokenRequest';
+
     public function __construct(
         #[Assert\NotBlank]
         #[Assert\Choice(
@@ -47,7 +49,7 @@ final readonly class AccessTokenRequest implements GroupSequenceProviderInterfac
 
     public function getGroupSequence(): array
     {
-        $groups = ['AccessTokenRequest'];
+        $groups = [self::BASE_GROUP];
 
         if ($type = GrantTypeEnum::tryFrom((string) $this->grant_type)) {
             $groups[] = $type->value;

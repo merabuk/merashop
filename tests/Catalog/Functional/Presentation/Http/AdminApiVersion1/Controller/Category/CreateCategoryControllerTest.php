@@ -101,7 +101,7 @@ final class CreateCategoryControllerTest extends WebTestCase
             'translations' => self::validTranslations(),
         ];
 
-        $this->requestJson($client, self::METHOD, $this->getUrl(), $payload);
+        $this->requestJson(client: $client, method: self::METHOD, uri: $this->getUrl(), payload: $payload);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
 
@@ -134,38 +134,37 @@ final class CreateCategoryControllerTest extends WebTestCase
 
     public static function invalidCategoryProvider(): iterable
     {
+        $payload = [
+            'slug' => 'electronics',
+            'parentId' => 1,
+            'status' => StatusEnum::Active->value,
+            'translations' => self::validTranslations(),
+        ];
+
         yield 'empty slug' => [
             'payload' => [
+                ...$payload,
                 'slug' => '',
-                'parentId' => 1,
-                'status' => StatusEnum::Active->value,
-                'translations' => self::validTranslations(),
             ],
             'expectedErrorFields' => ['slug'],
         ];
         yield 'invalid parent id' => [
             'payload' => [
-                'slug' => 'electronics',
+                ...$payload,
                 'parentId' => 'wrong_parent',
-                'status' => StatusEnum::Active->value,
-                'translations' => self::validTranslations(),
             ],
             'expectedErrorFields' => ['parentId'],
         ];
         yield 'invalid status' => [
             'payload' => [
-                'slug' => 'electronics',
-                'parentId' => 1,
+                ...$payload,
                 'status' => 'wrong_status',
-                'translations' => self::validTranslations(),
             ],
             'expectedErrorFields' => ['status'],
         ];
         yield 'invalid locale and missed required locales' => [
             'payload' => [
-                'slug' => 'electronics',
-                'parentId' => 1,
-                'status' => StatusEnum::Active->value,
+                ...$payload,
                 'translations' => [
                     'xx' => [
                         'name' => 'Name',
@@ -176,9 +175,7 @@ final class CreateCategoryControllerTest extends WebTestCase
         ];
         yield 'too long en translation name and description' => [
             'payload' => [
-                'slug' => 'electronics',
-                'parentId' => null,
-                'status' => StatusEnum::Active->value,
+                ...$payload,
                 'translations' => [
                     ...self::validTranslations(),
                     'en' => [

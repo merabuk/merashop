@@ -139,26 +139,29 @@ final class CreateAttributeControllerTest extends WebTestCase
 
     public static function invalidAttributeProvider(): iterable
     {
+        $payload = [
+            'code' => 'brand',
+            'type' => TypeEnum::String->value,
+            'translations' => self::validTranslations(),
+        ];
+
         yield 'empty code' => [
             'payload' => [
+                ...$payload,
                 'code' => '',
-                'type' => 'string',
-                'translations' => self::validTranslations(),
             ],
             'expectedErrorFields' => ['code'],
         ];
         yield 'invalid type' => [
             'payload' => [
-                'code' => 'brand',
+                ...$payload,
                 'type' => 'wrong_type',
-                'translations' => self::validTranslations(),
             ],
             'expectedErrorFields' => ['type'],
         ];
         yield 'invalid locale and missed required locales' => [
             'payload' => [
-                'code' => 'brand',
-                'type' => 'string',
+                ...$payload,
                 'translations' => [
                     'xx' => ['name' => 'Name'],
                 ],

@@ -11,7 +11,7 @@ final class ProductTranslationRequest
 {
     #[Assert\NotBlank]
     #[Assert\Length(max: Translation::NAME_MAX_LENGTH)]
-    public string $name;
+    public ?string $name = null;
 
     #[Assert\Length(max: Translation::DESCRIPTION_MAX_LENGTH)]
     public ?string $description = null;

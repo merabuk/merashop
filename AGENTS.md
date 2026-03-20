@@ -245,7 +245,7 @@ To ensure consistent data retrieval across all modules, the **Criteria Pattern**
 **Mapper Testing**: Every Mapper class in the `Infrastructure` layer must have an `Integration Test`. This test must verify:
 - `toDoctrineOrm`: Correct conversion of all Domain fields to ORM properties.
 - `fromDoctrineOrm`: Correct restoration of the Domain object (including VO) from the ORM state
-- `mapToExistingOrm`: Correct update of an existing ORM entity without losing data. *Note: These tests should use real data to ensure no field is forgotten.*
+- `mapToExistingOrm`: Correct update of an existing ORM entity without losing data. *Note: These tests should use Object Mothers / Data Builders (close to real data) to ensure no field is forgotten.*
 
 ### 5.1. Naming Conventions
 

@@ -7,6 +7,7 @@ namespace App\Tests\Catalog\Support;
 use App\Catalog\Domain\Entity\TemporaryImage;
 use App\Catalog\Domain\Enum\TemporaryImage\ContextEnum;
 use App\Catalog\Domain\Repository\TemporaryImageWriteRepositoryInterface;
+use Symfony\Component\Clock\ClockInterface;
 
 final readonly class TemporaryImageFixture
 {
@@ -20,11 +21,13 @@ final readonly class TemporaryImageFixture
         ?string $ulid = null,
         ?string $path = null,
         ?ContextEnum $context = null,
+        ?ClockInterface $clock = null,
     ): TemporaryImage {
         $temporaryImage = $this->mother->create(
             ulid: $ulid,
             path: $path,
             context: $context,
+            clock: $clock,
         );
 
         return $this->repository->save($temporaryImage);
