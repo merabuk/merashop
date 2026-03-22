@@ -15,6 +15,6 @@ class BooleanAttributeValueRequest extends BaseAttributeValueRequest
 
     public function toData(): BooleanAttributeValueData
     {
-        return new BooleanAttributeValueData($this->value);
+        return new BooleanAttributeValueData(value: $this->value);
     }
 }

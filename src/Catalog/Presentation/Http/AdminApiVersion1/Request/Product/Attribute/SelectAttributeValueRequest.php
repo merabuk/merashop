@@ -13,6 +13,6 @@ class SelectAttributeValueRequest extends BaseAttributeValueRequest
 
     public function toData(): SelectAttributeValueData
     {
-        return new SelectAttributeValueData($this->value);
+        return new SelectAttributeValueData(optionId: $this->value);
     }
 }

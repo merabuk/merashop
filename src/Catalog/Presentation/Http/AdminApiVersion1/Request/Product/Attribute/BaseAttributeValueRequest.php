@@ -13,9 +13,13 @@ use Symfony\Component\Validator\Constraints as Assert;
     TypeEnum::String->value => StringAttributeValueRequest::class,
     TypeEnum::Text->value => TextAttributeValueRequest::class,
     TypeEnum::Int->value => IntegerAttributeValueRequest::class,
+    TypeEnum::Float->value => FloatAttributeValueRequest::class,
     TypeEnum::Boolean->value => BooleanAttributeValueRequest::class,
     TypeEnum::Select->value => SelectAttributeValueRequest::class,
     TypeEnum::MultiSelect->value => MultiSelectAttributeValueRequest::class,
+    TypeEnum::Color->value => ColorAttributeValueRequest::class,
+    TypeEnum::Date->value => DateAttributeValueRequest::class,
+    TypeEnum::Url->value => UrlAttributeValueRequest::class,
     TypeEnum::Dimension->value => DimensionAttributeValueRequest::class,
 ])]
 abstract class BaseAttributeValueRequest
@@ -24,5 +28,31 @@ abstract class BaseAttributeValueRequest
     #[Assert\Positive]
     public int $attributeId;
 
+    #[Assert\NotBlank]
+    #[Assert\Choice(
+        callback: 'getAttributeTypes',
+        message: 'catalog.product_attribute_value.type_invalid'
+    )]
+    public ?string $type;
+
     abstract public function toData(): AttributeValueDataInterface;
+
+    /**
+     * @return string[]
+     */
+    public static function getAttributeTypes(): array
+    {
+        return [
+            TypeEnum::String->value,
+            TypeEnum::Text->value,
+            TypeEnum::Int->value,
+            TypeEnum::Float->value,
+            TypeEnum::Boolean->value,
+            TypeEnum::Select->value,
+            TypeEnum::MultiSelect->value,
+            TypeEnum::Color->value,
+            TypeEnum::Date->value,
+            TypeEnum::Url->value,
+        ];
+    }
 }

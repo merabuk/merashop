@@ -26,7 +26,7 @@ final class TextAttributeValueRequest extends BaseAttributeValueRequest
 
     public function toData(): TextAttributeValueData
     {
-        return new TextAttributeValueData($this->translations);
+        return new TextAttributeValueData(translations: $this->translations);
     }
 
     /**

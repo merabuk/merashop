@@ -18,6 +18,6 @@ final class MultiSelectAttributeValueRequest extends BaseAttributeValueRequest
 
     public function toData(): MultiSelectAttributeValueData
     {
-        return new MultiSelectAttributeValueData($this->values);
+        return new MultiSelectAttributeValueData(optionIds: $this->values);
     }
 }

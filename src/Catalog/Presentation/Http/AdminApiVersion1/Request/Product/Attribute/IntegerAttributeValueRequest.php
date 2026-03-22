@@ -15,6 +15,6 @@ final class IntegerAttributeValueRequest extends BaseAttributeValueRequest
 
     public function toData(): IntegerAttributeValueData
     {
-        return new IntegerAttributeValueData($this->value);
+        return new IntegerAttributeValueData(value: $this->value);
     }
 }

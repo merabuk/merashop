@@ -12,6 +12,7 @@ use App\Catalog\Application\DTO\Product\AttributeValue\StringAttributeValueData;
 use App\Catalog\Application\DTO\Product\ProductAttributeValueData;
 use App\Catalog\Application\DTO\Product\ProductPriceData;
 use App\Catalog\Application\DTO\Product\ProductTranslationData;
+use App\Catalog\Application\Service\Product\AttributeValue\ProductAttributeValueProviderInterface;
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Entity\Product;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
@@ -43,12 +44,19 @@ use App\Catalog\Domain\ValueObject\ProductPrice\TaxIncludedFlag;
 use App\Catalog\Domain\ValueObject\ProductPrice\Type;
 use App\Catalog\Domain\ValueObject\ProductPrice\ValidityPeriod;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
+use Psr\Container\ContainerInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 
 final readonly class ProductApplicationFactory implements ProductApplicationFactoryInterface
 {
     public function __construct(
         private AttributeReadRepositoryInterface $attributeReadRepository,
         private AttributeValueResolver $valueResolver,
+        #[AutowireLocator(
+            services: 'catalog.product_attribute_value_provider',
+            defaultIndexMethod: 'getDefaultIndexName',
+        )]
+        private ContainerInterface $providers,
     ) {
     }
 
@@ -169,36 +177,19 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
                 throw AttributeNotFoundException::withId($data->attributeId);
             }
 
-            $valueData = $data->value;
-            // TODO[attribute value]: add check type given valueData
+            $type = $attribute->getType()->value();
 
-            $result = match (true) {
-                $valueData instanceof SelectAttributeValueData => [
-                    // TODO[attribute value]: add check if option exists for attribute
-                    ProductAttributeValue::createWithOption(
-                        attributeId: AttributeId::fromInt($data->attributeId),
-                        attributeOptionId: AttributeOptionId::fromInt($valueData->optionId)
-                    )
-                ],
-                $valueData instanceof MultiSelectAttributeValueData => array_map(
-                    // TODO[attribute value]: add check if options exists for attribute
-                    fn (int $id) => ProductAttributeValue::createWithOption(
-                        attributeId: AttributeId::fromInt($data->attributeId),
-                        attributeOptionId: AttributeOptionId::fromInt($id)
-                    ),
-                    $valueData->optionIds
-                ),
-                $valueData instanceof StringAttributeValueData => [
-                    ProductAttributeValue::createWithValue(
-                        attributeId: AttributeId::fromInt($data->attributeId),
-                        value: $this->valueResolver->resolve(AttributeTypeEnum::String, $valueData->translations)
-                    )
-                ],
-                // TODO[attribute value]: add other types
-                default => throw new UnsupportedAttributeTypeException()
-            };
+            if (!$this->providers->has($type->value)) {
+                throw new UnsupportedAttributeTypeException();
+            }
 
-            foreach ($result as $pav) {
+            $provider = $this->providers->get($type->value);
+
+            if (false === $provider instanceof ProductAttributeValueProviderInterface) {
+                throw new UnsupportedAttributeTypeException();
+            }
+
+            foreach ($provider->handle($attribute, $data) as $pav) {
                 $attributeValues[] = $pav;
             }
         }

@@ -26,7 +26,7 @@ final class StringAttributeValueRequest extends BaseAttributeValueRequest
 
     public function toData(): StringAttributeValueData
     {
-        return new StringAttributeValueData($this->translations);
+        return new StringAttributeValueData(translations: $this->translations);
     }
 
     /**
