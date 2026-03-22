@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Catalog\Application\Service;
+namespace App\Catalog\Application\Service\Product;
 
 use App\Catalog\Domain\Entity\Product;
 use App\Catalog\Domain\Entity\ProductImage;

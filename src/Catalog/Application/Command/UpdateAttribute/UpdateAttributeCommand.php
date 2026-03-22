@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Catalog\Application\Command\UpdateAttribute;
 
+use App\Catalog\Application\DTO\Attribute\AttributeTranslationData;
 use App\Shared\Application\Command\CommandInterface;
 
 final readonly class UpdateAttributeCommand implements CommandInterface
@@ -13,7 +14,7 @@ final readonly class UpdateAttributeCommand implements CommandInterface
         public string $code,
         public string $type,
         /**
-         * @var array<string, array{name: string}>
+         * @var AttributeTranslationData[]
          */
         public array $translations,
         public int $version,

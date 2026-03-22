@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Catalog\Application\Command\CreateProduct;
 
 use App\Catalog\Application\Exception\Product\CreateProductException;
-use App\Catalog\Application\Service\ProductApplicationFactoryInterface;
-use App\Catalog\Application\Service\ProductMediaManagerInterface;
+use App\Catalog\Application\Service\Product\ProductApplicationFactoryInterface;
+use App\Catalog\Application\Service\Product\ProductMediaManagerInterface;
 use App\Catalog\Domain\Exception\Attribute\OneOfAttributesNotFoundException;
 use App\Catalog\Domain\Exception\Category\OneOfCategoriesNotFoundException;
 use App\Catalog\Domain\Exception\Product\ProductAlreadyExistsException;

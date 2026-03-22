@@ -22,6 +22,12 @@ interface AttributeReadRepositoryInterface
 
     public function findById(Id $id, bool $withTranslations = true): ?Attribute;
 
+    /**
+     * @param Id[] $ids
+     * @return Attribute[]
+     */
+    public function findByIds(array $ids, bool $withTranslations = true): array;
+
     public function findByUlid(Ulid $ulid): ?Attribute;
 
     public function existsByCode(Code $code): bool;

@@ -61,6 +61,21 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
     }
 
     /**
+     * @param Id[] $ids
+     * @return Attribute[]
+     */
+    public function findByIds(array $ids, bool $withTranslations = true): array
+    {
+        // TODO: find way add load translations for attributes
+
+        return $this->_findByIds(
+            ids: $ids,
+            mapCallback: fn (object $orm) => $this->checkAndMapToDomain($orm),
+            alias: 'a'
+        );
+    }
+
+    /**
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCatalogValueObjectException

@@ -6,6 +6,7 @@ namespace App\Catalog\Presentation\Http\AdminApiVersion1\Request\Product;
 
 use App\Catalog\Domain\Enum\Product\StatusEnum;
 use App\Catalog\Domain\ValueObject\Product\Sku;
+use App\Catalog\Presentation\Http\AdminApiVersion1\Request\Product\Attribute\BaseAttributeValueRequest;
 use App\Shared\Presentation\Http\Request\ValidateLocalesTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -59,10 +60,9 @@ abstract class BaseProductRequest implements GroupSequenceProviderInterface
     public ?array $categoryIds;
 
     /**
-     * @var ProductAttributeValueRequest[] $attributeValues
+     * @var BaseAttributeValueRequest[]
      */
     #[Assert\NotBlank(groups: [self::FULL_GROUP])]
-    #[Assert\Count(min: 1, minMessage: 'catalog.product.attribute_values_empty', groups: [self::FULL_GROUP])]
     #[Assert\Valid]
     public ?array $attributeValues;
 
@@ -99,6 +99,23 @@ abstract class BaseProductRequest implements GroupSequenceProviderInterface
                     ->addViolation();
             }
             $registry[$key] = true;
+        }
+    }
+
+    #[Assert\Callback]
+    public function validateUniqueAttributes(ExecutionContextInterface $context): void
+    {
+        $ids = array_map(fn (BaseAttributeValueRequest $v) => $v->attributeId, $this->attributeValues ?? []);
+
+        $checkedExists = [];
+
+        foreach ($ids as $i => $id) {
+            if (isset($checkedExists[$id])) {
+                $context->buildViolation('catalog.product.attribute_id_duplicate')
+                    ->atPath("attributeValues[{$i}]")
+                    ->addViolation();
+            }
+            $checkedExists[$id] = true;
         }
     }
 

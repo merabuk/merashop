@@ -6,7 +6,7 @@ namespace App\Catalog\Domain\Exception\Product;
 
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 
-class ProductImagesMainImageException extends InvalidCatalogValueObjectException
+final class ProductImagesMainImageException extends InvalidCatalogValueObjectException
 {
     public static function becauseNoMainImage(): self
     {

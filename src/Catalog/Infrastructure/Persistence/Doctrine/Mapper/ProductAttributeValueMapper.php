@@ -7,7 +7,7 @@ namespace App\Catalog\Infrastructure\Persistence\Doctrine\Mapper;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
-use App\Catalog\Domain\Exception\ProductAttribute\InvalidProductAttributeIdException;
+use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeValueIdException;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
 use App\Catalog\Domain\ValueObject\ProductAttribute\ArrayValue;
 use App\Catalog\Domain\ValueObject\ProductAttribute\BooleanValue;
@@ -22,7 +22,7 @@ final readonly class ProductAttributeValueMapper
 {
     /**
      * @throws EntityIdMissingException
-     * @throws InvalidProductAttributeIdException
+     * @throws InvalidProductAttributeValueIdException
      * @throws InvalidAttributeIdException
      */
     public function toDomain(OrmProductAttributeValue $orm): ProductAttributeValue

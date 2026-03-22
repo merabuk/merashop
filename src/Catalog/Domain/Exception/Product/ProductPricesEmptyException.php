@@ -6,7 +6,7 @@ namespace App\Catalog\Domain\Exception\Product;
 
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 
-class ProductPricesEmptyException extends InvalidCatalogValueObjectException
+final class ProductPricesEmptyException extends InvalidCatalogValueObjectException
 {
     public static function becauseItIsEmpty(): self
     {

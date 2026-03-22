@@ -8,6 +8,7 @@ use App\Catalog\Domain\Exception\Attribute\InvalidAttributeVersionException;
 use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Id;
+use App\Catalog\Domain\ValueObject\Attribute\OptionCollection;
 use App\Catalog\Domain\ValueObject\Attribute\Translations;
 use App\Catalog\Domain\ValueObject\Attribute\Type;
 use App\Catalog\Domain\ValueObject\Attribute\Ulid;
@@ -21,8 +22,9 @@ class Attribute implements HasIdInterface
         private Code $code,
         private Type $type,
         private Translations $translations,
-        private Version $version,
+        private readonly Version $version,
         private readonly AdminUlid $createdBy,
+        private OptionCollection $options,
         private ?AdminUlid $updatedBy = null,
         private readonly ?Id $id = null,
     ) {
@@ -37,6 +39,7 @@ class Attribute implements HasIdInterface
         Type $type,
         Translations $translations,
         AdminUlid $createdBy,
+        OptionCollection $options,
     ): self {
         return new self(
             ulid: $ulid,
@@ -45,6 +48,7 @@ class Attribute implements HasIdInterface
             translations: $translations,
             version: Version::initial(),
             createdBy: $createdBy,
+            options: $options,
         );
     }
 
@@ -93,6 +97,11 @@ class Attribute implements HasIdInterface
     public function getCreatedBy(): AdminUlid
     {
         return $this->createdBy;
+    }
+
+    public function getOptions(): OptionCollection
+    {
+        return $this->options;
     }
 
     public function getUpdatedBy(): ?AdminUlid

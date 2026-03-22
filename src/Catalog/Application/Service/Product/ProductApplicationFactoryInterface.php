@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Catalog\Application\Service;
+namespace App\Catalog\Application\Service\Product;
 
 use App\Catalog\Application\Command\CreateProduct\CreateProductCommand;
 use App\Catalog\Application\Command\UpdateProduct\UpdateProductCommand;
@@ -27,7 +27,7 @@ interface ProductApplicationFactoryInterface
      */
     public function mapAttributeIds(array $attributeValues): array;
 
-    public function createFromCommand(CreateProductCommand $command, string $newUlid): Product;
+    public function createFromCommand(CreateProductCommand $command, string $ulid): Product;
 
     public function updateFromCommand(Product $product, UpdateProductCommand $command): void;
 }

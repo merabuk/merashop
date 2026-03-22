@@ -23,6 +23,7 @@ services:
       $clock: '@clock'
       $filesystem: '@catalog.storage.filesystem'
 
+  App\Catalog\Application\Service\Attribute\AttributeApplicationFactoryInterface: '@App\Catalog\Application\Service\Attribute\AttributeApplicationFactory'
   App\Catalog\Domain\Service\Attribute\AttributeValidatorInterface: '@App\Catalog\Domain\Service\Attribute\AttributeValidator'
   App\Catalog\Domain\Factory\Contract\AttributeFactoryInterface: '@App\Catalog\Domain\Factory\AttributeFactory'
   App\Catalog\Domain\Repository\AttributeReadRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\AttributeReadRepository'
@@ -35,7 +36,7 @@ services:
   App\Catalog\Domain\Repository\CategoryReadRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\CategoryReadRepository'
   App\Catalog\Domain\Repository\CategoryWriteRepositoryInterface: '@App\Catalog\Infrastructure\Persistence\Doctrine\Repository\CategoryWriteRepository'
 
-  App\Catalog\Application\Service\ProductApplicationFactoryInterface: '@App\Catalog\Application\Service\ProductApplicationFactory'
+  App\Catalog\Application\Service\Product\ProductApplicationFactoryInterface: '@App\Catalog\Application\Service\Product\ProductApplicationFactory'
   App\Catalog\Application\Service\ProductMediaManagerInterface: '@App\Catalog\Application\Service\ProductMediaManager'
   App\Catalog\Domain\Service\Product\ProductValidatorInterface: '@App\Catalog\Domain\Service\Product\ProductValidator'
   App\Catalog\Domain\Factory\Contract\ProductFactoryInterface: '@App\Catalog\Domain\Factory\ProductFactory'

@@ -47,6 +47,17 @@ class OrmAttribute
     )]
     public Collection $translations;
 
+    /**
+     * @var Collection<int, OrmAttributeOption>
+     */
+    #[ORM\OneToMany(
+        targetEntity: OrmAttributeOption::class,
+        mappedBy: 'attribute',
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
+    public Collection $options;
+
     #[ORM\Version]
     #[ORM\Column(type: Types::INTEGER)]
     public ?int $version = null;
@@ -60,6 +71,7 @@ class OrmAttribute
     public function __construct()
     {
         $this->translations = new ArrayCollection();
+        $this->options = new ArrayCollection();
     }
 
     public function setId(?int $value): void

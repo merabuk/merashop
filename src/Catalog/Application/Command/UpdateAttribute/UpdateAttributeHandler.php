@@ -5,16 +5,14 @@ declare(strict_types=1);
 namespace App\Catalog\Application\Command\UpdateAttribute;
 
 use App\Catalog\Application\Exception\Attribute\UpdateAttributeException;
+use App\Catalog\Application\Service\Attribute\AttributeApplicationFactoryInterface;
 use App\Catalog\Domain\Exception\Attribute\AttributeAlreadyExistsException;
 use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
 use App\Catalog\Domain\Service\Attribute\AttributeValidatorInterface;
-use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Id;
-use App\Catalog\Domain\ValueObject\Attribute\Translations;
-use App\Catalog\Domain\ValueObject\Attribute\Type;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
 use App\Shared\Domain\Exception\Entity\ConcurrencyException;
@@ -27,6 +25,7 @@ readonly class UpdateAttributeHandler implements CommandHandlerInterface
     public function __construct(
         private AttributeReadRepositoryInterface $readRepository,
         private AttributeValidatorInterface $attributeValidator,
+        private AttributeApplicationFactoryInterface $attributeFactory,
         private AttributeWriteRepositoryInterface $writeRepository,
     ) {
     }
@@ -45,12 +44,7 @@ readonly class UpdateAttributeHandler implements CommandHandlerInterface
 
             $this->attributeValidator->validateUpdate($attribute, $command->version, $newCode);
 
-            $attribute->update(
-                code: $newCode,
-                type: Type::fromString($command->type),
-                translations: Translations::fromArray($command->translations),
-                updatedBy: AdminUlid::fromString($command->adminUlid),
-            );
+            $this->attributeFactory->updateFromCommand($attribute, $command);
 
             $this->writeRepository->save($attribute);
         } catch (AttributeAlreadyExistsException|AttributeNotFoundException|ConcurrencyException $e) {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\ValueObject\ProductAttribute;
 
-use App\Catalog\Domain\Exception\ProductAttribute\InvalidProductAttributeIdException;
+use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeValueIdException;
 use App\Shared\Domain\Exception\Services\IntegerIsNotUnsignedException;
 use App\Shared\Domain\Service\Validation\IntegerValidator;
 use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
@@ -18,14 +18,14 @@ final readonly class Id implements EquatableInterface, Stringable
     private int $id;
 
     /**
-     * @throws InvalidProductAttributeIdException
+     * @throws InvalidProductAttributeValueIdException
      */
     public function __construct(int $id)
     {
         try {
             $this->id = IntegerValidator::validateUnsigned($id);
         } catch (IntegerIsNotUnsignedException) {
-            throw InvalidProductAttributeIdException::becauseItIsNotAValidId();
+            throw InvalidProductAttributeValueIdException::becauseItIsNotAValidId();
         }
     }
 
@@ -35,7 +35,7 @@ final readonly class Id implements EquatableInterface, Stringable
     }
 
     /**
-     * @throws InvalidProductAttributeIdException
+     * @throws InvalidProductAttributeValueIdException
      */
     public static function fromInt(int $id): self
     {

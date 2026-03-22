@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Catalog\Unit\Domain\Entity;
 
 use App\Catalog\Domain\Entity\ProductAttributeValue;
-use App\Catalog\Domain\Exception\ProductAttribute\UnsupportedAttributeTypeException;
+use App\Catalog\Domain\Exception\ProductAttributeValue\UnsupportedAttributeTypeException;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
 use App\Catalog\Domain\ValueObject\ProductAttribute\ArrayValue;
 use App\Catalog\Domain\ValueObject\ProductAttribute\BooleanValue;

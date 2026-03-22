@@ -10,6 +10,8 @@ final readonly class StringValue implements AttributeValueInterface
 {
     use ValueObjectEqualityTrait;
 
+    public const int MAX_LENGTH = 255;
+
     public function __construct(
         private string $value,
     ) {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Catalog\Domain\Exception\ProductAttribute;
+namespace App\Catalog\Domain\Exception\ProductAttributeValue;
 
 use App\Catalog\Domain\Exception\CatalogDomainException;
 

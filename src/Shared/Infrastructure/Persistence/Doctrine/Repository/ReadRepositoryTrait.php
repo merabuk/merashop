@@ -103,6 +103,33 @@ trait ReadRepositoryTrait
     /**
      * @template T
      *
+     * @param IdInterface[]       $ids
+     * @param callable(object): T $mapCallback
+     *
+     * @return array<T>
+     */
+    protected function _findByIds(
+        array $ids,
+        callable $mapCallback,
+        string $alias = 'e',
+    ): array {
+        if (empty($ids)) {
+            return [];
+        }
+
+        $result = $this->createQueryBuilder($alias)
+            ->where("{$alias}.id IN (:ids)")
+            ->setParameter('ids', array_map(fn (IdInterface $id) => $id->value(), $ids))
+            ->orderBy("{$alias}.id", Sort::ASC)
+            ->getQuery()
+            ->getResult();
+
+        return array_map($mapCallback, $result);
+    }
+
+    /**
+     * @template T
+     *
      * @param Ulid[]              $ulids
      * @param callable(object): T $mapCallback
      *

@@ -7,7 +7,7 @@ use App\Catalog\Domain\Exception\CatalogDomainException;
 use App\Shared\Domain\Exception\Contracts\ClientFacingExceptionInterface;
 use App\Shared\Domain\Exception\Markers\NotFoundExceptionInterface;
 
-class ProductNotFoundException extends CatalogDomainException implements ClientFacingExceptionInterface, NotFoundExceptionInterface
+final class ProductNotFoundException extends CatalogDomainException implements ClientFacingExceptionInterface, NotFoundExceptionInterface
 {
     public function getErrorCode(): string
     {

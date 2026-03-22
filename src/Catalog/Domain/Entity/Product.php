@@ -27,7 +27,7 @@ class Product
         private Sku $sku,
         private Status $status,
         private Translations $translations,
-        private Version $version,
+        private readonly Version $version,
         private readonly AdminUlid $createdBy,
         private PriceCollection $prices,
         private CategoryIdCollection $categoryIds,

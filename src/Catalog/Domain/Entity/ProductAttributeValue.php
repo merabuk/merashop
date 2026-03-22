@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\Entity;
 
-use App\Catalog\Domain\Exception\ProductAttribute\UnsupportedAttributeTypeException;
+use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
+use App\Catalog\Domain\Exception\ProductAttributeValue\UnsupportedAttributeTypeException;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
 use App\Catalog\Domain\ValueObject\ProductAttribute\ArrayValue;
 use App\Catalog\Domain\ValueObject\ProductAttribute\AttributeValueInterface;
@@ -12,33 +13,49 @@ use App\Catalog\Domain\ValueObject\ProductAttribute\BooleanValue;
 use App\Catalog\Domain\ValueObject\ProductAttribute\Id;
 use App\Catalog\Domain\ValueObject\ProductAttribute\IntegerValue;
 use App\Catalog\Domain\ValueObject\ProductAttribute\StringValue;
+use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
 
 class ProductAttributeValue
 {
+    /**
+     * @throws ProductAttributeValueStateException
+     */
     public function __construct(
         private readonly AttributeId $attributeId,
-        private AttributeValueInterface $value,
+        private ?AttributeOptionId $attributeOptionId = null,
+        private ?AttributeValueInterface $value = null,
         private readonly ?Id $id = null,
     ) {
+        $this->ensureIsValidState();
     }
 
     /**
-     * @throws UnsupportedAttributeTypeException
+     * @throws ProductAttributeValueStateException
      */
-    public static function createWithRawValue(AttributeId $attributeId, mixed $value): self
+    public static function createWithOption(AttributeId $attributeId, AttributeOptionId $attributeOptionId): self
     {
-        return new self(
-            attributeId: $attributeId,
-            value: self::resolveValue($value),
-        );
+        return new self(attributeId: $attributeId, attributeOptionId: $attributeOptionId);
     }
 
+    /**
+     * @throws ProductAttributeValueStateException
+     */
+    public static function createWithValue(AttributeId $attributeId, AttributeValueInterface $value): self
+    {
+        return new self(attributeId: $attributeId, value: $value);
+    }
+
+    /**
+     * @throws ProductAttributeValueStateException
+     */
     public static function create(
         AttributeId $attributeId,
-        AttributeValueInterface $value,
+        ?AttributeOptionId $attributeOptionId = null,
+        ?AttributeValueInterface $value = null,
     ): self {
         return new self(
             attributeId: $attributeId,
+            attributeOptionId: $attributeOptionId,
             value: $value
         );
     }
@@ -49,6 +66,7 @@ class ProductAttributeValue
     }
 
     /**
+     * @deprecated
      * @throws UnsupportedAttributeTypeException
      */
     public static function resolveValue(mixed $value): AttributeValueInterface
@@ -72,8 +90,27 @@ class ProductAttributeValue
         return $this->attributeId;
     }
 
-    public function getValue(): AttributeValueInterface
+    public function getAttributeOptionId(): ?AttributeOptionId
+    {
+        return $this->attributeOptionId;
+    }
+
+    public function getValue(): ?AttributeValueInterface
     {
         return $this->value;
+    }
+
+    /**
+     * @throws ProductAttributeValueStateException
+     */
+    private function ensureIsValidState(): void
+    {
+        if (null === $this->attributeOptionId && null === $this->value) {
+            throw ProductAttributeValueStateException::becauseAllFieldsAreNull(['attributeOptionId', 'value']);
+        }
+
+        if ($this->attributeOptionId && $this->value) {
+            throw ProductAttributeValueStateException::becauseAllFieldsAreNotNull(['attributeOptionId', 'value']);
+        }
     }
 }

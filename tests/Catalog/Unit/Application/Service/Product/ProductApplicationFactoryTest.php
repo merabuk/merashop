@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Catalog\Unit\Application\Service;
+namespace App\Tests\Catalog\Unit\Application\Service\Product;
 
 use App\Catalog\Application\DTO\Product\ProductAttributeValueData;
-use App\Catalog\Application\Service\ProductApplicationFactory;
+use App\Catalog\Application\Service\Product\ProductApplicationFactory;
 use App\Catalog\Domain\Enum\Product\StatusEnum;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
 use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Catalog\Unit\Application\Service;
+namespace App\Tests\Catalog\Unit\Application\Service\Product;
 
-use App\Catalog\Application\Service\ProductMediaManager;
+use App\Catalog\Application\Service\Product\ProductMediaManager;
 use App\Catalog\Domain\Repository\TemporaryImageReadRepositoryInterface;
 use App\Catalog\Domain\Repository\TemporaryImageWriteRepositoryInterface;
 use App\Catalog\Domain\Service\CatalogStorageInterface;

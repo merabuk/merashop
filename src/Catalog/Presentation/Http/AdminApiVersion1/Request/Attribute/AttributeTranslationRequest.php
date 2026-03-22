@@ -11,5 +11,5 @@ final class AttributeTranslationRequest
 {
     #[Assert\NotBlank]
     #[Assert\Length(max: Translation::NAME_MAX_LENGTH)]
-    public string $name;
+    public ?string $name = null;
 }

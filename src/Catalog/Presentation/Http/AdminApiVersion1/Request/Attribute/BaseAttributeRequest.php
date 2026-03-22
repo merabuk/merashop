@@ -6,7 +6,6 @@ namespace App\Catalog\Presentation\Http\AdminApiVersion1\Request\Attribute;
 
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
-use App\Catalog\Domain\ValueObject\Attribute\Translation;
 use App\Shared\Presentation\Http\Request\ValidateLocalesTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -26,21 +25,11 @@ abstract class BaseAttributeRequest
     public ?string $type;
 
     /**
-     * @var ?array<string, array{name: string}> $translations
+     * @var ?AttributeTranslationRequest[] $translations
      */
     #[Assert\NotBlank]
     #[Assert\Count(min: 1, minMessage: 'shared.common.translations_empty')]
-    #[Assert\All([
-        new Assert\Collection(
-            fields: [
-                'name' => [
-                    new Assert\NotBlank(),
-                    new Assert\Length(min: 1, max: Translation::NAME_MAX_LENGTH),
-                ],
-            ],
-            allowExtraFields: false
-        ),
-    ])]
+    #[Assert\Valid]
     public ?array $translations;
 
     /**
@@ -51,17 +40,26 @@ abstract class BaseAttributeRequest
         return [
             TypeEnum::String->value,
             TypeEnum::Int->value,
+            TypeEnum::Float->value,
             TypeEnum::Boolean->value,
             TypeEnum::Select->value,
+            TypeEnum::MultiSelect->value,
+            TypeEnum::Color->value,
+            TypeEnum::Date->value,
+            TypeEnum::Text->value,
+            TypeEnum::Url->value,
+            TypeEnum::Image->value,
         ];
     }
 
     /**
-     * @return array<string, array{name: string}>
+     * @return array<string, true>
      */
     protected function getTranslations(): array
     {
-        return $this->translations ?? [];
+        return isset($this->translations)
+            ? array_map(fn (AttributeTranslationRequest $translation) => true, $this->translations)
+            : [];
     }
 
     protected function getRequestTranslationKey(): string
