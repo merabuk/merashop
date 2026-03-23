@@ -15,7 +15,6 @@ interface ProductAttributeValueProviderInterface
     public static function getDefaultIndexName(): string;
 
     /**
-     *
      * @return ProductAttributeValue[]
      */
     public function handle(Attribute $attribute, ProductAttributeValueData $data): array;

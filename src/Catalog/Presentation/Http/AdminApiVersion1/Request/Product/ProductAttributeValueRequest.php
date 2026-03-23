@@ -8,7 +8,6 @@ use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\GroupSequenceProviderInterface;
 
-
 #[Assert\GroupSequenceProvider]
 final class ProductAttributeValueRequest implements GroupSequenceProviderInterface
 {
@@ -26,7 +25,7 @@ final class ProductAttributeValueRequest implements GroupSequenceProviderInterfa
     public ?string $type = null;
 
     #[Assert\NotNull(groups: [self::BASE_GROUP])]
-    #[Assert\Type(type: 'int', groups: [TypeEnum::Int->value])]
+    #[Assert\Type(type: 'int', groups: [TypeEnum::Integer->value])]
     #[Assert\Type(type: 'bool', groups: [TypeEnum::Boolean->value])]
     #[Assert\Type(type: 'string', groups: [
         TypeEnum::String->value,
@@ -37,7 +36,7 @@ final class ProductAttributeValueRequest implements GroupSequenceProviderInterfa
         TypeEnum::MultiSelect->value,
     ])]
     #[Assert\All(constraints: [
-        new Assert\Type('int')
+        new Assert\Type('int'),
     ], groups: [
         TypeEnum::Select->value,
         TypeEnum::MultiSelect->value,
@@ -63,7 +62,7 @@ final class ProductAttributeValueRequest implements GroupSequenceProviderInterfa
         return [
             TypeEnum::String->value,
             TypeEnum::Text->value,
-            TypeEnum::Int->value,
+            TypeEnum::Integer->value,
             TypeEnum::Float->value,
             TypeEnum::Boolean->value,
             TypeEnum::Select->value,

@@ -22,7 +22,7 @@ final readonly class AttributeValueResolver
         return match ($attributeType) {
             TypeEnum::String,
             TypeEnum::Text => new StringValue((string) $rawValue),
-            TypeEnum::Int => new IntegerValue((int) $rawValue),
+            TypeEnum::Integer => new IntegerValue((int) $rawValue),
             TypeEnum::Boolean => new BooleanValue(filter_var($rawValue, FILTER_VALIDATE_BOOLEAN)),
             TypeEnum::Select,
             TypeEnum::MultiSelect => throw new InvalidArgumentException('Options should be handled via OptionId, not ValueInterface'),

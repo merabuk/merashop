@@ -33,7 +33,7 @@ final readonly class Type implements EquatableInterface, Stringable
 
     public static function int(): self
     {
-        return self::fromEnum(TypeEnum::Int);
+        return self::fromEnum(TypeEnum::Integer);
     }
 
     public static function boolean(): self
@@ -72,7 +72,7 @@ final readonly class Type implements EquatableInterface, Stringable
 
     public function isInt(): bool
     {
-        return TypeEnum::Int === $this->type;
+        return TypeEnum::Integer === $this->type;
     }
 
     public function isBoolean(): bool

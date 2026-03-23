@@ -1,16 +1,12 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Catalog\Domain\ValueObject\ProductAttribute;
 
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
 
-final readonly class TextValue implements AttributeValueInterface
+final readonly class UrlValue implements AttributeValueInterface
 {
     use ValueObjectEqualityTrait;
-
-    public const int MAX_LENGTH = 65_535;
 
     public function __construct(
         private string $value,

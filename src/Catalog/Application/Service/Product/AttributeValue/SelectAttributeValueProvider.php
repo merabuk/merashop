@@ -25,6 +25,8 @@ class SelectAttributeValueProvider implements ProductAttributeValueProviderInter
     }
 
     /**
+     * @return ProductAttributeValue[]
+     *
      * @throws InvalidAttributeIdException
      * @throws InvalidAttributeOptionIdException
      * @throws ProductAttributeValueStateException
@@ -34,7 +36,7 @@ class SelectAttributeValueProvider implements ProductAttributeValueProviderInter
         $this->checkAttributeType($attribute);
 
         $valueData = $data->value;
-        if (!$valueData instanceof SelectAttributeValueData) {
+        if (false === $valueData instanceof SelectAttributeValueData) {
             throw $this->makeInvalidValueDataException(actualClass: $valueData::class, expectedClass: SelectAttributeValueData::class);
         }
 
@@ -44,7 +46,7 @@ class SelectAttributeValueProvider implements ProductAttributeValueProviderInter
             ProductAttributeValue::createWithOption(
                 attributeId: AttributeId::fromInt($data->attributeId),
                 attributeOptionId: AttributeOptionId::fromInt($valueData->optionId)
-            )
+            ),
         ];
     }
 

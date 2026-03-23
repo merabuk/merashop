@@ -39,7 +39,7 @@ abstract class BaseAttributeRequest
     {
         return [
             TypeEnum::String->value,
-            TypeEnum::Int->value,
+            TypeEnum::Integer->value,
             TypeEnum::Float->value,
             TypeEnum::Boolean->value,
             TypeEnum::Select->value,

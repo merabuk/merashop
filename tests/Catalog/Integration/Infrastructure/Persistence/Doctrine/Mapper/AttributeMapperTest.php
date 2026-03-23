@@ -84,7 +84,7 @@ final class AttributeMapperTest extends KernelTestCase
 
         $ormAttribute = new OrmAttribute();
         $ormAttribute->code = 'old-test-code';
-        $ormAttribute->type = TypeEnum::Int;
+        $ormAttribute->type = TypeEnum::Integer;
         $ormAttribute->updatedBy = 'old_ulid';
 
         $translation = new OrmAttributeTranslation();

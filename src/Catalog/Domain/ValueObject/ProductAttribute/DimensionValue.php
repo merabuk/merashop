@@ -26,10 +26,12 @@ final readonly class DimensionValue implements AttributeValueInterface
         return $this->unit;
     }
 
-    // TODO[attribute value]: think about necessary this method
-    public function value(): string
+    public function value(): array
     {
-        return $this->getPrimitiveValue();
+        return [
+            'magnitude' => $this->magnitude,
+            'unit' => $this->unit,
+        ];
     }
 
     public function __toString(): string
@@ -41,5 +43,4 @@ final readonly class DimensionValue implements AttributeValueInterface
     {
         return sprintf('%s_%s', number_format($this->magnitude, 2), $this->unit);
     }
-
 }

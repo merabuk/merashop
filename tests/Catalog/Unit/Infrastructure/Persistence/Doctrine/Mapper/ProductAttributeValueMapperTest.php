@@ -70,7 +70,7 @@ final class ProductAttributeValueMapperTest extends TestCase
             'value' => 'string value',
         ];
         yield 'integer value' => [
-            'attributeType' => AttributeTypeEnum::Int,
+            'attributeType' => AttributeTypeEnum::Integer,
             'value' => 123456789,
         ];
         yield 'boolean value' => [
@@ -126,7 +126,7 @@ final class ProductAttributeValueMapperTest extends TestCase
             'value' => 123456789,
         ];
         yield 'attribute type int and value not' => [
-            'attributeType' => AttributeTypeEnum::Int,
+            'attributeType' => AttributeTypeEnum::Integer,
             'value' => 'invalid value',
         ];
         yield 'attribute type bool and value not' => [

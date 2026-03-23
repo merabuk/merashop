@@ -19,7 +19,7 @@ final class Version20260212160551 extends AbstractMigration
         $attributeTypes = [
             'string',
             'text',
-            'int',
+            'integer',
             'float',
             'boolean',
             'select',
@@ -28,11 +28,11 @@ final class Version20260212160551 extends AbstractMigration
             'date',
             'url',
             'dimension',
-            'image'
+            'image',
         ];
 
         $this->addSql(sprintf(
-            "CREATE TYPE attribute_type AS ENUM (%s)",
+            'CREATE TYPE attribute_type AS ENUM (%s)',
             implode(', ', array_map(fn (string $t) => "'{$t}'", $attributeTypes))
         ));
 

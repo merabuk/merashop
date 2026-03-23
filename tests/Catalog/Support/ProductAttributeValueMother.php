@@ -27,7 +27,7 @@ final readonly class ProductAttributeValueMother
     ): ProductAttributeValue {
         $value = match ($attributeType) {
             AttributeTypeEnum::String => 'string value',
-            AttributeTypeEnum::Int => 123456789,
+            AttributeTypeEnum::Integer => 123456789,
             AttributeTypeEnum::Boolean => true,
             AttributeTypeEnum::Select => ['option1', 'option2', 'option3'],
             default => $value ?? 'product attribute string value',
@@ -49,7 +49,7 @@ final readonly class ProductAttributeValueMother
         $attributeType ??= AttributeTypeEnum::String;
         $value ??= match ($attributeType) {
             AttributeTypeEnum::String => $this->faker->word(),
-            AttributeTypeEnum::Int => $this->faker->numberBetween(1, 1000),
+            AttributeTypeEnum::Integer => $this->faker->numberBetween(1, 1000),
             AttributeTypeEnum::Boolean => $this->faker->boolean(),
             AttributeTypeEnum::Select => $this->faker->randomElements(
                 array: ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5'],

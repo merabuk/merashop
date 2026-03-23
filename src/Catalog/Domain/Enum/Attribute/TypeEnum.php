@@ -12,7 +12,7 @@ enum TypeEnum: string
 
     case String = 'string';
     case Text = 'text';
-    case Int = 'int';
+    case Integer = 'integer';
     case Float = 'float';
     case Boolean = 'boolean';
     case Select = 'select';

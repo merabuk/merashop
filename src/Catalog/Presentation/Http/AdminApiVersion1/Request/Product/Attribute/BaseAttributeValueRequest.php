@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[DiscriminatorMap(typeProperty: 'type', mapping: [
     TypeEnum::String->value => StringAttributeValueRequest::class,
     TypeEnum::Text->value => TextAttributeValueRequest::class,
-    TypeEnum::Int->value => IntegerAttributeValueRequest::class,
+    TypeEnum::Integer->value => IntegerAttributeValueRequest::class,
     TypeEnum::Float->value => FloatAttributeValueRequest::class,
     TypeEnum::Boolean->value => BooleanAttributeValueRequest::class,
     TypeEnum::Select->value => SelectAttributeValueRequest::class,
@@ -45,7 +45,7 @@ abstract class BaseAttributeValueRequest
         return [
             TypeEnum::String->value,
             TypeEnum::Text->value,
-            TypeEnum::Int->value,
+            TypeEnum::Integer->value,
             TypeEnum::Float->value,
             TypeEnum::Boolean->value,
             TypeEnum::Select->value,

@@ -25,6 +25,8 @@ class MultiSelectAttributeValueProvider implements ProductAttributeValueProvider
     }
 
     /**
+     * @return ProductAttributeValue[]
+     *
      * @throws InvalidAttributeIdException
      * @throws InvalidAttributeOptionIdException
      * @throws ProductAttributeValueStateException
@@ -34,7 +36,7 @@ class MultiSelectAttributeValueProvider implements ProductAttributeValueProvider
         $this->checkAttributeType($attribute);
 
         $valueData = $data->value;
-        if (!$valueData instanceof MultiSelectAttributeValueData) {
+        if (false === $valueData instanceof MultiSelectAttributeValueData) {
             throw $this->makeInvalidValueDataException(actualClass: $valueData::class, expectedClass: MultiSelectAttributeValueData::class);
         }
 

@@ -53,7 +53,7 @@ final class TypeTest extends TestCase
     public static function factoryMethodProvider(): iterable
     {
         yield 'string' => [Type::string(), TypeEnum::String, 'isString'];
-        yield 'integer' => [Type::int(), TypeEnum::Int, 'isInt'];
+        yield 'integer' => [Type::int(), TypeEnum::Integer, 'isInt'];
         yield 'boolean' => [Type::boolean(), TypeEnum::Boolean, 'isBoolean'];
         yield 'select' => [Type::select(), TypeEnum::Select, 'isSelect'];
     }

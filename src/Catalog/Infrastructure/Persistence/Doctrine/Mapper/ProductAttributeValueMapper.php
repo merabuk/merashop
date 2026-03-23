@@ -45,7 +45,7 @@ final readonly class ProductAttributeValueMapper
                 ? StringValue::fromString($rawValue)
                 : throw $this->makeTypeError(id: $id, expected: 'string', actual: $rawValue),
 
-            TypeEnum::Int => is_int($rawValue)
+            TypeEnum::Integer => is_int($rawValue)
                 ? IntegerValue::fromInt($rawValue)
                 : throw $this->makeTypeError(id: $id, expected: 'integer', actual: $rawValue),
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Catalog\Presentation\Http\AdminApiVersion1\Request\Product\Attribute;
 
 use App\Catalog\Application\DTO\Product\AttributeValue\StringAttributeValueData;
-use App\Catalog\Domain\ValueObject\ProductAttribute\StringValue;
+use App\Catalog\Domain\ValueObject\ProductAttribute\LocalizedStringValue;
 use App\Shared\Presentation\Http\Request\ValidateLocalesTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -20,7 +20,7 @@ final class StringAttributeValueRequest extends BaseAttributeValueRequest
     #[Assert\Count(min: 1)]
     #[Assert\All([
         new Assert\NotBlank(),
-        new Assert\Length(max: StringValue::MAX_LENGTH)
+        new Assert\Length(max: LocalizedStringValue::MAX_LENGTH),
     ])]
     public ?array $translations;
 

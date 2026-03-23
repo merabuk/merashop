@@ -52,7 +52,7 @@ final class AttributeTest extends TestCase
         $attribute = AttributeMother::createWithData(code: 'old_code');
 
         $newCode = Code::fromString('new_code');
-        $newType = Type::fromEnum(TypeEnum::Int);
+        $newType = Type::fromEnum(TypeEnum::Integer);
         $newTranslations = Translations::fromArray(self::getValidTranslations());
         $adminUlid = AdminUlid::fromString('01KHVRCC1Z9S7G603HEPK9MGEZ');
 

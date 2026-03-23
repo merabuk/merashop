@@ -76,7 +76,7 @@ final class CreateProductControllerTest extends WebTestCase
         $this->loginAsAdmin();
 
         $attribute1 = $this->getAttributeFixture()->create(code: 'model', type: AttributeTypeEnum::String);
-        $attribute2 = $this->getAttributeFixture()->create(code: 'year-of-manufacture', type: AttributeTypeEnum::Int);
+        $attribute2 = $this->getAttributeFixture()->create(code: 'year-of-manufacture', type: AttributeTypeEnum::Integer);
         $attribute3 = $this->getAttributeFixture()->create(code: '4G', type: AttributeTypeEnum::Boolean);
         // TODO: rework on attribute_options
         $attribute4 = $this->getAttributeFixture()->create(code: 'wireless_tech', type: AttributeTypeEnum::Select);
