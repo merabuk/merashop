@@ -45,7 +45,7 @@ final class ExpiresAtTest extends TestCase
 
     public function testItProvidesEqualityCheckWithDateTime(): void
     {
-        $this->assertDateTimeEquality(ExpiresAt::class);
+        $this->assertDateTimeEqualityWithDateTime(ExpiresAt::class);
     }
 
     public function testItIsAfter(): void

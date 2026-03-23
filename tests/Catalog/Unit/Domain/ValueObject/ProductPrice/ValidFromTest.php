@@ -29,7 +29,7 @@ final class ValidFromTest extends TestCase
 
     public function testItProvidesEqualityCheckWithDateTime(): void
     {
-        $this->assertDateTimeEquality(ValidFrom::class);
+        $this->assertDateTimeEqualityWithDateTime(ValidFrom::class);
     }
 
     public function testItIsAfter(): void

@@ -3,11 +3,11 @@
 namespace App\Catalog\Domain\ValueObject\ProductAttributeValue\Value;
 
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeDateValueException;
-use App\Shared\Domain\ValueObject\Temporal\DateTimeValueObject;
+use App\Shared\Domain\ValueObject\Temporal\DateValueObject;
 use DateMalformedStringException;
 use DateTimeImmutable;
 
-final readonly class DateValue extends DateTimeValueObject implements AttributeValueInterface
+final readonly class DateValue extends DateValueObject implements AttributeValueInterface
 {
     /**
      * @throws InvalidProductAttributeDateValueException
@@ -19,5 +19,10 @@ final readonly class DateValue extends DateTimeValueObject implements AttributeV
         } catch (DateMalformedStringException $e) {
             throw InvalidProductAttributeDateValueException::becauseItIsDateMalformedString($e);
         }
+    }
+
+    public static function fromDateTime(DateTimeImmutable $data): self
+    {
+        return new self($data);
     }
 }

@@ -4,27 +4,37 @@ declare(strict_types=1);
 
 namespace App\Tests\Shared\Unit\Domain\ValueObject\Traits;
 
-use App\Shared\Domain\ValueObject\Temporal\DateTimeValueObject;
+use App\Shared\Domain\ValueObject\Temporal\DateValueObject;
 use DateTimeImmutable;
 
-trait DateTimeValueObjectTrait
+trait DateValueObjectTrait
 {
     use AbstractTemporalValueObjectTrait;
 
     protected function assertCreatesValidDateTime(
         string $className,
         ?DateTimeImmutable $dateTime = null,
-        string $toStringFormat = DateTimeValueObject::OUTPUT_FORMAT,
+        string $toStringFormat = DateValueObject::OUTPUT_FORMAT,
     ): void {
-        $this->assertValidTemporalValue($className, $toStringFormat, $dateTime);
+        $this->assertValidTemporalValue(
+            className: $className,
+            toStringFormat: $toStringFormat,
+            dateTime: $dateTime,
+            isDate: true
+        );
     }
 
     protected function assertCreatesValidDateTimeFromString(
         string $className,
         ?string $dateTimeString = null,
-        string $toStringFormat = DateTimeValueObject::OUTPUT_FORMAT,
+        string $toStringFormat = DateValueObject::OUTPUT_FORMAT,
     ): void {
-        $this->assertValidTemporalValueFromString($className, $toStringFormat, $dateTimeString);
+        $this->assertValidTemporalValueFromString(
+            className: $className,
+            toStringFormat: $toStringFormat,
+            dateTimeString: $dateTimeString,
+            isDate: true
+        );
     }
 
     protected function assertDateTimeEquality(string $className): void
@@ -32,7 +42,7 @@ trait DateTimeValueObjectTrait
         $this->assertDateTimeVOProvidesEqualityCheck(
             className: $className,
             value: '2024-01-01 15:30:00.123456',
-            anotherValue: '2024-01-01 15:30:00.123457',
+            anotherValue: '2024-01-02 15:30:00.123456',
         );
     }
 
@@ -41,7 +51,7 @@ trait DateTimeValueObjectTrait
         $this->assertTemporalValueEqualityWithDateTime(
             className: $className,
             value: '2024-01-01 15:30:00.123456',
-            anotherValue: '2024-01-01 15:30:00.123457',
+            anotherValue: '2024-01-02 15:30:00.123456',
         );
     }
 
@@ -50,7 +60,7 @@ trait DateTimeValueObjectTrait
         $this->assertTemporalValueIsAfter(
             className: $className,
             earlierValue: '2024-01-01 10:00:00',
-            laterValue: '2024-01-01 11:00:00',
+            laterValue: '2024-01-02 10:00:00',
         );
     }
 
@@ -59,7 +69,7 @@ trait DateTimeValueObjectTrait
         $this->assertTemporalValueIsBefore(
             className: $className,
             earlierValue: '2024-01-01 10:00:00',
-            laterValue: '2024-01-01 11:00:00',
+            laterValue: '2024-01-02 10:00:00',
         );
     }
 }
