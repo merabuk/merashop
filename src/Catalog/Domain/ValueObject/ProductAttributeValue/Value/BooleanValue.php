@@ -2,34 +2,12 @@
 
 namespace App\Catalog\Domain\ValueObject\ProductAttributeValue\Value;
 
-use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
+use App\Shared\Domain\ValueObject\BaseFlag;
 
-final readonly class BooleanValue implements AttributeValueInterface
+final readonly class BooleanValue extends BaseFlag implements AttributeValueInterface
 {
-    use ValueObjectEqualityTrait;
-
-    public function __construct(
-        private bool $value,
-    ) {
-    }
-
     public static function fromBool(bool $value): self
     {
         return new self($value);
-    }
-
-    public function value(): bool
-    {
-        return $this->value;
-    }
-
-    public function __toString(): string
-    {
-        return $this->value ? 'Yes' : 'No';
-    }
-
-    protected function getPrimitiveValue(): bool
-    {
-        return $this->value;
     }
 }
