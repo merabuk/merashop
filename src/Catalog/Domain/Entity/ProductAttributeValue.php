@@ -5,15 +5,10 @@ declare(strict_types=1);
 namespace App\Catalog\Domain\Entity;
 
 use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
-use App\Catalog\Domain\Exception\ProductAttributeValue\UnsupportedAttributeTypeException;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
-use App\Catalog\Domain\ValueObject\ProductAttribute\ArrayValue;
-use App\Catalog\Domain\ValueObject\ProductAttribute\AttributeValueInterface;
-use App\Catalog\Domain\ValueObject\ProductAttribute\BooleanValue;
-use App\Catalog\Domain\ValueObject\ProductAttribute\Id;
-use App\Catalog\Domain\ValueObject\ProductAttribute\IntegerValue;
-use App\Catalog\Domain\ValueObject\ProductAttribute\StringValue;
 use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
+use App\Catalog\Domain\ValueObject\ProductAttribute\Id;
+use App\Catalog\Domain\ValueObject\ProductAttribute\Value\AttributeValueInterface;
 
 class ProductAttributeValue
 {
@@ -63,21 +58,6 @@ class ProductAttributeValue
     public function updateValue(AttributeValueInterface $value): void
     {
         $this->value = $value;
-    }
-
-    /**
-     * @deprecated
-     * @throws UnsupportedAttributeTypeException
-     */
-    public static function resolveValue(mixed $value): AttributeValueInterface
-    {
-        return match (true) {
-            is_string($value) => StringValue::fromString($value),
-            is_int($value) => IntegerValue::fromInt($value),
-            is_bool($value) => BooleanValue::fromBool($value),
-            is_array($value) => ArrayValue::fromArray($value),
-            default => throw UnsupportedAttributeTypeException::becauseIsItNotSupportedType(get_debug_type($value)),
-        };
     }
 
     public function getId(): ?Id

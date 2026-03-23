@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Tests\Catalog\Support;
 
 use App\Catalog\Domain\Entity\Attribute;
+use App\Catalog\Domain\Entity\AttributeOption;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Factory\Contract\AttributeFactoryInterface;
 use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Id;
+use App\Catalog\Domain\ValueObject\Attribute\OptionCollection;
 use App\Catalog\Domain\ValueObject\Attribute\Translations;
 use App\Catalog\Domain\ValueObject\Attribute\Type;
 use App\Catalog\Domain\ValueObject\Attribute\Ulid;
@@ -34,6 +36,7 @@ final readonly class AttributeMother
 
     /**
      * @param ?array<string, array{name: string}> $translations
+     * @param ?AttributeOption[]                  $options
      */
     public static function createWithData(
         ?string $ulid = null,
@@ -42,6 +45,7 @@ final readonly class AttributeMother
         ?array $translations = null,
         ?int $version = null,
         ?string $createdByUlid = null,
+        ?array $options = null,
         ?string $updatedByUlid = null,
         ?int $id = null,
     ): Attribute {
@@ -52,6 +56,7 @@ final readonly class AttributeMother
             translations: Translations::fromArray($translations ?: self::makeFakeTranslations()),
             version: $version ? Version::fromInt($version) : Version::initial(),
             createdBy: AdminUlid::fromString($createdByUlid ?? self::DEFAULT_ADMIN_ULID),
+            options: OptionCollection::fromArray($options ?? []),
             updatedBy: $updatedByUlid ? AdminUlid::fromString($updatedByUlid) : null,
             id: $id ? Id::fromInt($id) : null,
         );
@@ -59,6 +64,7 @@ final readonly class AttributeMother
 
     /**
      * @param ?array<string, array{name: string}> $translations
+     * @param AttributeOption[]                   $options
      */
     public function create(
         ?string $ulid = null,
@@ -66,6 +72,7 @@ final readonly class AttributeMother
         ?TypeEnum $type = null,
         ?array $translations = null,
         ?string $createdByUlid = null,
+        ?array $options = null,
     ): Attribute {
         return $this->attributeFactory->createForTest(
             ulid: $ulid ?? $this->ulidGenerator->next(),
@@ -73,6 +80,7 @@ final readonly class AttributeMother
             type: $type ?? $this->faker->randomElement(TypeEnum::cases()),
             translations: $translations ?? $this->makeTranslations(),
             createdByUlid: $createdByUlid ?? $this->ulidGenerator->next(),
+            options: $options ?? [],
         );
     }
 

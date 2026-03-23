@@ -7,7 +7,7 @@ namespace App\Catalog\Application\DTO\Product\AttributeValue;
 final readonly class ColorAttributeValueData implements AttributeValueDataInterface
 {
     public function __construct(
-        public string $value
+        public string $value,
     ) {
     }
 }

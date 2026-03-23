@@ -1,34 +1,34 @@
 <?php
 
-namespace App\Catalog\Domain\ValueObject\ProductAttribute;
+namespace App\Catalog\Domain\ValueObject\ProductAttribute\Value;
 
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
 
-final readonly class UrlValue implements AttributeValueInterface
+final readonly class BooleanValue implements AttributeValueInterface
 {
     use ValueObjectEqualityTrait;
 
     public function __construct(
-        private string $value,
+        private bool $value,
     ) {
     }
 
-    public static function fromString(string $value): self
+    public static function fromBool(bool $value): self
     {
         return new self($value);
     }
 
-    public function value(): string
+    public function value(): bool
     {
         return $this->value;
     }
 
     public function __toString(): string
     {
-        return $this->value;
+        return $this->value ? 'Yes' : 'No';
     }
 
-    protected function getPrimitiveValue(): string
+    protected function getPrimitiveValue(): bool
     {
         return $this->value;
     }

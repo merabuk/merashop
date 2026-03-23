@@ -13,7 +13,7 @@ final class ProductAttributeValueStateException extends CatalogDomainException
      */
     public static function becauseAllFieldsAreNull(array $fields): self
     {
-        return new self(sprintf('One of the following fields must be not null: %s',  implode(', ', $fields)));
+        return new self(sprintf('One of the following fields must be not null: %s', implode(', ', $fields)));
     }
 
     /**
@@ -21,7 +21,7 @@ final class ProductAttributeValueStateException extends CatalogDomainException
      */
     public static function becauseAllFieldsAreNotNull(array $fields): self
     {
-        return new self(sprintf('One of the following fields must be null: %s',  implode(', ', $fields)));
+        return new self(sprintf('One of the following fields must be null: %s', implode(', ', $fields)));
     }
 
     public function getErrorCode(): string

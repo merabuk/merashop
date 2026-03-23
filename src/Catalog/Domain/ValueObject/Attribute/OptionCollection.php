@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Catalog\Domain\ValueObject\Attribute;
 
 use App\Catalog\Domain\Entity\AttributeOption;
-use App\Catalog\Domain\Entity\ProductImage;
 use App\Catalog\Domain\Exception\Attribute\AttributeOptionUniqueException;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeOptionItemException;
 use App\Catalog\Domain\ValueObject\AttributeOption\Ulid as AttributeOptionUlid;
@@ -49,7 +48,7 @@ final readonly class OptionCollection extends AbstractCollection
     {
         $ulidValue = $ulid instanceof AttributeOptionUlid ? $ulid->value() : $ulid;
 
-        return array_find($this->items, fn (ProductImage $item) => $item->getUlid()->value() === $ulidValue);
+        return array_find($this->items, fn (AttributeOption $item) => $item->getUlid()->value() === $ulidValue);
     }
 
     /**

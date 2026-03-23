@@ -6,5 +6,4 @@ namespace App\Catalog\Application\DTO\Product\AttributeValue;
 
 interface AttributeValueDataInterface
 {
-
 }

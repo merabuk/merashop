@@ -12,7 +12,7 @@ final class MultiSelectAttributeValueRequest extends BaseAttributeValueRequest
      */
     #[Assert\NotBlank]
     #[Assert\All([
-        new Assert\Positive()
+        new Assert\Positive(),
     ])]
     public ?array $values;
 

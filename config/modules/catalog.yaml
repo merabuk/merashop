@@ -18,6 +18,11 @@ services:
       $productImageMapper: '@App\Catalog\Infrastructure\Persistence\Doctrine\Mapper\ProductImageMapper'
       $productAttributeValueMapper: '@App\Catalog\Infrastructure\Persistence\Doctrine\Mapper\ProductAttributeValueMapper'
 
+  App\Catalog\Infrastructure\Persistence\Doctrine\Mapper\ProductAttributeValueMapper:
+    arguments:
+      $referenceProvider: '@catalog.proxy_reference_provider'
+      $normalizer: '@App\Catalog\Infrastructure\Persistence\Doctrine\Normalizer\ProductAttributeValueNormalizer'
+
   App\Catalog\Infrastructure\Service\CatalogFlysystemStorage:
     arguments:
       $clock: '@clock'

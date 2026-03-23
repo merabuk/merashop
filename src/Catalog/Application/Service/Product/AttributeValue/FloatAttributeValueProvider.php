@@ -12,7 +12,7 @@ use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
-use App\Catalog\Domain\ValueObject\ProductAttribute\FloatValue;
+use App\Catalog\Domain\ValueObject\ProductAttribute\Value\FloatValue;
 
 class FloatAttributeValueProvider implements ProductAttributeValueProviderInterface
 {

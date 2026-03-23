@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Catalog\Presentation\Http\AdminApiVersion1\Request\Product\Attribute;
 
 use App\Catalog\Application\DTO\Product\AttributeValue\StringAttributeValueData;
-use App\Catalog\Domain\ValueObject\ProductAttribute\LocalizedStringValue;
+use App\Catalog\Domain\ValueObject\ProductAttribute\Value\LocalizedStringValue;
 use App\Shared\Presentation\Http\Request\ValidateLocalesTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 

@@ -8,6 +8,7 @@ use App\Catalog\Domain\Entity\Product;
 use App\Catalog\Domain\Exception\Category\InvalidCategoryIdException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Exception\Product\InvalidProductCategoryIdItemException;
+use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
 use App\Catalog\Domain\Exception\ProductPrice\ProductPriceStateException;
 use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
@@ -76,6 +77,7 @@ final readonly class ProductMapper implements MapperInterface
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
      * @throws InvalidRelativePathException
+     * @throws ProductAttributeValueStateException
      * @throws ProductPriceStateException
      */
     public function fromDoctrineOrm(object $orm): Product
@@ -251,6 +253,7 @@ final readonly class ProductMapper implements MapperInterface
     /**
      * @throws InvalidCatalogValueObjectException
      * @throws EntityIdMissingException
+     * @throws ProductAttributeValueStateException
      */
     private function mapAttributesFromOrmToDomain(OrmProduct $orm): AttributeValueCollection
     {

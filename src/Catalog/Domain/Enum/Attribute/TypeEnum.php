@@ -16,7 +16,7 @@ enum TypeEnum: string
     case Float = 'float';
     case Boolean = 'boolean';
     case Select = 'select';
-    case MultiSelect = 'multi_select';
+    case MultiSelect = 'multiselect';
     case Color = 'color';
     case Date = 'date';
     case Url = 'url';

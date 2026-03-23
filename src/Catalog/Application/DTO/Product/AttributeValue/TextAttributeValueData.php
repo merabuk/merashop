@@ -10,6 +10,7 @@ final readonly class TextAttributeValueData implements AttributeValueDataInterfa
         /**
          * @var array<string, string> [locale => value]
          */
-        public array $translations
-    ) {}
+        public array $translations,
+    ) {
+    }
 }

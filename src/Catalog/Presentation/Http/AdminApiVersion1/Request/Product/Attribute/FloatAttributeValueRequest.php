@@ -13,7 +13,6 @@ final class FloatAttributeValueRequest extends BaseAttributeValueRequest
     #[Assert\Type('float')]
     public ?float $value;
 
-
     public function toData(): FloatAttributeValueData
     {
         return new FloatAttributeValueData(value: $this->value);

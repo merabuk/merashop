@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Catalog\Domain\ValueObject\ProductAttribute;
+namespace App\Catalog\Domain\ValueObject\ProductAttribute\Value;
 
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
 

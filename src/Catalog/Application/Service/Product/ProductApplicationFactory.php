@@ -6,30 +6,22 @@ namespace App\Catalog\Application\Service\Product;
 
 use App\Catalog\Application\Command\CreateProduct\CreateProductCommand;
 use App\Catalog\Application\Command\UpdateProduct\UpdateProductCommand;
-use App\Catalog\Application\DTO\Product\AttributeValue\MultiSelectAttributeValueData;
-use App\Catalog\Application\DTO\Product\AttributeValue\SelectAttributeValueData;
-use App\Catalog\Application\DTO\Product\AttributeValue\StringAttributeValueData;
 use App\Catalog\Application\DTO\Product\ProductAttributeValueData;
 use App\Catalog\Application\DTO\Product\ProductPriceData;
 use App\Catalog\Application\DTO\Product\ProductTranslationData;
 use App\Catalog\Application\Service\Product\AttributeValue\ProductAttributeValueProviderInterface;
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Entity\Product;
-use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Entity\ProductPrice;
-use App\Catalog\Domain\Enum\Attribute\TypeEnum as AttributeTypeEnum;
 use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
 use App\Catalog\Domain\Exception\Category\InvalidCategoryIdException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
-use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\UnsupportedAttributeTypeException;
 use App\Catalog\Domain\Exception\ProductPrice\ProductPriceStateException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
-use App\Catalog\Domain\Service\ProductAttributeValue\AttributeValueResolver;
 use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
-use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
 use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
 use App\Catalog\Domain\ValueObject\Product\AttributeValueCollection;
 use App\Catalog\Domain\ValueObject\Product\CategoryIdCollection;
@@ -44,6 +36,7 @@ use App\Catalog\Domain\ValueObject\ProductPrice\TaxIncludedFlag;
 use App\Catalog\Domain\ValueObject\ProductPrice\Type;
 use App\Catalog\Domain\ValueObject\ProductPrice\ValidityPeriod;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 
@@ -51,7 +44,6 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
 {
     public function __construct(
         private AttributeReadRepositoryInterface $attributeReadRepository,
-        private AttributeValueResolver $valueResolver,
         #[AutowireLocator(
             services: 'catalog.product_attribute_value_provider',
             defaultIndexMethod: 'getDefaultIndexName',
@@ -85,6 +77,7 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
     }
 
     /**
+     * @throws AttributeNotFoundException
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
      * @throws ProductPriceStateException
@@ -105,6 +98,7 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
     }
 
     /**
+     * @throws AttributeNotFoundException
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
      * @throws ProductPriceStateException
@@ -159,9 +153,9 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
     /**
      * @param ProductAttributeValueData[] $attributeValuesData
      *
+     * @throws AttributeNotFoundException
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidAttributeIdException
-     * @throws ProductAttributeValueStateException
      * @throws UnsupportedAttributeTypeException
      */
     private function mapAttributeValues(array $attributeValuesData): AttributeValueCollection
@@ -171,26 +165,31 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
         $attributeValues = [];
 
         foreach ($attributeValuesData as $data) {
-            $attribute = array_find($attributes, fn(Attribute $a) => $a->getId()->value() === $data->attributeId);
+            try {
+                $attribute = array_find($attributes, fn (Attribute $a) => $a->getId()->value() === $data->attributeId);
 
-            if (!$attribute) {
-                throw AttributeNotFoundException::withId($data->attributeId);
-            }
+                if (!$attribute) {
+                    // TODO[attribute]: add index support for exception
+                    throw new AttributeNotFoundException();
+                }
 
-            $type = $attribute->getType()->value();
+                $type = $attribute->getType()->value();
 
-            if (!$this->providers->has($type->value)) {
-                throw new UnsupportedAttributeTypeException();
-            }
+                if (!$this->providers->has($type->value)) {
+                    throw new UnsupportedAttributeTypeException(sprintf('Container does not have a value provider for attribute type: %s', $type->value));
+                }
 
-            $provider = $this->providers->get($type->value);
+                $provider = $this->providers->get($type->value);
 
-            if (false === $provider instanceof ProductAttributeValueProviderInterface) {
-                throw new UnsupportedAttributeTypeException();
-            }
+                if (false === $provider instanceof ProductAttributeValueProviderInterface) {
+                    throw new UnsupportedAttributeTypeException(sprintf('Value provider "%s" must implement %s', $type->value, ProductAttributeValueProviderInterface::class));
+                }
 
-            foreach ($provider->handle($attribute, $data) as $pav) {
-                $attributeValues[] = $pav;
+                foreach ($provider->handle($attribute, $data) as $pav) {
+                    $attributeValues[] = $pav;
+                }
+            } catch (ContainerExceptionInterface $e) {
+                throw new UnsupportedAttributeTypeException(message: 'Fail get value provider', previous: $e);
             }
         }
 

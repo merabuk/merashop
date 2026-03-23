@@ -23,7 +23,7 @@ final class Version20260212160551 extends AbstractMigration
             'float',
             'boolean',
             'select',
-            'multi_select',
+            'multiselect',
             'color',
             'date',
             'url',

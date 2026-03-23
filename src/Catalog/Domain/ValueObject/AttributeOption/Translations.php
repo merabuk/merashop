@@ -23,9 +23,9 @@ final readonly class Translations extends AbstractTranslations
     {
         $translations = [];
         foreach ($data as $locale => $item) {
-            $name = $item['value'] ?? throw InvalidAttributeOptionValueException::becauseItIsEmpty($locale);
+            $value = $item['value'] ?? throw InvalidAttributeOptionValueException::becauseItIsEmpty($locale);
 
-            $translations[$locale] = new Translation(locale: $locale, value: $name);
+            $translations[$locale] = new Translation(locale: $locale, value: $value);
         }
 
         return new self($translations);

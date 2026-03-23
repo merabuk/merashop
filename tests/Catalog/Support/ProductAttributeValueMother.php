@@ -8,58 +8,125 @@ use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum as AttributeTypeEnum;
 use App\Catalog\Domain\Factory\Contract\ProductAttributeValueFactoryInterface;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
+use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
 use App\Catalog\Domain\ValueObject\ProductAttribute\Id as ProductAttributeId;
+use App\Catalog\Domain\ValueObject\ProductAttribute\Value\AttributeValueInterface;
+use App\Catalog\Infrastructure\Persistence\Doctrine\Normalizer\ProductAttributeValueNormalizer;
+use App\Shared\Domain\Enum\LocaleEnum;
+use Faker\Factory;
 use Faker\Generator;
+use RuntimeException;
 
 final readonly class ProductAttributeValueMother
 {
     public function __construct(
         private ProductAttributeValueFactoryInterface $productAttributeValueFactory,
         private Generator $faker,
+        private Factory $fakerFactory,
+        private ProductAttributeValueNormalizer $normalizer,
     ) {
     }
 
     public static function createWithData(
         int $attributeId,
-        ?AttributeTypeEnum $attributeType = null,
+        AttributeTypeEnum $attributeType,
+        ?int $optionId = null,
         mixed $value = null,
         ?int $id = null,
     ): ProductAttributeValue {
-        $value = match ($attributeType) {
-            AttributeTypeEnum::String => 'string value',
-            AttributeTypeEnum::Integer => 123456789,
-            AttributeTypeEnum::Boolean => true,
-            AttributeTypeEnum::Select => ['option1', 'option2', 'option3'],
-            default => $value ?? 'product attribute string value',
-        };
-        $valueObject = ProductAttributeValue::resolveValue($value);
-
         return new ProductAttributeValue(
             attributeId: AttributeId::fromInt($attributeId),
-            value: $valueObject,
+            attributeOptionId: $optionId ? AttributeOptionId::fromInt($optionId) : null,
+            value: self::getFakeAttributeValue($attributeType, $value),
             id: $id ? ProductAttributeId::fromInt($id) : null
         );
     }
 
     public function create(
         int $attributeId,
-        ?AttributeTypeEnum $attributeType = null,
+        AttributeTypeEnum $attributeType,
+        ?int $optionId = null,
         mixed $value = null,
     ): ProductAttributeValue {
-        $attributeType ??= AttributeTypeEnum::String;
-        $value ??= match ($attributeType) {
-            AttributeTypeEnum::String => $this->faker->word(),
-            AttributeTypeEnum::Integer => $this->faker->numberBetween(1, 1000),
-            AttributeTypeEnum::Boolean => $this->faker->boolean(),
-            AttributeTypeEnum::Select => $this->faker->randomElements(
-                array: ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5'],
-                count: random_int(2, 5)
-            ),
-        };
+        $attributeValue = $this->getAttributeValue($attributeType, $value);
 
         return $this->productAttributeValueFactory->createForTest(
             attributeId: $attributeId,
-            value: $value,
+            attributeOptionId: $optionId,
+            value: $attributeValue,
         );
+    }
+
+    private function getAttributeValue(
+        AttributeTypeEnum $attributeType,
+        mixed $value,
+    ): ?AttributeValueInterface {
+        $arrayValue = match ($attributeType) {
+            AttributeTypeEnum::String,
+            AttributeTypeEnum::Text => is_null($value) ? $this->makeTranslations() : (array) $value,
+            AttributeTypeEnum::Integer => ['value' => $value ?? $this->faker->numberBetween(1, 1000)],
+            AttributeTypeEnum::Boolean => ['value' => $value ?? $this->faker->boolean()],
+            AttributeTypeEnum::Select,
+            AttributeTypeEnum::MultiSelect => [],
+            AttributeTypeEnum::Color => ['value' => $value ?? $this->faker->hexColor()],
+            AttributeTypeEnum::Date => ['value' => $value ?? $this->faker->date()],
+            AttributeTypeEnum::Url => ['value' => $value ?? $this->faker->url()],
+            AttributeTypeEnum::Dimension => is_null($value) ? [
+                'magnitude' => $this->faker->randomFloat(2, 1, 1000),
+                'unit' => $this->faker->randomElement(['cm', 'm', 'in', 'ft']),
+            ] : (array) $value,
+            default => throw new RuntimeException(sprintf('Unsupported attribute type: %s', $attributeType->value)),
+        };
+
+        return $this->normalizer->denormalize($attributeType, $arrayValue);
+    }
+
+    private static function getFakeAttributeValue(
+        AttributeTypeEnum $attributeType,
+        mixed $value,
+    ): ?AttributeValueInterface {
+        $arrayValue = match ($attributeType) {
+            AttributeTypeEnum::String,
+            AttributeTypeEnum::Text => is_null($value) ? self::makeFakeTranslations() : (array) $value,
+            AttributeTypeEnum::Integer => ['value' => $value ?? 42],
+            AttributeTypeEnum::Boolean => ['value' => $value ?? true],
+            AttributeTypeEnum::Select,
+            AttributeTypeEnum::MultiSelect => [],
+            AttributeTypeEnum::Color => ['value' => $value ?? '#ffffff'],
+            AttributeTypeEnum::Date => ['value' => $value ?? '2023-01-01'],
+            AttributeTypeEnum::Url => ['value' => $value ?? 'https://example.com'],
+            AttributeTypeEnum::Dimension => is_null($value) ? [
+                'magnitude' => 1234.5,
+                'unit' => 'cm',
+            ] : (array) $value,
+            default => throw new RuntimeException(sprintf('Unsupported attribute type: %s', $attributeType->value)),
+        };
+
+        return new ProductAttributeValueNormalizer()->denormalize($attributeType, $arrayValue);
+    }
+
+    private function makeTranslations(): array
+    {
+        $locales = LocaleEnum::cases();
+        $translations = [];
+
+        foreach ($locales as $locale) {
+            $faker = $this->fakerFactory->create($locale->value);
+            $translations[$locale->value] = $faker->text();
+        }
+
+        return $translations;
+    }
+
+    private static function makeFakeTranslations(): array
+    {
+        $locales = LocaleEnum::cases();
+        $translations = [];
+
+        foreach ($locales as $locale) {
+            $translations[$locale->value] = $locale->value.' translation value';
+        }
+
+        return $translations;
     }
 }

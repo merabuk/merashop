@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Catalog\Domain\ValueObject\ProductAttribute;
+namespace App\Catalog\Domain\ValueObject\ProductAttribute\Value;
 
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeBaseLocalizedStringValueException;
 use App\Shared\Domain\Enum\LocaleEnum;
@@ -46,14 +46,14 @@ abstract readonly class BaseLocalizedStringValue implements AttributeValueInterf
      */
     protected function getPrimitiveValue(): array
     {
-        $values = array_map(static fn (array $t) => serialize($t), $this->translations);
+        $values = $this->translations;
         ksort($values);
 
         return $values;
     }
 
     /**
-     * @param array<string, string> $data
+     * @param array<string, mixed> $data
      *
      * @return array<string, string>
      *

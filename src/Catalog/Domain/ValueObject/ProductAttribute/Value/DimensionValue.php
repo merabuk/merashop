@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Catalog\Domain\ValueObject\ProductAttribute;
+namespace App\Catalog\Domain\ValueObject\ProductAttribute\Value;
 
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
 
@@ -26,6 +26,9 @@ final readonly class DimensionValue implements AttributeValueInterface
         return $this->unit;
     }
 
+    /**
+     * @return array{magnitude: float, unit: string}
+     */
     public function value(): array
     {
         return [

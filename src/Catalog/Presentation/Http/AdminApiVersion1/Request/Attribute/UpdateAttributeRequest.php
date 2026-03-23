@@ -22,7 +22,7 @@ class UpdateAttributeRequest extends BaseAttributeRequest
             type: $this->type,
             translations: array_map(fn (AttributeTranslationRequest $t) => new AttributeTranslationData(
                 name: $t->name,
-            ) , $this->translations),
+            ), $this->translations),
             version: $this->version,
             adminUlid: $adminUlid,
         );

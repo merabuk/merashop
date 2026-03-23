@@ -9,5 +9,6 @@ final readonly class DimensionAttributeValueData implements AttributeValueDataIn
     public function __construct(
         public float $magnitude,
         public string $unit,
-    ) {}
+    ) {
+    }
 }

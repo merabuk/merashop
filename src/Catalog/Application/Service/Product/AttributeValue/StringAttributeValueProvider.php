@@ -13,7 +13,7 @@ use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeLocalizedStringValueException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
-use App\Catalog\Domain\ValueObject\ProductAttribute\LocalizedStringValue;
+use App\Catalog\Domain\ValueObject\ProductAttribute\Value\LocalizedStringValue;
 
 class StringAttributeValueProvider implements ProductAttributeValueProviderInterface
 {

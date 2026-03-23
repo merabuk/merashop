@@ -62,6 +62,7 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
 
     /**
      * @param Id[] $ids
+     *
      * @return Attribute[]
      */
     public function findByIds(array $ids, bool $withTranslations = true): array

@@ -10,7 +10,7 @@ final readonly class MultiSelectAttributeValueData implements AttributeValueData
         /**
          * @var int[]
          */
-        public array $optionIds
+        public array $optionIds,
     ) {
     }
 }

@@ -24,6 +24,7 @@ interface AttributeReadRepositoryInterface
 
     /**
      * @param Id[] $ids
+     *
      * @return Attribute[]
      */
     public function findByIds(array $ids, bool $withTranslations = true): array;
