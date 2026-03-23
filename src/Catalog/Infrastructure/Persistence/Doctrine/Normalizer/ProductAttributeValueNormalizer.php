@@ -8,16 +8,16 @@ use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeDateValueException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeLocalizedStringValueException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeLocalizedTextValueException;
-use App\Catalog\Domain\ValueObject\ProductAttribute\Value\AttributeValueInterface;
-use App\Catalog\Domain\ValueObject\ProductAttribute\Value\BooleanValue;
-use App\Catalog\Domain\ValueObject\ProductAttribute\Value\ColorValue;
-use App\Catalog\Domain\ValueObject\ProductAttribute\Value\DateValue;
-use App\Catalog\Domain\ValueObject\ProductAttribute\Value\DimensionValue;
-use App\Catalog\Domain\ValueObject\ProductAttribute\Value\FloatValue;
-use App\Catalog\Domain\ValueObject\ProductAttribute\Value\IntegerValue;
-use App\Catalog\Domain\ValueObject\ProductAttribute\Value\LocalizedStringValue;
-use App\Catalog\Domain\ValueObject\ProductAttribute\Value\LocalizedTextValue;
-use App\Catalog\Domain\ValueObject\ProductAttribute\Value\UrlValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\AttributeValueInterface;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\BooleanValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\ColorValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\DateValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\DimensionValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\FloatValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\IntegerValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\LocalizedStringValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\LocalizedTextValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\UrlValue;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 
 final readonly class ProductAttributeValueNormalizer

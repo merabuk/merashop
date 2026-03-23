@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Catalog\Domain\ValueObject\ProductAttribute\Value;
+namespace App\Catalog\Domain\ValueObject\ProductAttributeValue\Value;
 
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeBaseLocalizedStringValueException;
 use App\Shared\Domain\Enum\LocaleEnum;

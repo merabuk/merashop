@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Catalog\Domain\ValueObject\ProductAttribute\Value;
+namespace App\Catalog\Domain\ValueObject\ProductAttributeValue\Value;
 
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeDateValueException;
 use App\Shared\Domain\ValueObject\Temporal\DateTimeValueObject;

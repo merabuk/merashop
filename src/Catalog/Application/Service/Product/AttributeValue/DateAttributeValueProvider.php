@@ -13,7 +13,7 @@ use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeDateValueException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
-use App\Catalog\Domain\ValueObject\ProductAttribute\Value\DateValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\DateValue;
 
 class DateAttributeValueProvider implements ProductAttributeValueProviderInterface
 {

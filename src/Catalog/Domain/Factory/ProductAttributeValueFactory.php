@@ -11,7 +11,7 @@ use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStat
 use App\Catalog\Domain\Factory\Contract\ProductAttributeValueFactoryInterface;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
 use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
-use App\Catalog\Domain\ValueObject\ProductAttribute\Value\AttributeValueInterface;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\AttributeValueInterface;
 
 final readonly class ProductAttributeValueFactory implements ProductAttributeValueFactoryInterface
 {

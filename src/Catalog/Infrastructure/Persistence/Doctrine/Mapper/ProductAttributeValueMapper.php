@@ -14,7 +14,7 @@ use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeVa
 use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
 use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
-use App\Catalog\Domain\ValueObject\ProductAttribute\Id as ProductAttributeValueId;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Id as ProductAttributeValueId;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttributeOption;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductAttributeValue;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Normalizer\ProductAttributeValueNormalizer;

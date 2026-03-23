@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Catalog\Domain\ValueObject\ProductAttribute;
+namespace App\Catalog\Domain\ValueObject\ProductAttributeValue;
 
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeValueIdException;
 use App\Shared\Domain\Exception\Services\IntegerIsNotUnsignedException;

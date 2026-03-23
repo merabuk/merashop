@@ -7,8 +7,8 @@ namespace App\Catalog\Domain\Entity;
 use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
 use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
-use App\Catalog\Domain\ValueObject\ProductAttribute\Id;
-use App\Catalog\Domain\ValueObject\ProductAttribute\Value\AttributeValueInterface;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Id;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\AttributeValueInterface;
 
 class ProductAttributeValue
 {
