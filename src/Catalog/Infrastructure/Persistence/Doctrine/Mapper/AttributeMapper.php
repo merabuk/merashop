@@ -96,7 +96,6 @@ final readonly class AttributeMapper implements MapperInterface
         /* @var OrmAttribute $orm */
 
         $orm->code = $domain->getCode()->value();
-        $orm->type = $domain->getType()->value();
         $orm->updatedBy = $domain->getUpdatedBy()?->value();
 
         $this->mapTranslationsFromDomainToOrm($domain, $orm);
@@ -123,11 +122,10 @@ final readonly class AttributeMapper implements MapperInterface
         $domainOptions = $domain->getOptions();
         $currentOrmOptions = $orm->options->toArray();
 
-        // TODO[attribute options]: think about prevent removing options (because they maybe used by product attribute value
         foreach ($currentOrmOptions as $ormOption) {
             $stillExists = $domainOptions->getByUlid($ormOption->ulid);
             if (!$stillExists) {
-                $orm->options->removeElement($ormOption);
+                $ormOption->isActive = false;
             }
         }
 

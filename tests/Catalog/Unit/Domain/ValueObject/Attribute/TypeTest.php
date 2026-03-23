@@ -40,29 +40,12 @@ final class TypeTest extends TestCase
         }
     }
 
-    #[DataProvider('factoryMethodProvider')]
-    public function testItCreatesCorrectTypeFromFactoryMethods(
-        Type $vo,
-        TypeEnum $expectedEnum,
-        string $checkMethod,
-    ): void {
-        self::assertSame($expectedEnum, $vo->value());
-        self::assertTrue($vo->$checkMethod());
-    }
-
-    public static function factoryMethodProvider(): iterable
-    {
-        yield 'string' => [Type::string(), TypeEnum::String, 'isString'];
-        yield 'integer' => [Type::int(), TypeEnum::Integer, 'isInt'];
-        yield 'boolean' => [Type::boolean(), TypeEnum::Boolean, 'isBoolean'];
-        yield 'select' => [Type::select(), TypeEnum::Select, 'isSelect'];
-    }
-
     public function testItTrimsInput(): void
     {
         $type = TypeEnum::String;
         $vo = Type::fromString('  '.$type->value.'  ');
-        self::assertTrue($vo->isString());
+
+        self::assertTrue($vo->is($type));
     }
 
     public function testItProvidesEqualityCheck(): void
@@ -87,5 +70,19 @@ final class TypeTest extends TestCase
         yield 'only spaces' => ['   '];
         yield 'wrong case' => ['STRING'];
         yield 'random string' => ['not-a-type'];
+    }
+
+    #[DataProvider('typeEnumProvider')]
+    public function testItHasOptions(TypeEnum $enum): void
+    {
+        $vo = Type::fromEnum($enum);
+
+        $expectedHasOption = match ($enum) {
+            TypeEnum::Select,
+            TypeEnum::MultiSelect => true,
+            default => false,
+        };
+
+        self::assertSame($expectedHasOption, $vo->hasOptions());
     }
 }

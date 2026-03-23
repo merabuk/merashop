@@ -58,7 +58,6 @@ final readonly class AttributeApplicationFactory implements AttributeApplication
     {
         $attribute->update(
             code: AttributeCode::fromString($command->code),
-            type: Type::fromString($command->type),
             translations: $this->mapAttributeTranslations($command->translations),
             updatedBy: AdminUlid::fromString($command->adminUlid),
         );

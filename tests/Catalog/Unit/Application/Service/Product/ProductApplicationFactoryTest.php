@@ -106,6 +106,7 @@ final class ProductApplicationFactoryTest extends TestCase
         self::assertTrue($product->getSku()->equals($productForUpdate->getSku()));
         self::assertTrue($product->getStatus()->equals($productForUpdate->getStatus()));
         self::assertTrue($product->getTranslations()->equals($productForUpdate->getTranslations()));
+        self::assertSame(2, $product->getVersion()->value(), "Version mustn't changed");
         self::assertFalse($product->getVersion()->equals($productForUpdate->getVersion()), "Version mustn't changed");
         self::assertFalse($product->getCreatedBy()->equals($productForUpdate->getCreatedBy()), "Created by mustn't changed");
         self::assertTrue($product->getPrices()->equals($productForUpdate->getPrices()));

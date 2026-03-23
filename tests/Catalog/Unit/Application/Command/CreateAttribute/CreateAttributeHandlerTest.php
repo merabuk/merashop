@@ -6,27 +6,29 @@ namespace App\Tests\Catalog\Unit\Application\Command\CreateAttribute;
 
 use App\Catalog\Application\Command\CreateAttribute\CreateAttributeCommand;
 use App\Catalog\Application\Command\CreateAttribute\CreateAttributeHandler;
+use App\Catalog\Application\Service\Attribute\AttributeApplicationFactoryInterface;
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Exception\Attribute\AttributeAlreadyExistsException;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
 use App\Catalog\Domain\Service\Attribute\AttributeValidatorInterface;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Tests\Catalog\Support\AttributeMother;
-use App\Tests\Shared\Support\Traits\UlidGenerationTrait;
+use App\Tests\Catalog\Support\Traits\AttributeHelperTrait;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 final class CreateAttributeHandlerTest extends TestCase
 {
-    use UlidGenerationTrait;
+    use AttributeHelperTrait;
 
     private AttributeValidatorInterface&MockObject $attributeValidator;
+    private AttributeApplicationFactoryInterface&MockObject $attributeFactory;
     private AttributeWriteRepositoryInterface&MockObject $writeRepository;
 
     protected function setUp(): void
     {
-        $this->setUlidGenerator();
         $this->attributeValidator = $this->createMock(AttributeValidatorInterface::class);
+        $this->attributeFactory = $this->createMock(AttributeApplicationFactoryInterface::class);
         $this->writeRepository = $this->createMock(AttributeWriteRepositoryInterface::class);
     }
 
@@ -35,15 +37,10 @@ final class CreateAttributeHandlerTest extends TestCase
         $fakeId = 123;
         $attribute = AttributeMother::createWithData(id: $fakeId);
 
-        $command = new CreateAttributeCommand(
-            code: $attribute->getCode()->value(),
-            type: $attribute->getType()->value()->value,
-            translations: $attribute->getTranslations()->toArray(),
-            adminUlid: $attribute->getCreatedBy()->value()
-        );
+        $command = $this->fillAndGetCreateCommand($attribute);
 
         $this->givenCodeIsAvailable($attribute->getCode());
-        $this->expectGenerateUlid($attribute->getUlid()->value());
+        $this->expectFactoryCreateAttribute($command, $attribute);
         $this->expectSaveAttribute($attribute);
 
         $resultId = $this->createHandler()($command);
@@ -53,15 +50,11 @@ final class CreateAttributeHandlerTest extends TestCase
 
     public function testThrowsExceptionIfAttributeExists(): void
     {
-        $command = new CreateAttributeCommand(
-            code: 'duplicate',
-            type: 'string',
-            translations: ['en' => ['name' => 'Name']],
-            adminUlid: '01KHVRCA679BJ6PBXX5N3G6RR5'
-        );
+        $attribute = AttributeMother::createWithData(id: 123);
+        $command = $this->fillAndGetCreateCommand($attribute);
 
         $this->givenCodeIsTaken($command->code);
-        $this->generateUlidNeverCalled();
+        $this->factoryCreateAttributeNeverCalled();
         $this->saveAttributeNeverCalled();
 
         $this->expectException(AttributeAlreadyExistsException::class);
@@ -73,7 +66,7 @@ final class CreateAttributeHandlerTest extends TestCase
     {
         return new CreateAttributeHandler(
             attributeValidator: $this->attributeValidator,
-            ulidGenerator: $this->ulidGenerator,
+            attributeFactory: $this->attributeFactory,
             writeRepository: $this->writeRepository
         );
     }
@@ -91,6 +84,19 @@ final class CreateAttributeHandlerTest extends TestCase
             ->method('validateCreation')
             ->with(self::callback(fn (Code $c) => $c->value() === $code))
             ->willThrowException(new AttributeAlreadyExistsException());
+    }
+
+    private function expectFactoryCreateAttribute(CreateAttributeCommand $command, Attribute $attribute): void
+    {
+        $this->attributeFactory->expects(self::once())
+            ->method('createFromCommand')
+            ->with(self::equalTo($command))
+            ->willReturn($attribute);
+    }
+
+    private function factoryCreateAttributeNeverCalled(): void
+    {
+        $this->attributeFactory->expects(self::never())->method('createFromCommand');
     }
 
     private function expectSaveAttribute(Attribute $attribute): void

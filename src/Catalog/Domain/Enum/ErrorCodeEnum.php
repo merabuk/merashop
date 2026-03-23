@@ -9,6 +9,7 @@ enum ErrorCodeEnum: string
     case CatalogDomainError = 'CATALOG_DOMAIN_ERROR';
     case AttributeNotFound = 'ATTRIBUTE_NOT_FOUND';
     case AttributeAlreadyExists = 'ATTRIBUTE_ALREADY_EXISTS';
+    case AttributeTypeCanNotBeChanged = 'ATTRIBUTE_TYPE_CANNOT_BE_CHANGED';
     case OneOfAttributesNotFound = 'ONE_OF_ATTRIBUTES_NOT_FOUND';
     case CategoryNotFound = 'CATEGORY_NOT_FOUND';
     case CategoryAlreadyExists = 'CATEGORY_ALREADY_EXISTS';

@@ -26,26 +26,6 @@ final readonly class Type implements EquatableInterface, Stringable
         return new self($type);
     }
 
-    public static function string(): self
-    {
-        return self::fromEnum(TypeEnum::String);
-    }
-
-    public static function int(): self
-    {
-        return self::fromEnum(TypeEnum::Integer);
-    }
-
-    public static function boolean(): self
-    {
-        return self::fromEnum(TypeEnum::Boolean);
-    }
-
-    public static function select(): self
-    {
-        return self::fromEnum(TypeEnum::Select);
-    }
-
     /**
      * @throws InvalidAttributeTypeException
      */
@@ -65,24 +45,18 @@ final readonly class Type implements EquatableInterface, Stringable
         return $this->type;
     }
 
-    public function isString(): bool
+    public function is(TypeEnum $enum): bool
     {
-        return TypeEnum::String === $this->type;
+        return $this->type === $enum;
     }
 
-    public function isInt(): bool
+    public function hasOptions(): bool
     {
-        return TypeEnum::Integer === $this->type;
-    }
-
-    public function isBoolean(): bool
-    {
-        return TypeEnum::Boolean === $this->type;
-    }
-
-    public function isSelect(): bool
-    {
-        return TypeEnum::Select === $this->type;
+        return match ($this->type) {
+            TypeEnum::Select,
+            TypeEnum::MultiSelect => true,
+            default => false,
+        };
     }
 
     public function __toString(): string

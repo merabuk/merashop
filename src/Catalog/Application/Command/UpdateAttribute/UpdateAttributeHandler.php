@@ -8,11 +8,13 @@ use App\Catalog\Application\Exception\Attribute\UpdateAttributeException;
 use App\Catalog\Application\Service\Attribute\AttributeApplicationFactoryInterface;
 use App\Catalog\Domain\Exception\Attribute\AttributeAlreadyExistsException;
 use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
+use App\Catalog\Domain\Exception\Attribute\AttributeTypeCanNotBeCahngedException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
 use App\Catalog\Domain\Service\Attribute\AttributeValidatorInterface;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Id;
+use App\Catalog\Domain\ValueObject\Attribute\Type;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
 use App\Shared\Domain\Exception\Entity\ConcurrencyException;
@@ -33,6 +35,7 @@ readonly class UpdateAttributeHandler implements CommandHandlerInterface
     /**
      * @throws AttributeAlreadyExistsException
      * @throws AttributeNotFoundException
+     * @throws AttributeTypeCanNotBeCahngedException
      * @throws UpdateAttributeException
      * @throws ConcurrencyException
      */
@@ -41,13 +44,24 @@ readonly class UpdateAttributeHandler implements CommandHandlerInterface
         try {
             $attribute = $this->readRepository->getById(Id::fromInt($command->id));
             $newCode = Code::fromString($command->code);
+            $newType = Type::fromString($command->type);
 
-            $this->attributeValidator->validateUpdate($attribute, $command->version, $newCode);
+            $this->attributeValidator->validateUpdate(
+                attribute: $attribute,
+                version: $command->version,
+                newCode: $newCode,
+                newType: $newType
+            );
 
-            $this->attributeFactory->updateFromCommand($attribute, $command);
+            $this->attributeFactory->updateFromCommand(attribute: $attribute, command: $command);
 
             $this->writeRepository->save($attribute);
-        } catch (AttributeAlreadyExistsException|AttributeNotFoundException|ConcurrencyException $e) {
+        } catch (
+            AttributeAlreadyExistsException
+            |AttributeNotFoundException
+            |AttributeTypeCanNotBeCahngedException
+            |ConcurrencyException $e
+        ) {
             throw $e;
         } catch (Throwable $e) {
             throw new UpdateAttributeException(message: 'Error during updating attribute', previous: $e);

@@ -6,8 +6,9 @@ use App\Catalog\Domain\Enum\ErrorCodeEnum;
 
 return [
     ErrorCodeEnum::CatalogDomainError->value => 'Something went wrong in the catalog domain. Please try again later',
-    ErrorCodeEnum::AttributeAlreadyExists->value => 'Attribute with code "{code}" already exists',
     ErrorCodeEnum::AttributeNotFound->value => 'Attribute not found',
+    ErrorCodeEnum::AttributeAlreadyExists->value => 'Attribute with code "{code}" already exists',
+    ErrorCodeEnum::AttributeTypeCanNotBeChanged->value => 'Attribute type cannot be changed',
     ErrorCodeEnum::OneOfAttributesNotFound->value => 'One or more attributes not found',
     ErrorCodeEnum::CategoryNotFound->value => 'Category not found',
     ErrorCodeEnum::CategoryAlreadyExists->value => 'Category with slug "{slug}" already exists',

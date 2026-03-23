@@ -20,7 +20,7 @@ class Attribute implements HasIdInterface
     public function __construct(
         private readonly Ulid $ulid,
         private Code $code,
-        private Type $type,
+        private readonly Type $type,
         private Translations $translations,
         private readonly Version $version,
         private readonly AdminUlid $createdBy,
@@ -54,12 +54,10 @@ class Attribute implements HasIdInterface
 
     public function update(
         Code $code,
-        Type $type,
         Translations $translations,
         AdminUlid $updatedBy,
     ): void {
         $this->code = $code;
-        $this->type = $type;
         $this->translations = $translations;
         $this->updatedBy = $updatedBy;
     }
