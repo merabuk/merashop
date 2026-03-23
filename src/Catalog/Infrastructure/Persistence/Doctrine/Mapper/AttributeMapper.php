@@ -123,6 +123,7 @@ final readonly class AttributeMapper implements MapperInterface
         $domainOptions = $domain->getOptions();
         $currentOrmOptions = $orm->options->toArray();
 
+        // TODO[attribute options]: think about prevent removing options (because they maybe used by product attribute value
         foreach ($currentOrmOptions as $ormOption) {
             $stillExists = $domainOptions->getByUlid($ormOption->ulid);
             if (!$stillExists) {

@@ -28,6 +28,7 @@ final readonly class AttributeMother
 
     public function __construct(
         private AttributeFactoryInterface $attributeFactory,
+        private AttributeOptionMother $attributeOptionMother,
         private UlidGeneratorInterface $ulidGenerator,
         private Generator $faker,
         private Factory $fakerFactory,
@@ -49,14 +50,16 @@ final readonly class AttributeMother
         ?string $updatedByUlid = null,
         ?int $id = null,
     ): Attribute {
+        $type ??= TypeEnum::String;
+
         return new Attribute(
             ulid: Ulid::fromString($ulid ?? self::DEFAULT_ULID),
             code: Code::fromString($code ?? 'test-code'),
-            type: $type ? Type::fromEnum($type) : Type::string(),
+            type: Type::fromEnum($type),
             translations: Translations::fromArray($translations ?: self::makeFakeTranslations()),
             version: $version ? Version::fromInt($version) : Version::initial(),
             createdBy: AdminUlid::fromString($createdByUlid ?? self::DEFAULT_ADMIN_ULID),
-            options: OptionCollection::fromArray($options ?? []),
+            options: OptionCollection::fromArray($options ?? self::makeFakeOptions($type)),
             updatedBy: $updatedByUlid ? AdminUlid::fromString($updatedByUlid) : null,
             id: $id ? Id::fromInt($id) : null,
         );
@@ -74,13 +77,15 @@ final readonly class AttributeMother
         ?string $createdByUlid = null,
         ?array $options = null,
     ): Attribute {
+        $type ??= $this->faker->randomElement(TypeEnum::cases());
+
         return $this->attributeFactory->createForTest(
             ulid: $ulid ?? $this->ulidGenerator->next(),
             code: $code ?? $this->faker->unique()->word(),
             type: $type ?? $this->faker->randomElement(TypeEnum::cases()),
             translations: $translations ?? $this->makeTranslations(),
             createdByUlid: $createdByUlid ?? $this->ulidGenerator->next(),
-            options: $options ?? [],
+            options: $options ?? $this->makeOptions($type),
         );
     }
 
@@ -129,5 +134,53 @@ final readonly class AttributeMother
     private static function makeTranslationItem(string $name): array
     {
         return ['name' => $name];
+    }
+
+    private function makeOptions(TypeEnum $type): array
+    {
+        if (TypeEnum::Select !== $type && TypeEnum::MultiSelect !== $type) {
+            return [];
+        }
+
+        $options = [];
+
+        for ($i = 0; $i < 3; ++$i) {
+            $options[] = $this->attributeOptionMother->create();
+        }
+
+        return $options;
+    }
+
+    private static function makeFakeOptions(TypeEnum $type): array
+    {
+        if (TypeEnum::Select !== $type && TypeEnum::MultiSelect !== $type) {
+            return [];
+        }
+
+        $data = [
+            [
+                'ulid' => '01KMDEC4Z9NSK4YPEW8NG5068T',
+                'code' => 'option-1',
+            ],
+            [
+                'ulid' => '01KMDEC4Z9NSK4YPEW8NG5068U',
+                'code' => 'option-2',
+            ],
+            [
+                'ulid' => '01KMDEC4Z9NSK4YPEW8NG5068V',
+                'code' => 'option-3',
+            ],
+        ];
+
+        $options = [];
+
+        foreach ($data as $option) {
+            $options[] = AttributeOptionMother::createWithData(
+                ulid: $option['ulid'],
+                code: $option['code'],
+            );
+        }
+
+        return $options;
     }
 }
