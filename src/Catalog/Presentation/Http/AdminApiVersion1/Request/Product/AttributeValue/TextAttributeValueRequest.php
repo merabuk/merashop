@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Catalog\Presentation\Http\AdminApiVersion1\Request\Product\Attribute;
+namespace App\Catalog\Presentation\Http\AdminApiVersion1\Request\Product\AttributeValue;
 
 use App\Catalog\Application\DTO\Product\AttributeValue\TextAttributeValueData;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\LocalizedTextValue;

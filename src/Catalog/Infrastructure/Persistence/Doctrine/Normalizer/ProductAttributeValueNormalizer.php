@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Catalog\Infrastructure\Persistence\Doctrine\Normalizer;
 
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
+use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeColorValueException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeDateValueException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeLocalizedStringValueException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeLocalizedTextValueException;
@@ -25,9 +26,10 @@ final readonly class ProductAttributeValueNormalizer
     /**
      * @param ?array<string, mixed> $data
      *
+     * @throws InvalidProductAttributeColorValueException
+     * @throws InvalidProductAttributeDateValueException
      * @throws InvalidProductAttributeLocalizedStringValueException
      * @throws InvalidProductAttributeLocalizedTextValueException
-     * @throws InvalidProductAttributeDateValueException
      */
     public function denormalize(TypeEnum $type, ?array $data): ?AttributeValueInterface
     {

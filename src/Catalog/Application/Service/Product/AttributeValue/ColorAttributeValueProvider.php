@@ -10,6 +10,7 @@ use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
+use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeColorValueException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\ColorValue;
@@ -28,6 +29,7 @@ class ColorAttributeValueProvider implements ProductAttributeValueProviderInterf
      *
      * @throws InvalidAttributeIdException
      * @throws ProductAttributeValueStateException
+     * @throws InvalidProductAttributeColorValueException
      */
     public function handle(Attribute $attribute, ProductAttributeValueData $data): array
     {

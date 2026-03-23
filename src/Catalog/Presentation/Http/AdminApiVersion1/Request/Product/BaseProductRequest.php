@@ -6,7 +6,7 @@ namespace App\Catalog\Presentation\Http\AdminApiVersion1\Request\Product;
 
 use App\Catalog\Domain\Enum\Product\StatusEnum;
 use App\Catalog\Domain\ValueObject\Product\Sku;
-use App\Catalog\Presentation\Http\AdminApiVersion1\Request\Product\Attribute\BaseAttributeValueRequest;
+use App\Catalog\Presentation\Http\AdminApiVersion1\Request\Product\AttributeValue\BaseAttributeValueRequest;
 use App\Shared\Presentation\Http\Request\ValidateLocalesTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;

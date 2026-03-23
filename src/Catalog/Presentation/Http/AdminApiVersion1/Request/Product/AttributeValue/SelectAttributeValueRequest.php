@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Catalog\Presentation\Http\AdminApiVersion1\Request\Product\Attribute;
+namespace App\Catalog\Presentation\Http\AdminApiVersion1\Request\Product\AttributeValue;
 
 use App\Catalog\Application\DTO\Product\AttributeValue\SelectAttributeValueData;
 use Symfony\Component\Validator\Constraints as Assert;

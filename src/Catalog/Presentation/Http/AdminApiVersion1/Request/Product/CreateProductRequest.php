@@ -8,7 +8,7 @@ use App\Catalog\Application\Command\CreateProduct\CreateProductCommand;
 use App\Catalog\Application\DTO\Product\ProductAttributeValueData;
 use App\Catalog\Application\DTO\Product\ProductPriceData;
 use App\Catalog\Application\DTO\Product\ProductTranslationData;
-use App\Catalog\Presentation\Http\AdminApiVersion1\Request\Product\Attribute\BaseAttributeValueRequest;
+use App\Catalog\Presentation\Http\AdminApiVersion1\Request\Product\AttributeValue\BaseAttributeValueRequest;
 
 class CreateProductRequest extends BaseProductRequest
 {
