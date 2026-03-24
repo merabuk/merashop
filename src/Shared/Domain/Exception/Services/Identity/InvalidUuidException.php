@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Shared\Domain\Exception\Services;
+namespace App\Shared\Domain\Exception\Services\Identity;
 
 use App\Shared\Domain\Exception\InvalidArgumentException;
 

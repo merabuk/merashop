@@ -6,7 +6,7 @@ namespace App\Catalog\Domain\ValueObject\Category;
 
 use App\Catalog\Domain\Exception\Category\InvalidCategoryDescriptionException;
 use App\Catalog\Domain\Exception\Category\InvalidCategoryNameException;
-use App\Shared\Domain\Exception\InvalidStringException;
+use App\Shared\Domain\Exception\Services\Validation\InvalidStringException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Domain\Service\Validation\StringValidator;
 use App\Shared\Domain\ValueObject\Contract\TranslationInterface;

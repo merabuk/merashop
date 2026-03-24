@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Shared\Unit\Domain\Service\Validation;
 
-use App\Shared\Domain\Exception\Services\StringEmptyException;
-use App\Shared\Domain\Exception\Services\StringMaxLengthException;
-use App\Shared\Domain\Exception\Services\StringMinLengthException;
+use App\Shared\Domain\Exception\Services\Validation\StringEmptyException;
+use App\Shared\Domain\Exception\Services\Validation\StringMaxLengthException;
+use App\Shared\Domain\Exception\Services\Validation\StringMinLengthException;
 use App\Shared\Domain\Service\Validation\StringValidator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;

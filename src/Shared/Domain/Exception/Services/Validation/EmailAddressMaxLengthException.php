@@ -1,8 +1,6 @@
 <?php
 
-namespace App\Shared\Domain\Exception\Services;
-
-use App\Shared\Domain\Exception\InvalidEmailAddressException;
+namespace App\Shared\Domain\Exception\Services\Validation;
 
 final class EmailAddressMaxLengthException extends InvalidEmailAddressException
 {

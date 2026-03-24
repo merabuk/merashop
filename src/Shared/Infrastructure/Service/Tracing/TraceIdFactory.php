@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Service\Tracing;
 
-use App\Shared\Domain\Exception\Services\TraceIdFactoryException;
+use App\Shared\Domain\Exception\Services\Tracing\TraceIdFactoryException;
 use App\Shared\Domain\Exception\ValueObject\InvalidTraceIdException;
 use App\Shared\Domain\Service\Identity\UuidGeneratorInterface;
 use App\Shared\Domain\Service\Tracing\TraceIdFactoryInterface;

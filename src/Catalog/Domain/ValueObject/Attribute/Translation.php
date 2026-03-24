@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Catalog\Domain\ValueObject\Attribute;
 
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeNameException;
-use App\Shared\Domain\Exception\InvalidStringException;
+use App\Shared\Domain\Exception\Services\Validation\InvalidStringException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Domain\Service\Validation\StringValidator;
 use App\Shared\Domain\ValueObject\Contract\TranslationInterface;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\ValueObject\Identity;
 
-use App\Shared\Domain\Exception\Services\InvalidUlidException as BaseInvalidUlidException;
+use App\Shared\Domain\Exception\Services\Identity\InvalidUlidException as BaseInvalidUlidException;
 use App\Shared\Domain\Exception\ValueObject\InvalidUlidException;
 use App\Shared\Domain\Service\Validation\UlidValidator;
 use App\Shared\Domain\ValueObject\Contract\EquatableInterface;

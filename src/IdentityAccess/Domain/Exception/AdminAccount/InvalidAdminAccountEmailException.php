@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Domain\Exception\AdminAccount;
 
 use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectException;
-use App\Shared\Domain\Exception\InvalidEmailAddressException;
+use App\Shared\Domain\Exception\Services\Validation\InvalidEmailAddressException;
 
 final class InvalidAdminAccountEmailException extends InvalidIdentityAccessValueObjectException
 {

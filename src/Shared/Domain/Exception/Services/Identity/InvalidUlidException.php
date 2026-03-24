@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Shared\Domain\Exception\Services;
+namespace App\Shared\Domain\Exception\Services\Identity;
 
 use App\Shared\Domain\Exception\InvalidArgumentException;
 

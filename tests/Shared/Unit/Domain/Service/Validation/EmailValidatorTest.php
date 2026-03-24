@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Shared\Unit\Domain\Service\Validation;
 
-use App\Shared\Domain\Exception\Services\EmailAddressFormatException;
-use App\Shared\Domain\Exception\Services\EmailAddressMaxLengthException;
+use App\Shared\Domain\Exception\Services\Validation\EmailAddressFormatException;
+use App\Shared\Domain\Exception\Services\Validation\EmailAddressMaxLengthException;
 use App\Shared\Domain\Service\Validation\EmailValidator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\Exception\ValueObject\Translation;
 
-use App\Shared\Domain\Exception\InvalidStringException;
+use App\Shared\Domain\Exception\Services\Validation\InvalidStringException;
 use App\Shared\Domain\Exception\ValueObject\InvalidValueObjectExceptionInterface;
 
 final class InvalidTranslationDescriptionException extends InvalidValueObjectExceptionInterface

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\ValueObject\Tracing;
 
-use App\Shared\Domain\Exception\Services\InvalidUuidException;
+use App\Shared\Domain\Exception\Services\Identity\InvalidUuidException;
 use App\Shared\Domain\Exception\ValueObject\InvalidTraceIdException;
 use App\Shared\Domain\Service\Validation\UuidValidator;
 use App\Shared\Domain\ValueObject\Contract\EquatableInterface;

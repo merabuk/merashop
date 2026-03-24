@@ -6,7 +6,7 @@ namespace App\Catalog\Domain\ValueObject\Product;
 
 use App\Catalog\Domain\Exception\Product\InvalidProductDescriptionException;
 use App\Catalog\Domain\Exception\Product\InvalidProductNameException;
-use App\Shared\Domain\Exception\InvalidStringException;
+use App\Shared\Domain\Exception\Services\Validation\InvalidStringException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Domain\Service\Validation\StringValidator;
 use App\Shared\Domain\ValueObject\Contract\TranslationInterface;

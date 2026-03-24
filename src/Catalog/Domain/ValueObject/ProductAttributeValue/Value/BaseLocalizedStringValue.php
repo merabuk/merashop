@@ -6,7 +6,7 @@ namespace App\Catalog\Domain\ValueObject\ProductAttributeValue\Value;
 
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeBaseLocalizedStringValueException;
 use App\Shared\Domain\Enum\LocaleEnum;
-use App\Shared\Domain\Exception\InvalidStringException;
+use App\Shared\Domain\Exception\Services\Validation\InvalidStringException;
 use App\Shared\Domain\Service\Validation\StringValidator;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
 

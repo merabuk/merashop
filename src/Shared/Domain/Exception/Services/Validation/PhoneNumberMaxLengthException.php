@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Shared\Domain\Exception\Services;
-
-use App\Shared\Domain\Exception\InvalidPhoneNumberException;
+namespace App\Shared\Domain\Exception\Services\Validation;
 
 final class PhoneNumberMaxLengthException extends InvalidPhoneNumberException
 {

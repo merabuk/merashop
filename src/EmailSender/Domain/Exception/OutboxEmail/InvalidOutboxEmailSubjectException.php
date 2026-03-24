@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\EmailSender\Domain\Exception\OutboxEmail;
 
 use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectException;
-use App\Shared\Domain\Exception\InvalidStringException;
+use App\Shared\Domain\Exception\Services\Validation\InvalidStringException;
 
 final class InvalidOutboxEmailSubjectException extends InvalidEmailSenderValueObjectException
 {

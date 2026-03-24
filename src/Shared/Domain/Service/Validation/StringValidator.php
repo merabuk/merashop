@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\Service\Validation;
 
-use App\Shared\Domain\Exception\InvalidStringException;
-use App\Shared\Domain\Exception\Services\StringEmptyException;
-use App\Shared\Domain\Exception\Services\StringMaxLengthException;
-use App\Shared\Domain\Exception\Services\StringMinLengthException;
+use App\Shared\Domain\Exception\Services\Validation\InvalidStringException;
+use App\Shared\Domain\Exception\Services\Validation\StringEmptyException;
+use App\Shared\Domain\Exception\Services\Validation\StringMaxLengthException;
+use App\Shared\Domain\Exception\Services\Validation\StringMinLengthException;
 
 final class StringValidator
 {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Domain\ValueObject\AdminAccount;
 
 use App\IdentityAccess\Domain\Exception\AdminAccount\InvalidAdminAccountEmailException;
-use App\Shared\Domain\Exception\InvalidEmailAddressException;
+use App\Shared\Domain\Exception\Services\Validation\InvalidEmailAddressException;
 use App\Shared\Domain\Service\Validation\EmailValidator;
 use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;

@@ -1,8 +1,6 @@
 <?php
 
-namespace App\Shared\Domain\Exception\Services;
-
-use App\Shared\Domain\Exception\InvalidStringException;
+namespace App\Shared\Domain\Exception\Services\Validation;
 
 final class StringMaxLengthException extends InvalidStringException
 {
