@@ -13,7 +13,8 @@ final readonly class Code implements EquatableInterface, Stringable
 {
     use ValueObjectEqualityTrait;
 
-    public const int MAX_LENGTH = 50;
+    public const int MAX_LENGTH = 64;
+    public const string REGEX = '/^(?![\d-])(?!.*--)[a-z\d-]+(?<!-)$/';
 
     private string $code;
 
@@ -23,12 +24,8 @@ final readonly class Code implements EquatableInterface, Stringable
     public function __construct(string $code)
     {
         $code = mb_trim($code);
-        if ('' === $code) {
-            throw InvalidAttributeOptionCodeException::becauseItIsEmpty();
-        }
-        if (mb_strlen($code) > self::MAX_LENGTH) {
-            throw InvalidAttributeOptionCodeException::becauseItIsTooLong();
-        }
+
+        $this->ensureIsValidCode($code);
 
         $this->code = $code;
     }
@@ -54,5 +51,21 @@ final readonly class Code implements EquatableInterface, Stringable
     protected function getPrimitiveValue(): string
     {
         return $this->value();
+    }
+
+    /**
+     * @throws InvalidAttributeOptionCodeException
+     */
+    private function ensureIsValidCode(string $code): void
+    {
+        if ('' === $code) {
+            throw InvalidAttributeOptionCodeException::becauseItIsEmpty();
+        }
+        if (mb_strlen($code) > self::MAX_LENGTH) {
+            throw InvalidAttributeOptionCodeException::becauseItIsTooLong();
+        }
+        if (!preg_match(self::REGEX, $code)) {
+            throw InvalidAttributeOptionCodeException::becauseItDoesNotMatchRegex();
+        }
     }
 }

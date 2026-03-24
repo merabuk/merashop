@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Catalog\Unit\Domain\ValueObject\Attribute;
+namespace App\Tests\Catalog\Unit\Domain\ValueObject\AttributeOption;
 
-use App\Catalog\Domain\Exception\Attribute\InvalidAttributeCodeException;
-use App\Catalog\Domain\ValueObject\Attribute\Code;
+use App\Catalog\Domain\Exception\AttributeOption\InvalidAttributeOptionCodeException;
+use App\Catalog\Domain\ValueObject\AttributeOption\Code;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -25,15 +25,15 @@ final class CodeTest extends TestCase
 
     public static function validCodeProvider(): iterable
     {
-        yield 'simple' => ['color', 'color'];
-        yield 'trimmed' => ['  color  ', 'color'];
+        yield 'simple' => ['wifi7', 'wifi7'];
+        yield 'trimmed' => ['  wifi7  ', 'wifi7'];
     }
 
     public function testItProvidesEqualityCheck(): void
     {
         $this->assertStringVOProvidesEqualityCheck(
             className: Code::class,
-            value: 'color',
+            value: 'wifi7',
             anotherValue: 'different'
         );
     }
@@ -41,7 +41,7 @@ final class CodeTest extends TestCase
     #[DataProvider('invalidCodeProvider')]
     public function testThrowsExceptionOnInvalidInput(string $invalidValue): void
     {
-        $this->expectException(InvalidAttributeCodeException::class);
+        $this->expectException(InvalidAttributeOptionCodeException::class);
         Code::fromString($invalidValue);
     }
 

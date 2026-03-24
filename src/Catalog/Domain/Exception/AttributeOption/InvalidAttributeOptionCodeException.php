@@ -18,6 +18,11 @@ final class InvalidAttributeOptionCodeException extends InvalidCatalogValueObjec
         return new self('Attribute option code cannot be longer than 255 characters');
     }
 
+    public static function becauseItDoesNotMatchRegex(): self
+    {
+        return new self('Attribute option code does not match regex pattern');
+    }
+
     public function getErrorCode(): string
     {
         return 'INVALID_ATTRIBUTE_OPTION_CODE';
