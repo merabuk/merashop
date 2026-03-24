@@ -5,13 +5,8 @@ declare(strict_types=1);
 namespace App\Catalog\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\Catalog\Domain\Entity\AttributeOption;
-use App\Catalog\Domain\Exception\AttributeOption\InvalidAttributeOptionCodeException;
-use App\Catalog\Domain\Exception\AttributeOption\InvalidAttributeOptionDimensionMetadataException;
-use App\Catalog\Domain\Exception\AttributeOption\InvalidAttributeOptionIdException;
-use App\Catalog\Domain\Exception\AttributeOption\InvalidAttributeOptionUlidException;
 use App\Catalog\Domain\Exception\AttributeOption\InvalidAttributeOptionValueException;
-use App\Catalog\Domain\Exception\AttributeOption\InvalidAttributeOptionVersionException;
-use App\Catalog\Domain\Exception\InvalidAdminUlidException;
+use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Attribute\Type;
 use App\Catalog\Domain\ValueObject\AttributeOption\ActiveFlag;
@@ -35,13 +30,7 @@ final readonly class AttributeOptionMapper
 
     /**
      * @throws EntityIdMissingException
-     * @throws InvalidAdminUlidException
-     * @throws InvalidAttributeOptionCodeException
-     * @throws InvalidAttributeOptionDimensionMetadataException
-     * @throws InvalidAttributeOptionIdException
-     * @throws InvalidAttributeOptionValueException
-     * @throws InvalidAttributeOptionVersionException
-     * @throws InvalidAttributeOptionUlidException
+     * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
      */
     public function toDomain(OrmAttributeOption $orm, Type $type): AttributeOption

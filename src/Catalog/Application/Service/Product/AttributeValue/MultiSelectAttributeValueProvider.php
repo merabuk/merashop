@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace App\Catalog\Application\Service\Product\AttributeValue;
 
+use App\Catalog\Application\DTO\Product\AttributeValue\AttributeValueDataInterface;
 use App\Catalog\Application\DTO\Product\AttributeValue\MultiSelectAttributeValueData;
-use App\Catalog\Application\DTO\Product\ProductAttributeValueData;
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
-use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
-use App\Catalog\Domain\Exception\AttributeOption\InvalidAttributeOptionIdException;
+use App\Catalog\Domain\Exception\AttributeOption\AttributeOptionNotFoundException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
-use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
 use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
 
 class MultiSelectAttributeValueProvider implements ProductAttributeValueProviderInterface
@@ -27,32 +25,38 @@ class MultiSelectAttributeValueProvider implements ProductAttributeValueProvider
     /**
      * @return ProductAttributeValue[]
      *
-     * @throws InvalidAttributeIdException
-     * @throws InvalidAttributeOptionIdException
      * @throws ProductAttributeValueStateException
+     * @throws AttributeOptionNotFoundException
      */
-    public function handle(Attribute $attribute, ProductAttributeValueData $data): array
+    public function handle(Attribute $attribute, AttributeValueDataInterface $data): array
     {
         $this->checkAttributeType($attribute);
 
-        $valueData = $data->value;
-        if (false === $valueData instanceof MultiSelectAttributeValueData) {
-            throw $this->makeInvalidValueDataException(actualClass: $valueData::class, expectedClass: MultiSelectAttributeValueData::class);
+        if (false === $data instanceof MultiSelectAttributeValueData) {
+            throw $this->makeInvalidValueDataException(actualClass: $data::class, expectedClass: MultiSelectAttributeValueData::class);
         }
-
-        // TODO[attribute value]: add check if options exists for attribute
 
         return array_map(
             fn (int $id) => ProductAttributeValue::createWithOption(
-                attributeId: AttributeId::fromInt($data->attributeId),
-                attributeOptionId: AttributeOptionId::fromInt($id)
+                attributeId: $attribute->getId(),
+                attributeOptionId: $this->getOptionId($attribute, $id)
             ),
-            $valueData->optionIds
+            $data->optionIds
         );
     }
 
     protected static function getAttributeType(): TypeEnum
     {
         return TypeEnum::MultiSelect;
+    }
+
+    /**
+     * @throws AttributeOptionNotFoundException
+     */
+    private function getOptionId(Attribute $attribute, int $optionId): AttributeOptionId
+    {
+        $option = $attribute->getOptions()->getById($optionId) ?? throw new AttributeOptionNotFoundException();
+
+        return $option->getId();
     }
 }

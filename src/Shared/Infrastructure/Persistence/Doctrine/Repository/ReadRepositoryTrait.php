@@ -112,13 +112,15 @@ trait ReadRepositoryTrait
         array $ids,
         callable $mapCallback,
         string $alias = 'e',
+        ?QueryBuilder $qb = null,
     ): array {
         if (empty($ids)) {
             return [];
         }
 
-        $result = $this->createQueryBuilder($alias)
-            ->where("{$alias}.id IN (:ids)")
+        $qb ??= $this->createQueryBuilder($alias);
+
+        $result = $qb->where("{$alias}.id IN (:ids)")
             ->setParameter('ids', array_map(fn (IdInterface $id) => $id->value(), $ids))
             ->orderBy("{$alias}.id", Sort::ASC)
             ->getQuery()

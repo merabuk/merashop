@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace App\Catalog\Application\Service\Product\AttributeValue;
 
+use App\Catalog\Application\DTO\Product\AttributeValue\AttributeValueDataInterface;
 use App\Catalog\Application\DTO\Product\AttributeValue\SelectAttributeValueData;
-use App\Catalog\Application\DTO\Product\ProductAttributeValueData;
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
-use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
-use App\Catalog\Domain\Exception\AttributeOption\InvalidAttributeOptionIdException;
+use App\Catalog\Domain\Exception\AttributeOption\AttributeOptionNotFoundException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
-use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
-use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
 
 class SelectAttributeValueProvider implements ProductAttributeValueProviderInterface
 {
@@ -27,25 +24,24 @@ class SelectAttributeValueProvider implements ProductAttributeValueProviderInter
     /**
      * @return ProductAttributeValue[]
      *
-     * @throws InvalidAttributeIdException
-     * @throws InvalidAttributeOptionIdException
      * @throws ProductAttributeValueStateException
+     * @throws AttributeOptionNotFoundException
      */
-    public function handle(Attribute $attribute, ProductAttributeValueData $data): array
+    public function handle(Attribute $attribute, AttributeValueDataInterface $data): array
     {
         $this->checkAttributeType($attribute);
 
-        $valueData = $data->value;
-        if (false === $valueData instanceof SelectAttributeValueData) {
-            throw $this->makeInvalidValueDataException(actualClass: $valueData::class, expectedClass: SelectAttributeValueData::class);
+        if (false === $data instanceof SelectAttributeValueData) {
+            throw $this->makeInvalidValueDataException(actualClass: $data::class, expectedClass: SelectAttributeValueData::class);
         }
 
-        // TODO[attribute value]: add check if option exists for attribute
+        $option = $attribute->getOptions()->getById($data->optionId)
+            ?? throw new AttributeOptionNotFoundException();
 
         return [
             ProductAttributeValue::createWithOption(
-                attributeId: AttributeId::fromInt($data->attributeId),
-                attributeOptionId: AttributeOptionId::fromInt($valueData->optionId)
+                attributeId: $attribute->getId(),
+                attributeOptionId: $option->getId(),
             ),
         ];
     }

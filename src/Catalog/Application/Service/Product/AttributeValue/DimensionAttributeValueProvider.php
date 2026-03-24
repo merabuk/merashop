@@ -4,17 +4,14 @@ declare(strict_types=1);
 
 namespace App\Catalog\Application\Service\Product\AttributeValue;
 
+use App\Catalog\Application\DTO\Product\AttributeValue\AttributeValueDataInterface;
 use App\Catalog\Application\DTO\Product\AttributeValue\DimensionAttributeValueData;
-use App\Catalog\Application\DTO\Product\ProductAttributeValueData;
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
-use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
-use App\Catalog\Domain\Exception\AttributeOption\InvalidAttributeOptionIdException;
+use App\Catalog\Domain\Exception\AttributeOption\AttributeOptionNotFoundException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeMagnitudeDimensionValueException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
-use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
-use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\DimensionValue;
 
 class DimensionAttributeValueProvider implements ProductAttributeValueProviderInterface
@@ -29,28 +26,28 @@ class DimensionAttributeValueProvider implements ProductAttributeValueProviderIn
     /**
      * @return ProductAttributeValue[]
      *
-     * @throws InvalidAttributeIdException
-     * @throws InvalidAttributeOptionIdException
      * @throws InvalidProductAttributeMagnitudeDimensionValueException
      * @throws ProductAttributeValueStateException
+     * @throws AttributeOptionNotFoundException
      */
-    public function handle(Attribute $attribute, ProductAttributeValueData $data): array
+    public function handle(Attribute $attribute, AttributeValueDataInterface $data): array
     {
         $this->checkAttributeType($attribute);
 
-        $valueData = $data->value;
-        if (false === $valueData instanceof DimensionAttributeValueData) {
-            throw $this->makeInvalidValueDataException(actualClass: $valueData::class, expectedClass: DimensionAttributeValueData::class);
+        if (false === $data instanceof DimensionAttributeValueData) {
+            throw $this->makeInvalidValueDataException(actualClass: $data::class, expectedClass: DimensionAttributeValueData::class);
         }
 
-        // TODO[attribute value]: add check if option exists for attribute
+        $unitOption = $attribute->getOptions()->getById($data->unitOptionId)
+            ?? throw new AttributeOptionNotFoundException();
 
         return [
-            ProductAttributeValue::createWithValue(
-                attributeId: AttributeId::fromInt($data->attributeId),
+            ProductAttributeValue::create(
+                attributeId: $attribute->getId(),
+                attributeOptionId: $unitOption->getId(),
                 value: new DimensionValue(
-                    magnitude: $valueData->magnitude,
-                    unit: AttributeOptionId::fromInt($valueData->unitOptionId),
+                    magnitude: $data->magnitude,
+                    unit: $unitOption->getId(),
                 ),
             ),
         ];

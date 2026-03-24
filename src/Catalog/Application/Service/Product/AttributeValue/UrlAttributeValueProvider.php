@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace App\Catalog\Application\Service\Product\AttributeValue;
 
+use App\Catalog\Application\DTO\Product\AttributeValue\AttributeValueDataInterface;
 use App\Catalog\Application\DTO\Product\AttributeValue\UrlAttributeValueData;
-use App\Catalog\Application\DTO\Product\ProductAttributeValueData;
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
-use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeUrlValueException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
-use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\UrlValue;
 
 class UrlAttributeValueProvider implements ProductAttributeValueProviderInterface
@@ -27,23 +25,21 @@ class UrlAttributeValueProvider implements ProductAttributeValueProviderInterfac
     /**
      * @return ProductAttributeValue[]
      *
-     * @throws InvalidAttributeIdException
      * @throws ProductAttributeValueStateException
      * @throws InvalidProductAttributeUrlValueException
      */
-    public function handle(Attribute $attribute, ProductAttributeValueData $data): array
+    public function handle(Attribute $attribute, AttributeValueDataInterface $data): array
     {
         $this->checkAttributeType($attribute);
 
-        $valueData = $data->value;
-        if (false === $valueData instanceof UrlAttributeValueData) {
-            throw $this->makeInvalidValueDataException(actualClass: $valueData::class, expectedClass: UrlAttributeValueData::class);
+        if (false === $data instanceof UrlAttributeValueData) {
+            throw $this->makeInvalidValueDataException(actualClass: $data::class, expectedClass: UrlAttributeValueData::class);
         }
 
         return [
             ProductAttributeValue::createWithValue(
-                attributeId: AttributeId::fromInt($data->attributeId),
-                value: UrlValue::fromString($valueData->value),
+                attributeId: $attribute->getId(),
+                value: UrlValue::fromString($data->value),
             ),
         ];
     }

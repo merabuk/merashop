@@ -11,6 +11,8 @@ enum ErrorCodeEnum: string
     case AttributeAlreadyExists = 'ATTRIBUTE_ALREADY_EXISTS';
     case AttributeTypeCanNotBeChanged = 'ATTRIBUTE_TYPE_CANNOT_BE_CHANGED';
     case OneOfAttributesNotFound = 'ONE_OF_ATTRIBUTES_NOT_FOUND';
+    case AttributeOptionNotFound = 'ATTRIBUTE_OPTION_NOT_FOUND';
+    case OneOfAttributeOptionsNotFound = 'ONE_OF_ATTRIBUTE_OPTIONS_NOT_FOUND';
     case CategoryNotFound = 'CATEGORY_NOT_FOUND';
     case CategoryAlreadyExists = 'CATEGORY_ALREADY_EXISTS';
     case CategorySortOrderOutOfRange = 'CATEGORY_SORT_ORDER_OUT_OF_RANGE';

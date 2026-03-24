@@ -160,7 +160,10 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
      */
     private function mapAttributeValues(array $attributeValuesData): AttributeValueCollection
     {
-        $attributes = $this->attributeReadRepository->findByIds($this->mapAttributeIds($attributeValuesData));
+        $attributes = $this->attributeReadRepository->findByIds(
+            ids: $this->mapAttributeIds($attributeValuesData),
+            withOptions: true,
+        );
 
         $attributeValues = [];
 
@@ -185,7 +188,7 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
                     throw new UnsupportedAttributeTypeException(sprintf('Value provider "%s" must implement %s', $type->value, ProductAttributeValueProviderInterface::class));
                 }
 
-                foreach ($provider->handle($attribute, $data) as $pav) {
+                foreach ($provider->handle($attribute, $data->value) as $pav) {
                     $attributeValues[] = $pav;
                 }
             } catch (ContainerExceptionInterface $e) {

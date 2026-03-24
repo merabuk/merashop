@@ -7,6 +7,7 @@ namespace App\Catalog\Domain\ValueObject\Attribute;
 use App\Catalog\Domain\Entity\AttributeOption;
 use App\Catalog\Domain\Exception\Attribute\AttributeOptionUniqueException;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeOptionItemException;
+use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
 use App\Catalog\Domain\ValueObject\AttributeOption\Ulid as AttributeOptionUlid;
 use App\Shared\Domain\Exception\ValueObject\InvalidAbstractCollectionItemException;
 use App\Shared\Domain\ValueObject\AbstractCollection;
@@ -42,6 +43,13 @@ final readonly class OptionCollection extends AbstractCollection
     public static function fromArray(array $items): self
     {
         return new self($items);
+    }
+
+    public function getById(int|AttributeOptionId $id): ?AttributeOption
+    {
+        $idValue = $id instanceof AttributeOptionId ? $id->value() : $id;
+
+        return array_find($this->items, fn (AttributeOption $item) => $item->getId()?->value() === $idValue);
     }
 
     public function getByUlid(string|AttributeOptionUlid $ulid): ?AttributeOption

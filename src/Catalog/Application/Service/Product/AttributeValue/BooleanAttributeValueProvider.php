@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace App\Catalog\Application\Service\Product\AttributeValue;
 
+use App\Catalog\Application\DTO\Product\AttributeValue\AttributeValueDataInterface;
 use App\Catalog\Application\DTO\Product\AttributeValue\BooleanAttributeValueData;
-use App\Catalog\Application\DTO\Product\ProductAttributeValueData;
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
-use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
-use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\BooleanValue;
 
-class BooleanAttributeValueProvider implements ProductAttributeValueProviderInterface
+final readonly class BooleanAttributeValueProvider implements ProductAttributeValueProviderInterface
 {
     use ProductAttributeValueProviderTrait;
 
@@ -26,22 +24,20 @@ class BooleanAttributeValueProvider implements ProductAttributeValueProviderInte
     /**
      * @return ProductAttributeValue[]
      *
-     * @throws InvalidAttributeIdException
      * @throws ProductAttributeValueStateException
      */
-    public function handle(Attribute $attribute, ProductAttributeValueData $data): array
+    public function handle(Attribute $attribute, AttributeValueDataInterface $data): array
     {
         $this->checkAttributeType($attribute);
 
-        $valueData = $data->value;
-        if (false === $valueData instanceof BooleanAttributeValueData) {
-            throw $this->makeInvalidValueDataException(actualClass: $valueData::class, expectedClass: BooleanAttributeValueData::class);
+        if (false === $data instanceof BooleanAttributeValueData) {
+            throw $this->makeInvalidValueDataException(actualClass: $data::class, expectedClass: BooleanAttributeValueData::class);
         }
 
         return [
             ProductAttributeValue::createWithValue(
-                attributeId: AttributeId::fromInt($data->attributeId),
-                value: BooleanValue::fromBool($valueData->value),
+                attributeId: $attribute->getId(),
+                value: BooleanValue::fromBool($data->value),
             ),
         ];
     }

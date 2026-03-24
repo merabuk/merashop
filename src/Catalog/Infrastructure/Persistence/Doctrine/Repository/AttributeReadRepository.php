@@ -65,14 +65,31 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
      *
      * @return Attribute[]
      */
-    public function findByIds(array $ids, bool $withTranslations = true): array
+    public function findByIds(array $ids, bool $withTranslations = true, bool $withOptions = true): array
     {
-        // TODO: find way add load translations for attributes
+        if (empty($ids)) {
+            return [];
+        }
+
+        $qb = $this->createQueryBuilder('a');
+
+        if ($withTranslations) {
+            $qb->leftJoin('a.translations', 'at')
+                ->addSelect('at');
+        }
+
+        if ($withOptions) {
+            $qb->leftJoin('a.options', 'o')
+                ->addSelect('o')
+                ->leftJoin('o.translations', 'ot')
+                ->addSelect('ot');
+        }
 
         return $this->_findByIds(
             ids: $ids,
             mapCallback: fn (object $orm) => $this->checkAndMapToDomain($orm),
-            alias: 'a'
+            alias: $qb->getRootAliases()[0],
+            qb: $qb
         );
     }
 

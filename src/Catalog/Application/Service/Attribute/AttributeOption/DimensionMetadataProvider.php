@@ -24,7 +24,7 @@ final readonly class DimensionMetadataProvider implements AttributeOptionMetadat
         return DimensionMetadata::fromNullableFloat($data->baseRatio);
     }
 
-    protected static function getAttributeType(): TypeEnum
+    private static function getAttributeType(): TypeEnum
     {
         return TypeEnum::Dimension;
     }
