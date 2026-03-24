@@ -24,6 +24,14 @@ final class ProductAttributeValueStateException extends CatalogDomainException
         return new self(sprintf('One of the following fields must be null: %s', implode(', ', $fields)));
     }
 
+    /**
+     * @param string[] $fields
+     */
+    public static function becauseOneFieldIsNull(array $fields): self
+    {
+        return new self(sprintf('Fields "%s" must be not null', implode('", "', $fields)));
+    }
+
     public function getErrorCode(): string
     {
         return 'PRODUCT_ATTRIBUTE_VALUE_STATE_EXCEPTION';

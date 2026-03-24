@@ -10,8 +10,11 @@ use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
+use App\Catalog\Domain\Exception\AttributeOption\InvalidAttributeOptionIdException;
+use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeMagnitudeDimensionValueException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
+use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\DimensionValue;
 
 class DimensionAttributeValueProvider implements ProductAttributeValueProviderInterface
@@ -27,6 +30,8 @@ class DimensionAttributeValueProvider implements ProductAttributeValueProviderIn
      * @return ProductAttributeValue[]
      *
      * @throws InvalidAttributeIdException
+     * @throws InvalidAttributeOptionIdException
+     * @throws InvalidProductAttributeMagnitudeDimensionValueException
      * @throws ProductAttributeValueStateException
      */
     public function handle(Attribute $attribute, ProductAttributeValueData $data): array
@@ -38,12 +43,14 @@ class DimensionAttributeValueProvider implements ProductAttributeValueProviderIn
             throw $this->makeInvalidValueDataException(actualClass: $valueData::class, expectedClass: DimensionAttributeValueData::class);
         }
 
+        // TODO[attribute value]: add check if option exists for attribute
+
         return [
             ProductAttributeValue::createWithValue(
                 attributeId: AttributeId::fromInt($data->attributeId),
                 value: new DimensionValue(
                     magnitude: $valueData->magnitude,
-                    unit: $valueData->unit,
+                    unit: AttributeOptionId::fromInt($valueData->unitOptionId),
                 ),
             ),
         ];

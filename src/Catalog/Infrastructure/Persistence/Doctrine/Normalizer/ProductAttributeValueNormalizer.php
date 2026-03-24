@@ -9,6 +9,8 @@ use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeCo
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeDateValueException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeLocalizedStringValueException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeLocalizedTextValueException;
+use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeMagnitudeDimensionValueException;
+use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\AttributeValueInterface;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\BooleanValue;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\ColorValue;
@@ -30,8 +32,9 @@ final readonly class ProductAttributeValueNormalizer
      * @throws InvalidProductAttributeDateValueException
      * @throws InvalidProductAttributeLocalizedStringValueException
      * @throws InvalidProductAttributeLocalizedTextValueException
+     * @throws InvalidProductAttributeMagnitudeDimensionValueException
      */
-    public function denormalize(TypeEnum $type, ?array $data): ?AttributeValueInterface
+    public function denormalize(TypeEnum $type, ?array $data, ?AttributeOptionId $optionId = null): ?AttributeValueInterface
     {
         if (null === $data) {
             return null;
@@ -50,7 +53,7 @@ final readonly class ProductAttributeValueNormalizer
             TypeEnum::Url => UrlValue::fromString((string) ($data['value'] ?? '')),
             TypeEnum::Dimension => new DimensionValue(
                 magnitude: (float) ($data['magnitude'] ?? 0),
-                unit: (string) ($data['ulid'] ?? '')
+                unit: $optionId ?? throw new InvalidArgumentException('Dimension unit option id is required'),
             ),
             default => throw new InvalidArgumentException(sprintf('Normalization for type %s not implemented', $type->value)),
         };
@@ -75,7 +78,6 @@ final readonly class ProductAttributeValueNormalizer
 
             $vo instanceof DimensionValue => [
                 'magnitude' => $vo->magnitude(),
-                'ulid' => $vo->unit(),
             ],
 
             default => throw new InvalidArgumentException(sprintf('Denormalization for %s not implemented', get_debug_type($vo))),

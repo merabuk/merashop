@@ -43,7 +43,7 @@ final class ProductAttributeValueTest extends TestCase
     ): void {
         $attributeId = AttributeId::fromInt(123);
         $attributeOptionId = $optionId ? AttributeOptionId::fromInt($optionId) : null;
-        $attributeValue = $this->normalizer->denormalize($type, $rawValue);
+        $attributeValue = $this->normalizer->denormalize($type, $rawValue, $attributeOptionId);
 
         $productAttributeValue = ProductAttributeValue::create(
             attributeId: $attributeId,
@@ -130,8 +130,8 @@ final class ProductAttributeValueTest extends TestCase
         ];
         yield 'dimension' => [
             'type' => TypeEnum::Dimension,
-            'optionId' => null,
-            'rawValue' => ['magnitude' => 1234.5, 'unit' => 'cm'],
+            'optionId' => 789,
+            'rawValue' => ['magnitude' => 1234.5],
             'expectedVoClass' => DimensionValue::class,
         ];
     }

@@ -9,6 +9,7 @@ use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
 use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Id;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\AttributeValueInterface;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\DimensionValue;
 
 class ProductAttributeValue
 {
@@ -85,11 +86,17 @@ class ProductAttributeValue
      */
     private function ensureIsValidState(): void
     {
-        if (null === $this->attributeOptionId && null === $this->value) {
+        $allowBoth = $this->value instanceof DimensionValue;
+
+        if ($allowBoth && (null === $this->attributeOptionId || null === $this->value)) {
+            throw ProductAttributeValueStateException::becauseOneFieldIsNull(['attributeOptionId', 'value']);
+        }
+
+        if (false === $allowBoth && null === $this->attributeOptionId && null === $this->value) {
             throw ProductAttributeValueStateException::becauseAllFieldsAreNull(['attributeOptionId', 'value']);
         }
 
-        if ($this->attributeOptionId && $this->value) {
+        if (false === $allowBoth && $this->attributeOptionId && $this->value) {
             throw ProductAttributeValueStateException::becauseAllFieldsAreNotNull(['attributeOptionId', 'value']);
         }
     }

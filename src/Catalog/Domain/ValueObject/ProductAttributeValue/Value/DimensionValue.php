@@ -4,16 +4,24 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\ValueObject\ProductAttributeValue\Value;
 
+use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeMagnitudeDimensionValueException;
+use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
 
 final readonly class DimensionValue implements AttributeValueInterface
 {
     use ValueObjectEqualityTrait;
 
+    /**
+     * @throws InvalidProductAttributeMagnitudeDimensionValueException
+     */
     public function __construct(
         private float $magnitude,
-        private string $unit,
+        private AttributeOptionId $unit,
     ) {
+        if ($this->magnitude < 0) {
+            throw InvalidProductAttributeMagnitudeDimensionValueException::becauseItIsNotAValidMagnitude();
+        }
     }
 
     public function magnitude(): float
@@ -21,19 +29,18 @@ final readonly class DimensionValue implements AttributeValueInterface
         return $this->magnitude;
     }
 
-    public function unit(): string
+    public function getUnitOptionId(): AttributeOptionId
     {
         return $this->unit;
     }
 
     /**
-     * @return array{magnitude: float, unit: string}
+     * @return array{magnitude: float}
      */
     public function value(): array
     {
         return [
             'magnitude' => $this->magnitude,
-            'unit' => $this->unit,
         ];
     }
 

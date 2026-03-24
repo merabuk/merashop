@@ -11,17 +11,17 @@ final class DimensionAttributeValueRequest extends BaseAttributeValueRequest
 {
     #[Assert\NotBlank]
     #[Assert\Type('numeric')]
-    public float $magnitude;
+    public ?float $magnitude;
 
     #[Assert\NotBlank]
-    // TODO[attribute value]: think about translations?
-    public string $unit;
+    #[Assert\Positive]
+    public ?int $unitOptionId;
 
     public function toData(): DimensionAttributeValueData
     {
         return new DimensionAttributeValueData(
             magnitude: $this->magnitude,
-            unit: $this->unit
+            unitOptionId: $this->unitOptionId
         );
     }
 }

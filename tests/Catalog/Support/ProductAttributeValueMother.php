@@ -34,10 +34,12 @@ final readonly class ProductAttributeValueMother
         mixed $value = null,
         ?int $id = null,
     ): ProductAttributeValue {
+        $attributeOptionId = $optionId ? AttributeOptionId::fromInt($optionId) : null;
+
         return new ProductAttributeValue(
             attributeId: AttributeId::fromInt($attributeId),
-            attributeOptionId: $optionId ? AttributeOptionId::fromInt($optionId) : null,
-            value: self::getFakeAttributeValue($attributeType, $value),
+            attributeOptionId: $attributeOptionId,
+            value: self::getFakeAttributeValue($attributeType, $value, $attributeOptionId),
             id: $id ? ProductAttributeId::fromInt($id) : null
         );
     }
@@ -48,7 +50,7 @@ final readonly class ProductAttributeValueMother
         ?int $optionId = null,
         mixed $value = null,
     ): ProductAttributeValue {
-        $attributeValue = $this->getAttributeValue($attributeType, $value);
+        $attributeValue = $this->getAttributeValue($attributeType, $value, $optionId);
 
         return $this->productAttributeValueFactory->createForTest(
             attributeId: $attributeId,
@@ -60,6 +62,7 @@ final readonly class ProductAttributeValueMother
     private function getAttributeValue(
         AttributeTypeEnum $attributeType,
         mixed $value,
+        ?int $optionId = null,
     ): ?AttributeValueInterface {
         $arrayValue = match ($attributeType) {
             AttributeTypeEnum::String,
@@ -73,17 +76,21 @@ final readonly class ProductAttributeValueMother
             AttributeTypeEnum::Url => ['value' => $value ?? $this->faker->url()],
             AttributeTypeEnum::Dimension => is_null($value) ? [
                 'magnitude' => $this->faker->randomFloat(2, 1, 1000),
-                'unit' => $this->faker->randomElement(['cm', 'm', 'in', 'ft']),
             ] : (array) $value,
             default => throw new RuntimeException(sprintf('Unsupported attribute type: %s', $attributeType->value)),
         };
 
-        return $this->normalizer->denormalize($attributeType, $arrayValue);
+        return $this->normalizer->denormalize(
+            type: $attributeType,
+            data: $arrayValue,
+            optionId: $optionId ? AttributeOptionId::fromInt($optionId) : null
+        );
     }
 
     private static function getFakeAttributeValue(
         AttributeTypeEnum $attributeType,
         mixed $value,
+        ?AttributeOptionId $optionId = null,
     ): ?AttributeValueInterface {
         $arrayValue = match ($attributeType) {
             AttributeTypeEnum::String,
@@ -97,12 +104,15 @@ final readonly class ProductAttributeValueMother
             AttributeTypeEnum::Url => ['value' => $value ?? 'https://example.com'],
             AttributeTypeEnum::Dimension => is_null($value) ? [
                 'magnitude' => 1234.5,
-                'unit' => 'cm',
             ] : (array) $value,
             default => throw new RuntimeException(sprintf('Unsupported attribute type: %s', $attributeType->value)),
         };
 
-        return new ProductAttributeValueNormalizer()->denormalize($attributeType, $arrayValue);
+        return new ProductAttributeValueNormalizer()->denormalize(
+            type: $attributeType,
+            data: $arrayValue,
+            optionId: $optionId
+        );
     }
 
     private function makeTranslations(): array
