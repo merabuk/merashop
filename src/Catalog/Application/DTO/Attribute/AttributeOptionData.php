@@ -13,6 +13,7 @@ final readonly class AttributeOptionData
          */
         public array $translations,
         public bool $isActive,
+        public ?float $baseRatio = null,
     ) {
     }
 }

@@ -55,6 +55,12 @@ class OrmAttributeOption
     #[ORM\Column(type: Types::BOOLEAN)]
     public ?bool $isActive = ActiveFlag::DEFAULT_VALUE;
 
+    /**
+     * @var ?array<string, mixed>
+     */
+    #[ORM\Column(type: Types::JSONB, nullable: true)]
+    public ?array $valueJson = null;
+
     #[ORM\Version]
     #[ORM\Column(type: Types::INTEGER)]
     public ?int $version = null;

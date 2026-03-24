@@ -9,6 +9,7 @@ use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\AttributeOption\ActiveFlag;
 use App\Catalog\Domain\ValueObject\AttributeOption\Code;
 use App\Catalog\Domain\ValueObject\AttributeOption\Id;
+use App\Catalog\Domain\ValueObject\AttributeOption\Metadata\AttributeOptionMetadataInterface;
 use App\Catalog\Domain\ValueObject\AttributeOption\Translations;
 use App\Catalog\Domain\ValueObject\AttributeOption\Ulid;
 use App\Catalog\Domain\ValueObject\AttributeOption\Version;
@@ -22,6 +23,7 @@ class AttributeOption
         private ActiveFlag $isActive,
         private readonly Version $version,
         private readonly AdminUlid $createdBy,
+        private ?AttributeOptionMetadataInterface $metadata = null,
         private ?AdminUlid $updatedBy = null,
         private readonly ?Id $id = null,
     ) {
@@ -36,6 +38,7 @@ class AttributeOption
         Translations $translations,
         ActiveFlag $isActive,
         AdminUlid $createdBy,
+        ?AttributeOptionMetadataInterface $metadata = null,
     ): self {
         return new self(
             ulid: $ulid,
@@ -44,6 +47,7 @@ class AttributeOption
             isActive: $isActive,
             version: Version::initial(),
             createdBy: $createdBy,
+            metadata: $metadata,
         );
     }
 
@@ -52,10 +56,12 @@ class AttributeOption
         Translations $translations,
         ActiveFlag $isActive,
         AdminUlid $updatedBy,
+        ?AttributeOptionMetadataInterface $metadata = null,
     ): void {
         $this->code = $code;
         $this->translations = $translations;
         $this->isActive = $isActive;
+        $this->metadata = $metadata;
         $this->updatedBy = $updatedBy;
     }
 
@@ -92,6 +98,11 @@ class AttributeOption
     public function getCreatedBy(): AdminUlid
     {
         return $this->createdBy;
+    }
+
+    public function getMetadata(): ?AttributeOptionMetadataInterface
+    {
+        return $this->metadata;
     }
 
     public function getUpdatedBy(): ?AdminUlid

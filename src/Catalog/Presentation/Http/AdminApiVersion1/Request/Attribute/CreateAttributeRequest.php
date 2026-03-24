@@ -34,6 +34,7 @@ class CreateAttributeRequest extends BaseAttributeRequest
                     value: $t->value,
                 ), $o->translations),
                 isActive: $o->isActive,
+                baseRatio: $o->baseRatio,
             ), $this->options),
             adminUlid: $adminUlid,
         );

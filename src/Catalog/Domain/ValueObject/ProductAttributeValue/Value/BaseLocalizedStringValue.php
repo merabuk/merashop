@@ -20,6 +20,13 @@ abstract readonly class BaseLocalizedStringValue implements AttributeValueInterf
     ) {
     }
 
+    public function getByLocale(string|LocaleEnum $locale): ?string
+    {
+        $locale = $locale instanceof LocaleEnum ? $locale->value : $locale;
+
+        return $this->translations[$locale] ?? null;
+    }
+
     /**
      * @return array<string, string> [locale => value]
      */

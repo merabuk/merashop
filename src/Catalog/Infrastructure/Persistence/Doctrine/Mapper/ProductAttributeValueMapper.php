@@ -78,7 +78,7 @@ final readonly class ProductAttributeValueMapper
             default => null,
         };
 
-        $orm->valueJson = $vo ? $this->normalizer->normalize($vo) : null;
+        $orm->valueJson = $this->normalizer->normalize($vo);
     }
 
     private function getLogPrefix(int $id): string

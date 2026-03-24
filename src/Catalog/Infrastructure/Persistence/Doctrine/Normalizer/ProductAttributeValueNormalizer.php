@@ -60,10 +60,14 @@ final readonly class ProductAttributeValueNormalizer
     }
 
     /**
-     * @return array<string, mixed>
+     * @return ?array<string, mixed>
      */
-    public function normalize(AttributeValueInterface $vo): array
+    public function normalize(?AttributeValueInterface $vo): ?array
     {
+        if (null === $vo) {
+            return null;
+        }
+
         return match (true) {
             $vo instanceof LocalizedStringValue,
             $vo instanceof LocalizedTextValue => ['translations' => $vo->value()],

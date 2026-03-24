@@ -54,7 +54,16 @@ final readonly class Type implements EquatableInterface, Stringable
     {
         return match ($this->type) {
             TypeEnum::Select,
-            TypeEnum::MultiSelect => true,
+            TypeEnum::MultiSelect,
+            TypeEnum::Dimension => true,
+            default => false,
+        };
+    }
+
+    public function hasOptionMetadata(): bool
+    {
+        return match ($this->type) {
+            TypeEnum::Dimension => true,
             default => false,
         };
     }

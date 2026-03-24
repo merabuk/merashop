@@ -8,10 +8,14 @@ use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Shared\Presentation\Http\Request\ValidateLocalesTrait;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\GroupSequenceProviderInterface;
 
-abstract class BaseAttributeRequest
+#[Assert\GroupSequenceProvider]
+abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
 {
     use ValidateLocalesTrait;
+
+    private const string BASE_GROUP = 'BaseAttributeRequest';
 
     #[Assert\NotBlank]
     #[Assert\Length(min: 1, max: Code::MAX_LENGTH)]
@@ -31,6 +35,17 @@ abstract class BaseAttributeRequest
     #[Assert\Count(min: 1, minMessage: 'shared.common.translations_empty')]
     #[Assert\Valid]
     public ?array $translations;
+
+    public function getGroupSequence(): array
+    {
+        $groups = [self::BASE_GROUP];
+
+        if ($type = TypeEnum::tryFrom((string) $this->type)) {
+            $groups[] = $type->value;
+        }
+
+        return $groups;
+    }
 
     /**
      * @return string[]

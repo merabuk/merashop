@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Catalog\Presentation\Http\AdminApiVersion1\Request\Attribute;
 
+use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\ValueObject\AttributeOption\Code;
 use App\Shared\Presentation\Http\Request\ValidateLocalesTrait;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -26,7 +27,12 @@ final class AttributeOptionRequest
 
     #[Assert\NotNull]
     #[Assert\Type(type: 'bool')]
-    public ?bool $isActive = null;
+    public ?bool $isActive;
+
+    #[Assert\NotNull(groups: [TypeEnum::Dimension->value])]
+    #[Assert\Type(type: 'float', groups: [TypeEnum::Dimension->value])]
+    #[Assert\Positive(groups: [TypeEnum::Dimension->value])]
+    public ?float $baseRatio = null;
 
     /**
      * @return array<string, true>

@@ -70,6 +70,7 @@ final class Version20260212160551 extends AbstractMigration
             ulid UUID NOT NULL,
             code VARCHAR(50) NOT NULL,
             is_active BOOLEAN NOT NULL,
+            value_json JSONB DEFAULT NULL,
             version INT DEFAULT 1 NOT NULL,
             created_by UUID NOT NULL,
             updated_by UUID DEFAULT NULL,

@@ -69,8 +69,10 @@ final readonly class AttributeMapper implements MapperInterface
         /** @var OrmAttribute $orm */
         $id = Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class));
 
+        $type = Type::fromEnum($orm->type);
+
         $translations = $this->mapTranslationsFromOrmToDomain($orm);
-        $options = $this->mapOptionsFromOrmToDomain($orm);
+        $options = $this->mapOptionsFromOrmToDomain($orm, $type);
 
         return new Attribute(
             ulid: Ulid::fromString($orm->ulid),
@@ -107,11 +109,11 @@ final readonly class AttributeMapper implements MapperInterface
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
      */
-    private function mapOptionsFromOrmToDomain(OrmAttribute $orm): OptionCollection
+    private function mapOptionsFromOrmToDomain(OrmAttribute $orm, Type $type): OptionCollection
     {
         $options = [];
         foreach ($orm->options as $ormOption) {
-            $options[] = $this->attributeOptionMapper->toDomain($ormOption);
+            $options[] = $this->attributeOptionMapper->toDomain($ormOption, $type);
         }
 
         return OptionCollection::fromArray($options);

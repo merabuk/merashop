@@ -6,12 +6,14 @@ namespace App\Catalog\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\Catalog\Domain\Entity\AttributeOption;
 use App\Catalog\Domain\Exception\AttributeOption\InvalidAttributeOptionCodeException;
+use App\Catalog\Domain\Exception\AttributeOption\InvalidAttributeOptionDimensionMetadataException;
 use App\Catalog\Domain\Exception\AttributeOption\InvalidAttributeOptionIdException;
 use App\Catalog\Domain\Exception\AttributeOption\InvalidAttributeOptionUlidException;
 use App\Catalog\Domain\Exception\AttributeOption\InvalidAttributeOptionValueException;
 use App\Catalog\Domain\Exception\AttributeOption\InvalidAttributeOptionVersionException;
 use App\Catalog\Domain\Exception\InvalidAdminUlidException;
 use App\Catalog\Domain\ValueObject\AdminUlid;
+use App\Catalog\Domain\ValueObject\Attribute\Type;
 use App\Catalog\Domain\ValueObject\AttributeOption\ActiveFlag;
 use App\Catalog\Domain\ValueObject\AttributeOption\Code;
 use App\Catalog\Domain\ValueObject\AttributeOption\Id;
@@ -20,22 +22,29 @@ use App\Catalog\Domain\ValueObject\AttributeOption\Ulid;
 use App\Catalog\Domain\ValueObject\AttributeOption\Version;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttributeOption;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttributeOptionTranslation;
+use App\Catalog\Infrastructure\Persistence\Doctrine\Normalizer\AttributeOptionMetadataNormalizer;
 use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 
 final readonly class AttributeOptionMapper
 {
+    public function __construct(
+        private AttributeOptionMetadataNormalizer $normalizer,
+    ) {
+    }
+
     /**
      * @throws EntityIdMissingException
      * @throws InvalidAdminUlidException
      * @throws InvalidAttributeOptionCodeException
+     * @throws InvalidAttributeOptionDimensionMetadataException
      * @throws InvalidAttributeOptionIdException
      * @throws InvalidAttributeOptionValueException
      * @throws InvalidAttributeOptionVersionException
      * @throws InvalidAttributeOptionUlidException
      * @throws InvalidLocaleException
      */
-    public function toDomain(OrmAttributeOption $orm): AttributeOption
+    public function toDomain(OrmAttributeOption $orm, Type $type): AttributeOption
     {
         $id = $orm->id ?? throw EntityIdMissingException::forEntity($orm::class);
 
@@ -48,6 +57,7 @@ final readonly class AttributeOptionMapper
             isActive: ActiveFlag::fromBool($orm->isActive),
             version: Version::fromInt($orm->version),
             createdBy: AdminUlid::fromString($orm->createdBy),
+            metadata: $this->normalizer->denormalize($type, $orm->valueJson),
             updatedBy: $orm->updatedBy ? AdminUlid::fromString($orm->updatedBy) : null,
             id: Id::fromInt($id),
         );
@@ -57,6 +67,7 @@ final readonly class AttributeOptionMapper
     {
         $orm->code = $domain->getCode()->value();
         $orm->isActive = $domain->isActive()->value();
+        $orm->valueJson = $this->normalizer->normalize($domain->getMetadata());
         $orm->updatedBy = $domain->getUpdatedBy()?->value();
 
         $this->mapTranslationsFromDomainToOrm($domain, $orm);
