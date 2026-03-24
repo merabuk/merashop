@@ -2,17 +2,34 @@
 
 namespace App\Catalog\Domain\ValueObject\ProductAttributeValue\Value;
 
+use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeUrlValueException;
+use App\Shared\Domain\Exception\Services\Validation\InvalidUrlFormatException;
+use App\Shared\Domain\Service\Validation\UrlValidator;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
 
 final readonly class UrlValue implements AttributeValueInterface
 {
     use ValueObjectEqualityTrait;
 
-    public function __construct(
-        private string $value,
-    ) {
+    private string $value;
+
+    /**
+     * @throws InvalidProductAttributeUrlValueException
+     */
+    public function __construct(string $value)
+    {
+        $value = mb_trim($value);
+
+        try {
+            $this->value = UrlValidator::normalize(url: $value, allowedSchemes: UrlValidator::ONLY_HTTP);
+        } catch (InvalidUrlFormatException $e) {
+            throw InvalidProductAttributeUrlValueException::fromBaseException($e);
+        }
     }
 
+    /**
+     * @throws InvalidProductAttributeUrlValueException
+     */
     public static function fromString(string $value): self
     {
         return new self($value);

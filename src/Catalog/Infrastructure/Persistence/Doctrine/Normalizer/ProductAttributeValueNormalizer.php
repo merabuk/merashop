@@ -7,9 +7,8 @@ namespace App\Catalog\Infrastructure\Persistence\Doctrine\Normalizer;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeColorValueException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeDateValueException;
-use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeLocalizedStringValueException;
-use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeLocalizedTextValueException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeMagnitudeDimensionValueException;
+use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeUrlValueException;
 use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\AttributeValueInterface;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\BooleanValue;
@@ -30,9 +29,8 @@ final readonly class ProductAttributeValueNormalizer
      *
      * @throws InvalidProductAttributeColorValueException
      * @throws InvalidProductAttributeDateValueException
-     * @throws InvalidProductAttributeLocalizedStringValueException
-     * @throws InvalidProductAttributeLocalizedTextValueException
      * @throws InvalidProductAttributeMagnitudeDimensionValueException
+     * @throws InvalidProductAttributeUrlValueException
      */
     public function denormalize(TypeEnum $type, ?array $data, ?AttributeOptionId $optionId = null): ?AttributeValueInterface
     {
@@ -43,8 +41,8 @@ final readonly class ProductAttributeValueNormalizer
         return match ($type) {
             TypeEnum::Select,
             TypeEnum::MultiSelect => null,
-            TypeEnum::String => LocalizedStringValue::fromArray($data['translations'] ?? []),
-            TypeEnum::Text => LocalizedTextValue::fromArray($data['translations'] ?? []),
+            TypeEnum::String => new LocalizedStringValue($data['translations'] ?? []),
+            TypeEnum::Text => new LocalizedTextValue($data['translations'] ?? []),
             TypeEnum::Integer => IntegerValue::fromInt((int) ($data['value'] ?? 0)),
             TypeEnum::Float => FloatValue::fromFloat((float) ($data['value'] ?? 0.0)),
             TypeEnum::Boolean => BooleanValue::fromBool((bool) ($data['value'] ?? false)),

@@ -22,6 +22,19 @@ trait ValueObjectEqualityCheckTrait
         $this->baseEqualityCheckAssertion($vo1, $vo2, $vo3);
     }
 
+    protected function assertFloatVOProvidesEqualityCheck(string $className, float $value, float $anotherValue): void
+    {
+        $this->assertHasStaticMethod($className, 'fromFloat');
+
+        $vo1 = $className::fromFloat($value);
+        $vo2 = $className::fromFloat($value);
+        $vo3 = $className::fromFloat($anotherValue);
+
+        $this->assertVoProvidesEqualityCheck($vo1);
+
+        $this->baseEqualityCheckAssertion($vo1, $vo2, $vo3);
+    }
+
     protected function assertStringVOProvidesEqualityCheck(string $className, string $value, string $anotherValue): void
     {
         $this->assertHasStaticMethod($className, 'fromString');
