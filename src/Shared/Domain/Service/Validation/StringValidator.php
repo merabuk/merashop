@@ -27,7 +27,7 @@ final class StringValidator
         }
 
         if ($normalize) {
-            $value = self::normalize($value);
+            $value = self::normalize(value: $value, trim: false);
         }
 
         $length = mb_strlen($value);
@@ -43,8 +43,12 @@ final class StringValidator
         return $value;
     }
 
-    private static function normalize(string $value): string
+    public static function normalize(string $value, bool $trim = true): string
     {
+        if ($trim) {
+            $value = mb_trim($value);
+        }
+
         return preg_replace([
             '/ +/',
             '/ *(\r?\n) */',

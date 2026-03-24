@@ -26,36 +26,30 @@ final class StringValidatorTest extends TestCase
         yield 'string with spaces' => ['  Trim Me  ', 10, 2, 'Trim Me'];
         yield 'normalize spaces' => ['Some  extra   spaces  between  words', 35, 2, 'Some extra spaces between words'];
         yield 'normalize break lines' => ["Some  \n\n\n\n  extra  \n\n\n\n  breaks", 35, 2, "Some\n\nextra\n\nbreaks"];
-        yield 'multibyte string' => ['Привіт', 10, 2, 'Привіт'];
+        yield 'multibyte string' => ['Привіт', 6, 6, 'Привіт'];
         yield 'exact max length' => ['ABCDE', 5, 0, 'ABCDE'];
         yield 'exact min length' => ['ABC', 10, 3, 'ABC'];
         yield 'emoji support' => ['🚀', 2, 1, '🚀'];
     }
 
-    public function testThrowsExceptionWhenEmptyAfterTrim(): void
-    {
-        $this->expectException(StringEmptyException::class);
-        StringValidator::validate(rawValue: '   ', maxLength: 10, minLength: 0);
+    #[DataProvider('invalidStringsProvider')]
+    public function testThrowsExceptionOnInvalidValue(
+        string $invalidValue,
+        int $maxLength,
+        int $minLength,
+        string $expectedException,
+    ): void {
+        $this->expectException($expectedException);
+
+        StringValidator::validate(rawValue: $invalidValue, maxLength: $maxLength, minLength: $minLength);
     }
 
-    public function testThrowsExceptionWhenTooLong(): void
+    public static function invalidStringsProvider(): iterable
     {
-        $this->expectException(StringMaxLengthException::class);
-        StringValidator::validate(rawValue: 'Too Long String', maxLength: 5, minLength: 0);
-    }
-
-    public function testThrowsExceptionWhenTooShort(): void
-    {
-        $this->expectException(StringMinLengthException::class);
-        StringValidator::validate(rawValue: 'Short', maxLength: 10, minLength: 8);
-    }
-
-    public function testItHandlesMultibyteLengthCorrectly(): void
-    {
-        $result = StringValidator::validate(rawValue: 'Тест', maxLength: 4, minLength: 4);
-        self::assertSame('Тест', $result);
-
-        $this->expectException(StringMaxLengthException::class);
-        StringValidator::validate(rawValue: 'Тест+', maxLength: 4, minLength: 0);
+        yield 'empty string' => ['', 10, 0, StringEmptyException::class];
+        yield 'string with only spaces' => ['   ', 10, 0, StringEmptyException::class];
+        yield 'too long string' => ['Too Long String', 5, 0, StringMaxLengthException::class];
+        yield 'too short string' => ['Short', 10, 8, StringMinLengthException::class];
+        yield 'multibyte long string' => ['Тест+', 4, 0, StringMaxLengthException::class];
     }
 }

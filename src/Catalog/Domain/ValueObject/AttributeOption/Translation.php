@@ -13,7 +13,7 @@ use App\Shared\Domain\ValueObject\Locale;
 
 final readonly class Translation implements TranslationInterface
 {
-    public const int NAME_MAX_LENGTH = 255; // 65_535 ???
+    public const int NAME_MAX_LENGTH = 255;
 
     public Locale $locale;
     public string $value;
@@ -26,7 +26,7 @@ final readonly class Translation implements TranslationInterface
     {
         $this->locale = Locale::fromString($locale);
         try {
-            $this->value = StringValidator::validate($value, self::NAME_MAX_LENGTH);
+            $this->value = StringValidator::validate(rawValue: $value, maxLength: self::NAME_MAX_LENGTH);
         } catch (InvalidStringException $e) {
             throw InvalidAttributeOptionValueException::fromBaseException($e);
         }
