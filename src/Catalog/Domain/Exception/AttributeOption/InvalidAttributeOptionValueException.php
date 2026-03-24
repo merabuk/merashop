@@ -11,7 +11,7 @@ final class InvalidAttributeOptionValueException extends InvalidCatalogValueObje
 {
     public static function becauseItIsEmpty(string $locale): self
     {
-        return new self(sprintf('Attribute option name is required for locale: %s', $locale));
+        return new self(sprintf('Attribute option value is required for locale: %s', $locale));
     }
 
     public static function fromBaseException(InvalidStringException $baseException): self

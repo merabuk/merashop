@@ -48,7 +48,7 @@ final readonly class DimensionMetadata implements AttributeOptionMetadataInterfa
 
     protected function getPrimitiveValue(): float
     {
-        return $this->getBaseRatio();
+        return $this->value;
     }
 
     /**
