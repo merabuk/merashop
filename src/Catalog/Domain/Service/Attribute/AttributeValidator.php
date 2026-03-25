@@ -40,7 +40,7 @@ final readonly class AttributeValidator implements AttributeValidatorInterface
         Code $newCode,
         Type $newType,
     ): void {
-        if ($this->checkTypeCanNotBeChanged($attribute->getType(), $newType)) {
+        if (false === $attribute->getType()->allowChange($newType)) {
             throw new AttributeTypeCanNotBeCahngedException();
         }
 
@@ -51,12 +51,5 @@ final readonly class AttributeValidator implements AttributeValidatorInterface
         if (!$attribute->getCode()->equals($newCode) && $this->readRepository->existsByCode($newCode)) {
             throw AttributeAlreadyExistsException::becauseAttributeCodeAlreadyExists($newCode->value());
         }
-    }
-
-    private function checkTypeCanNotBeChanged(Type $currentType, Type $newType): bool
-    {
-        // TODO: add change between string and text in future
-
-        return false === $currentType->equals($newType);
     }
 }

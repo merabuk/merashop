@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Catalog\Unit\Domain\Service\Attribute;
 
+use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Exception\Attribute\AttributeAlreadyExistsException;
 use App\Catalog\Domain\Exception\Attribute\AttributeTypeCanNotBeCahngedException;
@@ -13,6 +14,7 @@ use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Type;
 use App\Shared\Domain\Exception\Entity\ConcurrencyException;
 use App\Tests\Catalog\Support\AttributeMother;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -45,19 +47,40 @@ final class AttributeValidatorTest extends TestCase
         $this->createValidator()->validateCreation(code: $code);
     }
 
-    public function testItValidatesUpdating(): void
-    {
-        $attribute = AttributeMother::createWithData(code: 'old-code', id: 123);
-        $newCode = Code::fromString('new-code');
-
-        $this->givenCodeIsAvailable($newCode);
+    #[DataProvider('updateAttributeProvider')]
+    public function testItValidatesUpdating(
+        Attribute $attribute,
+        Code $newCode,
+        Type $newType,
+    ): void {
+        $attribute->getCode()->equals($newCode) ? $this->checkCodeNeverCalled() : $this->givenCodeIsAvailable($newCode);
 
         $this->createValidator()->validateUpdate(
             attribute: $attribute,
             version: $attribute->getVersion()->value(),
             newCode: $newCode,
-            newType: $attribute->getType(),
+            newType: $newType,
         );
+    }
+
+    public static function updateAttributeProvider(): iterable
+    {
+        $attribute = AttributeMother::createWithData(
+            code: 'old-code',
+            type: TypeEnum::String,
+            id: 123
+        );
+
+        yield 'code changed' => [
+            'attribute' => $attribute,
+            'newCode' => Code::fromString('new-code'),
+            'newType' => $attribute->getType(),
+        ];
+        yield 'type changed' => [
+            'attribute' => $attribute,
+            'newCode' => $attribute->getCode(),
+            'newType' => Type::fromEnum(TypeEnum::Text),
+        ];
     }
 
     public function testThrowsExceptionWhenAttributeCannotChangeType(): void

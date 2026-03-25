@@ -40,12 +40,10 @@ final class TypeTest extends TestCase
         }
     }
 
-    public function testItTrimsInput(): void
+    public function testItTrimsInputAndValidatesCase(): void
     {
-        $type = TypeEnum::String;
-        $vo = Type::fromString('  '.$type->value.'  ');
-
-        self::assertTrue($vo->is($type));
+        $vo = Type::fromString('  string  ');
+        self::assertTrue($vo->is(TypeEnum::String));
     }
 
     public function testItProvidesEqualityCheck(): void
@@ -66,23 +64,49 @@ final class TypeTest extends TestCase
 
     public static function invalidTypeProvider(): iterable
     {
-        yield 'empty string' => [''];
+        yield 'empty' => [''];
         yield 'only spaces' => ['   '];
         yield 'wrong case' => ['STRING'];
-        yield 'random string' => ['not-a-type'];
+        yield 'unknown' => ['unknown_type'];
     }
 
-    #[DataProvider('typeEnumProvider')]
-    public function testItHasOptions(TypeEnum $enum): void
+    #[DataProvider('booleanMethodsProvider')]
+    public function testBooleanMethods(TypeEnum $enum, bool $hasOptions, bool $hasMetadata): void
     {
         $vo = Type::fromEnum($enum);
 
-        $expectedHasOption = match ($enum) {
-            TypeEnum::Select,
-            TypeEnum::MultiSelect => true,
-            default => false,
-        };
+        self::assertSame($hasOptions, $vo->hasOptions(), "Failed hasOptions for {$enum->name}");
+        self::assertSame($hasMetadata, $vo->hasOptionMetadata(), "Failed hasMetadata for {$enum->name}");
+    }
 
-        self::assertSame($expectedHasOption, $vo->hasOptions());
+    public static function booleanMethodsProvider(): iterable
+    {
+        yield 'string' => [TypeEnum::String, false, false];
+        yield 'text' => [TypeEnum::Text, false, false];
+        yield 'integer' => [TypeEnum::Integer, false, false];
+        yield 'float' => [TypeEnum::Float, false, false];
+        yield 'boolean' => [TypeEnum::Boolean, false, false];
+        yield 'select' => [TypeEnum::Select, true, false];
+        yield 'multiselect' => [TypeEnum::MultiSelect, true, false];
+        yield 'color' => [TypeEnum::Color, false, false];
+        yield 'date' => [TypeEnum::Date, false, false];
+        yield 'url' => [TypeEnum::Url, false, false];
+        yield 'dimension' => [TypeEnum::Dimension, true, true];
+        yield 'image' => [TypeEnum::Image, false, false];
+    }
+
+    #[DataProvider('allowChangeProvider')]
+    public function testItAllowChange(TypeEnum $current, TypeEnum $new, bool $expected): void
+    {
+        self::assertSame($expected, Type::fromEnum($current)->allowChange(Type::fromEnum($new)));
+    }
+
+    public static function allowChangeProvider(): iterable
+    {
+        yield 'identity' => [TypeEnum::String, TypeEnum::String, true];
+        yield 'string to text' => [TypeEnum::String, TypeEnum::Text, true];
+        yield 'text to string' => [TypeEnum::Text, TypeEnum::String, true];
+        yield 'string to select' => [TypeEnum::String, TypeEnum::Select, false];
+        yield 'integer to float' => [TypeEnum::Integer, TypeEnum::Float, false];
     }
 }

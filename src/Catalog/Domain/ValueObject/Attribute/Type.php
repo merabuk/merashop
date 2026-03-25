@@ -68,6 +68,19 @@ final readonly class Type implements EquatableInterface, Stringable
         };
     }
 
+    public function allowChange(self $newType): bool
+    {
+        if ($this->equals($newType)) {
+            return true;
+        }
+
+        return match ($newType->value()) {
+            TypeEnum::String => $this->is(TypeEnum::Text),
+            TypeEnum::Text => $this->is(TypeEnum::String),
+            default => false,
+        };
+    }
+
     public function __toString(): string
     {
         return $this->value()->value;
