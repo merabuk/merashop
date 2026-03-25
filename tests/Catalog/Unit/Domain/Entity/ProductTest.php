@@ -97,7 +97,7 @@ final class ProductTest extends TestCase
         self::assertEmpty($product->getImages());
     }
 
-    public function testUpdateChangesState(): void
+    public function testItUpdateChangesState(): void
     {
         $product = ProductMother::createWithData(
             sku: 'OLD-TEST-SKU',

@@ -98,7 +98,7 @@ final class CategoryTest extends TestCase
     }
 
     #[DataProvider('updateData')]
-    public function testUpdateChangesState(
+    public function testItUpdateChangesState(
         ?Slug $newSlug,
         ?CategoryStructureResult $structure,
     ): void {

@@ -6,11 +6,14 @@ namespace App\Tests\Catalog\Support;
 
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Entity\AttributeOption;
+use App\Catalog\Domain\Enum\Attribute\TypeEnum as AttributeTypeEnum;
 use App\Catalog\Domain\Factory\Contract\AttributeOptionFactoryInterface;
 use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\AttributeOption\ActiveFlag;
 use App\Catalog\Domain\ValueObject\AttributeOption\Code;
 use App\Catalog\Domain\ValueObject\AttributeOption\Id;
+use App\Catalog\Domain\ValueObject\AttributeOption\Metadata\AttributeOptionMetadataInterface;
+use App\Catalog\Domain\ValueObject\AttributeOption\Metadata\DimensionMetadata;
 use App\Catalog\Domain\ValueObject\AttributeOption\Translations;
 use App\Catalog\Domain\ValueObject\AttributeOption\Ulid;
 use App\Catalog\Domain\ValueObject\AttributeOption\Version;
@@ -43,6 +46,8 @@ final readonly class AttributeOptionMother
         ?int $version = null,
         ?string $createdByUlid = null,
         ?string $updatedByUlid = null,
+        ?AttributeTypeEnum $attributeType = null,
+        mixed $metadata = null,
         ?int $id = null,
     ): AttributeOption {
         return new AttributeOption(
@@ -52,6 +57,7 @@ final readonly class AttributeOptionMother
             isActive: ActiveFlag::fromBool($isActive ?? true),
             version: $version ? Version::fromInt($version) : Version::initial(),
             createdBy: AdminUlid::fromString($createdByUlid ?? self::DEFAULT_ADMIN_ULID),
+            metadata: self::makeFakeMetadata($attributeType, $metadata),
             updatedBy: $updatedByUlid ? AdminUlid::fromString($updatedByUlid) : null,
             id: $id ? Id::fromInt($id) : null,
         );
@@ -118,5 +124,15 @@ final readonly class AttributeOptionMother
     private static function makeTranslationItem(string $value): array
     {
         return ['value' => $value];
+    }
+
+    private static function makeFakeMetadata(
+        ?AttributeTypeEnum $attributeType,
+        mixed $metadata,
+    ): ?AttributeOptionMetadataInterface {
+        return match ($attributeType) {
+            AttributeTypeEnum::Dimension => DimensionMetadata::fromNullableFloat(is_float($metadata) ? $metadata : null),
+            default => null,
+        };
     }
 }
