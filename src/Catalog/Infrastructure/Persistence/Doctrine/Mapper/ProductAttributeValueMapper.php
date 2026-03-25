@@ -5,14 +5,7 @@ declare(strict_types=1);
 namespace App\Catalog\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\Catalog\Domain\Entity\ProductAttributeValue;
-use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
-use App\Catalog\Domain\Exception\AttributeOption\InvalidAttributeOptionIdException;
-use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeColorValueException;
-use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeDateValueException;
-use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeLocalizedStringValueException;
-use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeLocalizedTextValueException;
-use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeMagnitudeDimensionValueException;
-use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeValueIdException;
+use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
 use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
@@ -34,14 +27,7 @@ final readonly class ProductAttributeValueMapper
 
     /**
      * @throws EntityIdMissingException
-     * @throws InvalidAttributeIdException
-     * @throws InvalidAttributeOptionIdException
-     * @throws InvalidProductAttributeColorValueException
-     * @throws InvalidProductAttributeDateValueException
-     * @throws InvalidProductAttributeLocalizedStringValueException
-     * @throws InvalidProductAttributeLocalizedTextValueException
-     * @throws InvalidProductAttributeMagnitudeDimensionValueException
-     * @throws InvalidProductAttributeValueIdException
+     * @throws InvalidCatalogValueObjectException
      * @throws ProductAttributeValueStateException
      */
     public function toDomain(OrmProductAttributeValue $orm): ProductAttributeValue

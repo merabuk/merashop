@@ -100,6 +100,7 @@ final readonly class AttributeOptionMapper
                 $ormTranslation = new OrmAttributeOptionTranslation();
                 $ormTranslation->option = $orm;
                 $ormTranslation->locale = $locale;
+
                 $orm->translations->add($ormTranslation);
             }
 

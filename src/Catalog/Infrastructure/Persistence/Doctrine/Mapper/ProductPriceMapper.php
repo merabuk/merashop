@@ -48,8 +48,6 @@ final readonly class ProductPriceMapper
     public function mapToExistingOrm(ProductPrice $domain, OrmProductPrice $orm): void
     {
         $orm->amount = $domain->getPrice()->getAmount();
-        $orm->currency = $domain->getPrice()->getCurrency();
-        $orm->type = $domain->getType()->value();
         $orm->taxValue = (string) $domain->getTax()->getValue();
         $orm->taxType = $domain->getTax()->getType();
         $orm->taxIncluded = $domain->getTaxIncluded()->value();

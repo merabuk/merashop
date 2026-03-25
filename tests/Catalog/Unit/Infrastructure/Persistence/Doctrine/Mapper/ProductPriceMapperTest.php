@@ -62,15 +62,21 @@ final class ProductPriceMapperTest extends TestCase
 
     public function testMapToExistingOrm(): void
     {
-        $domain = ProductPriceMother::createWithData(type: TypeEnum::Sale, id: 123);
+        $domain = ProductPriceMother::createWithData(
+            currency: CurrencyEnum::USD,
+            type: TypeEnum::Sale,
+            id: 123
+        );
         $orm = new OrmProductPrice();
+        $orm->currency = CurrencyEnum::UAH;
+        $orm->type = TypeEnum::Regular;
 
         $this->mapper->mapToExistingOrm($domain, $orm);
 
         self::assertNull($orm->id);
         self::assertSame($domain->getPrice()->getAmount(), $orm->amount);
-        self::assertSame($domain->getPrice()->getCurrency(), $orm->currency);
-        self::assertSame($domain->getType()->value(), $orm->type);
+        self::assertSame(CurrencyEnum::UAH, $orm->currency);
+        self::assertSame(TypeEnum::Regular, $orm->type);
         self::assertSame((string) $domain->getTax()->getValue(), $orm->taxValue);
         self::assertSame($domain->getTax()->getType(), $orm->taxType);
         self::assertSame($domain->getTaxIncluded()->value(), $orm->taxIncluded);

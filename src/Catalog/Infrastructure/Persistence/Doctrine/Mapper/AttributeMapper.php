@@ -122,20 +122,21 @@ final readonly class AttributeMapper implements MapperInterface
     private function mapOptionsFromDomainToOrm(Attribute $domain, OrmAttribute $orm): void
     {
         $domainOptions = $domain->getOptions();
-        $currentOrmOptions = $orm->options->toArray();
 
-        foreach ($currentOrmOptions as $ormOption) {
-            $stillExists = $domainOptions->getByUlid($ormOption->ulid);
-            if (!$stillExists) {
+        $existingOrmOptions = [];
+
+        foreach ($orm->options as $o) {
+            $existingOrmOptions[$o->ulid] = $o;
+        }
+
+        foreach ($existingOrmOptions as $ulid => $ormOption) {
+            if (!$domainOptions->getByUlid($ulid)) {
                 $ormOption->isActive = false;
             }
         }
 
         foreach ($domainOptions as $do) {
-            $ormOption = array_find(
-                $currentOrmOptions,
-                fn (OrmAttributeOption $p) => $p->ulid === $do->getUlid()->value()
-            );
+            $ormOption = $existingOrmOptions[$do->getUlid()->value()] ?? null;
 
             if (!$ormOption) {
                 $ormOption = new OrmAttributeOption();
@@ -166,25 +167,29 @@ final readonly class AttributeMapper implements MapperInterface
     {
         $domainTranslations = $domain->getTranslations();
 
-        foreach ($orm->translations as $ormTranslation) {
-            if (null === $domainTranslations->get($ormTranslation->locale)) {
+        $existingOrmTranslations = [];
+        foreach ($orm->translations as $t) {
+            $existingOrmTranslations[$t->locale] = $t;
+        }
+
+        foreach ($existingOrmTranslations as $locale => $ormTranslation) {
+            if (!$domainTranslations->has($locale)) {
                 $orm->translations->removeElement($ormTranslation);
             }
         }
 
-        foreach ($domainTranslations as $locale => $translation) {
-            $existing = $orm->translations->filter(fn (OrmAttributeTranslation $t) => $t->locale === $locale)->first();
+        foreach ($domainTranslations as $locale => $domainTranslation) {
+            $ormTranslation = $existingOrmTranslations[$locale] ?? null;
 
-            if ($existing) {
-                $existing->name = $translation->name;
-            } else {
-                $newOrmTranslation = new OrmAttributeTranslation();
-                $newOrmTranslation->attribute = $orm;
-                $newOrmTranslation->locale = $locale;
-                $newOrmTranslation->name = $translation->name;
+            if (!$ormTranslation) {
+                $ormTranslation = new OrmAttributeTranslation();
+                $ormTranslation->attribute = $orm;
+                $ormTranslation->locale = $locale;
 
-                $orm->translations->add($newOrmTranslation);
+                $orm->translations->add($ormTranslation);
             }
+
+            $ormTranslation->name = $domainTranslation->name;
         }
     }
 }

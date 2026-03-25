@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Catalog\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\Catalog\Domain\Entity\Product;
+use App\Catalog\Domain\Enum\ProductPrice\TypeEnum;
 use App\Catalog\Domain\Exception\Category\InvalidCategoryIdException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Exception\Product\InvalidProductCategoryIdItemException;
@@ -29,6 +30,7 @@ use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductAttributeVa
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductImage;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductPrice;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductTranslation;
+use App\Shared\Domain\Enum\CurrencyEnum;
 use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
@@ -147,29 +149,44 @@ final readonly class ProductMapper implements MapperInterface
     private function mapPricesFromDomainToOrm(Product $domain, OrmProduct $orm): void
     {
         $domainPrices = $domain->getPrices();
-        $currentOrmPrices = $orm->prices->toArray();
 
-        foreach ($currentOrmPrices as $ormPrice) {
+        $existingOrmPrices = [];
+        foreach ($orm->prices as $ormPrice) {
+            $existingOrmPrices[$this->getPriceKey(
+                currency: $ormPrice->currency,
+                type: $ormPrice->type,
+            )] = $ormPrice;
+        }
+
+        foreach ($existingOrmPrices as $ormPrice) {
             $stillExists = $domainPrices->getByCurrencyAndType($ormPrice->currency, $ormPrice->type);
-
             if (!$stillExists) {
                 $orm->prices->removeElement($ormPrice);
             }
         }
 
         foreach ($domainPrices as $dp) {
-            $ormProductPrice = array_find($currentOrmPrices, fn (OrmProductPrice $p) => $p->type === $dp->getType()->value()
-                && $p->currency === $dp->getPrice()->getCurrency()
-            );
+            $ormProductPrice = $existingOrmPrices[$this->getPriceKey(
+                currency: $dp->getPrice()->getCurrency(),
+                type: $dp->getType()->value(),
+            )] ?? null;
 
             if (!$ormProductPrice) {
                 $ormProductPrice = new OrmProductPrice();
                 $ormProductPrice->product = $orm;
+                $ormProductPrice->type = $dp->getType()->value();
+                $ormProductPrice->currency = $dp->getPrice()->getCurrency();
+
                 $orm->prices->add($ormProductPrice);
             }
 
             $this->productPriceMapper->mapToExistingOrm($dp, $ormProductPrice);
         }
+    }
+
+    private function getPriceKey(CurrencyEnum $currency, TypeEnum $type): string
+    {
+        return sprintf('%s_%s', $currency->value, $type->value);
     }
 
     /**
@@ -190,15 +207,21 @@ final readonly class ProductMapper implements MapperInterface
     {
         $domainCategoryIds = array_map(fn (CategoryId $id) => $id->value(), $domain->getCategoryIds()->all());
 
-        $check = array_combine($domainCategoryIds, $domainCategoryIds);
+        $check = [] !== $domainCategoryIds ? array_combine($domainCategoryIds, $domainCategoryIds) : [];
+
+        $existingOrmCategories = [];
         foreach ($orm->categories as $ormCategory) {
-            if (!isset($check[$ormCategory->id])) {
+            $existingOrmCategories[$ormCategory->id] = $ormCategory;
+        }
+
+        foreach ($existingOrmCategories as $id => $ormCategory) {
+            if (!isset($check[$id])) {
                 $orm->categories->removeElement($ormCategory);
             }
         }
 
         foreach ($domainCategoryIds as $id) {
-            $exists = $orm->categories->exists(fn (mixed $key, OrmCategory $c) => $c->id === $id);
+            $exists = $existingOrmCategories[$id] ?? null;
             if (!$exists) {
                 $orm->categories->add($this->referenceProvider->getReference(className: OrmCategory::class, id: $id));
             }
@@ -226,27 +249,30 @@ final readonly class ProductMapper implements MapperInterface
     {
         $domainTranslations = $domain->getTranslations();
 
-        foreach ($orm->translations as $ormTranslation) {
-            if (null === $domainTranslations->get($ormTranslation->locale)) {
+        $existingOrmTranslations = [];
+        foreach ($orm->translations as $t) {
+            $existingOrmTranslations[$t->locale] = $t;
+        }
+
+        foreach ($existingOrmTranslations as $locale => $ormTranslation) {
+            if (!$domainTranslations->has($locale)) {
                 $orm->translations->removeElement($ormTranslation);
             }
         }
 
         foreach ($domainTranslations as $locale => $translation) {
-            $existing = $orm->translations->filter(fn (OrmProductTranslation $t) => $t->locale === $locale)->first();
+            $ormTranslation = $existingOrmTranslations[$locale] ?? null;
 
-            if ($existing) {
-                $existing->name = $translation->name;
-                $existing->description = $translation->description;
-            } else {
+            if (!$ormTranslation) {
                 $ormTranslation = new OrmProductTranslation();
                 $ormTranslation->product = $orm;
                 $ormTranslation->locale = $locale;
-                $ormTranslation->name = $translation->name;
-                $ormTranslation->description = $translation->description;
 
                 $orm->translations->add($ormTranslation);
             }
+
+            $ormTranslation->name = $translation->name;
+            $ormTranslation->description = $translation->description;
         }
     }
 
@@ -268,20 +294,20 @@ final readonly class ProductMapper implements MapperInterface
     private function mapAttributeValuesFromDomainToOrm(Product $domain, OrmProduct $orm): void
     {
         $domainValues = $domain->getAttributeValues();
-        $currentOrmValues = $orm->attributeValues->toArray();
 
-        foreach ($currentOrmValues as $ormValue) {
-            $stillExists = $domainValues->getByAttributeId($ormValue->attribute->id);
-            if (!$stillExists) {
+        $existingOrmValues = [];
+        foreach ($orm->attributeValues as $ormValue) {
+            $existingOrmValues[$ormValue->attribute->id] = $ormValue;
+        }
+
+        foreach ($existingOrmValues as $attributeId => $ormValue) {
+            if (!$domainValues->getByAttributeId($attributeId)) {
                 $orm->attributeValues->removeElement($ormValue);
             }
         }
 
         foreach ($domainValues as $dv) {
-            $ormValue = array_find(
-                $currentOrmValues,
-                fn (OrmProductAttributeValue $p) => $p->attribute->id === $dv->getAttributeId()->value()
-            );
+            $ormValue = $existingOrmValues[$dv->getAttributeId()->value()] ?? null;
 
             if (!$ormValue) {
                 $ormValue = new OrmProductAttributeValue();
@@ -316,21 +342,20 @@ final readonly class ProductMapper implements MapperInterface
     private function mapImagesFromDomainToOrm(Product $domain, OrmProduct $orm): void
     {
         $domainImages = $domain->getImages();
-        $currentOrmImages = $orm->images->toArray();
 
-        foreach ($currentOrmImages as $ormImage) {
-            $stillExists = $domainImages->getByUlid($ormImage->ulid);
-            if (!$stillExists) {
+        $existingOrmImages = [];
+        foreach ($orm->images as $ormImage) {
+            $existingOrmImages[$ormImage->ulid] = $ormImage;
+        }
+
+        foreach ($existingOrmImages as $ulid => $ormImage) {
+            if (!$domainImages->getByUlid($ulid)) {
                 $orm->images->removeElement($ormImage);
             }
         }
 
         foreach ($domainImages as $di) {
-            $ormImage = array_find(
-                $currentOrmImages,
-                fn (OrmProductImage $p) => $p->ulid === $di->getUlid()->value()
-            );
-
+            $ormImage = $existingOrmImages[$di->getUlid()->value()] ?? null;
             if (!$ormImage) {
                 $ormImage = new OrmProductImage();
                 $ormImage->product = $orm;
