@@ -6,19 +6,24 @@ namespace App\Tests\Catalog\Integration\Infrastructure\Persistence\Doctrine\Mapp
 
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
+use App\Catalog\Domain\ValueObject\AttributeOption\Metadata\DimensionMetadata;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttribute;
+use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttributeOptionTranslation;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttributeTranslation;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Mapper\AttributeMapper;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Mapper\AttributeOptionMapper;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Normalizer\AttributeOptionMetadataNormalizer;
 use App\Tests\Catalog\Support\AttributeMother;
+use App\Tests\Catalog\Support\Traits\AttributeFactoryTrait;
 use App\Tests\Catalog\Support\Traits\CatalogEntityManagerTrait;
 use App\Tests\Shared\Support\Traits\ValueObjectAssertionTrait;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 final class AttributeMapperTest extends KernelTestCase
 {
+    use AttributeFactoryTrait;
     use CatalogEntityManagerTrait;
     use ValueObjectAssertionTrait;
 
@@ -37,9 +42,10 @@ final class AttributeMapperTest extends KernelTestCase
         );
     }
 
-    public function testItSuccessfullyPerformsRoundTrip(): void
+    #[DataProvider('attributeDataProvider')]
+    public function testItSuccessfullyPerformsRoundTrip(TypeEnum $type): void
     {
-        $domainAttribute = AttributeMother::createWithData();
+        $domainAttribute = $this->getAttributeMother()->create(type: $type);
 
         $ormAttribute = $this->mapper->toDoctrineOrm($domainAttribute);
 
@@ -50,6 +56,7 @@ final class AttributeMapperTest extends KernelTestCase
         $this->assertOrmTranslationsMatch($domainAttribute, $ormAttribute);
         self::assertSame($domainAttribute->getVersion()->value(), $ormAttribute->version);
         self::assertSame($domainAttribute->getCreatedBy()->value(), $ormAttribute->createdBy);
+        $this->assertOrmOptionsMatch($domainAttribute, $ormAttribute);
         self::assertSame($domainAttribute->getUpdatedBy()?->value(), $ormAttribute->updatedBy);
 
         $this->em->persist($ormAttribute);
@@ -69,14 +76,17 @@ final class AttributeMapperTest extends KernelTestCase
         self::assertTrue($domainAttribute->getUlid()->equals($restoredDomain->getUlid()));
         self::assertTrue($domainAttribute->getCode()->equals($restoredDomain->getCode()));
         self::assertTrue($domainAttribute->getType()->equals($restoredDomain->getType()));
-        self::assertCount($domainAttribute->getTranslations()->count(), $restoredDomain->getTranslations());
-        foreach ($domainAttribute->getTranslations() as $locale => $translation) {
-            $restoredTranslation = $restoredDomain->getTranslations()->get($locale);
-            self::assertNotNull($restoredTranslation);
-            self::assertSame($translation->name, $restoredTranslation->name);
-        }
+        self::assertTrue($domainAttribute->getTranslations()->equals($restoredDomain->getTranslations()));
         self::assertTrue($domainAttribute->getCreatedBy()->equals($restoredDomain->getCreatedBy()));
+        $this->assertRestoredOptionsMatch($domainAttribute, $restoredDomain);
         $this->assertVoEqualsOrNull($domainAttribute->getUpdatedBy(), $restoredDomain->getUpdatedBy());
+    }
+
+    public static function attributeDataProvider(): iterable
+    {
+        yield 'without metadata and options' => [TypeEnum::String];
+        yield 'with options and no metadata' => [TypeEnum::MultiSelect];
+        yield 'with metadata and option' => [TypeEnum::Dimension];
     }
 
     public function testItUpdatesExistingOrmEntity(): void
@@ -114,13 +124,74 @@ final class AttributeMapperTest extends KernelTestCase
     {
         self::assertCount($domain->getTranslations()->count(), $orm->translations);
 
+        $ormTranslations = [];
+        foreach ($orm->translations as $ormT) {
+            $ormTranslations[$ormT->locale] = $ormT;
+        }
+
         foreach ($domain->getTranslations() as $locale => $domainTranslation) {
-            $ormTranslation = $orm->translations->filter(
-                fn (OrmAttributeTranslation $t) => $t->locale === $locale
-            )->first();
+            $ormTranslation = $ormTranslations[$locale] ?? null;
 
             self::assertNotNull($ormTranslation, sprintf('Translation for %s locale not found in ORM', $locale));
             self::assertSame($domainTranslation->name, $ormTranslation->name);
+        }
+    }
+
+    private function assertOrmOptionsMatch(Attribute $domain, OrmAttribute $orm): void
+    {
+        self::assertCount($domain->getOptions()->count(), $orm->options);
+
+        $ormOptions = [];
+        foreach ($orm->options as $ormOption) {
+            $ormOptions[$ormOption->ulid] = $ormOption;
+        }
+
+        foreach ($domain->getOptions() as $domainOption) {
+            $ormOption = $ormOptions[$domainOption->getUlid()->value()] ?? null;
+
+            self::assertNotNull($ormOption, sprintf('Option with ulid %s not found in ORM', $domainOption->getUlid()));
+            self::assertNull($ormOption->id);
+            self::assertSame($domainOption->getCode()->value(), $ormOption->code);
+            self::assertCount($domainOption->getTranslations()->count(), $ormOption->translations);
+            foreach ($domainOption->getTranslations() as $locale => $domainTranslation) {
+                $ormTranslation = $ormOption->translations->filter(
+                    fn (OrmAttributeOptionTranslation $t) => $t->locale === $locale
+                )->first();
+
+                self::assertNotNull($ormTranslation, sprintf('Translation for %s locale not found in ORM', $locale));
+                self::assertSame($domainTranslation->value, $ormTranslation->value);
+            }
+            self::assertSame($domainOption->isActive()->value(), $ormOption->isActive);
+            self::assertSame($domainOption->getVersion()->value(), $ormOption->version);
+            self::assertSame($domainOption->getCreatedBy()->value(), $ormOption->createdBy);
+            if ($domain->getType()->is(TypeEnum::Dimension)) {
+                self::assertNotNull($ormOption->valueJson);
+                $domainMetadata = $domainOption->getMetadata();
+                self::assertNotNull($domainMetadata);
+                self::assertInstanceOf(DimensionMetadata::class, $domainMetadata);
+                self::assertSame(['base_ratio' => $domainMetadata->getBaseRatio()], $ormOption->valueJson);
+            } else {
+                self::assertNull($ormOption->valueJson);
+            }
+            self::assertSame($domainOption->getUpdatedBy()?->value(), $ormOption->updatedBy);
+        }
+    }
+
+    private function assertRestoredOptionsMatch(Attribute $domain, Attribute $restored): void
+    {
+        self::assertCount($domain->getOptions()->count(), $restored->getOptions());
+
+        foreach ($domain->getOptions() as $domainOption) {
+            $restoredOption = $restored->getOptions()->getByUlid($domainOption->getUlid());
+            self::assertNotNull($restoredOption);
+            self::assertNotNull($restoredOption->getId());
+            self::assertTrue($domainOption->getCode()->equals($restoredOption->getCode()));
+            self::assertTrue($domainOption->getTranslations()->equals($restoredOption->getTranslations()));
+            self::assertTrue($domainOption->isActive()->equals($restoredOption->isActive()));
+            self::assertTrue($domainOption->getVersion()->equals($restoredOption->getVersion()));
+            self::assertTrue($domainOption->getCreatedBy()->equals($restoredOption->getCreatedBy()));
+            $this->assertVoEqualsOrNull($domainOption->getMetadata(), $restoredOption->getMetadata());
+            $this->assertVoEqualsOrNull($domainOption->getUpdatedBy(), $restoredOption->getUpdatedBy());
         }
     }
 }

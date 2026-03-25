@@ -72,6 +72,8 @@ final readonly class AttributeOptionMother
         ?array $translations = null,
         ?bool $isActive = null,
         ?string $createdByUlid = null,
+        ?AttributeTypeEnum $attributeType = null,
+        mixed $metadata = null,
     ): AttributeOption {
         return $this->attributeOptionFactory->createForTest(
             ulid: $ulid ?? $this->ulidGenerator->next(),
@@ -79,6 +81,7 @@ final readonly class AttributeOptionMother
             translations: $translations ?? $this->makeTranslations(),
             isActive: $isActive ?? $this->faker->boolean(),
             createdByUlid: $createdByUlid ?? $this->ulidGenerator->next(),
+            metadata: $this->makeMetadata($attributeType, $metadata),
         );
     }
 
@@ -126,12 +129,26 @@ final readonly class AttributeOptionMother
         return ['value' => $value];
     }
 
+    private function makeMetadata(
+        ?AttributeTypeEnum $attributeType,
+        mixed $metadata,
+    ): ?AttributeOptionMetadataInterface {
+        return match ($attributeType) {
+            AttributeTypeEnum::Dimension => DimensionMetadata::fromFloat(
+                (float) ($metadata ?? $this->faker->randomFloat(2, 0, 100))
+            ),
+            default => null,
+        };
+    }
+
     private static function makeFakeMetadata(
         ?AttributeTypeEnum $attributeType,
         mixed $metadata,
     ): ?AttributeOptionMetadataInterface {
         return match ($attributeType) {
-            AttributeTypeEnum::Dimension => DimensionMetadata::fromNullableFloat(is_float($metadata) ? $metadata : null),
+            AttributeTypeEnum::Dimension => DimensionMetadata::fromNullableFloat(
+                is_float($metadata) ? $metadata : null
+            ),
             default => null,
         };
     }

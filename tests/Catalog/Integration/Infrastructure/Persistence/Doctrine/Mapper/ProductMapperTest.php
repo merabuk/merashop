@@ -208,6 +208,8 @@ final class ProductMapperTest extends KernelTestCase
 
     private function assertRestoredPricesMatch(Product $domain, Product $restored): void
     {
+        self::assertCount($domain->getPrices()->count(), $restored->getPrices());
+
         foreach ($domain->getPrices() as $domainPrice) {
             $restoredPrice = $restored->getPrices()->getByCurrencyAndType(
                 currency: $domainPrice->getPrice()->getCurrency(),
@@ -261,6 +263,8 @@ final class ProductMapperTest extends KernelTestCase
 
     private function assertRestoredAttributeValuesMatch(Product $domain, Product $restored): void
     {
+        self::assertCount($domain->getAttributeValues()->count(), $restored->getAttributeValues());
+
         foreach ($domain->getAttributeValues() as $domainAttributeValue) {
             $restoredAttributeValue = $restored->getAttributeValues()->getByAttributeId($domainAttributeValue->getAttributeId());
             self::assertNotNull($restoredAttributeValue);
@@ -287,6 +291,8 @@ final class ProductMapperTest extends KernelTestCase
 
     private function assertRestoredImagesMatch(Product $domain, Product $restored): void
     {
+        self::assertCount($domain->getImages()->count(), $restored->getImages());
+
         foreach ($domain->getImages() as $domainImage) {
             $restoredImage = $restored->getImages()->getByUlid($domainImage->getUlid());
             self::assertNotNull($restoredImage);

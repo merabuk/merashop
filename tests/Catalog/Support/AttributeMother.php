@@ -138,14 +138,21 @@ final readonly class AttributeMother
 
     private function makeOptions(TypeEnum $type): array
     {
-        if (TypeEnum::Select !== $type && TypeEnum::MultiSelect !== $type) {
+        $optionCount = match ($type) {
+            TypeEnum::Dimension => 1,
+            TypeEnum::Select,
+            TypeEnum::MultiSelect => 3,
+            default => 0,
+        };
+
+        if (0 === $optionCount) {
             return [];
         }
 
         $options = [];
 
-        for ($i = 0; $i < 3; ++$i) {
-            $options[] = $this->attributeOptionMother->create();
+        for ($i = 0; $i < $optionCount; ++$i) {
+            $options[] = $this->attributeOptionMother->create(attributeType: $type);
         }
 
         return $options;

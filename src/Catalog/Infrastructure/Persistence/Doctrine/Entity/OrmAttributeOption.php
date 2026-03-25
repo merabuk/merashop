@@ -47,7 +47,7 @@ class OrmAttributeOption
      */
     #[ORM\OneToMany(
         targetEntity: OrmAttributeOptionTranslation::class,
-        mappedBy: 'attribute',
+        mappedBy: 'option',
         cascade: ['persist', 'remove'],
         orphanRemoval: true
     )]

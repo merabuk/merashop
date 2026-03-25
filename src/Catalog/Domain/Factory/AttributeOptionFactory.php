@@ -14,6 +14,7 @@ use App\Catalog\Domain\Factory\Contract\AttributeOptionFactoryInterface;
 use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\AttributeOption\ActiveFlag;
 use App\Catalog\Domain\ValueObject\AttributeOption\Code;
+use App\Catalog\Domain\ValueObject\AttributeOption\Metadata\AttributeOptionMetadataInterface;
 use App\Catalog\Domain\ValueObject\AttributeOption\Translations;
 use App\Catalog\Domain\ValueObject\AttributeOption\Ulid;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
@@ -36,6 +37,7 @@ final readonly class AttributeOptionFactory implements AttributeOptionFactoryInt
         array $translations,
         bool $isActive,
         string $createdByUlid,
+        ?AttributeOptionMetadataInterface $metadata = null,
     ): AttributeOption {
         return AttributeOption::create(
             ulid: Ulid::fromString($ulid),
@@ -43,6 +45,7 @@ final readonly class AttributeOptionFactory implements AttributeOptionFactoryInt
             translations: Translations::fromArray($translations),
             isActive: ActiveFlag::fromBool($isActive),
             createdBy: AdminUlid::fromString($createdByUlid),
+            metadata: $metadata,
         );
     }
 }

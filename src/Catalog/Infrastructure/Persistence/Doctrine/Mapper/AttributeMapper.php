@@ -53,6 +53,7 @@ final readonly class AttributeMapper implements MapperInterface
         $orm->updatedBy = $domain->getUpdatedBy()?->value();
 
         $this->mapTranslationsFromDomainToOrm($domain, $orm);
+        $this->mapOptionsFromDomainToOrm($domain, $orm);
 
         return $orm;
     }
@@ -141,6 +142,9 @@ final readonly class AttributeMapper implements MapperInterface
             if (!$ormOption) {
                 $ormOption = new OrmAttributeOption();
                 $ormOption->attribute = $orm;
+                $ormOption->ulid = $do->getUlid()->value();
+                $ormOption->version = $do->getVersion()->value();
+                $ormOption->createdBy = $do->getCreatedBy()->value();
 
                 $orm->options->add($ormOption);
             }
