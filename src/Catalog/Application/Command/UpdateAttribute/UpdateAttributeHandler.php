@@ -46,6 +46,7 @@ readonly class UpdateAttributeHandler implements CommandHandlerInterface
             $newCode = Code::fromString($command->code);
             $newType = Type::fromString($command->type);
 
+            // TODO: add validation for options
             $this->attributeValidator->validateUpdate(
                 attribute: $attribute,
                 version: $command->version,

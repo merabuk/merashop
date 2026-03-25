@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace App\Catalog\Presentation\Http\AdminApiVersion1\Request\Attribute;
 
+use App\Catalog\Application\DTO\Attribute\AttributeOptionData;
+use App\Catalog\Application\DTO\Attribute\AttributeOptionTranslationData;
+use App\Catalog\Application\DTO\Attribute\AttributeTranslationData;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Shared\Presentation\Http\Request\ValidateLocalesTrait;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\GroupSequenceProviderInterface;
 
 #[Assert\GroupSequenceProvider]
@@ -35,6 +39,41 @@ abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
     #[Assert\Count(min: 1, minMessage: 'shared.common.translations_empty')]
     #[Assert\Valid]
     public ?array $translations;
+
+    /**
+     * @var ?AttributeOptionRequest[] $options
+     */
+    #[Assert\NotBlank]
+    #[Assert\Count(min: 1, minMessage: 'catalog.attribute.options_empty', groups: [
+        TypeEnum::Select->value,
+        TypeEnum::MultiSelect->value,
+        TypeEnum::Dimension->value,
+    ])]
+    #[Assert\Valid]
+    public ?array $options;
+
+    #[Assert\Callback]
+    public function validateUniqueOptions(ExecutionContextInterface $context): void
+    {
+        if (!isset($this->options)) {
+            return;
+        }
+
+        $registry = [];
+        foreach ($this->options as $index => $option) {
+            if (!isset($option->code)) {
+                continue;
+            }
+
+            if (isset($registry[$option->code])) {
+                $context->buildViolation('catalog.attribute.option_code_duplicate')
+                    ->atPath("options[{$index}]")
+                    ->addViolation();
+            }
+
+            $registry[$option->code] = true;
+        }
+    }
 
     public function getGroupSequence(): array
     {
@@ -80,5 +119,30 @@ abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
     protected function getRequestTranslationKey(): string
     {
         return 'translations';
+    }
+
+    /**
+     * @return AttributeTranslationData[]
+     */
+    protected function mapAndGetTranslations(): array
+    {
+        return array_map(fn (AttributeTranslationRequest $t) => new AttributeTranslationData(
+            name: $t->name,
+        ), $this->translations);
+    }
+
+    /**
+     * @return AttributeOptionData[]
+     */
+    protected function mapAndGetOptions(): array
+    {
+        return array_map(fn (AttributeOptionRequest $o) => new AttributeOptionData(
+            code: $o->code,
+            translations: array_map(fn (AttributeOptionTranslationRequest $t) => new AttributeOptionTranslationData(
+                value: $t->value,
+            ), $o->translations),
+            isActive: $o->isActive,
+            baseRatio: $o->baseRatio,
+        ), $this->options);
     }
 }

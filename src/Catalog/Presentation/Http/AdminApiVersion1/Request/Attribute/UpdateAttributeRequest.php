@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Catalog\Presentation\Http\AdminApiVersion1\Request\Attribute;
 
 use App\Catalog\Application\Command\UpdateAttribute\UpdateAttributeCommand;
-use App\Catalog\Application\DTO\Attribute\AttributeTranslationData;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class UpdateAttributeRequest extends BaseAttributeRequest
@@ -20,9 +19,8 @@ class UpdateAttributeRequest extends BaseAttributeRequest
             id: $id,
             code: $this->code,
             type: $this->type,
-            translations: array_map(fn (AttributeTranslationRequest $t) => new AttributeTranslationData(
-                name: $t->name,
-            ), $this->translations),
+            translations: $this->mapAndGetTranslations(),
+            options: $this->mapAndGetOptions(),
             version: $this->version,
             adminUlid: $adminUlid,
         );

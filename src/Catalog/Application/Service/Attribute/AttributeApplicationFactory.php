@@ -69,6 +69,7 @@ final readonly class AttributeApplicationFactory implements AttributeApplication
      */
     public function updateFromCommand(Attribute $attribute, UpdateAttributeCommand $command): void
     {
+        // TODO: add options update
         $attribute->update(
             code: AttributeCode::fromString($command->code),
             translations: $this->mapAttributeTranslations($command->translations),

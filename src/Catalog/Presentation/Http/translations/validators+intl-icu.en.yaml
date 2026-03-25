@@ -1,6 +1,8 @@
 catalog:
   attribute:
     type_invalid: "The selected attribute type is invalid. Allowed values are: {choices}"
+    options_empty: "Attribute options cannot be empty"
+    option_code_duplicate: "Attribute option code must be unique for the attribute"
   category:
     status_invalid: "The selected category status is invalid. Allowed values are: {choices}"
   product:
