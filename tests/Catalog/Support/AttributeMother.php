@@ -153,7 +153,14 @@ final readonly class AttributeMother
 
     private static function makeFakeOptions(TypeEnum $type): array
     {
-        if (TypeEnum::Select !== $type && TypeEnum::MultiSelect !== $type) {
+        $optionCount = match ($type) {
+            TypeEnum::Dimension => 1,
+            TypeEnum::Select,
+            TypeEnum::MultiSelect => 3,
+            default => 0,
+        };
+
+        if (0 === $optionCount) {
             return [];
         }
 
@@ -174,10 +181,10 @@ final readonly class AttributeMother
 
         $options = [];
 
-        foreach ($data as $option) {
+        for ($i = 0; $i < $optionCount; ++$i) {
             $options[] = AttributeOptionMother::createWithData(
-                ulid: $option['ulid'],
-                code: $option['code'],
+                ulid: $data[$i]['ulid'],
+                code: $data[$i]['code'],
             );
         }
 
