@@ -109,8 +109,14 @@ final class CreateAttributeHandlerTest extends TestCase
                 $typeCorrect = $attribute->getType()->equals($updatedAttribute->getType());
                 $translationsCorrect = $attribute->getTranslations()->equals($updatedAttribute->getTranslations());
                 $createdByCorrect = $attribute->getCreatedBy()->equals($updatedAttribute->getCreatedBy());
+                $optionsCorrect = $attribute->getOptions()->equals($updatedAttribute->getOptions());
 
-                return $ulidCorrect && $codeCorrect && $typeCorrect && $translationsCorrect && $createdByCorrect;
+                return $ulidCorrect
+                    && $codeCorrect
+                    && $typeCorrect
+                    && $translationsCorrect
+                    && $createdByCorrect
+                    && $optionsCorrect;
             }))
             ->willReturn($attribute);
     }

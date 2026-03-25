@@ -20,13 +20,17 @@ final readonly class AttributeOptionMetadataNormalizer
      */
     public function denormalize(Type $type, ?array $data): ?AttributeOptionMetadataInterface
     {
-        if (null === $data || !$type->hasOptionMetadata()) {
+        if (!$type->hasOptionMetadata()) {
             return null;
         }
 
+        // TODO[logging]: think about to add logging on data is null
+
+        $safeData = $data ?? [];
+
         return match ($type->value()) {
-            TypeEnum::Dimension => DimensionMetadata::fromFloat((float) ($data['base_ratio'] ?? DimensionMetadata::BASE_RATIO)),
-            default => throw new InvalidArgumentException(sprintf('Normalization for type %s not implemented', $type->value()->value)),
+            TypeEnum::Dimension => DimensionMetadata::fromFloat((float) ($safeData['base_ratio'] ?? DimensionMetadata::BASE_RATIO)),
+            default => throw new InvalidArgumentException(sprintf('Denormalization logic for type "%s" is missing in normalizer', $type)),
         };
     }
 
@@ -41,7 +45,7 @@ final readonly class AttributeOptionMetadataNormalizer
 
         return match (true) {
             $vo instanceof DimensionMetadata => ['base_ratio' => $vo->getBaseRatio()],
-            default => throw new InvalidArgumentException(sprintf('Denormalization for %s not implemented', get_debug_type($vo))),
+            default => throw new InvalidArgumentException(sprintf('Normalization logic for class "%s" is missing in normalizer', get_debug_type($vo))),
         };
     }
 }

@@ -82,25 +82,28 @@ final readonly class AttributeOptionMapper
     {
         $domainTranslations = $domain->getTranslations();
 
-        foreach ($orm->translations as $ormTranslation) {
-            if (null === $domainTranslations->get($ormTranslation->locale)) {
+        $existingOrmTranslations = [];
+        foreach ($orm->translations as $t) {
+            $existingOrmTranslations[$t->locale] = $t;
+        }
+
+        foreach ($existingOrmTranslations as $locale => $ormTranslation) {
+            if (!$domainTranslations->has($locale)) {
                 $orm->translations->removeElement($ormTranslation);
             }
         }
 
-        foreach ($domainTranslations as $locale => $translation) {
-            $existing = $orm->translations->filter(fn (OrmAttributeOptionTranslation $t) => $t->locale === $locale)->first();
+        foreach ($domainTranslations as $locale => $domainTranslation) {
+            $ormTranslation = $existingOrmTranslations[$locale] ?? null;
 
-            if ($existing) {
-                $existing->value = $translation->value;
-            } else {
+            if (!$ormTranslation) {
                 $ormTranslation = new OrmAttributeOptionTranslation();
                 $ormTranslation->option = $orm;
                 $ormTranslation->locale = $locale;
-                $ormTranslation->value = $translation->value;
-
                 $orm->translations->add($ormTranslation);
             }
+
+            $ormTranslation->value = $domainTranslation->value;
         }
     }
 }

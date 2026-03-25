@@ -9,6 +9,8 @@ use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttribute;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttributeTranslation;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Mapper\AttributeMapper;
+use App\Catalog\Infrastructure\Persistence\Doctrine\Mapper\AttributeOptionMapper;
+use App\Catalog\Infrastructure\Persistence\Doctrine\Normalizer\AttributeOptionMetadataNormalizer;
 use App\Tests\Catalog\Support\AttributeMother;
 use App\Tests\Catalog\Support\Traits\CatalogEntityManagerTrait;
 use App\Tests\Shared\Support\Traits\ValueObjectAssertionTrait;
@@ -28,7 +30,11 @@ final class AttributeMapperTest extends KernelTestCase
         self::bootKernel();
 
         $this->em = $this->getCatalogEntityManager();
-        $this->mapper = new AttributeMapper();
+        $this->mapper = new AttributeMapper(
+            attributeOptionMapper: new AttributeOptionMapper(
+                normalizer: new AttributeOptionMetadataNormalizer(),
+            ),
+        );
     }
 
     public function testItSuccessfullyPerformsRoundTrip(): void

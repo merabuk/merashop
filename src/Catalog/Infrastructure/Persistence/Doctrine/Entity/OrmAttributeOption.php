@@ -7,6 +7,7 @@ namespace App\Catalog\Infrastructure\Persistence\Doctrine\Entity;
 use App\Catalog\Domain\ValueObject\AttributeOption\ActiveFlag;
 use App\Catalog\Domain\ValueObject\AttributeOption\Code;
 use App\Shared\Infrastructure\Persistence\Doctrine\Entity\Traits\TimestampableEntityTrait;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint\ReferentialAction;
 use Doctrine\DBAL\Types\Types;
@@ -70,4 +71,14 @@ class OrmAttributeOption
 
     #[ORM\Column(type: UlidType::NAME, nullable: true)]
     public ?string $updatedBy = null;
+
+    public function __construct()
+    {
+        $this->translations = new ArrayCollection();
+    }
+
+    public function setId(?int $value): void
+    {
+        $this->id = $value;
+    }
 }

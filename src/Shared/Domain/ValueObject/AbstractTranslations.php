@@ -35,6 +35,11 @@ abstract readonly class AbstractTranslations implements Countable, EquatableInte
         $this->items = $items;
     }
 
+    public function has(string $locale): bool
+    {
+        return isset($this->items[$locale]);
+    }
+
     /**
      * @return ?T
      */
