@@ -53,7 +53,7 @@ final readonly class ProductAttributeValueNormalizer
                 magnitude: (float) ($data['magnitude'] ?? 0),
                 unit: $optionId ?? throw new InvalidArgumentException('Dimension unit option id is required'),
             ),
-            default => throw new InvalidArgumentException(sprintf('Normalization for type %s not implemented', $type->value)),
+            default => throw new InvalidArgumentException(sprintf('Denormalization logic for type "%s" is missing in normalizer', $type->value)),
         };
     }
 
@@ -82,7 +82,7 @@ final readonly class ProductAttributeValueNormalizer
                 'magnitude' => $vo->magnitude(),
             ],
 
-            default => throw new InvalidArgumentException(sprintf('Denormalization for %s not implemented', get_debug_type($vo))),
+            default => throw new InvalidArgumentException(sprintf('Normalization logic for class "%s" is missing in normalizer', get_debug_type($vo))),
         };
     }
 }
