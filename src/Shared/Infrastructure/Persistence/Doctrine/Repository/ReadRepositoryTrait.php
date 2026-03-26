@@ -22,16 +22,16 @@ trait ReadRepositoryTrait
     /**
      * @param Criterion[] $criteria
      */
-    protected function _existsBy(array $criteria): bool
+    protected function _existsBy(array $criteria, string $alias = 'e'): bool
     {
-        $qb = $this->createQueryBuilder('e')->select('1');
+        $qb = $this->createQueryBuilder($alias)->select('1');
 
         foreach ($criteria as $index => $criteriaItem) {
             $field = $criteriaItem->field;
             $operator = $criteriaItem->operator->value;
             $paramName = $field.$index;
 
-            $qb->andWhere("e.{$field} {$operator} :{$paramName}")
+            $qb->andWhere("{$alias}.{$field} {$operator} :{$paramName}")
                 ->setParameter(key: $paramName, value: $criteriaItem->value, type: $criteriaItem->type);
         }
 
@@ -100,6 +100,19 @@ trait ReadRepositoryTrait
         }
     }
 
+    protected function _findById(
+        IdInterface $id,
+        string $alias = 'e',
+        ?QueryBuilder $qb = null,
+    ): ?object {
+        $qb ??= $this->createQueryBuilder($alias);
+
+        return $qb->where("{$alias}.id = :id")
+            ->setParameter('id', $id->value())
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     /**
      * @template T
      *
@@ -127,6 +140,19 @@ trait ReadRepositoryTrait
             ->getResult();
 
         return array_map($mapCallback, $result);
+    }
+
+    protected function _findByUlid(
+        Ulid $ulid,
+        string $alias = 'e',
+        ?QueryBuilder $qb = null,
+    ): ?object {
+        $qb ??= $this->createQueryBuilder($alias);
+
+        return $qb->where("{$alias}.ulid = :ulid")
+            ->setParameter('ulid', UlidPersistenceHelper::toBaseString($ulid))
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /**

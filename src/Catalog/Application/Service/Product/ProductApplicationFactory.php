@@ -160,10 +160,7 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
      */
     private function mapAttributeValues(array $attributeValuesData): AttributeValueCollection
     {
-        $attributes = $this->attributeReadRepository->findByIds(
-            ids: $this->mapAttributeIds($attributeValuesData),
-            withOptions: true,
-        );
+        $attributes = $this->attributeReadRepository->findByIds(ids: $this->mapAttributeIds($attributeValuesData));
 
         $attributeValues = [];
 
