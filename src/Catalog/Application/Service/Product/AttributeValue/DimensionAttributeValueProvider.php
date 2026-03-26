@@ -39,7 +39,7 @@ class DimensionAttributeValueProvider implements ProductAttributeValueProviderIn
         }
 
         $unitOption = $attribute->getOptions()->getById($data->unitOptionId)
-            ?? throw new AttributeOptionNotFoundException();
+            ?? throw AttributeOptionNotFoundException::withId($data->unitOptionId);
 
         return [
             ProductAttributeValue::create(

@@ -6,11 +6,11 @@ use App\Catalog\Domain\Enum\ErrorCodeEnum;
 
 return [
     ErrorCodeEnum::CatalogDomainError->value => 'Something went wrong in the catalog domain. Please try again later',
-    ErrorCodeEnum::AttributeNotFound->value => 'Attribute not found',
+    ErrorCodeEnum::AttributeNotFound->value => 'Attribute with {field} "{value}" not found',
     ErrorCodeEnum::AttributeAlreadyExists->value => 'Attribute with code "{code}" already exists',
     ErrorCodeEnum::AttributeTypeCanNotBeChanged->value => 'Attribute type cannot be changed',
     ErrorCodeEnum::OneOfAttributesNotFound->value => 'One or more attributes not found',
-    ErrorCodeEnum::AttributeOptionNotFound->value => 'Attribute option not found',
+    ErrorCodeEnum::AttributeOptionNotFound->value => 'Attribute option with {field} "{value}" not found',
     ErrorCodeEnum::OneOfAttributeOptionsNotFound->value => 'One or more attribute options not found',
     ErrorCodeEnum::CategoryNotFound->value => 'Category not found',
     ErrorCodeEnum::CategoryAlreadyExists->value => 'Category with slug "{slug}" already exists',

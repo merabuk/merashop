@@ -173,7 +173,7 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
 
                 if (!$attribute) {
                     // TODO[attribute]: add index support for exception
-                    throw new AttributeNotFoundException();
+                    throw AttributeNotFoundException::withId($data->attributeId);
                 }
 
                 $type = $attribute->getType()->value();

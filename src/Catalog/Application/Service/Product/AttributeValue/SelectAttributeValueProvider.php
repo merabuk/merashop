@@ -36,7 +36,7 @@ class SelectAttributeValueProvider implements ProductAttributeValueProviderInter
         }
 
         $option = $attribute->getOptions()->getById($data->optionId)
-            ?? throw new AttributeOptionNotFoundException();
+            ?? throw AttributeOptionNotFoundException::withId($data->optionId);
 
         return [
             ProductAttributeValue::createWithOption(

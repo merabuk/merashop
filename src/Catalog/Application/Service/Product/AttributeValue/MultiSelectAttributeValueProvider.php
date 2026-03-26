@@ -55,7 +55,7 @@ class MultiSelectAttributeValueProvider implements ProductAttributeValueProvider
      */
     private function getOptionId(Attribute $attribute, int $optionId): AttributeOptionId
     {
-        $option = $attribute->getOptions()->getById($optionId) ?? throw new AttributeOptionNotFoundException();
+        $option = $attribute->getOptions()->getById($optionId) ?? throw AttributeOptionNotFoundException::withId($optionId);
 
         return $option->getId();
     }
