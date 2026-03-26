@@ -29,13 +29,17 @@ trait AttributeHelperTrait
         );
     }
 
-    protected function fillAndGetUpdateCommand(Attribute $attribute): UpdateAttributeCommand
+    /**
+     * @param string[] $newOptionUlids
+     */
+    protected function fillAndGetUpdateCommand(Attribute $attribute, array $newOptionUlids = []): UpdateAttributeCommand
     {
         return new UpdateAttributeCommand(
             id: $attribute->getId()->value(),
             code: $attribute->getCode()->value(),
             type: $attribute->getType()->value()->value,
             translations: self::getValidAttributeTranslations($attribute->getTranslations()),
+            options: self::getValidAttributeOptions($attribute->getOptions(), $newOptionUlids),
             version: $attribute->getVersion()->value(),
             adminUlid: $attribute->getUpdatedBy()->value(),
         );
@@ -52,11 +56,16 @@ trait AttributeHelperTrait
     }
 
     /**
+     * @param string[] $newOptionUlids
+     *
      * @return AttributeOptionData[]
      */
-    protected static function getValidAttributeOptions(OptionCollection $options): array
+    protected static function getValidAttributeOptions(OptionCollection $options, array $newOptionUlids = []): array
     {
+        $map = $newOptionUlids ? array_combine($newOptionUlids, $newOptionUlids) : [];
+
         return array_map(fn (AttributeOption $option) => new AttributeOptionData(
+            ulid: isset($map[$option->getUlid()->value()]) ? null : $option->getUlid()->value(),
             code: $option->getCode()->value(),
             translations: array_map(fn (AttributeOptionTranslation $t) => new AttributeOptionTranslationData(
                 value: $t->value,

@@ -8,15 +8,13 @@ use App\Shared\Domain\ValueObject\BaseFlag;
 
 final readonly class ActiveFlag extends BaseFlag
 {
-    public const bool DEFAULT_VALUE = false;
-
     public static function fromBool(bool $value): self
     {
         return new self($value);
     }
 
-    public static function default(): self
+    public static function inactive(): self
     {
-        return new self(self::DEFAULT_VALUE);
+        return new self(false);
     }
 }

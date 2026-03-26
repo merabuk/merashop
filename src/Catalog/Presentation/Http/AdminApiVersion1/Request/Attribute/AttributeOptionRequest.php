@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Catalog\Presentation\Http\AdminApiVersion1\Request\Attribute;
 
+use App\Catalog\Application\DTO\Attribute\AttributeOptionData;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\ValueObject\AttributeOption\Code;
 use App\Shared\Presentation\Http\Request\ValidateLocalesTrait;
@@ -12,6 +13,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 final class AttributeOptionRequest
 {
     use ValidateLocalesTrait;
+
+    #[Assert\Optional]
+    #[Assert\Ulid]
+    public ?string $ulid = null;
 
     #[Assert\NotBlank]
     #[Assert\Length(min: 1, max: Code::MAX_LENGTH)]
@@ -33,6 +38,17 @@ final class AttributeOptionRequest
     #[Assert\Type(type: 'float', groups: [TypeEnum::Dimension->value])]
     #[Assert\Positive(groups: [TypeEnum::Dimension->value])]
     public ?float $baseRatio = null;
+
+    public function toData(): AttributeOptionData
+    {
+        return new AttributeOptionData(
+            ulid: $this->ulid,
+            code: $this->code,
+            translations: array_map(fn (AttributeOptionTranslationRequest $t) => $t->toData(), $this->translations),
+            isActive: $this->isActive,
+            baseRatio: $this->baseRatio,
+        );
+    }
 
     /**
      * @return array<string, true>

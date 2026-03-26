@@ -25,10 +25,10 @@ final class ActiveFlagTest extends TestCase
         $this->assertBooleanFlagEquality(className: ActiveFlag::class);
     }
 
-    public function testItCreatesDefaultMainImageFlag(): void
+    public function testItCreatesInactiveMainImageFlag(): void
     {
-        $vo = ActiveFlag::default();
+        $vo = ActiveFlag::inactive();
 
-        self::assertSame(ActiveFlag::DEFAULT_VALUE, $vo->value());
+        self::assertSame(false, $vo->value());
     }
 }

@@ -8,7 +8,7 @@ use App\Catalog\Domain\Enum\ErrorCodeEnum;
 use App\Catalog\Domain\Exception\CatalogConflictException;
 use App\Shared\Domain\Exception\Contracts\ClientFacingExceptionInterface;
 
-class AttributeTypeCanNotBeCahngedException extends CatalogConflictException implements ClientFacingExceptionInterface
+class AttributeTypeCanNotBeChangedException extends CatalogConflictException implements ClientFacingExceptionInterface
 {
     public function getErrorCode(): string
     {

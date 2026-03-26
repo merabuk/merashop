@@ -9,7 +9,6 @@ use App\Catalog\Application\Service\Attribute\AttributeApplicationFactoryInterfa
 use App\Catalog\Domain\Exception\Attribute\AttributeAlreadyExistsException;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
 use App\Catalog\Domain\Service\Attribute\AttributeValidatorInterface;
-use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -32,11 +31,9 @@ readonly class CreateAttributeHandler implements CommandHandlerInterface
     public function __invoke(CreateAttributeCommand $command): int
     {
         try {
-            $code = Code::fromString($command->code);
-
-            $this->attributeValidator->validateCreation($code);
-
             $attribute = $this->attributeFactory->createFromCommand($command);
+
+            $this->attributeValidator->validateCreation(code: $attribute->getCode());
 
             $attribute = $this->writeRepository->save($attribute);
 

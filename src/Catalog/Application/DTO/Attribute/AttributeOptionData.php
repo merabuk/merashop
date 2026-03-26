@@ -7,6 +7,7 @@ namespace App\Catalog\Application\DTO\Attribute;
 final readonly class AttributeOptionData
 {
     public function __construct(
+        public ?string $ulid,
         public string $code,
         /**
          * @var AttributeOptionTranslationData[]

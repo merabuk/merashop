@@ -6,6 +6,7 @@ namespace App\Tests\Catalog\Unit\Domain\Entity;
 
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
+use App\Catalog\Domain\Exception\Attribute\AttributeStateException;
 use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\OptionCollection;
@@ -14,6 +15,7 @@ use App\Catalog\Domain\ValueObject\Attribute\Type;
 use App\Catalog\Domain\ValueObject\Attribute\Ulid;
 use App\Tests\Catalog\Support\AttributeMother;
 use App\Tests\Catalog\Support\AttributeOptionMother;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class AttributeTest extends TestCase
@@ -101,28 +103,122 @@ final class AttributeTest extends TestCase
         self::assertNull($attribute->getUpdatedBy());
     }
 
-    public function testItUpdateChangesState(): void
+    #[DataProvider('invalidCreateStateProvider')]
+    public function testThrowsExceptionWhenAttributeHasInvalidStateWhileCreate(
+        TypeEnum $type,
+        OptionCollection $options,
+    ): void {
+        $this->expectException(AttributeStateException::class);
+
+        Attribute::create(
+            ulid: Ulid::fromString(AttributeMother::DEFAULT_ULID),
+            code: Code::fromString('color'),
+            type: Type::fromEnum($type),
+            translations: Translations::fromArray(self::getValidTranslations()),
+            createdBy: AdminUlid::fromString(AttributeMother::DEFAULT_ADMIN_ULID),
+            options: $options
+        );
+    }
+
+    public static function invalidCreateStateProvider(): iterable
     {
-        $attribute = AttributeMother::createWithData(code: 'old-code');
+        yield 'type which cannot have options' => [
+            'type' => TypeEnum::Color,
+            'options' => OptionCollection::fromArray([
+                AttributeOptionMother::createWithData(),
+            ]),
+        ];
+        yield 'type which can have options' => [
+            'type' => TypeEnum::MultiSelect,
+            'options' => OptionCollection::empty(),
+        ];
+    }
+
+    #[DataProvider('updateStateProvider')]
+    public function testItUpdateChangesState(
+        TypeEnum $fromType,
+        TypeEnum $toType,
+        OptionCollection $options,
+    ): void {
+        $attribute = AttributeMother::createWithData(code: 'old-code', type: $fromType);
 
         $newCode = Code::fromString('new-code');
+        $newType = Type::fromEnum($toType);
         $newTranslations = Translations::fromArray(self::getValidTranslations());
         $adminUlid = AdminUlid::fromString(AttributeMother::DEFAULT_ADMIN_ULID);
 
         $attribute->update(
             code: $newCode,
+            type: $newType,
             translations: $newTranslations,
-            updatedBy: $adminUlid
+            updatedBy: $adminUlid,
+            options: $options,
         );
 
         self::assertTrue($attribute->getCode()->equals($newCode));
-        self::assertCount($newTranslations->count(), $attribute->getTranslations());
-        foreach ($newTranslations as $locale => $translation) {
-            $actualTranslation = $attribute->getTranslations()->get($locale);
-            self::assertNotNull($actualTranslation);
-            self::assertSame($translation->name, $actualTranslation->name);
-        }
+        self::assertTrue($attribute->getType()->equals($newType));
+        self::assertTrue($attribute->getTranslations()->equals($newTranslations));
         self::assertTrue($attribute->getUpdatedBy()->equals($adminUlid));
+        self::assertTrue($attribute->getOptions()->equals($options));
+    }
+
+    public static function updateStateProvider(): iterable
+    {
+        yield 'string to text' => [
+            'fromType' => TypeEnum::String,
+            'toType' => TypeEnum::Text,
+            'options' => OptionCollection::empty(),
+        ];
+        yield 'text to string' => [
+            'fromType' => TypeEnum::Text,
+            'toType' => TypeEnum::String,
+            'options' => OptionCollection::empty(),
+        ];
+        yield 'change options' => [
+            'fromType' => TypeEnum::Dimension,
+            'toType' => TypeEnum::Dimension,
+            'options' => OptionCollection::fromArray([
+                AttributeOptionMother::createWithData(attributeType: TypeEnum::Dimension, metadata: 1000.0),
+            ]),
+        ];
+    }
+
+    #[DataProvider('invalidUpdateStateProvider')]
+    public function testThrowsExceptionWhenAttributeHasInvalidStateWhileUpdate(
+        Attribute $attribute,
+        TypeEnum $toType,
+        OptionCollection $options,
+    ): void {
+        $this->expectException(AttributeStateException::class);
+
+        $attribute->update(
+            code: Code::fromString('new-code'),
+            type: Type::fromEnum($toType),
+            translations: Translations::fromArray(self::getValidTranslations()),
+            updatedBy: AdminUlid::fromString(AttributeMother::DEFAULT_ADMIN_ULID),
+            options: $options,
+        );
+    }
+
+    public static function invalidUpdateStateProvider(): iterable
+    {
+        yield 'cannot change type' => [
+            'attribute' => AttributeMother::createWithData(type: TypeEnum::Color),
+            'toType' => TypeEnum::String,
+            'options' => OptionCollection::empty(),
+        ];
+        yield 'type which cannot have options' => [
+            'attribute' => AttributeMother::createWithData(type: TypeEnum::Color),
+            'toType' => TypeEnum::Color,
+            'options' => OptionCollection::fromArray([
+                AttributeOptionMother::createWithData(),
+            ]),
+        ];
+        yield 'type which can have options' => [
+            'attribute' => AttributeMother::createWithData(type: TypeEnum::MultiSelect),
+            'toType' => TypeEnum::MultiSelect,
+            'options' => OptionCollection::empty(),
+        ];
     }
 
     private function getValidTranslations(): array

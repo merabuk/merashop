@@ -80,12 +80,17 @@ final readonly class OptionCollection extends AbstractCollection
      */
     private function ensureUnique(array $items): void
     {
-        $keys = [];
+        $codes = [];
+        $ulids = [];
         foreach ($items as $option) {
-            if (isset($keys[$option->getUlid()->value()])) {
-                throw AttributeOptionUniqueException::becauseDuplicateOption($option->getUlid()->value());
+            if (isset($codes[$option->getCode()->value()])) {
+                throw AttributeOptionUniqueException::becauseDuplicateOption($option->getCode()->value(), 'code');
             }
-            $keys[$option->getUlid()->value()] = true;
+            if (isset($ulids[$option->getUlid()->value()])) {
+                throw AttributeOptionUniqueException::becauseDuplicateOption($option->getUlid()->value(), 'ulid');
+            }
+            $codes[$option->getCode()->value()] = true;
+            $ulids[$option->getUlid()->value()] = true;
         }
     }
 }

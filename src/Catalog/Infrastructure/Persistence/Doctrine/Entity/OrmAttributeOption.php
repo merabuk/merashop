@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Catalog\Infrastructure\Persistence\Doctrine\Entity;
 
-use App\Catalog\Domain\ValueObject\AttributeOption\ActiveFlag;
 use App\Catalog\Domain\ValueObject\AttributeOption\Code;
 use App\Shared\Infrastructure\Persistence\Doctrine\Entity\Traits\TimestampableEntityTrait;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -54,7 +53,7 @@ class OrmAttributeOption
     public Collection $translations;
 
     #[ORM\Column(type: Types::BOOLEAN)]
-    public ?bool $isActive = ActiveFlag::DEFAULT_VALUE;
+    public ?bool $isActive = null;
 
     /**
      * @var ?array<string, mixed>

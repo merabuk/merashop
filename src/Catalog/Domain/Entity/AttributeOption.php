@@ -65,6 +65,12 @@ class AttributeOption
         $this->updatedBy = $updatedBy;
     }
 
+    public function deactivate(AdminUlid $adminUlid): void
+    {
+        $this->isActive = ActiveFlag::inactive();
+        $this->updatedBy = $adminUlid;
+    }
+
     public function getId(): ?Id
     {
         return $this->id;

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Catalog\Presentation\Http\AdminApiVersion1\Request\Attribute;
 
 use App\Catalog\Application\DTO\Attribute\AttributeOptionData;
-use App\Catalog\Application\DTO\Attribute\AttributeOptionTranslationData;
 use App\Catalog\Application\DTO\Attribute\AttributeTranslationData;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
@@ -126,9 +125,7 @@ abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
      */
     protected function mapAndGetTranslations(): array
     {
-        return array_map(fn (AttributeTranslationRequest $t) => new AttributeTranslationData(
-            name: $t->name,
-        ), $this->translations);
+        return array_map(fn (AttributeTranslationRequest $t) => $t->toData(), $this->translations);
     }
 
     /**
@@ -136,13 +133,6 @@ abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
      */
     protected function mapAndGetOptions(): array
     {
-        return array_map(fn (AttributeOptionRequest $o) => new AttributeOptionData(
-            code: $o->code,
-            translations: array_map(fn (AttributeOptionTranslationRequest $t) => new AttributeOptionTranslationData(
-                value: $t->value,
-            ), $o->translations),
-            isActive: $o->isActive,
-            baseRatio: $o->baseRatio,
-        ), $this->options);
+        return array_map(fn (AttributeOptionRequest $o) => $o->toData(), $this->options);
     }
 }

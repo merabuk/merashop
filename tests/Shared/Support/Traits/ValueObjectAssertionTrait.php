@@ -9,15 +9,15 @@ use PHPUnit\Framework\Assert;
 
 trait ValueObjectAssertionTrait
 {
-    protected function assertVoEqualsOrNull(?EquatableInterface $expected, ?EquatableInterface $actual, string $message = ''): void
+    protected function assertVoEqualsOrNull(?EquatableInterface $expected, ?EquatableInterface $actual): void
     {
         if (null === $expected) {
-            Assert::assertNull($actual, $message ?: 'Expected ValueObject is null, but actual is not');
+            Assert::assertNull($actual, 'Expected ValueObject is null, but actual is not');
 
             return;
         }
 
-        Assert::assertNotNull($actual, $message ?: 'Expected ValueObject is set, but actual is null');
-        Assert::assertTrue($expected->equals($actual), $message ?: 'ValueObjects are not equal');
+        Assert::assertNotNull($actual, 'Expected ValueObject is set, but actual is null');
+        Assert::assertTrue($expected->equals($actual), 'ValueObjects are not equal');
     }
 }

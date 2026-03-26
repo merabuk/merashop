@@ -8,7 +8,8 @@ use App\Catalog\Application\Exception\Attribute\UpdateAttributeException;
 use App\Catalog\Application\Service\Attribute\AttributeApplicationFactoryInterface;
 use App\Catalog\Domain\Exception\Attribute\AttributeAlreadyExistsException;
 use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
-use App\Catalog\Domain\Exception\Attribute\AttributeTypeCanNotBeCahngedException;
+use App\Catalog\Domain\Exception\Attribute\AttributeTypeCanNotBeChangedException;
+use App\Catalog\Domain\Exception\AttributeOption\AttributeOptionNotFoundException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
 use App\Catalog\Domain\Service\Attribute\AttributeValidatorInterface;
@@ -35,7 +36,8 @@ readonly class UpdateAttributeHandler implements CommandHandlerInterface
     /**
      * @throws AttributeAlreadyExistsException
      * @throws AttributeNotFoundException
-     * @throws AttributeTypeCanNotBeCahngedException
+     * @throws AttributeOptionNotFoundException
+     * @throws AttributeTypeCanNotBeChangedException
      * @throws UpdateAttributeException
      * @throws ConcurrencyException
      */
@@ -45,13 +47,14 @@ readonly class UpdateAttributeHandler implements CommandHandlerInterface
             $attribute = $this->readRepository->getById(Id::fromInt($command->id));
             $newCode = Code::fromString($command->code);
             $newType = Type::fromString($command->type);
+            $optionUlids = $this->attributeFactory->mapAttributeOptionUlids($command->options);
 
-            // TODO: add validation for options
             $this->attributeValidator->validateUpdate(
                 attribute: $attribute,
                 version: $command->version,
                 newCode: $newCode,
-                newType: $newType
+                newType: $newType,
+                optionsUlids: $optionUlids,
             );
 
             $this->attributeFactory->updateFromCommand(attribute: $attribute, command: $command);
@@ -60,7 +63,8 @@ readonly class UpdateAttributeHandler implements CommandHandlerInterface
         } catch (
             AttributeAlreadyExistsException
             |AttributeNotFoundException
-            |AttributeTypeCanNotBeCahngedException
+            |AttributeOptionNotFoundException
+            |AttributeTypeCanNotBeChangedException
             |ConcurrencyException $e
         ) {
             throw $e;

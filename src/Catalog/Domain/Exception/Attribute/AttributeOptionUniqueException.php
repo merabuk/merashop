@@ -8,9 +8,9 @@ use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 
 final class AttributeOptionUniqueException extends InvalidCatalogValueObjectException
 {
-    public static function becauseDuplicateOption(string $ulid): self
+    public static function becauseDuplicateOption(string $value, string $property): self
     {
-        return new self(message: sprintf('Attribute option with ulid "%s" already exists', $ulid));
+        return new self(message: sprintf('Attribute option with %s "%s" already exists', $property, $value));
     }
 
     public function getErrorCode(): string

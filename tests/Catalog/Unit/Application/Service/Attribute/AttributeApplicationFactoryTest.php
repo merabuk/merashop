@@ -7,13 +7,17 @@ namespace App\Tests\Catalog\Unit\Application\Service\Attribute;
 use App\Catalog\Application\DTO\Attribute\AttributeOptionData;
 use App\Catalog\Application\Service\Attribute\AttributeApplicationFactory;
 use App\Catalog\Application\Service\Attribute\AttributeOption\AttributeOptionMetadataProviderInterface;
+use App\Catalog\Domain\Entity\AttributeOption;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Exception\AttributeOption\UnsupportedAttributeOptionMetadataTypeException;
 use App\Catalog\Domain\ValueObject\AttributeOption\Metadata\AttributeOptionMetadataInterface;
+use App\Catalog\Domain\ValueObject\AttributeOption\Ulid as AttributeOptionUlid;
 use App\Tests\Catalog\Support\AttributeMother;
 use App\Tests\Catalog\Support\AttributeOptionMother;
 use App\Tests\Catalog\Support\Traits\AttributeHelperTrait;
 use App\Tests\Shared\Support\Traits\UlidGenerationTrait;
+use App\Tests\Shared\Support\Traits\ValueObjectAssertionTrait;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
@@ -23,6 +27,7 @@ final class AttributeApplicationFactoryTest extends TestCase
 {
     use AttributeHelperTrait;
     use UlidGenerationTrait;
+    use ValueObjectAssertionTrait;
 
     private ContainerInterface&MockObject $container;
 
@@ -30,6 +35,68 @@ final class AttributeApplicationFactoryTest extends TestCase
     {
         $this->setUlidGenerator();
         $this->container = $this->createMock(ContainerInterface::class);
+    }
+
+    #[DataProvider('attributeOptionUlidsDataProvider')]
+    public function testItMapsAttributeOptionUlids(
+        array $ulids,
+        bool $associative,
+        array $expectedUlids,
+    ): void {
+        $data = array_map(static fn (?string $ulid) => new AttributeOptionData(
+            ulid: $ulid,
+            code: 'code',
+            translations: [],
+            isActive: true,
+        ), $ulids);
+
+        $result = $this->createFactory()->mapAttributeOptionUlids(optionsData: $data, associative: $associative);
+
+        self::assertCount(count($expectedUlids), $result);
+        foreach ($result as $key => $ulid) {
+            self::assertInstanceOf(AttributeOptionUlid::class, $ulid);
+            self::assertSame($expectedUlids[$key], $ulid->value());
+        }
+    }
+
+    public static function attributeOptionUlidsDataProvider(): iterable
+    {
+        $ulids = [
+            '01KMDEC4Z9NSK4YPEW8NG5068T',
+            '01KMGY62KTY8BJ9J8NHMXHKF4P',
+            '01KMJ1ANFES9VS1HYEYBDCNCFW',
+        ];
+
+        yield 'simple' => [
+            'ulids' => $ulids,
+            'associative' => false,
+            'expectedUlids' => $ulids,
+        ];
+        yield 'simple with sparse values' => [
+            'ulids' => [
+                $ulids[0],
+                null,
+                $ulids[1],
+                null,
+                $ulids[2],
+            ],
+            'associative' => false,
+            'expectedUlids' => [
+                0 => $ulids[0],
+                2 => $ulids[1],
+                4 => $ulids[2],
+            ],
+        ];
+        yield 'associative' => [
+            'ulids' => $ulids,
+            'associative' => true,
+            'expectedUlids' => array_combine($ulids, $ulids),
+        ];
+        yield 'associative with sparse values' => [
+            'ulids' => [$ulids[0], null, $ulids[1], null, $ulids[2]],
+            'associative' => true,
+            'expectedUlids' => array_combine($ulids, $ulids),
+        ];
     }
 
     public function testItCreatesFromCommandWithoutOptions(): void
@@ -184,6 +251,83 @@ final class AttributeApplicationFactoryTest extends TestCase
         self::assertFalse($attribute->getCreatedBy()->equals($attributeForUpdate->getCreatedBy()), "Created by mustn't changed");
         self::assertCount(0, $attribute->getOptions());
         self::assertTrue($attribute->getOptions()->equals($attributeForUpdate->getOptions()));
+        self::assertTrue($attribute->getUpdatedBy()->equals($attributeForUpdate->getUpdatedBy()));
+    }
+
+    public function testItUpdatesFromCommandWithOptions(): void
+    {
+        $type = TypeEnum::MultiSelect;
+        $existingOption1 = AttributeOptionMother::createWithData(
+            ulid: '01KMDEC4Z9NSK4YPEW8NG5068T',
+            code: 'op-code-1',
+        );
+        $existingOption2 = AttributeOptionMother::createWithData(
+            ulid: '01KMGY62KTY8BJ9J8NHMXHKF4P',
+            code: 'op-code-2',
+        );
+        $willBeDeactivated = AttributeOptionMother::createWithData(
+            ulid: '01KMJ1ANFES9VS1HYEYBDCNCFW',
+            code: 'op-code-3',
+        );
+        $willBeAdded = AttributeOptionMother::createWithData(
+            ulid: '01KMNT82QHCRRFAQA0RMTKK1H2',
+            code: 'op-code-4',
+        );
+
+        $attribute = AttributeMother::createWithData(
+            ulid: AttributeMother::DEFAULT_ULID,
+            code: 'old-code',
+            type: $type,
+            translations: [
+                'en' => ['name' => 'Old Attribute'],
+            ],
+            version: 2,
+            createdByUlid: AttributeMother::DEFAULT_ADMIN_ULID,
+            options: [$existingOption1, $existingOption2, $willBeDeactivated],
+            id: 123
+        );
+        $attributeForUpdate = AttributeMother::createWithData(
+            ulid: '01KME5MMDTM1607C5T3X8YHDB0',
+            type: $type,
+            version: 1,
+            createdByUlid: '01KM2VXDT53FFTM8A520WFDK9T',
+            options: [$existingOption1, $existingOption2, $willBeAdded],
+            updatedByUlid: AttributeMother::DEFAULT_ADMIN_ULID,
+            id: 456
+        );
+
+        $command = $this->fillAndGetUpdateCommand($attributeForUpdate, [$willBeAdded->getUlid()->value()]);
+
+        $this->expectGenerateUlid($willBeAdded->getUlid()->value());
+
+        $this->createFactory()->updateFromCommand($attribute, $command);
+
+        self::assertFalse($attribute->getId()->equals($attributeForUpdate->getId()), "Id mustn't changed");
+        self::assertFalse($attribute->getUlid()->equals($attributeForUpdate->getUlid()), "Ulid mustn't changed");
+        self::assertTrue($attribute->getCode()->equals($attributeForUpdate->getCode()));
+        self::assertTrue($attribute->getType()->equals($attributeForUpdate->getType()));
+        self::assertTrue($attribute->getTranslations()->equals($attributeForUpdate->getTranslations()));
+        self::assertSame(2, $attribute->getVersion()->value(), "Version mustn't changed");
+        self::assertFalse($attribute->getVersion()->equals($attributeForUpdate->getVersion()), "Version mustn't changed");
+        self::assertFalse($attribute->getCreatedBy()->equals($attributeForUpdate->getCreatedBy()), "Created by mustn't changed");
+        self::assertCount(4, $attribute->getOptions());
+        foreach ([$existingOption1, $existingOption2, $willBeDeactivated, $willBeAdded] as $option) {
+            /** @var AttributeOption $option */
+            $actual = $attribute->getOptions()->getByUlid($option->getUlid());
+            self::assertNotNull($actual);
+            self::assertTrue($option->getUlid()->equals($actual->getUlid()));
+            self::assertTrue($option->getCode()->equals($actual->getCode()));
+            self::assertTrue($option->getTranslations()->equals($actual->getTranslations()));
+            if ($option->getUlid()->equals($willBeDeactivated->getUlid())) {
+                self::assertFalse($actual->isActive()->value());
+            } else {
+                self::assertTrue($option->isActive()->equals($actual->isActive()));
+            }
+            self::assertTrue($option->getVersion()->equals($actual->getVersion()));
+            self::assertTrue($option->getCreatedBy()->equals($actual->getCreatedBy()));
+            $this->assertVoEqualsOrNull($option->getMetadata(), $actual->getMetadata());
+            $this->assertVoEqualsOrNull($option->getUpdatedBy(), $actual->getUpdatedBy());
+        }
         self::assertTrue($attribute->getUpdatedBy()->equals($attributeForUpdate->getUpdatedBy()));
     }
 

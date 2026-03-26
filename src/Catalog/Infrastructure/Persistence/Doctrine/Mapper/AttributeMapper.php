@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Catalog\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\Catalog\Domain\Entity\Attribute;
+use App\Catalog\Domain\Exception\Attribute\AttributeStateException;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeNameException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\ValueObject\AdminUlid;
@@ -59,6 +60,7 @@ final readonly class AttributeMapper implements MapperInterface
     }
 
     /**
+     * @throws AttributeStateException
      * @throws EntityIdMissingException
      * @throws InvalidCatalogValueObjectException
      * @throws IncompatibleMappedEntityException
@@ -128,12 +130,6 @@ final readonly class AttributeMapper implements MapperInterface
 
         foreach ($orm->options as $o) {
             $existingOrmOptions[$o->ulid] = $o;
-        }
-
-        foreach ($existingOrmOptions as $ulid => $ormOption) {
-            if (!$domainOptions->getByUlid($ulid)) {
-                $ormOption->isActive = false;
-            }
         }
 
         foreach ($domainOptions as $do) {

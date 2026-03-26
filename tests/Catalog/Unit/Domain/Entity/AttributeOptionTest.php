@@ -141,6 +141,19 @@ final class AttributeOptionTest extends TestCase
         self::assertTrue($attributeOption->getUpdatedBy()->equals($adminUlid));
     }
 
+    public function testItDeactivatesCorrectly(): void
+    {
+        $attributeOption = AttributeOptionMother::createWithData(isActive: true);
+
+        self::assertNull($attributeOption->getUpdatedBy());
+
+        $attributeOption->deactivate($attributeOption->getCreatedBy());
+
+        self::assertFalse($attributeOption->isActive()->value());
+        self::assertNotNull($attributeOption->getUpdatedBy());
+        self::assertTrue($attributeOption->getUpdatedBy()->equals($attributeOption->getCreatedBy()));
+    }
+
     private function getValidTranslations(): array
     {
         return [

@@ -12,6 +12,9 @@ use App\Catalog\Application\DTO\Attribute\AttributeTranslationData;
 use App\Catalog\Application\Service\Attribute\AttributeOption\AttributeOptionMetadataProviderInterface;
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Entity\AttributeOption;
+use App\Catalog\Domain\Exception\Attribute\AttributeStateException;
+use App\Catalog\Domain\Exception\AttributeOption\AttributeOptionNotFoundException;
+use App\Catalog\Domain\Exception\AttributeOption\InvalidAttributeOptionUlidException;
 use App\Catalog\Domain\Exception\AttributeOption\UnsupportedAttributeOptionMetadataTypeException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\ValueObject\AdminUlid;
@@ -44,13 +47,34 @@ final readonly class AttributeApplicationFactory implements AttributeApplication
     }
 
     /**
+     * @param AttributeOptionData[] $optionsData
+     *
+     * @return AttributeOptionUlid[]
+     *
+     * @throws InvalidAttributeOptionUlidException
+     */
+    public function mapAttributeOptionUlids(array $optionsData, bool $associative = false): array
+    {
+        $ulids = [];
+        foreach ($optionsData as $i => $option) {
+            if (null !== $option->ulid) {
+                $key = $associative ? $option->ulid : $i;
+                $ulids[$key] = AttributeOptionUlid::fromString($option->ulid);
+            }
+        }
+
+        return $ulids;
+    }
+
+    /**
+     * @throws AttributeStateException
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
      * @throws UnsupportedAttributeOptionMetadataTypeException
      */
     public function createFromCommand(CreateAttributeCommand $command): Attribute
     {
-        $createdBy = AdminUlid::fromString($command->adminUlid);
+        $adminUlid = AdminUlid::fromString($command->adminUlid);
         $type = Type::fromString($command->type);
 
         return Attribute::create(
@@ -58,22 +82,35 @@ final readonly class AttributeApplicationFactory implements AttributeApplication
             code: AttributeCode::fromString($command->code),
             type: $type,
             translations: $this->mapAttributeTranslations($command->translations),
-            createdBy: $createdBy,
-            options: $this->mapOptions($command->options, $createdBy, $type),
+            createdBy: $adminUlid,
+            options: $this->mapOptions(optionsData: $command->options, adminUlid: $adminUlid, type: $type),
         );
     }
 
     /**
+     * @throws AttributeStateException
+     * @throws AttributeOptionNotFoundException
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
+     * @throws UnsupportedAttributeOptionMetadataTypeException
      */
     public function updateFromCommand(Attribute $attribute, UpdateAttributeCommand $command): void
     {
-        // TODO: add options update
+        $adminUlid = AdminUlid::fromString($command->adminUlid);
+        $type = Type::fromString($command->type);
+        $newOptions = $this->syncOptions(
+            attribute: $attribute,
+            optionsData: $command->options,
+            adminUlid: $adminUlid,
+            type: $type,
+        );
+
         $attribute->update(
             code: AttributeCode::fromString($command->code),
+            type: $type,
             translations: $this->mapAttributeTranslations($command->translations),
-            updatedBy: AdminUlid::fromString($command->adminUlid),
+            updatedBy: $adminUlid,
+            options: $newOptions,
         );
     }
 
@@ -91,22 +128,22 @@ final readonly class AttributeApplicationFactory implements AttributeApplication
     }
 
     /**
-     * @param AttributeOptionData[] $options
+     * @param AttributeOptionData[] $optionsData
      *
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
      * @throws UnsupportedAttributeOptionMetadataTypeException
      */
-    private function mapOptions(array $options, AdminUlid $createdBy, Type $type): OptionCollection
+    private function mapOptions(array $optionsData, AdminUlid $adminUlid, Type $type): OptionCollection
     {
         return OptionCollection::fromArray(array_map(fn (AttributeOptionData $o) => AttributeOption::create(
             ulid: AttributeOptionUlid::fromString($this->ulidGenerator->next()),
             code: AttributeOptionCode::fromString($o->code),
             translations: $this->mapAttributeOptionTranslations($o->translations),
             isActive: ActiveFlag::fromBool($o->isActive),
-            createdBy: $createdBy,
+            createdBy: $adminUlid,
             metadata: $this->getAttributeOptionMetadata($type, $o),
-        ), $options));
+        ), $optionsData));
     }
 
     /**
@@ -120,6 +157,66 @@ final readonly class AttributeApplicationFactory implements AttributeApplication
         return AttributeOptionTranslations::fromArray(array_map(fn (AttributeOptionTranslationData $t) => [
             'value' => $t->value,
         ], $translations));
+    }
+
+    /**
+     * @param AttributeOptionData[] $optionsData
+     *
+     * @throws AttributeOptionNotFoundException
+     * @throws InvalidCatalogValueObjectException
+     * @throws InvalidLocaleException
+     * @throws UnsupportedAttributeOptionMetadataTypeException
+     */
+    private function syncOptions(
+        Attribute $attribute,
+        array $optionsData,
+        AdminUlid $adminUlid,
+        Type $type,
+    ): OptionCollection {
+        $currentOptions = $attribute->getOptions();
+        $processedUlids = [];
+        $syncedOptions = [];
+
+        foreach ($optionsData as $data) {
+            $code = AttributeOptionCode::fromString($data->code);
+            $translations = $this->mapAttributeOptionTranslations($data->translations);
+            $isActive = ActiveFlag::fromBool($data->isActive);
+            $metadata = $this->getAttributeOptionMetadata($type, $data);
+
+            if (null !== $data->ulid) {
+                $option = $currentOptions->getByUlid($data->ulid)
+                    ?? throw AttributeOptionNotFoundException::withUlid($data->ulid);
+
+                $option->update(
+                    code: $code,
+                    translations: $translations,
+                    isActive: $isActive,
+                    updatedBy: $adminUlid,
+                    metadata: $metadata,
+                );
+            } else {
+                $option = AttributeOption::create(
+                    ulid: AttributeOptionUlid::fromString($this->ulidGenerator->next()),
+                    code: $code,
+                    translations: $translations,
+                    isActive: $isActive,
+                    createdBy: $adminUlid,
+                    metadata: $metadata,
+                );
+            }
+
+            $processedUlids[$option->getUlid()->value()] = true;
+            $syncedOptions[] = $option;
+        }
+
+        foreach ($currentOptions as $existingOption) {
+            if (!isset($processedUlids[$existingOption->getUlid()->value()])) {
+                $existingOption->deactivate($adminUlid);
+                $syncedOptions[] = $existingOption;
+            }
+        }
+
+        return OptionCollection::fromArray($syncedOptions);
     }
 
     /**

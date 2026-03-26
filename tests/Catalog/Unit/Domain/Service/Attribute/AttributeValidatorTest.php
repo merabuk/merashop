@@ -5,13 +5,16 @@ declare(strict_types=1);
 namespace App\Tests\Catalog\Unit\Domain\Service\Attribute;
 
 use App\Catalog\Domain\Entity\Attribute;
+use App\Catalog\Domain\Entity\AttributeOption;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Exception\Attribute\AttributeAlreadyExistsException;
-use App\Catalog\Domain\Exception\Attribute\AttributeTypeCanNotBeCahngedException;
+use App\Catalog\Domain\Exception\Attribute\AttributeTypeCanNotBeChangedException;
+use App\Catalog\Domain\Exception\AttributeOption\AttributeOptionNotFoundException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\Service\Attribute\AttributeValidator;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Type;
+use App\Catalog\Domain\ValueObject\AttributeOption\Ulid as AttributeOptionUlid;
 use App\Shared\Domain\Exception\Entity\ConcurrencyException;
 use App\Tests\Catalog\Support\AttributeMother;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -52,14 +55,18 @@ final class AttributeValidatorTest extends TestCase
         Attribute $attribute,
         Code $newCode,
         Type $newType,
+        array $optionsUlids,
     ): void {
-        $attribute->getCode()->equals($newCode) ? $this->checkCodeNeverCalled() : $this->givenCodeIsAvailable($newCode);
+        $attribute->getCode()->equals($newCode)
+            ? $this->checkCodeNeverCalled()
+            : $this->givenCodeIsAvailable($newCode);
 
         $this->createValidator()->validateUpdate(
             attribute: $attribute,
             version: $attribute->getVersion()->value(),
             newCode: $newCode,
             newType: $newType,
+            optionsUlids: $optionsUlids,
         );
     }
 
@@ -70,16 +77,19 @@ final class AttributeValidatorTest extends TestCase
             type: TypeEnum::String,
             id: 123
         );
+        $optionsUlids = self::getAttributeOptionsUlids($attribute);
 
         yield 'code changed' => [
             'attribute' => $attribute,
             'newCode' => Code::fromString('new-code'),
             'newType' => $attribute->getType(),
+            'optionsUlids' => $optionsUlids,
         ];
         yield 'type changed' => [
             'attribute' => $attribute,
             'newCode' => $attribute->getCode(),
             'newType' => Type::fromEnum(TypeEnum::Text),
+            'optionsUlids' => $optionsUlids,
         ];
     }
 
@@ -93,13 +103,14 @@ final class AttributeValidatorTest extends TestCase
         $newCode = Code::fromString('new-code');
         $newType = Type::fromEnum(TypeEnum::Integer);
 
-        $this->expectException(AttributeTypeCanNotBeCahngedException::class);
+        $this->expectException(AttributeTypeCanNotBeChangedException::class);
 
         $this->createValidator()->validateUpdate(
             attribute: $attribute,
             version: $attribute->getVersion()->value(),
             newCode: $newCode,
             newType: $newType,
+            optionsUlids: self::getAttributeOptionsUlids($attribute),
         );
     }
 
@@ -115,6 +126,7 @@ final class AttributeValidatorTest extends TestCase
             version: $attribute->getVersion()->value() + 1,
             newCode: $newCode,
             newType: $attribute->getType(),
+            optionsUlids: self::getAttributeOptionsUlids($attribute),
         );
     }
 
@@ -132,6 +144,7 @@ final class AttributeValidatorTest extends TestCase
             version: $attribute->getVersion()->value(),
             newCode: $newCode,
             newType: $attribute->getType(),
+            optionsUlids: self::getAttributeOptionsUlids($attribute),
         );
     }
 
@@ -147,7 +160,34 @@ final class AttributeValidatorTest extends TestCase
             version: $attribute->getVersion()->value(),
             newCode: $newCode,
             newType: $attribute->getType(),
+            optionsUlids: self::getAttributeOptionsUlids($attribute),
         );
+    }
+
+    public function testThrowsExceptionWhenOneOfAttributeOptionsNotFoundWhileUpdating(): void
+    {
+        $attribute = AttributeMother::createWithData(type: TypeEnum::String, id: 123);
+        $optionsUlids = [AttributeOptionUlid::fromString('01KMDEC4Z9NSK4YPEW8NG5068T')];
+
+        $this->checkCodeNeverCalled();
+
+        $this->expectException(AttributeOptionNotFoundException::class);
+
+        $this->createValidator()->validateUpdate(
+            attribute: $attribute,
+            version: $attribute->getVersion()->value(),
+            newCode: $attribute->getCode(),
+            newType: $attribute->getType(),
+            optionsUlids: $optionsUlids,
+        );
+    }
+
+    /**
+     * @return AttributeOptionUlid[]
+     */
+    private static function getAttributeOptionsUlids(Attribute $attribute): array
+    {
+        return array_map(fn (AttributeOption $ao) => $ao->getUlid(), $attribute->getOptions()->all());
     }
 
     private function createValidator(): AttributeValidator
