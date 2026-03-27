@@ -24,6 +24,7 @@ use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\MapperInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
+use Doctrine\ORM\PersistentCollection;
 
 /**
  * @implements MapperInterface<Attribute, OrmAttribute>
@@ -38,6 +39,7 @@ final readonly class AttributeMapper implements MapperInterface
     }
 
     /**
+     * @throws AttributeStateException
      * @throws IncompatibleMappedEntityException
      */
     public function toDoctrineOrm(object $domain): OrmAttribute
@@ -91,6 +93,7 @@ final readonly class AttributeMapper implements MapperInterface
     }
 
     /**
+     * @throws AttributeStateException
      * @throws IncompatibleMappedEntityException
      */
     public function mapToExistingOrm(object $domain, object $orm): void
@@ -115,17 +118,30 @@ final readonly class AttributeMapper implements MapperInterface
      */
     private function mapOptionsFromOrmToDomain(OrmAttribute $orm, Type $type): OptionCollection
     {
+        $optionsCollection = $orm->options;
+
+        if ($optionsCollection instanceof PersistentCollection && !$optionsCollection->isInitialized()) {
+            return OptionCollection::uninitialized();
+        }
+
         $options = [];
-        foreach ($orm->options as $ormOption) {
+        foreach ($optionsCollection as $ormOption) {
             $options[] = $this->attributeOptionMapper->toDomain($ormOption, $type);
         }
 
         return OptionCollection::fromArray($options);
     }
 
+    /**
+     * @throws AttributeStateException
+     */
     private function mapOptionsFromDomainToOrm(Attribute $domain, OrmAttribute $orm): void
     {
         $domainOptions = $domain->getOptions();
+
+        if (false === $domainOptions->isInitialized()) {
+            throw AttributeStateException::becauseCanNotSaveAttributeWithUninitializedOptions();
+        }
 
         $existingOrmOptions = [];
 

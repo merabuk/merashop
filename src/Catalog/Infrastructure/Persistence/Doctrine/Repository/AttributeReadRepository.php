@@ -6,6 +6,7 @@ namespace App\Catalog\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
+use App\Catalog\Domain\Exception\Attribute\AttributeStateException;
 use App\Catalog\Domain\Exception\Attribute\OneOfAttributesNotFoundException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
@@ -33,6 +34,7 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
 
     /**
      * @throws AttributeNotFoundException
+     * @throws AttributeStateException
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCatalogValueObjectException
@@ -44,6 +46,7 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
     }
 
     /**
+     * @throws AttributeStateException
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCatalogValueObjectException
@@ -82,6 +85,7 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
     }
 
     /**
+     * @throws AttributeStateException
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCatalogValueObjectException
@@ -126,7 +130,7 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
     {
         $qb = $this->createBaseQueryBuilder();
 
-        $this->joinOptions(qb: $qb);
+        $this->joinOptions(qb: $qb, withOptions: false);
 
         if ($criteria->filters->has('search')) {
             $search = $this->_prepareSearchValue($criteria->filters->get('search'));
@@ -151,17 +155,21 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
         return $this->createQueryBuilder(self::ALIAS);
     }
 
-    private function joinOptions(QueryBuilder $qb): void
+    private function joinOptions(QueryBuilder $qb, bool $withOptions = true): void
     {
         $qb->leftJoin(self::ALIAS.'.translations', self::ALIAS_TRANSLATIONS)
-            ->addSelect(self::ALIAS_TRANSLATIONS)
-            ->leftJoin(self::ALIAS.'.options', self::ALIAS_OPTIONS)
-            ->addSelect(self::ALIAS_OPTIONS)
-            ->leftJoin(self::ALIAS_OPTIONS.'.translations', self::ALIAS_OPTION_TRANSLATIONS)
-            ->addSelect(self::ALIAS_OPTION_TRANSLATIONS);
+            ->addSelect(self::ALIAS_TRANSLATIONS);
+
+        if ($withOptions) {
+            $qb->leftJoin(self::ALIAS.'.options', self::ALIAS_OPTIONS)
+                ->addSelect(self::ALIAS_OPTIONS)
+                ->leftJoin(self::ALIAS_OPTIONS.'.translations', self::ALIAS_OPTION_TRANSLATIONS)
+                ->addSelect(self::ALIAS_OPTION_TRANSLATIONS);
+        }
     }
 
     /**
+     * @throws AttributeStateException
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCatalogValueObjectException

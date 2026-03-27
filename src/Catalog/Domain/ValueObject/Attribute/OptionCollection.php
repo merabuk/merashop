@@ -17,21 +17,46 @@ use App\Shared\Domain\ValueObject\AbstractCollection;
  */
 final readonly class OptionCollection extends AbstractCollection
 {
+    private bool $initialized;
+
     /**
      * @param AttributeOption[] $items
      *
      * @throws InvalidAttributeOptionItemException
      * @throws AttributeOptionUniqueException
      */
-    public function __construct(array $items)
+    public function __construct(array $items, bool $initialized = true)
     {
-        try {
-            $this->ensureDataType($items);
-            $this->ensureUnique($items);
-            parent::__construct($items);
-        } catch (InvalidAbstractCollectionItemException $e) {
-            throw InvalidAttributeOptionItemException::fromBase($e);
+        $this->initialized = $initialized;
+
+        if ($this->initialized) {
+            try {
+                $this->ensureDataType($items);
+                $this->ensureUnique($items);
+            } catch (InvalidAbstractCollectionItemException $e) {
+                throw InvalidAttributeOptionItemException::fromBase($e);
+            }
         }
+
+        parent::__construct($items);
+    }
+
+    /**
+     * @throws AttributeOptionUniqueException
+     * @throws InvalidAttributeOptionItemException
+     */
+    public static function uninitialized(): self
+    {
+        return new self([], false);
+    }
+
+    /**
+     * @throws InvalidAttributeOptionItemException
+     * @throws AttributeOptionUniqueException
+     */
+    public static function empty(): self
+    {
+        return new self([]);
     }
 
     /**
@@ -43,6 +68,11 @@ final readonly class OptionCollection extends AbstractCollection
     public static function fromArray(array $items): self
     {
         return new self($items);
+    }
+
+    public function isInitialized(): bool
+    {
+        return $this->initialized;
     }
 
     public function getById(int|AttributeOptionId $id): ?AttributeOption
@@ -57,15 +87,6 @@ final readonly class OptionCollection extends AbstractCollection
         $ulidValue = $ulid instanceof AttributeOptionUlid ? $ulid->value() : $ulid;
 
         return array_find($this->items, fn (AttributeOption $item) => $item->getUlid()->value() === $ulidValue);
-    }
-
-    /**
-     * @throws InvalidAttributeOptionItemException
-     * @throws AttributeOptionUniqueException
-     */
-    public static function empty(): self
-    {
-        return new self([]);
     }
 
     protected function getExpectedClass(): string

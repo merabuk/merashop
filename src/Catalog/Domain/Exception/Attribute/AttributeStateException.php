@@ -8,6 +8,11 @@ use App\Catalog\Domain\Exception\CatalogDomainException;
 
 final class AttributeStateException extends CatalogDomainException
 {
+    public static function becauseCanNotSaveAttributeWithUninitializedOptions(): self
+    {
+        return new self('Cannot save an attribute with uninitialized options collection');
+    }
+
     public static function becauseTypeCanNotBeChanged(string $from, string $to): self
     {
         return new self(sprintf('Attribute type can not be changed from "%s" to "%s"', $from, $to));

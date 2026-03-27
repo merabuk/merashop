@@ -131,6 +131,10 @@ class Attribute implements HasIdInterface
      */
     private function ensureTypeAndOptionsConsistency(): void
     {
+        if (false === $this->options->isInitialized()) {
+            return;
+        }
+
         if ($this->type->hasOptions() && $this->options->isEmpty()) {
             throw AttributeStateException::becauseOptionsRequiredForType((string) $this->type);
         }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Catalog\Functional\Presentation\Http\AdminApiVersion1\Controller\Attribute;
 
+use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Presentation\Http\AdminApiVersion1\Controller\Attribute\GetAttributeListController;
 use App\Shared\Domain\Criteria\Sorting\Sort;
 use App\Tests\Catalog\Support\Traits\AttributeFactoryTrait;
@@ -63,7 +64,11 @@ final class GetAttributeListControllerTest extends WebTestCase
 
         $count = 5;
         $perPage = 2;
-        $this->getAttributeFixture()->createMany($count);
+        $this->getAttributeFixture()->create(type: TypeEnum::String);
+        $this->getAttributeFixture()->create(type: TypeEnum::Color);
+        $this->getAttributeFixture()->create(type: TypeEnum::Select);
+        $this->getAttributeFixture()->create(type: TypeEnum::MultiSelect);
+        $this->getAttributeFixture()->create(type: TypeEnum::Integer);
 
         $this->requestJson(
             client: $client,
