@@ -60,16 +60,11 @@ final class CreateAttributeControllerTest extends WebTestCase
     /**
      * @throws InvalidAttributeCodeException
      */
-    public function testItSuccessfullyCreatesAttribute(): void
+    #[DataProvider('validAttributeProvider')]
+    public function testItSuccessfullyCreatesAttribute(array $payload): void
     {
         $client = self::createClient();
         $this->loginAsAdmin();
-
-        $payload = [
-            'code' => 'brand_name',
-            'type' => TypeEnum::String->value,
-            'translations' => self::validTranslations(),
-        ];
 
         $this->requestJson(
             client: $client,
@@ -88,6 +83,36 @@ final class CreateAttributeControllerTest extends WebTestCase
         $this->assertTrue($exists, 'Attribute was not saved to database');
     }
 
+    public static function validAttributeProvider(): iterable
+    {
+        yield 'without options' => [
+            'payload' => [
+                'code' => 'brand-name',
+                'type' => TypeEnum::String->value,
+                'translations' => self::validAttributeTranslations(),
+            ],
+        ];
+        yield 'with options' => [
+            'payload' => [
+                'code' => 'brand-name',
+                'type' => TypeEnum::Select->value,
+                'translations' => self::validAttributeTranslations(),
+                'options' => [
+                    [
+                        'code' => 'brand-name-1',
+                        'translations' => self::getAttributeOptionTranslations(),
+                        'isActive' => true,
+                    ],
+                    [
+                        'code' => 'brand-name-2',
+                        'translations' => self::getAttributeOptionTranslations(),
+                        'isActive' => false,
+                    ],
+                ],
+            ],
+        ];
+    }
+
     public function testItReturns409WhenCodeAlreadyExists(): void
     {
         $client = self::createClient();
@@ -98,7 +123,7 @@ final class CreateAttributeControllerTest extends WebTestCase
         $payload = [
             'code' => $existingAttribute->getCode()->value(),
             'type' => TypeEnum::String->value,
-            'translations' => self::validTranslations(),
+            'translations' => self::validAttributeTranslations(),
         ];
 
         $this->requestJson(
@@ -134,6 +159,10 @@ final class CreateAttributeControllerTest extends WebTestCase
         $this->assertResponseIsUnprocessable();
         $data = $this->getResponseData($client);
 
+        dump([
+            'data' => $data,
+        ]);
+
         $this->assertValidationErrors(responseData: $data, expectedErrorFields: $expectedErrorFields);
     }
 
@@ -142,7 +171,12 @@ final class CreateAttributeControllerTest extends WebTestCase
         $payload = [
             'code' => 'brand',
             'type' => TypeEnum::String->value,
-            'translations' => self::validTranslations(),
+            'translations' => self::validAttributeTranslations(),
+        ];
+        $optionPayload = [
+            'code' => 'brand-name-1',
+            'translations' => self::getAttributeOptionTranslations(),
+            'isActive' => true,
         ];
 
         yield 'empty code' => [
@@ -168,6 +202,64 @@ final class CreateAttributeControllerTest extends WebTestCase
             ],
             'expectedErrorFields' => ['translations', 'translations[xx]'],
         ];
+        yield 'empty options' => [
+            'payload' => [
+                ...$payload,
+                'type' => TypeEnum::Select->value,
+            ],
+            'expectedErrorFields' => ['options'],
+        ];
+        yield 'invalid option code' => [
+            'payload' => [
+                ...$payload,
+                'type' => TypeEnum::Select->value,
+                'options' => [
+                    [
+                        ...$optionPayload,
+                        'code' => '',
+                    ],
+                ],
+            ],
+            'expectedErrorFields' => ['options[0].code'],
+        ];
+        yield 'invalid option locale and missed required locales' => [
+            'payload' => [
+                ...$payload,
+                'type' => TypeEnum::Select->value,
+                'options' => [
+                    [
+                        ...$optionPayload,
+                        'translations' => [
+                            'xx' => ['value' => 'Option'],
+                        ],
+                    ],
+                ],
+            ],
+            'expectedErrorFields' => ['options[0].translations', 'options[0].translations[xx]'],
+        ];
+        yield 'invalid option active' => [
+            'payload' => [
+                ...$payload,
+                'type' => TypeEnum::Select->value,
+                'options' => [
+                    [
+                        ...$optionPayload,
+                        'isActive' => 'invalid_value',
+                    ],
+                ],
+            ],
+            'expectedErrorFields' => ['options[0].isActive'],
+        ];
+        yield 'invalid option base ratio' => [
+            'payload' => [
+                ...$payload,
+                'type' => TypeEnum::Dimension->value,
+                'options' => [
+                    $optionPayload,
+                ],
+            ],
+            'expectedErrorFields' => ['options[0].baseRatio'],
+        ];
     }
 
     private function getUrl(array $params = []): string
@@ -180,11 +272,19 @@ final class CreateAttributeControllerTest extends WebTestCase
         return self::getContainer()->get(AttributeReadRepositoryInterface::class);
     }
 
-    private static function validTranslations(): array
+    private static function validAttributeTranslations(): array
     {
         return [
             'en' => ['name' => 'Brand'],
             'uk' => ['name' => 'Бренд'],
+        ];
+    }
+
+    private static function getAttributeOptionTranslations(): array
+    {
+        return [
+            'en' => ['value' => 'Option'],
+            'uk' => ['value' => 'Опція'],
         ];
     }
 }

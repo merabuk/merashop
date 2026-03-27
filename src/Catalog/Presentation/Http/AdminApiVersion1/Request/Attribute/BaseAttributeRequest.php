@@ -42,13 +42,22 @@ abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
     /**
      * @var ?AttributeOptionRequest[] $options
      */
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(groups: [
+        TypeEnum::Select->value,
+        TypeEnum::MultiSelect->value,
+        TypeEnum::Dimension->value,
+    ])]
     #[Assert\Count(min: 1, minMessage: 'catalog.attribute.options_empty', groups: [
         TypeEnum::Select->value,
         TypeEnum::MultiSelect->value,
         TypeEnum::Dimension->value,
     ])]
-    #[Assert\Valid]
+    #[Assert\Valid(groups: [
+        AttributeOptionRequest::BASE_GROUP,
+        TypeEnum::Select->value,
+        TypeEnum::MultiSelect->value,
+        TypeEnum::Dimension->value,
+    ])]
     public ?array $options;
 
     #[Assert\Callback]
@@ -80,6 +89,12 @@ abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
 
         if ($type = TypeEnum::tryFrom((string) $this->type)) {
             $groups[] = $type->value;
+            match ($type) {
+                TypeEnum::Select,
+                TypeEnum::MultiSelect,
+                TypeEnum::Dimension => $groups[] = AttributeOptionRequest::BASE_GROUP,
+                default => null,
+            };
         }
 
         return $groups;
@@ -101,7 +116,7 @@ abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
             TypeEnum::Date->value,
             TypeEnum::Text->value,
             TypeEnum::Url->value,
-            TypeEnum::Image->value,
+            TypeEnum::Dimension->value,
         ];
     }
 
@@ -133,6 +148,6 @@ abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
      */
     protected function mapAndGetOptions(): array
     {
-        return array_map(fn (AttributeOptionRequest $o) => $o->toData(), $this->options);
+        return array_map(fn (AttributeOptionRequest $o) => $o->toData(), $this->options ?? []);
     }
 }

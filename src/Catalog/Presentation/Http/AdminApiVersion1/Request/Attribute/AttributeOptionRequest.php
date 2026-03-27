@@ -14,24 +14,26 @@ final class AttributeOptionRequest
 {
     use ValidateLocalesTrait;
 
-    #[Assert\Optional]
-    #[Assert\Ulid]
+    public const string BASE_GROUP = 'AttributeOptionRequest';
+
+    #[Assert\Optional(groups: [self::BASE_GROUP])]
+    #[Assert\Ulid(groups: [self::BASE_GROUP])]
     public ?string $ulid = null;
 
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 1, max: Code::MAX_LENGTH)]
+    #[Assert\NotBlank(groups: [self::BASE_GROUP])]
+    #[Assert\Length(min: 1, max: Code::MAX_LENGTH, groups: [self::BASE_GROUP])]
     public ?string $code;
 
     /**
      * @var ?AttributeOptionTranslationRequest[] $translations
      */
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(groups: [self::BASE_GROUP])]
     #[Assert\Count(min: 1, minMessage: 'shared.common.translations_empty')]
-    #[Assert\Valid]
+    #[Assert\Valid(groups: [self::BASE_GROUP])]
     public ?array $translations;
 
-    #[Assert\NotNull]
-    #[Assert\Type(type: 'bool')]
+    #[Assert\NotNull(groups: [self::BASE_GROUP])]
+    #[Assert\Type(type: 'bool', groups: [self::BASE_GROUP])]
     public ?bool $isActive;
 
     #[Assert\NotNull(groups: [TypeEnum::Dimension->value])]
