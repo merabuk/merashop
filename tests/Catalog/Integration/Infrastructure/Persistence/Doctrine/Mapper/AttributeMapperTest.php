@@ -93,14 +93,14 @@ final class AttributeMapperTest extends KernelTestCase
     {
         $domainAttribute = AttributeMother::createWithData(
             code: 'new-test-code',
-            type: TypeEnum::String,
+            type: TypeEnum::Text,
             translations: ['en' => ['name' => 'New name']],
             updatedByUlid: '01KHVRCA679BJ6PBXX5N3G6RR5'
         );
 
         $ormAttribute = new OrmAttribute();
         $ormAttribute->code = 'old-test-code';
-        $ormAttribute->type = TypeEnum::Integer;
+        $ormAttribute->type = TypeEnum::String;
         $ormAttribute->updatedBy = 'old_ulid';
 
         $translation = new OrmAttributeTranslation();

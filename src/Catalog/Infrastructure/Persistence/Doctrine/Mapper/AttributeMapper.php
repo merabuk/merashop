@@ -101,6 +101,7 @@ final readonly class AttributeMapper implements MapperInterface
         /* @var OrmAttribute $orm */
 
         $orm->code = $domain->getCode()->value();
+        $orm->type = $domain->getType()->value();
         $orm->updatedBy = $domain->getUpdatedBy()?->value();
 
         $this->mapTranslationsFromDomainToOrm($domain, $orm);
