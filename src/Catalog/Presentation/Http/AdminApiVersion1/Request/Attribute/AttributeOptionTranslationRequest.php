@@ -10,9 +10,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 final class AttributeOptionTranslationRequest
 {
-    #[Assert\NotBlank]
-    #[Assert\Length(max: Translation::NAME_MAX_LENGTH)]
-    public ?string $value = null;
+    public const string BASE_GROUP = 'AttributeOptionTranslationRequest';
+
+    #[Assert\NotBlank(groups: [self::BASE_GROUP])]
+    #[Assert\Length(min: 1, max: Translation::NAME_MAX_LENGTH, groups: [self::BASE_GROUP])]
+    public ?string $value;
 
     public function toData(): AttributeOptionTranslationData
     {

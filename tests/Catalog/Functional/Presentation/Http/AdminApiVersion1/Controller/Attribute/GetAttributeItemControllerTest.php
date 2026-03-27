@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Catalog\Functional\Presentation\Http\AdminApiVersion1\Controller\Attribute;
 
+use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Enum\ErrorCodeEnum;
+use App\Catalog\Domain\ValueObject\AttributeOption\Metadata\DimensionMetadata;
 use App\Catalog\Presentation\Http\AdminApiVersion1\Controller\Attribute\GetAttributeItemController;
 use App\Shared\Domain\Enum\ErrorCodeEnum as SharedErrorCodeEnum;
 use App\Tests\Catalog\Support\Traits\AttributeFactoryTrait;
@@ -12,6 +14,7 @@ use App\Tests\Shared\Support\Traits\ApiAuthTrait;
 use App\Tests\Shared\Support\Traits\ApiRequestTrait;
 use App\Tests\Shared\Support\Traits\ApiResponseTrait;
 use App\Tests\Shared\Support\Traits\BaseUriTrait;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -61,12 +64,13 @@ final class GetAttributeItemControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
-    public function testItReturnsAttributeItem(): void
+    #[DataProvider('validAttributeProvider')]
+    public function testItReturnsAttributeItem(TypeEnum $type): void
     {
         $client = self::createClient();
         $this->loginAsAdmin();
 
-        $attribute = $this->getAttributeFixture()->create();
+        $attribute = $this->getAttributeFixture()->create(type: $type);
 
         $this->requestJson(
             client: $client,
@@ -83,6 +87,7 @@ final class GetAttributeItemControllerTest extends WebTestCase
         self::assertArrayHasKey('type', $data);
         self::assertArrayHasKey('translations', $data);
         self::assertArrayHasKey('version', $data);
+        self::assertArrayHasKey('options', $data);
         self::assertSame($attribute->getId()->value(), $data['id']);
         self::assertSame($attribute->getCode()->value(), $data['code']);
         self::assertSame($attribute->getType()->value()->value, $data['type']);
@@ -92,6 +97,41 @@ final class GetAttributeItemControllerTest extends WebTestCase
             self::assertSame($translation->name, $data['translations'][$locale]['name']);
         }
         self::assertSame($attribute->getVersion()->value(), $data['version']);
+        self::assertSame($attribute->getOptions()->count(), count($data['options']));
+        foreach ($attribute->getOptions() as $i => $option) {
+            self::assertArrayHasKey($i, $data['options']);
+            self::assertArrayHasKey('ulid', $data['options'][$i]);
+            self::assertArrayHasKey('code', $data['options'][$i]);
+            self::assertArrayHasKey('translations', $data['options'][$i]);
+            self::assertArrayHasKey('isActive', $data['options'][$i]);
+            $metadata = $option->getMetadata();
+            if ($metadata) {
+                self::assertArrayHasKey('metadata', $data['options'][$i]);
+            } else {
+                self::assertArrayNotHasKey('metadata', $data['options'][$i]);
+            }
+            self::assertSame($option->getUlid()->value(), $data['options'][$i]['ulid']);
+            self::assertSame($option->getCode()->value(), $data['options'][$i]['code']);
+            foreach ($option->getTranslations() as $locale => $translation) {
+                self::assertArrayHasKey($locale, $data['options'][$i]['translations']);
+                self::assertArrayHasKey('value', $data['options'][$i]['translations'][$locale]);
+                self::assertSame($translation->value, $data['options'][$i]['translations'][$locale]['value']);
+            }
+            self::assertSame($option->isActive()->value(), $data['options'][$i]['isActive']);
+            match (true) {
+                $metadata instanceof DimensionMetadata => self::assertSame(
+                    ['baseRatio' => (string) $metadata],
+                    $data['options'][$i]['metadata']),
+                default => self::assertNull($data['options'][$i]['metadata']),
+            };
+        }
+    }
+
+    public static function validAttributeProvider(): iterable
+    {
+        yield 'without option' => [TypeEnum::String];
+        yield 'with option' => [TypeEnum::Select];
+        yield 'with option and metadata' => [TypeEnum::Dimension];
     }
 
     public function testItReturns404OnNonExistingAttribute(): void
@@ -99,10 +139,12 @@ final class GetAttributeItemControllerTest extends WebTestCase
         $client = self::createClient();
         $this->loginAsAdmin();
 
+        $id = 123;
+
         $this->requestJson(
             client: $client,
             method: self::METHOD,
-            uri: $this->getUrl(['id' => 123])
+            uri: $this->getUrl(['id' => $id])
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
@@ -111,7 +153,7 @@ final class GetAttributeItemControllerTest extends WebTestCase
         $this->assertExceptionMessage(
             data: $data,
             expectedCode: ErrorCodeEnum::AttributeNotFound->value,
-            expectedContainMessage: 'Attribute not found'
+            expectedContainMessage: sprintf('Attribute with id "%s" not found', $id)
         );
     }
 

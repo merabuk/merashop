@@ -18,7 +18,7 @@ abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
 {
     use ValidateLocalesTrait;
 
-    private const string BASE_GROUP = 'BaseAttributeRequest';
+    protected const string BASE_GROUP = 'BaseAttributeRequest';
 
     #[Assert\NotBlank]
     #[Assert\Length(min: 1, max: Code::MAX_LENGTH)]
@@ -36,7 +36,7 @@ abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
      */
     #[Assert\NotBlank]
     #[Assert\Count(min: 1, minMessage: 'shared.common.translations_empty')]
-    #[Assert\Valid]
+    #[Assert\Valid(groups: [AttributeTranslationRequest::BASE_GROUP])]
     public ?array $translations;
 
     /**
@@ -54,6 +54,7 @@ abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
     ])]
     #[Assert\Valid(groups: [
         AttributeOptionRequest::BASE_GROUP,
+        AttributeOptionTranslationRequest::BASE_GROUP,
         TypeEnum::Select->value,
         TypeEnum::MultiSelect->value,
         TypeEnum::Dimension->value,
@@ -85,17 +86,23 @@ abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
 
     public function getGroupSequence(): array
     {
-        $groups = [self::BASE_GROUP];
+        $groups = [self::BASE_GROUP, AttributeTranslationRequest::BASE_GROUP];
 
         if ($type = TypeEnum::tryFrom((string) $this->type)) {
             $groups[] = $type->value;
             match ($type) {
                 TypeEnum::Select,
                 TypeEnum::MultiSelect,
-                TypeEnum::Dimension => $groups[] = AttributeOptionRequest::BASE_GROUP,
+                TypeEnum::Dimension => $groups = [
+                    ...$groups,
+                    AttributeOptionRequest::BASE_GROUP,
+                    AttributeOptionTranslationRequest::BASE_GROUP,
+                ],
                 default => null,
             };
         }
+
+        dump($groups);
 
         return $groups;
     }

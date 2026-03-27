@@ -80,7 +80,7 @@ final class CreateAttributeControllerTest extends WebTestCase
         $this->assertStringContainsString('Attribute was successfully created', $data['message']);
 
         $exists = $this->getReadRepository()->existsByCode(Code::fromString($payload['code']));
-        $this->assertTrue($exists, 'Attribute was not saved to database');
+        self::assertTrue($exists, 'Attribute was not saved to database');
     }
 
     public static function validAttributeProvider(): iterable
@@ -202,6 +202,16 @@ final class CreateAttributeControllerTest extends WebTestCase
             ],
             'expectedErrorFields' => ['translations', 'translations[xx]'],
         ];
+        yield 'invalid attribute translation name' => [
+            'payload' => [
+                ...$payload,
+                'translations' => [
+                    ...self::validAttributeTranslations(),
+                    'en' => ['name' => ''],
+                ],
+            ],
+            'expectedErrorFields' => ['translations[en].name'],
+        ];
         yield 'empty options' => [
             'payload' => [
                 ...$payload,
@@ -236,6 +246,22 @@ final class CreateAttributeControllerTest extends WebTestCase
                 ],
             ],
             'expectedErrorFields' => ['options[0].translations', 'options[0].translations[xx]'],
+        ];
+        yield 'invalid option translation value' => [
+            'payload' => [
+                ...$payload,
+                'type' => TypeEnum::Select->value,
+                'options' => [
+                    [
+                        ...$optionPayload,
+                        'translations' => [
+                            ...self::getAttributeOptionTranslations(),
+                            'en' => ['value' => ''],
+                        ],
+                    ],
+                ],
+            ],
+            'expectedErrorFields' => ['options[0].translations[en].value'],
         ];
         yield 'invalid option active' => [
             'payload' => [

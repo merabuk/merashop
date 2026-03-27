@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Catalog\Support;
 
 use App\Catalog\Domain\Entity\Attribute;
+use App\Catalog\Domain\Entity\AttributeOption;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
 
@@ -18,6 +19,7 @@ final readonly class AttributeFixture
 
     /**
      * @param ?array<string, array{name: string}> $translations
+     * @param ?AttributeOption[]                  $options
      */
     public function create(
         ?string $ulid = null,
@@ -25,6 +27,7 @@ final readonly class AttributeFixture
         ?TypeEnum $type = null,
         ?array $translations = null,
         ?string $createdByUlid = null,
+        ?array $options = null,
     ): Attribute {
         $attribute = $this->mother->create(
             ulid: $ulid,
@@ -32,6 +35,7 @@ final readonly class AttributeFixture
             type: $type,
             translations: $translations,
             createdByUlid: $createdByUlid,
+            options: $options,
         );
 
         return $this->repository->save($attribute);

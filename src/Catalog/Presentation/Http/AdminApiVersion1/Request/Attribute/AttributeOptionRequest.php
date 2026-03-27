@@ -27,9 +27,12 @@ final class AttributeOptionRequest
     /**
      * @var ?AttributeOptionTranslationRequest[] $translations
      */
-    #[Assert\NotBlank(groups: [self::BASE_GROUP])]
-    #[Assert\Count(min: 1, minMessage: 'shared.common.translations_empty')]
-    #[Assert\Valid(groups: [self::BASE_GROUP])]
+    #[Assert\NotBlank(groups: [AttributeOptionTranslationRequest::BASE_GROUP, self::BASE_GROUP])]
+    #[Assert\Count(min: 1, minMessage: 'shared.common.translations_empty', groups: [
+        AttributeOptionTranslationRequest::BASE_GROUP,
+        self::BASE_GROUP,
+    ])]
+    #[Assert\Valid(groups: [AttributeOptionTranslationRequest::BASE_GROUP, self::BASE_GROUP])]
     public ?array $translations;
 
     #[Assert\NotNull(groups: [self::BASE_GROUP])]
