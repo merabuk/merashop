@@ -11,10 +11,12 @@ use App\Catalog\Application\DTO\Attribute\AttributeOptionTranslationData;
 use App\Catalog\Application\DTO\Attribute\AttributeTranslationData;
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Entity\AttributeOption;
+use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\ValueObject\Attribute\OptionCollection;
 use App\Catalog\Domain\ValueObject\Attribute\Translation as AttributeTranslation;
 use App\Catalog\Domain\ValueObject\Attribute\Translations as AttributeTranslations;
 use App\Catalog\Domain\ValueObject\AttributeOption\Translation as AttributeOptionTranslation;
+use App\Catalog\Domain\ValueObject\AttributeOption\Ulid as AttributeOptionUlid;
 
 trait AttributeHelperTrait
 {
@@ -32,16 +34,22 @@ trait AttributeHelperTrait
     /**
      * @param string[] $newOptionUlids
      */
-    protected function fillAndGetUpdateCommand(Attribute $attribute, array $newOptionUlids = []): UpdateAttributeCommand
-    {
+    protected function fillAndGetUpdateCommand(
+        Attribute $attribute,
+        ?int $version = null,
+        ?string $code = null,
+        ?TypeEnum $type = null,
+        ?OptionCollection $options = null,
+        array $newOptionUlids = [],
+    ): UpdateAttributeCommand {
         return new UpdateAttributeCommand(
             id: $attribute->getId()->value(),
-            code: $attribute->getCode()->value(),
-            type: $attribute->getType()->value()->value,
+            code: $code ?? $attribute->getCode()->value(),
+            type: ($type ?? $attribute->getType()->value())->value,
             translations: self::getValidAttributeTranslations($attribute->getTranslations()),
-            options: self::getValidAttributeOptions($attribute->getOptions(), $newOptionUlids),
-            version: $attribute->getVersion()->value(),
-            adminUlid: $attribute->getUpdatedBy()->value(),
+            options: self::getValidAttributeOptions($options ?? $attribute->getOptions(), $newOptionUlids),
+            version: $version ?? $attribute->getVersion()->value(),
+            adminUlid: $attribute->getCreatedBy()->value(),
         );
     }
 
@@ -72,5 +80,13 @@ trait AttributeHelperTrait
             ), $option->getTranslations()->all()),
             isActive: $option->isActive()->value(),
         ), $options->all());
+    }
+
+    /**
+     * @return AttributeOptionUlid[]
+     */
+    protected function getExpectedAttributeOptionUlids(Attribute $attribute, ?OptionCollection $options = null): array
+    {
+        return array_map(fn (AttributeOption $ao) => $ao->getUlid(), ($options ?? $attribute->getOptions())->all());
     }
 }

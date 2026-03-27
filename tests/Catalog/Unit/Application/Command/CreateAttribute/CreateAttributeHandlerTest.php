@@ -8,12 +8,14 @@ use App\Catalog\Application\Command\CreateAttribute\CreateAttributeCommand;
 use App\Catalog\Application\Command\CreateAttribute\CreateAttributeHandler;
 use App\Catalog\Application\Service\Attribute\AttributeApplicationFactoryInterface;
 use App\Catalog\Domain\Entity\Attribute;
+use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Exception\Attribute\AttributeAlreadyExistsException;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
 use App\Catalog\Domain\Service\Attribute\AttributeValidatorInterface;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Tests\Catalog\Support\AttributeMother;
 use App\Tests\Catalog\Support\Traits\AttributeHelperTrait;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -32,20 +34,32 @@ final class CreateAttributeHandlerTest extends TestCase
         $this->writeRepository = $this->createMock(AttributeWriteRepositoryInterface::class);
     }
 
-    public function testItHandleSuccess(): void
-    {
-        $fakeId = 123;
-        $attribute = AttributeMother::createWithData(id: $fakeId);
-
+    #[DataProvider('attributeDataProvider')]
+    public function testItHandleSuccess(
+        Attribute $attribute,
+        int $expectedId,
+    ): void {
         $command = $this->fillAndGetCreateCommand($attribute);
 
-        $this->givenCodeIsAvailable($attribute->getCode());
         $this->expectFactoryCreateAttribute($command, $attribute);
+        $this->givenCodeIsAvailable($attribute->getCode());
         $this->expectSaveAttribute($attribute);
 
         $resultId = $this->createHandler()($command);
 
-        self::assertSame($fakeId, $resultId);
+        self::assertSame($expectedId, $resultId);
+    }
+
+    public static function attributeDataProvider(): iterable
+    {
+        yield 'without options' => [
+            'attribute' => AttributeMother::createWithData(type: TypeEnum::String, id: 123),
+            'expectedId' => 123,
+        ];
+        yield 'with options' => [
+            'attribute' => AttributeMother::createWithData(type: TypeEnum::Select, id: 123),
+            'expectedId' => 123,
+        ];
     }
 
     public function testThrowsExceptionIfAttributeExists(): void
@@ -53,8 +67,8 @@ final class CreateAttributeHandlerTest extends TestCase
         $attribute = AttributeMother::createWithData(id: 123);
         $command = $this->fillAndGetCreateCommand($attribute);
 
-        $this->givenCodeIsTaken($command->code);
-        $this->factoryCreateAttributeNeverCalled();
+        $this->expectFactoryCreateAttribute($command, $attribute);
+        $this->givenCodeIsTaken($attribute->getCode());
         $this->saveAttributeNeverCalled();
 
         $this->expectException(AttributeAlreadyExistsException::class);
@@ -78,11 +92,11 @@ final class CreateAttributeHandlerTest extends TestCase
             ->with(self::equalTo($code));
     }
 
-    private function givenCodeIsTaken(string $code): void
+    private function givenCodeIsTaken(Code $code): void
     {
         $this->attributeValidator->expects(self::once())
             ->method('validateCreation')
-            ->with(self::callback(fn (Code $c) => $c->value() === $code))
+            ->with(self::equalTo($code))
             ->willThrowException(new AttributeAlreadyExistsException());
     }
 
@@ -94,29 +108,19 @@ final class CreateAttributeHandlerTest extends TestCase
             ->willReturn($attribute);
     }
 
-    private function factoryCreateAttributeNeverCalled(): void
-    {
-        $this->attributeFactory->expects(self::never())->method('createFromCommand');
-    }
-
     private function expectSaveAttribute(Attribute $attribute): void
     {
         $this->writeRepository->expects(self::once())
             ->method('save')
             ->with(self::callback(function (Attribute $updatedAttribute) use ($attribute): bool {
-                $ulidCorrect = $attribute->getUlid()->equals($updatedAttribute->getUlid());
-                $codeCorrect = $attribute->getCode()->equals($updatedAttribute->getCode());
-                $typeCorrect = $attribute->getType()->equals($updatedAttribute->getType());
-                $translationsCorrect = $attribute->getTranslations()->equals($updatedAttribute->getTranslations());
-                $createdByCorrect = $attribute->getCreatedBy()->equals($updatedAttribute->getCreatedBy());
-                $optionsCorrect = $attribute->getOptions()->equals($updatedAttribute->getOptions());
+                self::assertTrue($attribute->getUlid()->equals($updatedAttribute->getUlid()));
+                self::assertTrue($attribute->getCode()->equals($updatedAttribute->getCode()));
+                self::assertTrue($attribute->getType()->equals($updatedAttribute->getType()));
+                self::assertTrue($attribute->getTranslations()->equals($updatedAttribute->getTranslations()));
+                self::assertTrue($attribute->getCreatedBy()->equals($updatedAttribute->getCreatedBy()));
+                self::assertTrue($attribute->getOptions()->equals($updatedAttribute->getOptions()));
 
-                return $ulidCorrect
-                    && $codeCorrect
-                    && $typeCorrect
-                    && $translationsCorrect
-                    && $createdByCorrect
-                    && $optionsCorrect;
+                return true;
             }))
             ->willReturn($attribute);
     }

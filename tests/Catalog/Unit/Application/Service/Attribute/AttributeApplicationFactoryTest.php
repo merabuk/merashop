@@ -237,7 +237,7 @@ final class AttributeApplicationFactoryTest extends TestCase
             updatedByUlid: AttributeMother::DEFAULT_ADMIN_ULID,
             id: 456
         );
-        $command = $this->fillAndGetUpdateCommand($attributeForUpdate);
+        $command = $this->fillAndGetUpdateCommand(attribute: $attributeForUpdate);
 
         $this->createFactory()->updateFromCommand($attribute, $command);
 
@@ -296,7 +296,10 @@ final class AttributeApplicationFactoryTest extends TestCase
             id: 456
         );
 
-        $command = $this->fillAndGetUpdateCommand($attributeForUpdate, [$willBeAdded->getUlid()->value()]);
+        $command = $this->fillAndGetUpdateCommand(
+            attribute: $attributeForUpdate,
+            newOptionUlids: [$willBeAdded->getUlid()->value()],
+        );
 
         $this->expectGenerateUlid($willBeAdded->getUlid()->value());
 
