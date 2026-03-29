@@ -34,7 +34,7 @@ final class DimensionAttributeValueProviderTest extends TestCase
         $attribute = AttributeMother::createWithData(type: self::TYPE, options: [$option], id: 123);
         $data = self::getData(unitOptionId: $option->getId()->value());
 
-        $results = $this->createProvider()->handle($attribute, $data);
+        $results = $this->createProvider()->handle($attribute, $data, $attribute->getCreatedBy());
 
         self::assertCount(1, $results);
         $result = $results[0];
@@ -44,6 +44,7 @@ final class DimensionAttributeValueProviderTest extends TestCase
         self::assertSame($data->magnitude, $value->magnitude());
         self::assertSame($data->unitOptionId, $value->getUnitOptionId()->value());
         self::assertTrue($option->getId()->equals($result->getAttributeOptionId()));
+        self::assertTrue($attribute->getCreatedBy()->equals($result->getCreatedBy()));
     }
 
     #[DataProvider('invalidDataProvider')]
@@ -54,7 +55,7 @@ final class DimensionAttributeValueProviderTest extends TestCase
     ): void {
         $this->expectException($expectedException);
 
-        $this->createProvider()->handle($attribute, $data);
+        $this->createProvider()->handle($attribute, $data, $attribute->getCreatedBy());
     }
 
     public static function invalidDataProvider(): iterable

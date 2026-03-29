@@ -9,6 +9,7 @@ use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\ValueObject\AttributeOption\Code;
 use App\Shared\Presentation\Http\Request\ValidateLocalesTrait;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 final class AttributeOptionRequest
 {
@@ -27,12 +28,13 @@ final class AttributeOptionRequest
     /**
      * @var ?AttributeOptionTranslationRequest[] $translations
      */
-    #[Assert\NotBlank(groups: [AttributeOptionTranslationRequest::BASE_GROUP, self::BASE_GROUP])]
-    #[Assert\Count(min: 1, minMessage: 'shared.common.translations_empty', groups: [
-        AttributeOptionTranslationRequest::BASE_GROUP,
-        self::BASE_GROUP,
-    ])]
-    #[Assert\Valid(groups: [AttributeOptionTranslationRequest::BASE_GROUP, self::BASE_GROUP])]
+    #[Assert\NotBlank(groups: [AttributeOptionTranslationRequest::BASE_GROUP])]
+    #[Assert\Count(
+        min: 1,
+        minMessage: 'shared.common.translations_empty',
+        groups: [AttributeOptionTranslationRequest::BASE_GROUP],
+    )]
+    #[Assert\Valid(groups: [AttributeOptionTranslationRequest::BASE_GROUP])]
     public ?array $translations;
 
     #[Assert\NotNull(groups: [self::BASE_GROUP])]
@@ -53,6 +55,12 @@ final class AttributeOptionRequest
             isActive: $this->isActive,
             baseRatio: $this->baseRatio,
         );
+    }
+
+    #[Assert\Callback(groups: [AttributeOptionTranslationRequest::BASE_GROUP])]
+    public function validateLocales(ExecutionContextInterface $context): void
+    {
+        $this->_validateLocales($context);
     }
 
     /**

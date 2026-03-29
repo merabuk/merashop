@@ -15,17 +15,11 @@ trait ProductFactoryTrait
 {
     protected function getProductMother(): ProductMother
     {
-        /** @var ProductMother $mother */
-        $mother = self::getContainer()->get(ProductMother::class);
-
-        return $mother;
+        return self::getContainer()->get(ProductMother::class);
     }
 
     protected function getProductFixture(): ProductFixture
     {
-        /** @var ProductFixture $fixture */
-        $fixture = self::getContainer()->get(ProductFixture::class);
-
-        return $fixture;
+        return self::getContainer()->get(ProductFixture::class);
     }
 }

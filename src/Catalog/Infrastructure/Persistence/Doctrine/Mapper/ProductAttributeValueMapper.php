@@ -7,9 +7,11 @@ namespace App\Catalog\Infrastructure\Persistence\Doctrine\Mapper;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
+use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
 use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Id as ProductAttributeValueId;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Version;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttributeOption;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductAttributeValue;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Normalizer\ProductAttributeValueNormalizer;
@@ -40,13 +42,19 @@ final readonly class ProductAttributeValueMapper
         if (null === $type) {
             throw $this->makeError(sprintf('%s Attribute type is null', $this->getLogPrefix($id)));
         }
+        if ($type->hasOptions() && null === $optionId) {
+            throw $this->makeError(sprintf('%s Attribute %s type option id is null', $this->getLogPrefix($id), $type->value));
+        }
 
         $attributeOptionId = $optionId ? AttributeOptionId::fromInt($optionId) : null;
 
         return new ProductAttributeValue(
             attributeId: AttributeId::fromInt($orm->attribute->id),
+            version: Version::fromInt($orm->version),
+            createdBy: AdminUlid::fromString($orm->createdBy),
             attributeOptionId: $attributeOptionId,
             value: $this->normalizer->denormalize(type: $type, data: $orm->valueJson, optionId: $attributeOptionId),
+            updatedBy: $orm->updatedBy ? AdminUlid::fromString($orm->updatedBy) : null,
             id: ProductAttributeValueId::fromInt($id)
         );
     }
@@ -54,17 +62,18 @@ final readonly class ProductAttributeValueMapper
     public function mapToExistingOrm(ProductAttributeValue $domain, OrmProductAttributeValue $orm): void
     {
         $vo = $domain->getValue();
-        $option = $domain->getAttributeOptionId();
+        $optionId = $domain->getAttributeOptionId();
 
         $orm->option = match (true) {
-            null !== $option => $this->referenceProvider->getReference(
+            null !== $optionId => $this->referenceProvider->getReference(
                 className: OrmAttributeOption::class,
-                id: $option->value()
+                id: $optionId->value()
             ),
             default => null,
         };
 
         $orm->valueJson = $this->normalizer->normalize($vo);
+        $orm->updatedBy = $domain->getUpdatedBy()?->value();
     }
 
     private function getLogPrefix(int $id): string

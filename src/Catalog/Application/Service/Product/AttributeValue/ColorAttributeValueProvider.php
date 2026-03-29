@@ -10,7 +10,9 @@ use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeColorValueException;
+use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeValueVersionException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
+use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\ColorValue;
 
 final readonly class ColorAttributeValueProvider implements ProductAttributeValueProviderInterface
@@ -25,11 +27,15 @@ final readonly class ColorAttributeValueProvider implements ProductAttributeValu
     /**
      * @return ProductAttributeValue[]
      *
-     * @throws ProductAttributeValueStateException
      * @throws InvalidProductAttributeColorValueException
+     * @throws InvalidProductAttributeValueVersionException
+     * @throws ProductAttributeValueStateException
      */
-    public function handle(Attribute $attribute, AttributeValueDataInterface $data): array
-    {
+    public function handle(
+        Attribute $attribute,
+        AttributeValueDataInterface $data,
+        AdminUlid $adminUlid,
+    ): array {
         $this->checkAttributeType($attribute);
 
         if (false === $data instanceof ColorAttributeValueData) {
@@ -40,6 +46,7 @@ final readonly class ColorAttributeValueProvider implements ProductAttributeValu
             ProductAttributeValue::createWithValue(
                 attributeId: $attribute->getId(),
                 value: ColorValue::fromString($data->value),
+                createdBy: $adminUlid,
             ),
         ];
     }

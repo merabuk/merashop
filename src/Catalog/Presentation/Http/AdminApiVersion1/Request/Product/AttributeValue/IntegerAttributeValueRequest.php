@@ -9,11 +9,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 final class IntegerAttributeValueRequest extends BaseAttributeValueRequest
 {
-    #[Assert\NotNull]
-    #[Assert\Type('int')]
+    #[Assert\NotNull(groups: [self::BASE_GROUP])]
+    #[Assert\Type(type: 'int', groups: [self::BASE_GROUP])]
     public int $value;
 
-    public function toData(): IntegerAttributeValueData
+    public function toValueData(): IntegerAttributeValueData
     {
         return new IntegerAttributeValueData(value: $this->value);
     }

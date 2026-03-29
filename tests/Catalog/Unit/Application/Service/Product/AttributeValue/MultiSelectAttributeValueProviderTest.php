@@ -29,19 +29,20 @@ final class MultiSelectAttributeValueProviderTest extends TestCase
 
     public function testItHandleCorrectly(): void
     {
-        $option1 = AttributeOptionMother::createWithData(ulid: '01KMDEC4Z9NSK4YPEW8NG5068T', id: 456);
-        $option2 = AttributeOptionMother::createWithData(ulid: '01KMGY62KTY8BJ9J8NHMXHKF4P', id: 789);
+        $option1 = AttributeOptionMother::createWithData(ulid: '01KMDEC4Z9NSK4YPEW8NG5068T', code: 'option-1', id: 456);
+        $option2 = AttributeOptionMother::createWithData(ulid: '01KMGY62KTY8BJ9J8NHMXHKF4P', code: 'option-2', id: 789);
         $options = [$option1, $option2];
         $attribute = AttributeMother::createWithData(type: self::TYPE, options: $options, id: 123);
         $data = self::getData(optionIds: [$option1->getId()->value(), $option2->getId()->value()]);
 
-        $results = $this->createProvider()->handle($attribute, $data);
+        $results = $this->createProvider()->handle($attribute, $data, $attribute->getCreatedBy());
 
         self::assertCount(2, $results);
 
         foreach ($results as $i => $result) {
             self::assertInstanceOf(ProductAttributeValue::class, $result);
             self::assertNull($result->getValue());
+            self::assertTrue($attribute->getCreatedBy()->equals($result->getCreatedBy()));
             self::assertTrue($options[$i]->getId()->equals($result->getAttributeOptionId()));
         }
     }
@@ -54,7 +55,7 @@ final class MultiSelectAttributeValueProviderTest extends TestCase
     ): void {
         $this->expectException($expectedException);
 
-        $this->createProvider()->handle($attribute, $data);
+        $this->createProvider()->handle($attribute, $data, $attribute->getCreatedBy());
     }
 
     public static function invalidDataProvider(): iterable

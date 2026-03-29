@@ -14,6 +14,9 @@ final readonly class DateValue extends DateValueObject implements AttributeValue
      */
     public static function fromString(string $value): self
     {
+        if ('' === $value) {
+            throw InvalidProductAttributeDateValueException::becauseItIsEmpty();
+        }
         try {
             return new self(new DateTimeImmutable($value));
         } catch (DateMalformedStringException $e) {

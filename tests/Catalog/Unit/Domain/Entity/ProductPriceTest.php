@@ -7,11 +7,13 @@ namespace App\Tests\Catalog\Unit\Domain\Entity;
 use App\Catalog\Domain\Entity\ProductPrice;
 use App\Catalog\Domain\Enum\ProductPrice\TypeEnum;
 use App\Catalog\Domain\Exception\ProductPrice\ProductPriceStateException;
+use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\ProductPrice\Price;
 use App\Catalog\Domain\ValueObject\ProductPrice\Tax;
 use App\Catalog\Domain\ValueObject\ProductPrice\TaxIncludedFlag;
 use App\Catalog\Domain\ValueObject\ProductPrice\Type;
 use App\Catalog\Domain\ValueObject\ProductPrice\ValidityPeriod;
+use App\Catalog\Domain\ValueObject\ProductPrice\Version;
 use App\Shared\Domain\Enum\CurrencyEnum;
 use App\Shared\Domain\Enum\TaxTypeEnum;
 use App\Tests\Catalog\Support\ProductPriceMother;
@@ -35,6 +37,8 @@ final class ProductPriceTest extends TestCase
             type: Type::fromEnum($type),
             tax: new Tax(value: 1, type: TaxTypeEnum::Percentage),
             taxIncluded: TaxIncludedFlag::fromBool(true),
+            version: Version::initial(),
+            createdBy: AdminUlid::fromString(ProductPriceMother::DEFAULT_ADMIN_ULID),
             validityPeriod: $validFrom && $validTo
                 ? ValidityPeriod::fromDateTimeRange($validFrom, $validTo)
                 : null,

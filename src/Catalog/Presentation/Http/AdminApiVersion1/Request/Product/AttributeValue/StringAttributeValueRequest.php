@@ -8,6 +8,7 @@ use App\Catalog\Application\DTO\Product\AttributeValue\StringAttributeValueData;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\LocalizedStringValue;
 use App\Shared\Presentation\Http\Request\ValidateLocalesTrait;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 final class StringAttributeValueRequest extends BaseAttributeValueRequest
 {
@@ -16,17 +17,23 @@ final class StringAttributeValueRequest extends BaseAttributeValueRequest
     /**
      * @var array<string, string>
      */
-    #[Assert\NotBlank]
-    #[Assert\Count(min: 1)]
-    #[Assert\All([
+    #[Assert\NotBlank(groups: [self::BASE_GROUP])]
+    #[Assert\Count(min: 1, groups: [self::BASE_GROUP])]
+    #[Assert\All(constraints: [
         new Assert\NotBlank(),
         new Assert\Length(max: LocalizedStringValue::MAX_LENGTH),
-    ])]
+    ], groups: [self::BASE_GROUP])]
     public ?array $translations;
 
-    public function toData(): StringAttributeValueData
+    public function toValueData(): StringAttributeValueData
     {
         return new StringAttributeValueData(translations: $this->translations);
+    }
+
+    #[Assert\Callback(groups: [self::BASE_GROUP])]
+    public function validateLocales(ExecutionContextInterface $context): void
+    {
+        $this->_validateLocales($context);
     }
 
     /**

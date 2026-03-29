@@ -159,10 +159,6 @@ final class CreateAttributeControllerTest extends WebTestCase
         $this->assertResponseIsUnprocessable();
         $data = $this->getResponseData($client);
 
-        dump([
-            'data' => $data,
-        ]);
-
         $this->assertValidationErrors(responseData: $data, expectedErrorFields: $expectedErrorFields);
     }
 
@@ -247,7 +243,23 @@ final class CreateAttributeControllerTest extends WebTestCase
             ],
             'expectedErrorFields' => ['options[0].translations', 'options[0].translations[xx]'],
         ];
-        yield 'invalid option translation value' => [
+        yield 'missing and invalid option translation value' => [
+            'payload' => [
+                ...$payload,
+                'type' => TypeEnum::Select->value,
+                'options' => [
+                    [
+                        ...$optionPayload,
+                        'translations' => [
+                            'en' => ['value' => ''],
+                            'xx' => ['value' => 'Option'],
+                        ],
+                    ],
+                ],
+            ],
+            'expectedErrorFields' => ['options[0].translations', 'options[0].translations[xx]'],
+        ];
+        yield 'invalid option en value translation value' => [
             'payload' => [
                 ...$payload,
                 'type' => TypeEnum::Select->value,

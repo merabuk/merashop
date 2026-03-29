@@ -10,11 +10,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 final class ColorAttributeValueRequest extends BaseAttributeValueRequest
 {
-    #[Assert\NotBlank]
-    #[Assert\Regex(pattern: ColorValue::HEX_REGEX)]
+    #[Assert\NotBlank(groups: [self::BASE_GROUP])]
+    #[Assert\Regex(pattern: ColorValue::HEX_REGEX, groups: [self::BASE_GROUP])]
     public ?string $value;
 
-    public function toData(): ColorAttributeValueData
+    public function toValueData(): ColorAttributeValueData
     {
         return new ColorAttributeValueData(value: $this->value);
     }

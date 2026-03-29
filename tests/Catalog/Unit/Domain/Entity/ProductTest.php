@@ -7,8 +7,9 @@ namespace App\Tests\Catalog\Unit\Domain\Entity;
 use App\Catalog\Domain\Entity\Product;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Entity\ProductPrice;
+use App\Catalog\Domain\Enum\Attribute\TypeEnum as AttributeTypeEnum;
 use App\Catalog\Domain\Enum\Product\StatusEnum;
-use App\Catalog\Domain\Enum\ProductPrice\TypeEnum;
+use App\Catalog\Domain\Enum\ProductPrice\TypeEnum as ProductPriceTypeEnum;
 use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
 use App\Catalog\Domain\ValueObject\Product\AttributeValueCollection;
@@ -117,11 +118,11 @@ final class ProductTest extends TestCase
         $newPrices = PriceCollection::fromArray([
             ProductPriceMother::createWithData(
                 currency: CurrencyEnum::UAH,
-                type: TypeEnum::Regular,
+                type: ProductPriceTypeEnum::Regular,
             ),
             ProductPriceMother::createWithData(
                 currency: CurrencyEnum::USD,
-                type: TypeEnum::Regular,
+                type: ProductPriceTypeEnum::Regular,
             ),
         ]);
         $updatedBy = AdminUlid::fromString(ProductMother::DEFAULT_ADMIN_ULID);
@@ -179,7 +180,7 @@ final class ProductTest extends TestCase
 
     public function testAddImage(): void
     {
-        $product = ProductMother::createWithData();
+        $product = ProductMother::createWithData(images: []);
 
         self::assertCount(0, $product->getImages());
 
@@ -212,7 +213,7 @@ final class ProductTest extends TestCase
 
     public function testItSetsImages(): void
     {
-        $product = ProductMother::createWithData();
+        $product = ProductMother::createWithData(images: []);
 
         self::assertCount(0, $product->getImages());
 
@@ -245,7 +246,7 @@ final class ProductTest extends TestCase
     private static function getValidPrices(): array
     {
         $currencies = CurrencyEnum::cases();
-        $productPriceTypes = TypeEnum::cases();
+        $productPriceTypes = ProductPriceTypeEnum::cases();
 
         $prices = [];
         foreach ($currencies as $currency) {
@@ -274,6 +275,9 @@ final class ProductTest extends TestCase
     {
         $attributeIds ??= [321, 654, 987];
 
-        return array_map(fn (int $id) => ProductAttributeValueMother::createWithData(attributeId: $id), $attributeIds);
+        return array_map(fn (int $id) => ProductAttributeValueMother::createWithData(
+            attributeId: $id,
+            attributeType: AttributeTypeEnum::Integer
+        ), $attributeIds);
     }
 }

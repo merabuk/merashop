@@ -50,7 +50,6 @@ final class CodeTest extends TestCase
         yield 'empty' => [''];
         yield 'only spaces' => ['   '];
         yield 'regex mismatch' => ['CODE'];
-        yield 'starts with number' => ['1code'];
         yield 'contains special characters' => ['code!'];
         yield 'contains spaces' => ['code with spaces'];
         yield 'leading dash' => ['-code'];

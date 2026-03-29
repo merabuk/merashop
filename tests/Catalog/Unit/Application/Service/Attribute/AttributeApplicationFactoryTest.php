@@ -234,7 +234,6 @@ final class AttributeApplicationFactoryTest extends TestCase
             version: 1,
             createdByUlid: '01KM2VXDT53FFTM8A520WFDK9T',
             options: [],
-            updatedByUlid: AttributeMother::DEFAULT_ADMIN_ULID,
             id: 456
         );
         $command = $this->fillAndGetUpdateCommand(attribute: $attributeForUpdate);
@@ -251,7 +250,7 @@ final class AttributeApplicationFactoryTest extends TestCase
         self::assertFalse($attribute->getCreatedBy()->equals($attributeForUpdate->getCreatedBy()), "Created by mustn't changed");
         self::assertCount(0, $attribute->getOptions());
         self::assertTrue($attribute->getOptions()->equals($attributeForUpdate->getOptions()));
-        self::assertTrue($attribute->getUpdatedBy()->equals($attributeForUpdate->getUpdatedBy()));
+        self::assertTrue($attribute->getUpdatedBy()->equals($attributeForUpdate->getCreatedBy()));
     }
 
     public function testItUpdatesFromCommandWithOptions(): void
@@ -282,7 +281,7 @@ final class AttributeApplicationFactoryTest extends TestCase
                 'en' => ['name' => 'Old Attribute'],
             ],
             version: 2,
-            createdByUlid: AttributeMother::DEFAULT_ADMIN_ULID,
+            createdByUlid: '01KM2VXDT53FFTM8A520WFDK9T',
             options: [$existingOption1, $existingOption2, $willBeDeactivated],
             id: 123
         );
@@ -290,9 +289,7 @@ final class AttributeApplicationFactoryTest extends TestCase
             ulid: '01KME5MMDTM1607C5T3X8YHDB0',
             type: $type,
             version: 1,
-            createdByUlid: '01KM2VXDT53FFTM8A520WFDK9T',
             options: [$existingOption1, $existingOption2, $willBeAdded],
-            updatedByUlid: AttributeMother::DEFAULT_ADMIN_ULID,
             id: 456
         );
 
@@ -331,7 +328,7 @@ final class AttributeApplicationFactoryTest extends TestCase
             $this->assertVoEqualsOrNull($option->getMetadata(), $actual->getMetadata());
             $this->assertVoEqualsOrNull($option->getUpdatedBy(), $actual->getUpdatedBy());
         }
-        self::assertTrue($attribute->getUpdatedBy()->equals($attributeForUpdate->getUpdatedBy()));
+        self::assertTrue($attribute->getUpdatedBy()->equals($attributeForUpdate->getCreatedBy()));
     }
 
     private function createFactory(): AttributeApplicationFactory

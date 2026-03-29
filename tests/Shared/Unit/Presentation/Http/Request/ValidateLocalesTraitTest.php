@@ -30,7 +30,7 @@ final class ValidateLocalesTraitTest extends TestCase
 
         $this->context->expects(self::never())->method('buildViolation');
 
-        $trait->validateLocales($this->context);
+        $trait->_validateLocales($this->context);
     }
 
     public function testItHandlesMissingLocales(): void
@@ -55,7 +55,7 @@ final class ValidateLocalesTraitTest extends TestCase
 
         $this->violationBuilder->expects(self::once())->method('addViolation');
 
-        $trait->validateLocales($this->context);
+        $trait->_validateLocales($this->context);
     }
 
     public function testItHandlesInvalidLocales(): void
@@ -80,7 +80,7 @@ final class ValidateLocalesTraitTest extends TestCase
 
         $this->violationBuilder->expects(self::once())->method('addViolation');
 
-        $trait->validateLocales($this->context);
+        $trait->_validateLocales($this->context);
     }
 
     private function createAnonymousClass(): object

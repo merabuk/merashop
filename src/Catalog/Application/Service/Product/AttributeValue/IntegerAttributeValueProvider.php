@@ -9,7 +9,9 @@ use App\Catalog\Application\DTO\Product\AttributeValue\IntegerAttributeValueData
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
+use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeValueVersionException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
+use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\IntegerValue;
 
 class IntegerAttributeValueProvider implements ProductAttributeValueProviderInterface
@@ -24,10 +26,14 @@ class IntegerAttributeValueProvider implements ProductAttributeValueProviderInte
     /**
      * @return ProductAttributeValue[]
      *
+     * @throws InvalidProductAttributeValueVersionException
      * @throws ProductAttributeValueStateException
      */
-    public function handle(Attribute $attribute, AttributeValueDataInterface $data): array
-    {
+    public function handle(
+        Attribute $attribute,
+        AttributeValueDataInterface $data,
+        AdminUlid $adminUlid,
+    ): array {
         $this->checkAttributeType($attribute);
 
         if (false === $data instanceof IntegerAttributeValueData) {
@@ -38,6 +44,7 @@ class IntegerAttributeValueProvider implements ProductAttributeValueProviderInte
             ProductAttributeValue::createWithValue(
                 attributeId: $attribute->getId(),
                 value: IntegerValue::fromInt($data->value),
+                createdBy: $adminUlid,
             ),
         ];
     }

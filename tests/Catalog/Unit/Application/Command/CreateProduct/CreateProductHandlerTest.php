@@ -254,29 +254,19 @@ final class CreateProductHandlerTest extends TestCase
         $this->writeRepository->expects(self::once())
             ->method('save')
             ->with(self::callback(function (Product $updatedProduct) use ($product): bool {
-                $ulidCorrect = $product->getUlid()->equals($updatedProduct->getUlid());
-                $skuCorrect = $product->getSku()->equals($updatedProduct->getSku());
-                $statusCorrect = $product->getStatus()->equals($updatedProduct->getStatus());
-                $translationsCorrect = $product->getTranslations()->equals($updatedProduct->getTranslations());
-                $versionCorrect = $product->getVersion()->equals($updatedProduct->getVersion());
-                $createdByCorrect = $product->getCreatedBy()->equals($updatedProduct->getCreatedBy());
-                $pricesCorrect = $product->getPrices()->equals($updatedProduct->getPrices());
-                $categoryIdsCorrect = $product->getCategoryIds()->equals($updatedProduct->getCategoryIds());
-                $attributeValuesCorrect = $product->getAttributeValues()->equals($updatedProduct->getAttributeValues());
-                $imagesCorrect = $product->getImages()->equals($updatedProduct->getImages());
-                $updatedByCorrect = null === $updatedProduct->getUpdatedBy();
+                self::assertTrue($product->getUlid()->equals($updatedProduct->getUlid()));
+                self::assertTrue($product->getSku()->equals($updatedProduct->getSku()));
+                self::assertTrue($product->getStatus()->equals($updatedProduct->getStatus()));
+                self::assertTrue($product->getTranslations()->equals($updatedProduct->getTranslations()));
+                self::assertTrue($product->getVersion()->equals($updatedProduct->getVersion()));
+                self::assertTrue($product->getCreatedBy()->equals($updatedProduct->getCreatedBy()));
+                self::assertTrue($product->getPrices()->equals($updatedProduct->getPrices()));
+                self::assertTrue($product->getCategoryIds()->equals($updatedProduct->getCategoryIds()));
+                self::assertTrue($product->getAttributeValues()->equals($updatedProduct->getAttributeValues()));
+                self::assertTrue($product->getImages()->equals($updatedProduct->getImages()));
+                self::assertNull($updatedProduct->getUpdatedBy());
 
-                return $ulidCorrect
-                    && $skuCorrect
-                    && $statusCorrect
-                    && $translationsCorrect
-                    && $versionCorrect
-                    && $createdByCorrect
-                    && $pricesCorrect
-                    && $categoryIdsCorrect
-                    && $attributeValuesCorrect
-                    && $imagesCorrect
-                    && $updatedByCorrect;
+                return true;
             }))
             ->willReturn($product);
     }

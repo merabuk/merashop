@@ -37,6 +37,9 @@ final class ProductPriceMapperTest extends TestCase
         $orm->taxIncluded = true;
         $orm->validFrom = $clock->now();
         $orm->validTo = $clock->now()->modify('+1 month');
+        $orm->version = 1;
+        $orm->createdBy = ProductPriceMother::DEFAULT_ADMIN_ULID;
+        $orm->updatedBy = ProductPriceMother::DEFAULT_ADMIN_ULID;
 
         $domain = $this->mapper->toDomain($orm);
 
@@ -49,6 +52,9 @@ final class ProductPriceMapperTest extends TestCase
         self::assertSame($orm->taxIncluded, $domain->getTaxIncluded()->value());
         self::assertSame($orm->validFrom, $domain->getValidityPeriod()->getFrom()->value());
         self::assertSame($orm->validTo, $domain->getValidityPeriod()->getTo()->value());
+        self::assertSame($orm->version, $domain->getVersion()->value());
+        self::assertSame($orm->createdBy, $domain->getCreatedBy()->value());
+        self::assertSame($orm->updatedBy, $domain->getUpdatedBy()->value());
     }
 
     public function testMapToDomainThrowsExceptionWhenOrmMissingId(): void

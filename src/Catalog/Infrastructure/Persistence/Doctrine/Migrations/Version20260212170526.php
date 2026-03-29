@@ -49,6 +49,9 @@ final class Version20260212170526 extends AbstractMigration
             tax_included BOOLEAN NOT NULL,
             valid_from TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL,
             valid_to TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL,
+            version INT DEFAULT 1 NOT NULL,
+            created_by UUID NOT NULL,
+            updated_by UUID DEFAULT NULL,
             created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
             updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
             product_id BIGINT NOT NULL,
@@ -86,6 +89,9 @@ final class Version20260212170526 extends AbstractMigration
             attribute_id BIGINT NOT NULL,
             option_id BIGINT DEFAULT NULL,
             value_json JSONB DEFAULT NULL,
+            version INT DEFAULT 1 NOT NULL,
+            created_by UUID NOT NULL,
+            updated_by UUID DEFAULT NULL,
             PRIMARY KEY (id)
         )'
         );

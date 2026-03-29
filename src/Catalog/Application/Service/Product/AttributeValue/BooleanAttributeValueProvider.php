@@ -9,7 +9,9 @@ use App\Catalog\Application\DTO\Product\AttributeValue\BooleanAttributeValueData
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
+use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeValueVersionException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
+use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\BooleanValue;
 
 final readonly class BooleanAttributeValueProvider implements ProductAttributeValueProviderInterface
@@ -24,10 +26,14 @@ final readonly class BooleanAttributeValueProvider implements ProductAttributeVa
     /**
      * @return ProductAttributeValue[]
      *
+     * @throws InvalidProductAttributeValueVersionException
      * @throws ProductAttributeValueStateException
      */
-    public function handle(Attribute $attribute, AttributeValueDataInterface $data): array
-    {
+    public function handle(
+        Attribute $attribute,
+        AttributeValueDataInterface $data,
+        AdminUlid $adminUlid,
+    ): array {
         $this->checkAttributeType($attribute);
 
         if (false === $data instanceof BooleanAttributeValueData) {
@@ -38,6 +44,7 @@ final readonly class BooleanAttributeValueProvider implements ProductAttributeVa
             ProductAttributeValue::createWithValue(
                 attributeId: $attribute->getId(),
                 value: BooleanValue::fromBool($data->value),
+                createdBy: $adminUlid,
             ),
         ];
     }

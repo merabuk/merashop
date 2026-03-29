@@ -6,6 +6,7 @@ namespace App\Tests\Catalog\Support\Traits;
 
 use App\Tests\Catalog\Support\AttributeFixture;
 use App\Tests\Catalog\Support\AttributeMother;
+use App\Tests\Catalog\Support\AttributeOptionMother;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 /**
@@ -15,17 +16,16 @@ trait AttributeFactoryTrait
 {
     protected function getAttributeMother(): AttributeMother
     {
-        /** @var AttributeMother $mother */
-        $mother = self::getContainer()->get(AttributeMother::class);
-
-        return $mother;
+        return self::getContainer()->get(AttributeMother::class);
     }
 
     protected function getAttributeFixture(): AttributeFixture
     {
-        /** @var AttributeFixture $fixture */
-        $fixture = self::getContainer()->get(AttributeFixture::class);
+        return self::getContainer()->get(AttributeFixture::class);
+    }
 
-        return $fixture;
+    protected function getAttributeOptionMother(): AttributeOptionMother
+    {
+        return self::getContainer()->get(AttributeOptionMother::class);
     }
 }

@@ -7,6 +7,7 @@ namespace App\Catalog\Infrastructure\Persistence\Doctrine\Entity;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint\ReferentialAction;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'product_attribute_values')]
@@ -55,6 +56,16 @@ class OrmProductAttributeValue
      */
     #[ORM\Column(type: Types::JSONB, nullable: true)]
     public ?array $valueJson = null;
+
+    #[ORM\Version]
+    #[ORM\Column(type: Types::INTEGER)]
+    public ?int $version = null;
+
+    #[ORM\Column(type: UlidType::NAME)]
+    public ?string $createdBy = null;
+
+    #[ORM\Column(type: UlidType::NAME, nullable: true)]
+    public ?string $updatedBy = null;
 
     public function setId(?int $value): void
     {

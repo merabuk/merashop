@@ -16,6 +16,7 @@ use DateTimeImmutable;
 use Doctrine\DBAL\Schema\ForeignKeyConstraint\ReferentialAction;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Types\UlidType;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'product_prices')]
@@ -61,6 +62,16 @@ class OrmProductPrice
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     public ?DateTimeImmutable $validTo = null;
+
+    #[ORM\Version]
+    #[ORM\Column(type: Types::INTEGER)]
+    public ?int $version = null;
+
+    #[ORM\Column(type: UlidType::NAME)]
+    public ?string $createdBy = null;
+
+    #[ORM\Column(type: UlidType::NAME, nullable: true)]
+    public ?string $updatedBy = null;
 
     public function setId(?int $value): void
     {

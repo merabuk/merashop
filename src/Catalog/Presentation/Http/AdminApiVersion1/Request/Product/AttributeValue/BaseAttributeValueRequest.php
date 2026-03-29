@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Catalog\Presentation\Http\AdminApiVersion1\Request\Product\AttributeValue;
 
 use App\Catalog\Application\DTO\Product\AttributeValue\AttributeValueDataInterface;
+use App\Catalog\Application\DTO\Product\ProductAttributeValueData;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use Symfony\Component\Serializer\Attribute\DiscriminatorMap;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -24,18 +25,29 @@ use Symfony\Component\Validator\Constraints as Assert;
 ])]
 abstract class BaseAttributeValueRequest
 {
-    #[Assert\NotBlank]
-    #[Assert\Positive]
+    public const string BASE_GROUP = 'BaseAttributeValueRequest';
+
+    #[Assert\NotBlank(groups: [self::BASE_GROUP])]
+    #[Assert\Positive(groups: [self::BASE_GROUP])]
     public int $attributeId;
 
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(groups: [self::BASE_GROUP])]
     #[Assert\Choice(
         callback: 'getAttributeTypes',
-        message: 'catalog.product_attribute_value.type_invalid'
+        message: 'catalog.product_attribute_value.type_invalid',
+        groups: [self::BASE_GROUP],
     )]
     public ?string $type;
 
-    abstract public function toData(): AttributeValueDataInterface;
+    public function toData(): ProductAttributeValueData
+    {
+        return new ProductAttributeValueData(
+            attributeId: $this->attributeId,
+            value: $this->toValueData(),
+        );
+    }
+
+    abstract public function toValueData(): AttributeValueDataInterface;
 
     /**
      * @return string[]
@@ -53,6 +65,7 @@ abstract class BaseAttributeValueRequest
             TypeEnum::Color->value,
             TypeEnum::Date->value,
             TypeEnum::Url->value,
+            TypeEnum::Dimension->value,
         ];
     }
 }

@@ -5,28 +5,24 @@ declare(strict_types=1);
 namespace App\Catalog\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\Catalog\Domain\Entity\ProductPrice;
-use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceAmountException;
-use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceIdException;
-use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceTaxValueException;
-use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceValidityPeriodException;
+use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Exception\ProductPrice\ProductPriceStateException;
+use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\ProductPrice\Id;
 use App\Catalog\Domain\ValueObject\ProductPrice\Price;
 use App\Catalog\Domain\ValueObject\ProductPrice\Tax;
 use App\Catalog\Domain\ValueObject\ProductPrice\TaxIncludedFlag;
 use App\Catalog\Domain\ValueObject\ProductPrice\Type;
 use App\Catalog\Domain\ValueObject\ProductPrice\ValidityPeriod;
+use App\Catalog\Domain\ValueObject\ProductPrice\Version;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductPrice;
 use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
 
 final readonly class ProductPriceMapper
 {
     /**
-     * @throws InvalidProductPriceAmountException
-     * @throws InvalidProductPriceIdException
-     * @throws InvalidProductPriceTaxValueException
-     * @throws InvalidProductPriceValidityPeriodException
      * @throws EntityIdMissingException
+     * @throws InvalidCatalogValueObjectException
      * @throws ProductPriceStateException
      */
     public function toDomain(OrmProductPrice $orm): ProductPrice
@@ -38,9 +34,12 @@ final readonly class ProductPriceMapper
             type: Type::fromEnum($orm->type),
             tax: new Tax((float) $orm->taxValue, $orm->taxType),
             taxIncluded: TaxIncludedFlag::fromBool($orm->taxIncluded),
+            version: Version::fromInt($orm->version),
+            createdBy: AdminUlid::fromString($orm->createdBy),
             validityPeriod: $orm->validFrom && $orm->validTo
                 ? ValidityPeriod::fromDateTimeRange($orm->validFrom, $orm->validTo)
                 : null,
+            updatedBy: $orm->updatedBy ? AdminUlid::fromString($orm->updatedBy) : null,
             id: Id::fromInt($id)
         );
     }
@@ -53,5 +52,6 @@ final readonly class ProductPriceMapper
         $orm->taxIncluded = $domain->getTaxIncluded()->value();
         $orm->validFrom = $domain->getValidityPeriod()?->getFrom()->value();
         $orm->validTo = $domain->getValidityPeriod()?->getTo()?->value();
+        $orm->updatedBy = $domain->getUpdatedBy()?->value();
     }
 }

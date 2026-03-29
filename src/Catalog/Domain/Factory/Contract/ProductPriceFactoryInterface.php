@@ -19,5 +19,6 @@ interface ProductPriceFactoryInterface
         bool $taxIncluded,
         ?DateTimeImmutable $validFrom,
         ?DateTimeImmutable $validTo,
+        string $createdByUlid,
     ): ProductPrice;
 }

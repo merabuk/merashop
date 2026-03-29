@@ -7,11 +7,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class SelectAttributeValueRequest extends BaseAttributeValueRequest
 {
-    #[Assert\NotBlank]
-    #[Assert\Positive]
+    #[Assert\NotBlank(groups: [self::BASE_GROUP])]
+    #[Assert\Positive(groups: [self::BASE_GROUP])]
     public ?int $value;
 
-    public function toData(): SelectAttributeValueData
+    public function toValueData(): SelectAttributeValueData
     {
         return new SelectAttributeValueData(optionId: $this->value);
     }

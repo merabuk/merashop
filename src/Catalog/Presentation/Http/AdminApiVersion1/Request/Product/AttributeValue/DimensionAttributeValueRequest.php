@@ -9,15 +9,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 final class DimensionAttributeValueRequest extends BaseAttributeValueRequest
 {
-    #[Assert\NotBlank]
-    #[Assert\Type('numeric')]
+    #[Assert\NotBlank(groups: [self::BASE_GROUP])]
+    #[Assert\Type(type: 'numeric', groups: [self::BASE_GROUP])]
     public ?float $magnitude;
 
-    #[Assert\NotBlank]
-    #[Assert\Positive]
+    #[Assert\NotBlank(groups: [self::BASE_GROUP])]
+    #[Assert\Positive(groups: [self::BASE_GROUP])]
     public ?int $unitOptionId;
 
-    public function toData(): DimensionAttributeValueData
+    public function toValueData(): DimensionAttributeValueData
     {
         return new DimensionAttributeValueData(
             magnitude: $this->magnitude,

@@ -41,16 +41,34 @@ final readonly class ProductAttributeValueNormalizer
         return match ($type) {
             TypeEnum::Select,
             TypeEnum::MultiSelect => null,
-            TypeEnum::String => new LocalizedStringValue($data['translations'] ?? []),
-            TypeEnum::Text => new LocalizedTextValue($data['translations'] ?? []),
-            TypeEnum::Integer => IntegerValue::fromInt((int) ($data['value'] ?? 0)),
-            TypeEnum::Float => FloatValue::fromFloat((float) ($data['value'] ?? 0.0)),
-            TypeEnum::Boolean => BooleanValue::fromBool((bool) ($data['value'] ?? false)),
-            TypeEnum::Color => ColorValue::fromString((string) ($data['value'] ?? '')),
-            TypeEnum::Date => DateValue::fromString((string) ($data['value'] ?? '')),
-            TypeEnum::Url => UrlValue::fromString((string) ($data['value'] ?? '')),
+            TypeEnum::String => isset($data['translations']) && is_array($data['translations'])
+                ? new LocalizedStringValue($data['translations'])
+                : throw $this->makeTypeError('array', $data['translations'] ?? null),
+            TypeEnum::Text => isset($data['translations']) && is_array($data['translations'])
+                ? new LocalizedTextValue($data['translations'])
+                : throw $this->makeTypeError('array', $data['translations'] ?? null),
+            TypeEnum::Integer => isset($data['value']) && is_int($data['value'])
+                ? IntegerValue::fromInt($data['value'])
+                : throw $this->makeTypeError('int', $data['value'] ?? null),
+            TypeEnum::Float => isset($data['value']) && is_float($data['value'])
+                ? FloatValue::fromFloat($data['value'])
+                : throw $this->makeTypeError('float', $data['value'] ?? null),
+            TypeEnum::Boolean => isset($data['value']) && is_bool($data['value'])
+                ? BooleanValue::fromBool($data['value'])
+                : throw $this->makeTypeError('bool', $data['value'] ?? null),
+            TypeEnum::Color => isset($data['value']) && is_string($data['value'])
+                ? ColorValue::fromString($data['value'])
+                : throw $this->makeTypeError('string', $data['value'] ?? null),
+            TypeEnum::Date => isset($data['value']) && is_string($data['value'])
+                ? DateValue::fromString($data['value'])
+                : throw $this->makeTypeError('string', $data['value'] ?? null),
+            TypeEnum::Url => isset($data['value']) && is_string($data['value'])
+                ? UrlValue::fromString($data['value'])
+                : throw $this->makeTypeError('string', $data['value'] ?? null),
             TypeEnum::Dimension => new DimensionValue(
-                magnitude: (float) ($data['magnitude'] ?? 0),
+                magnitude: isset($data['magnitude']) && is_float($data['magnitude'])
+                    ? $data['magnitude']
+                    : throw $this->makeTypeError('float', $data['magnitude'] ?? null),
                 unit: $optionId ?? throw new InvalidArgumentException('Dimension unit option id is required'),
             ),
             default => throw new InvalidArgumentException(sprintf('Denormalization logic for type "%s" is missing in normalizer', $type->value)),
@@ -84,5 +102,14 @@ final readonly class ProductAttributeValueNormalizer
 
             default => throw new InvalidArgumentException(sprintf('Normalization logic for class "%s" is missing in normalizer', get_debug_type($vo))),
         };
+    }
+
+    private function makeTypeError(string $expected, mixed $actual): InvalidArgumentException
+    {
+        return new InvalidArgumentException(sprintf(
+            'Invalid data type in JSONB. Expected %s, got %s',
+            $expected,
+            get_debug_type($actual)
+        ));
     }
 }

@@ -10,7 +10,9 @@ use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Exception\AttributeOption\AttributeOptionNotFoundException;
+use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeValueVersionException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
+use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
 
 class MultiSelectAttributeValueProvider implements ProductAttributeValueProviderInterface
@@ -25,11 +27,15 @@ class MultiSelectAttributeValueProvider implements ProductAttributeValueProvider
     /**
      * @return ProductAttributeValue[]
      *
-     * @throws ProductAttributeValueStateException
      * @throws AttributeOptionNotFoundException
+     * @throws InvalidProductAttributeValueVersionException
+     * @throws ProductAttributeValueStateException
      */
-    public function handle(Attribute $attribute, AttributeValueDataInterface $data): array
-    {
+    public function handle(
+        Attribute $attribute,
+        AttributeValueDataInterface $data,
+        AdminUlid $adminUlid,
+    ): array {
         $this->checkAttributeType($attribute);
 
         if (false === $data instanceof MultiSelectAttributeValueData) {
@@ -39,7 +45,8 @@ class MultiSelectAttributeValueProvider implements ProductAttributeValueProvider
         return array_map(
             fn (int $id) => ProductAttributeValue::createWithOption(
                 attributeId: $attribute->getId(),
-                attributeOptionId: $this->getOptionId($attribute, $id)
+                attributeOptionId: $this->getOptionId($attribute, $id),
+                createdBy: $adminUlid,
             ),
             $data->optionIds
         );

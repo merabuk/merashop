@@ -9,11 +9,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 final class FloatAttributeValueRequest extends BaseAttributeValueRequest
 {
-    #[Assert\NotNull]
-    #[Assert\Type('float')]
+    #[Assert\NotNull(groups: [self::BASE_GROUP])]
+    #[Assert\Type(type: 'float', groups: [self::BASE_GROUP])]
     public ?float $value;
 
-    public function toData(): FloatAttributeValueData
+    public function toValueData(): FloatAttributeValueData
     {
         return new FloatAttributeValueData(value: $this->value);
     }

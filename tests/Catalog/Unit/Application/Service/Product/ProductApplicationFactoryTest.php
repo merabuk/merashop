@@ -4,21 +4,39 @@ declare(strict_types=1);
 
 namespace App\Tests\Catalog\Unit\Application\Service\Product;
 
+use App\Catalog\Application\DTO\Product\AttributeValue\AttributeValueDataInterface;
 use App\Catalog\Application\DTO\Product\ProductAttributeValueData;
+use App\Catalog\Application\Service\Product\AttributeValue\ProductAttributeValueProviderInterface;
 use App\Catalog\Application\Service\Product\ProductApplicationFactory;
+use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Enum\Product\StatusEnum;
+use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
 use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
+use App\Tests\Catalog\Support\AttributeMother;
+use App\Tests\Catalog\Support\AttributeOptionMother;
+use App\Tests\Catalog\Support\ProductAttributeValueMother;
 use App\Tests\Catalog\Support\ProductMother;
 use App\Tests\Catalog\Support\ProductPriceMother;
 use App\Tests\Catalog\Support\Traits\ProductHelperTrait;
 use App\Tests\Shared\Support\Traits\ValueObjectAssertionTrait;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Container\ContainerInterface;
 
 final class ProductApplicationFactoryTest extends TestCase
 {
     use ProductHelperTrait;
     use ValueObjectAssertionTrait;
+
+    private AttributeReadRepositoryInterface&MockObject $attributeReadRepository;
+    private ContainerInterface&MockObject $container;
+
+    protected function setUp(): void
+    {
+        $this->attributeReadRepository = $this->createMock(AttributeReadRepositoryInterface::class);
+        $this->container = $this->createMock(ContainerInterface::class);
+    }
 
     public function testItMapsCategoryIds(): void
     {
@@ -37,10 +55,13 @@ final class ProductApplicationFactoryTest extends TestCase
     {
         $ids = [1, 2, 3];
         $attributeValues = [];
+
+        $mockValue = $this->createMock(AttributeValueDataInterface::class);
+
         foreach ($ids as $id) {
             $attributeValues[] = new ProductAttributeValueData(
                 attributeId: $id,
-                value: 'value '.$id,
+                value: $mockValue,
             );
         }
 
@@ -55,8 +76,113 @@ final class ProductApplicationFactoryTest extends TestCase
 
     public function testItCreatesFromCommand(): void
     {
-        $product = ProductMother::createWithData();
+        $optionSelect1 = AttributeOptionMother::createWithData(
+            ulid: '01KMDEC4Z9NSK4YPEW8NG5068T',
+            code: 'select-1',
+            id: 5201
+        );
+        $optionSelect2 = AttributeOptionMother::createWithData(
+            code: 'select-2',
+            id: 5202
+        );
+        $optionDimension1 = AttributeOptionMother::createWithData(
+            ulid: '01KMJ1ANFES9VS1HYEYBDCNCFW',
+            code: 'dimension-1',
+            id: 5301
+        );
+        $optionDimension2 = AttributeOptionMother::createWithData(
+            code: 'dimension-2',
+            id: 5302
+        );
+
+        $attributeString = AttributeMother::createWithData(type: TypeEnum::String, id: 5100);
+        $attributeSelect = AttributeMother::createWithData(
+            type: TypeEnum::Select,
+            options: [$optionSelect1, $optionSelect2],
+            id: 5200
+        );
+        $attributeDimension = AttributeMother::createWithData(
+            type: TypeEnum::Dimension,
+            options: [$optionDimension1, $optionDimension2],
+            id: 5300
+        );
+        $productStringAttributeValue = ProductAttributeValueMother::createWithData(
+            attributeId: $attributeString->getId()->value(),
+            attributeType: $attributeString->getType()->value(),
+            createdByUlid: ProductMother::DEFAULT_ADMIN_ULID,
+        );
+        $productSelectAttributeValue = ProductAttributeValueMother::createWithData(
+            attributeId: $attributeSelect->getId()->value(),
+            attributeType: $attributeSelect->getType()->value(),
+            optionId: $optionSelect1->getId()->value(),
+            createdByUlid: ProductMother::DEFAULT_ADMIN_ULID,
+        );
+        $productDimensionAttributeValue = ProductAttributeValueMother::createWithData(
+            attributeId: $attributeDimension->getId()->value(),
+            attributeType: $attributeDimension->getType()->value(),
+            optionId: $optionDimension1->getId()->value(),
+            createdByUlid: ProductMother::DEFAULT_ADMIN_ULID,
+        );
+
+        $product = ProductMother::createWithData(attributeValues: [
+            $productStringAttributeValue,
+            $productSelectAttributeValue,
+            $productDimensionAttributeValue,
+        ]);
         $command = $this->fillAndGetCreateCommand($product);
+
+        $this->attributeReadRepository->expects(self::once())
+            ->method('findByIds')
+            ->with(self::equalTo([
+                $attributeString->getId(),
+                $attributeSelect->getId(),
+                $attributeDimension->getId(),
+            ]))
+            ->willReturn([$attributeString, $attributeSelect, $attributeDimension]);
+
+        $this->container->expects(self::exactly(3))
+            ->method('has')
+            ->with(self::logicalOr(
+                self::equalTo($attributeString->getType()->value()->value),
+                self::equalTo($attributeSelect->getType()->value()->value),
+                self::equalTo($attributeDimension->getType()->value()->value),
+            ))
+            ->willReturn(true);
+        $this->container->expects(self::exactly(3))
+            ->method('get')
+            ->with(self::logicalOr(
+                self::equalTo($attributeString->getType()->value()->value),
+                self::equalTo($attributeSelect->getType()->value()->value),
+                self::equalTo($attributeDimension->getType()->value()->value),
+            ))
+            ->willReturnCallback(function (string $type) use (
+                $attributeString,
+                $productStringAttributeValue,
+                $attributeSelect,
+                $productSelectAttributeValue,
+                $attributeDimension,
+                $productDimensionAttributeValue,
+            ): ProductAttributeValueProviderInterface&MockObject {
+                $provider = $this->createMock(ProductAttributeValueProviderInterface::class);
+
+                match (true) {
+                    $type === $attributeString->getType()->value()->value => $provider
+                        ->expects(self::once())
+                        ->method('handle')
+                        ->willReturn([$productStringAttributeValue]),
+                    $type === $attributeSelect->getType()->value()->value => $provider
+                        ->expects(self::once())
+                        ->method('handle')
+                        ->willReturn([$productSelectAttributeValue]),
+                    $type === $attributeDimension->getType()->value()->value => $provider
+                        ->expects(self::once())
+                        ->method('handle')
+                        ->willReturn([$productDimensionAttributeValue]),
+                    default => null,
+                };
+
+                return $provider;
+            });
 
         $created = $this->createFactory()->createFromCommand($command, $product->getUlid()->value());
 
@@ -118,6 +244,9 @@ final class ProductApplicationFactoryTest extends TestCase
 
     private function createFactory(): ProductApplicationFactory
     {
-        return new ProductApplicationFactory();
+        return new ProductApplicationFactory(
+            attributeReadRepository: $this->attributeReadRepository,
+            providers: $this->container,
+        );
     }
 }

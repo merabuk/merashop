@@ -75,7 +75,7 @@ final class AttributeReadRepositoryTest extends KernelTestCase
 
     public function testExistsByCode(): void
     {
-        $code = Code::fromString('unique_test_code');
+        $code = Code::fromString('unique-test-code');
 
         self::assertFalse($this->repository->existsByCode($code));
 
@@ -105,9 +105,9 @@ final class AttributeReadRepositoryTest extends KernelTestCase
 
     public function testPaginateWithSearch(): void
     {
-        $this->getAttributeFixture()->create(code: 'color_red');
-        $this->getAttributeFixture()->create(code: 'color_blue');
-        $this->getAttributeFixture()->create(code: 'size_xl');
+        $this->getAttributeFixture()->create(code: 'color-red');
+        $this->getAttributeFixture()->create(code: 'color-blue');
+        $this->getAttributeFixture()->create(code: 'size-xl');
 
         $criteria = new Criteria(
             cursor: new Cursor(lastSeenIdentifier: null, perPage: Cursor::DEFAULT_PER_PAGE),
@@ -119,6 +119,6 @@ final class AttributeReadRepositoryTest extends KernelTestCase
 
         self::assertSame(2, $result->totalCount);
         self::assertCount(2, $result->items);
-        self::assertSame('color_blue', $result->items[0]->getCode()->value());
+        self::assertSame('color-blue', $result->items[0]->getCode()->value());
     }
 }

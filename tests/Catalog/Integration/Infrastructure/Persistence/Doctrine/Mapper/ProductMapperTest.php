@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Catalog\Integration\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\Catalog\Domain\Entity\Product;
+use App\Catalog\Domain\Enum\Attribute\TypeEnum as AttributeTypeEnum;
 use App\Catalog\Domain\Enum\Product\StatusEnum;
 use App\Catalog\Domain\Enum\ProductPrice\TypeEnum as ProductPriceTypeEnum;
 use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
@@ -16,6 +17,7 @@ use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductImage;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductPrice;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductTranslation;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Mapper\ProductMapper;
+use App\Catalog\Infrastructure\Persistence\Doctrine\Normalizer\ProductAttributeValueNormalizer;
 use App\Shared\Domain\Enum\CurrencyEnum;
 use App\Shared\Domain\Enum\TaxTypeEnum;
 use App\Tests\Catalog\Support\ProductAttributeValueMother;
@@ -36,6 +38,7 @@ final class ProductMapperTest extends KernelTestCase
     use ValueObjectAssertionTrait;
 
     private EntityManagerInterface $em;
+    private ProductAttributeValueNormalizer $normalizer;
     private ProductMapper $mapper;
 
     protected function setUp(): void
@@ -43,6 +46,7 @@ final class ProductMapperTest extends KernelTestCase
         self::bootKernel();
 
         $this->em = $this->getCatalogEntityManager();
+        $this->normalizer = self::getContainer()->get(ProductAttributeValueNormalizer::class);
         $this->mapper = self::getContainer()->get(ProductMapper::class);
     }
 
@@ -112,7 +116,8 @@ final class ProductMapperTest extends KernelTestCase
             categoryIds: [CategoryId::fromInt(123)],
             attributeValues: [ProductAttributeValueMother::createWithData(
                 attributeId: 456,
-                value: 'new_value'
+                attributeType: AttributeTypeEnum::Float,
+                value: 123.45
             )],
             images: [ProductImageMother::createWithData(isMain: true)]
         );
@@ -257,7 +262,8 @@ final class ProductMapperTest extends KernelTestCase
             )->first();
 
             self::assertNotNull($ormAttributeValue, sprintf('Attribute value for attribute id %s not found in ORM', $domainAttributeValue->getAttributeId()->value()));
-            self::assertSame($domainAttributeValue->getValue()->value(), $ormAttributeValue->valueJson['value'] ?? null);
+
+            self::assertSame($this->normalizer->normalize($domainAttributeValue->getValue()), $ormAttributeValue->valueJson);
         }
     }
 
@@ -269,7 +275,7 @@ final class ProductMapperTest extends KernelTestCase
             $restoredAttributeValue = $restored->getAttributeValues()->getByAttributeId($domainAttributeValue->getAttributeId());
             self::assertNotNull($restoredAttributeValue);
             self::assertNotNull($restoredAttributeValue->getId());
-            self::assertTrue($domainAttributeValue->getValue()->equals($restoredAttributeValue->getValue()));
+            $this->assertVoEqualsOrNull($domainAttributeValue->getValue(), $restoredAttributeValue->getValue());
         }
     }
 

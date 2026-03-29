@@ -10,11 +10,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 final class UrlAttributeValueRequest extends BaseAttributeValueRequest
 {
-    #[Assert\NotBlank]
-    #[Assert\Url]
+    #[Assert\NotBlank(groups: [self::BASE_GROUP])]
+    #[Assert\Url(groups: [self::BASE_GROUP])]
     public ?string $value;
 
-    public function toData(): AttributeValueDataInterface
+    public function toValueData(): AttributeValueDataInterface
     {
         return new UrlAttributeValueData(value: $this->value);
     }

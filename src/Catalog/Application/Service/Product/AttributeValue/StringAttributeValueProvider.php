@@ -10,7 +10,9 @@ use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeLocalizedStringValueException;
+use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeValueVersionException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
+use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\LocalizedStringValue;
 
 class StringAttributeValueProvider implements ProductAttributeValueProviderInterface
@@ -25,11 +27,15 @@ class StringAttributeValueProvider implements ProductAttributeValueProviderInter
     /**
      * @return ProductAttributeValue[]
      *
-     * @throws ProductAttributeValueStateException
      * @throws InvalidProductAttributeLocalizedStringValueException
+     * @throws InvalidProductAttributeValueVersionException
+     * @throws ProductAttributeValueStateException
      */
-    public function handle(Attribute $attribute, AttributeValueDataInterface $data): array
-    {
+    public function handle(
+        Attribute $attribute,
+        AttributeValueDataInterface $data,
+        AdminUlid $adminUlid,
+    ): array {
         $this->checkAttributeType($attribute);
 
         if (false === $data instanceof StringAttributeValueData) {
@@ -40,6 +46,7 @@ class StringAttributeValueProvider implements ProductAttributeValueProviderInter
             ProductAttributeValue::createWithValue(
                 attributeId: $attribute->getId(),
                 value: LocalizedStringValue::fromArray($data->translations),
+                createdBy: $adminUlid,
             ),
         ];
     }

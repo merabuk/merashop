@@ -43,7 +43,7 @@ final class AttributeMapperTest extends KernelTestCase
     }
 
     #[DataProvider('attributeDataProvider')]
-    public function testItSuccessfullyPerformsRoundTrip(TypeEnum $type): void
+    public function testItSuccessfullyPerformsRoundTrip(TypeEnum $type, bool $initializeOptions = true): void
     {
         $domainAttribute = $this->getAttributeMother()->create(type: $type);
 
@@ -69,6 +69,10 @@ final class AttributeMapperTest extends KernelTestCase
 
         $loadedOrm = $this->em->find(OrmAttribute::class, $generatedId);
         self::assertNotNull($loadedOrm);
+        if ($initializeOptions) {
+            // because we have lazy loading options in domain
+            $loadedOrm->options->initialize();
+        }
 
         $restoredDomain = $this->mapper->fromDoctrineOrm($loadedOrm);
 
@@ -78,7 +82,7 @@ final class AttributeMapperTest extends KernelTestCase
         self::assertTrue($domainAttribute->getType()->equals($restoredDomain->getType()));
         self::assertTrue($domainAttribute->getTranslations()->equals($restoredDomain->getTranslations()));
         self::assertTrue($domainAttribute->getCreatedBy()->equals($restoredDomain->getCreatedBy()));
-        $this->assertRestoredOptionsMatch($domainAttribute, $restoredDomain);
+        $this->assertRestoredOptionsMatch($domainAttribute, $restoredDomain, $initializeOptions);
         $this->assertVoEqualsOrNull($domainAttribute->getUpdatedBy(), $restoredDomain->getUpdatedBy());
     }
 
@@ -87,6 +91,7 @@ final class AttributeMapperTest extends KernelTestCase
         yield 'without metadata and options' => [TypeEnum::String];
         yield 'with options and no metadata' => [TypeEnum::MultiSelect];
         yield 'with metadata and option' => [TypeEnum::Dimension];
+        yield 'without initializing options' => [TypeEnum::Select, false];
     }
 
     public function testItUpdatesExistingOrmEntity(): void
@@ -177,8 +182,16 @@ final class AttributeMapperTest extends KernelTestCase
         }
     }
 
-    private function assertRestoredOptionsMatch(Attribute $domain, Attribute $restored): void
+    private function assertRestoredOptionsMatch(Attribute $domain, Attribute $restored, bool $initializedOptions): void
     {
+        self::assertSame($initializedOptions, $restored->getOptions()->isInitialized());
+
+        if (false === $initializedOptions) {
+            self::assertCount(0, $restored->getOptions());
+
+            return;
+        }
+
         self::assertCount($domain->getOptions()->count(), $restored->getOptions());
 
         foreach ($domain->getOptions() as $domainOption) {

@@ -10,7 +10,9 @@ use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeUrlValueException;
+use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeValueVersionException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
+use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\UrlValue;
 
 class UrlAttributeValueProvider implements ProductAttributeValueProviderInterface
@@ -25,11 +27,15 @@ class UrlAttributeValueProvider implements ProductAttributeValueProviderInterfac
     /**
      * @return ProductAttributeValue[]
      *
-     * @throws ProductAttributeValueStateException
+     * @throws InvalidProductAttributeValueVersionException
      * @throws InvalidProductAttributeUrlValueException
+     * @throws ProductAttributeValueStateException
      */
-    public function handle(Attribute $attribute, AttributeValueDataInterface $data): array
-    {
+    public function handle(
+        Attribute $attribute,
+        AttributeValueDataInterface $data,
+        AdminUlid $adminUlid,
+    ): array {
         $this->checkAttributeType($attribute);
 
         if (false === $data instanceof UrlAttributeValueData) {
@@ -40,6 +46,7 @@ class UrlAttributeValueProvider implements ProductAttributeValueProviderInterfac
             ProductAttributeValue::createWithValue(
                 attributeId: $attribute->getId(),
                 value: UrlValue::fromString($data->value),
+                createdBy: $adminUlid,
             ),
         ];
     }

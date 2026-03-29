@@ -11,7 +11,9 @@ use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Exception\AttributeOption\AttributeOptionNotFoundException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeMagnitudeDimensionValueException;
+use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeValueVersionException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
+use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\DimensionValue;
 
 class DimensionAttributeValueProvider implements ProductAttributeValueProviderInterface
@@ -26,12 +28,16 @@ class DimensionAttributeValueProvider implements ProductAttributeValueProviderIn
     /**
      * @return ProductAttributeValue[]
      *
-     * @throws InvalidProductAttributeMagnitudeDimensionValueException
-     * @throws ProductAttributeValueStateException
      * @throws AttributeOptionNotFoundException
+     * @throws InvalidProductAttributeMagnitudeDimensionValueException
+     * @throws InvalidProductAttributeValueVersionException
+     * @throws ProductAttributeValueStateException
      */
-    public function handle(Attribute $attribute, AttributeValueDataInterface $data): array
-    {
+    public function handle(
+        Attribute $attribute,
+        AttributeValueDataInterface $data,
+        AdminUlid $adminUlid,
+    ): array {
         $this->checkAttributeType($attribute);
 
         if (false === $data instanceof DimensionAttributeValueData) {
@@ -44,6 +50,7 @@ class DimensionAttributeValueProvider implements ProductAttributeValueProviderIn
         return [
             ProductAttributeValue::create(
                 attributeId: $attribute->getId(),
+                createdBy: $adminUlid,
                 attributeOptionId: $unitOption->getId(),
                 value: new DimensionValue(
                     magnitude: $data->magnitude,

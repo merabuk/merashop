@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Catalog\Unit\Domain\ValueObject\Product;
 
 use App\Catalog\Domain\Entity\ProductAttributeValue;
+use App\Catalog\Domain\Enum\Attribute\TypeEnum as AttributeTypeEnum;
 use App\Catalog\Domain\Exception\Product\InvalidProductAttributeValueItemException;
 use App\Catalog\Domain\ValueObject\Product\AttributeValueCollection;
 use App\Tests\Catalog\Support\ProductAttributeValueMother;
@@ -77,6 +78,9 @@ final class AttributeValueCollectionTest extends TestCase
     {
         $attributeIds ??= [123, 456, 789];
 
-        return array_map(fn (int $id) => ProductAttributeValueMother::createWithData(attributeId: $id), $attributeIds);
+        return array_map(fn (int $id) => ProductAttributeValueMother::createWithData(
+            attributeId: $id,
+            attributeType: AttributeTypeEnum::Integer,
+        ), $attributeIds);
     }
 }

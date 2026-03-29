@@ -15,17 +15,11 @@ trait UserAccountFactoryTrait
 {
     protected function getUserAccountMother(): UserAccountMother
     {
-        /** @var UserAccountMother $mother */
-        $mother = self::getContainer()->get(UserAccountMother::class);
-
-        return $mother;
+        return self::getContainer()->get(UserAccountMother::class);
     }
 
     protected function getUserAccountFixture(): UserAccountFixture
     {
-        /** @var UserAccountFixture $fixture */
-        $fixture = self::getContainer()->get(UserAccountFixture::class);
-
-        return $fixture;
+        return self::getContainer()->get(UserAccountFixture::class);
     }
 }

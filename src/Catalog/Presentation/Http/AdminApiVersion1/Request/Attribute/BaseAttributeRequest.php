@@ -34,8 +34,12 @@ abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
     /**
      * @var ?AttributeTranslationRequest[] $translations
      */
-    #[Assert\NotBlank]
-    #[Assert\Count(min: 1, minMessage: 'shared.common.translations_empty')]
+    #[Assert\NotBlank(groups: [AttributeTranslationRequest::BASE_GROUP])]
+    #[Assert\Count(
+        min: 1,
+        minMessage: 'shared.common.translations_empty',
+        groups: [AttributeTranslationRequest::BASE_GROUP],
+    )]
     #[Assert\Valid(groups: [AttributeTranslationRequest::BASE_GROUP])]
     public ?array $translations;
 
@@ -61,7 +65,7 @@ abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
     ])]
     public ?array $options;
 
-    #[Assert\Callback]
+    #[Assert\Callback(groups: [AttributeOptionRequest::BASE_GROUP])]
     public function validateUniqueOptions(ExecutionContextInterface $context): void
     {
         if (!isset($this->options)) {
@@ -84,25 +88,24 @@ abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
         }
     }
 
+    #[Assert\Callback(groups: [AttributeTranslationRequest::BASE_GROUP])]
+    public function validateLocales(ExecutionContextInterface $context): void
+    {
+        $this->_validateLocales($context);
+    }
+
     public function getGroupSequence(): array
     {
         $groups = [self::BASE_GROUP, AttributeTranslationRequest::BASE_GROUP];
 
         if ($type = TypeEnum::tryFrom((string) $this->type)) {
             $groups[] = $type->value;
-            match ($type) {
-                TypeEnum::Select,
-                TypeEnum::MultiSelect,
-                TypeEnum::Dimension => $groups = [
-                    ...$groups,
-                    AttributeOptionRequest::BASE_GROUP,
-                    AttributeOptionTranslationRequest::BASE_GROUP,
-                ],
-                default => null,
-            };
-        }
 
-        dump($groups);
+            if ($type->hasOptions()) {
+                $groups[] = AttributeOptionRequest::BASE_GROUP;
+                $groups[] = AttributeOptionTranslationRequest::BASE_GROUP;
+            }
+        }
 
         return $groups;
     }

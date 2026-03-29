@@ -11,5 +11,6 @@ interface ProductAttributeValueFactoryInterface
         int $attributeId,
         ?int $attributeOptionId,
         ?AttributeValueInterface $value,
+        string $createdByUlid,
     ): ProductAttributeValue;
 }

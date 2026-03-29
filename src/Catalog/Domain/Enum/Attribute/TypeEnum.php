@@ -22,4 +22,14 @@ enum TypeEnum: string
     case Url = 'url';
     case Dimension = 'dimension';
     case Image = 'image';
+
+    public function hasOptions(): bool
+    {
+        return match ($this) {
+            self::Select,
+            self::MultiSelect,
+            self::Dimension => true,
+            default => false,
+        };
+    }
 }

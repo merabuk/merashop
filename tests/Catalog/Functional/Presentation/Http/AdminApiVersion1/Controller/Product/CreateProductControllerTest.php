@@ -75,11 +75,17 @@ final class CreateProductControllerTest extends WebTestCase
         $client = self::createClient();
         $this->loginAsAdmin();
 
+        $option1 = $this->getAttributeOptionMother()->create(code: 'bluetooth');
+        $option2 = $this->getAttributeOptionMother()->create(code: 'wifi');
+
         $attribute1 = $this->getAttributeFixture()->create(code: 'model', type: AttributeTypeEnum::String);
         $attribute2 = $this->getAttributeFixture()->create(code: 'year-of-manufacture', type: AttributeTypeEnum::Integer);
-        $attribute3 = $this->getAttributeFixture()->create(code: '4G', type: AttributeTypeEnum::Boolean);
-        // TODO: rework on attribute_options
-        $attribute4 = $this->getAttributeFixture()->create(code: 'wireless_tech', type: AttributeTypeEnum::Select);
+        $attribute3 = $this->getAttributeFixture()->create(code: '4g', type: AttributeTypeEnum::Boolean);
+        $attribute4 = $this->getAttributeFixture()->create(
+            code: 'wireless-tech',
+            type: AttributeTypeEnum::Select,
+            options: [$option1, $option2]
+        );
 
         $category1 = $this->getCategoryFixture()->create(slug: 'electronics');
         $category2 = $this->getCategoryFixture()->create(slug: 'phones');
@@ -95,12 +101,31 @@ final class CreateProductControllerTest extends WebTestCase
             'status' => StatusEnum::Active->value,
             'prices' => self::getValidPrices(),
             'categoryIds' => [$category1->getId()->value(), $category2->getId()->value()],
-            'attributeValues' => self::getValidAttributeValues(
-                stringAttributeId: $attribute1->getId()->value(),
-                intAttributeId: $attribute2->getId()->value(),
-                booleanAttributeId: $attribute3->getId()->value(),
-                selectAttributeId: $attribute4->getId()->value(),
-            ),
+            'attributeValues' => [
+                [
+                    'attributeId' => $attribute1->getId()->value(),
+                    'type' => $attribute1->getType()->value()->value,
+                    'translations' => [
+                        'en' => 'Apple iPhone 17 Pro 256GB Silver (MG8G4)',
+                        'uk' => 'Apple iPhone 17 Pro 256GB Сірий (MG8G4)',
+                    ],
+                ],
+                [
+                    'attributeId' => $attribute2->getId()->value(),
+                    'type' => $attribute2->getType()->value()->value,
+                    'value' => 2024,
+                ],
+                [
+                    'attributeId' => $attribute3->getId()->value(),
+                    'type' => $attribute3->getType()->value()->value,
+                    'value' => true,
+                ],
+                [
+                    'attributeId' => $attribute4->getId()->value(),
+                    'type' => $attribute4->getType()->value()->value,
+                    'value' => $attribute4->getOptions()->all()[0]->getId()->value(),
+                ],
+            ],
             'translations' => self::validTranslations(),
             'images' => [$temporaryImage1->getUlid()->value(), $temporaryImage2->getUlid()->value()],
         ];
@@ -109,7 +134,7 @@ final class CreateProductControllerTest extends WebTestCase
             client: $client,
             method: self::METHOD,
             uri: $this->getUrl(),
-            payload: $payload
+            payload: $payload,
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
@@ -188,7 +213,7 @@ final class CreateProductControllerTest extends WebTestCase
             'prices' => $prices,
             'translations' => self::validTranslations(),
             'categoryIds' => self::getFakeValidCategoryIds(),
-            'attributeValues' => self::getValidAttributeValues(),
+            'attributeValues' => self::getFakeValidAttributeValues(),
             'images' => self::getFakeValidImageUlids(),
         ];
 
@@ -420,17 +445,118 @@ final class CreateProductControllerTest extends WebTestCase
             ],
             'expectedErrorFields' => ['attributeValues'],
         ];
-        yield 'invalid attribute value' => [
+        yield 'invalid attribute id' => [
+            'payload' => [
+                ...$payload,
+                'attributeValues' => [
+                    [
+                        'attributeId' => 0,
+                        'type' => AttributeTypeEnum::Integer->value,
+                        'value' => 123,
+                    ],
+                ],
+            ],
+            'expectedErrorFields' => ['attributeValues[0].attributeId'],
+        ];
+        yield 'invalid attribute type' => [
             'payload' => [
                 ...$payload,
                 'attributeValues' => [
                     [
                         'attributeId' => 1,
-                        'value' => 12.34,
+                        'type' => 'type',
+                        'value' => 'invalid',
+                    ],
+                ],
+            ],
+            'expectedErrorFields' => ['attributeValues[0].type'],
+        ];
+        yield 'missing and invalid attribute string value' => [
+            'payload' => [
+                ...$payload,
+                'attributeValues' => [
+                    [
+                        'attributeId' => 1,
+                        'type' => AttributeTypeEnum::String->value,
+                        'translations' => [
+                            'en' => '',
+                            'xx' => 'Value',
+                        ],
+                    ],
+                ],
+            ],
+            'expectedErrorFields' => [
+                'attributeValues[0].translations',
+                'attributeValues[0].translations[en]',
+                'attributeValues[0].translations[xx]',
+            ],
+        ];
+        yield 'invalid attribute integer value' => [
+            'payload' => [
+                ...$payload,
+                'attributeValues' => [
+                    [
+                        'attributeId' => 1,
+                        'type' => AttributeTypeEnum::Integer->value,
+                        'value' => 'invalid',
                     ],
                 ],
             ],
             'expectedErrorFields' => ['attributeValues[0].value'],
+        ];
+        yield 'invalid attribute select value' => [
+            'payload' => [
+                ...$payload,
+                'attributeValues' => [
+                    [
+                        'attributeId' => 1,
+                        'type' => AttributeTypeEnum::Select->value,
+                        'value' => 0,
+                    ],
+                ],
+            ],
+            'expectedErrorFields' => ['attributeValues[0].value'],
+        ];
+        yield 'invalid attribute multiselect value' => [
+            'payload' => [
+                ...$payload,
+                'attributeValues' => [
+                    [
+                        'attributeId' => 1,
+                        'type' => AttributeTypeEnum::MultiSelect->value,
+                        'values' => [0],
+                    ],
+                ],
+            ],
+            'expectedErrorFields' => ['attributeValues[0].values[0]'],
+        ];
+        yield 'invalid attribute dimension magnitude value' => [
+            'payload' => [
+                ...$payload,
+                'attributeValues' => [
+                    [
+                        'attributeId' => 1,
+                        'type' => AttributeTypeEnum::Dimension->value,
+                        'magnitude' => 'invalid',
+                        'unitOptionId' => 1,
+                    ],
+                ],
+            ],
+            'expectedErrorFields' => ['attributeValues[0].magnitude'],
+        ];
+        yield 'invalid attribute dimension unitOptionId value' => [
+            'payload' => [
+                ...$payload,
+                'attributeValues' => [
+                    [
+                        'attributeId' => 1,
+                        'type' => AttributeTypeEnum::Dimension->value,
+                        'magnitude' => 0.1,
+                        'unitOptionId' => -1,
+                    ],
+                ],
+            ],
+            'expectedErrorFields' => ['attributeValues[0].unitOptionId'],
         ];
         yield 'empty images' => [
             'payload' => [
@@ -528,28 +654,13 @@ final class CreateProductControllerTest extends WebTestCase
         return [1, 2, 3];
     }
 
-    private static function getValidAttributeValues(
-        ?int $stringAttributeId = null,
-        ?int $intAttributeId = null,
-        ?int $booleanAttributeId = null,
-        ?int $selectAttributeId = null,
-    ): array {
+    private static function getFakeValidAttributeValues(): array
+    {
         return [
             [
-                'attributeId' => $stringAttributeId ?? 1,
-                'value' => 'iPhone 17 Pro',
-            ],
-            [
-                'attributeId' => $intAttributeId ?? 2,
-                'value' => 2024,
-            ],
-            [
-                'attributeId' => $booleanAttributeId ?? 3,
-                'value' => true,
-            ],
-            [
-                'attributeId' => $selectAttributeId ?? 4,
-                'value' => ['WI-FI', 'Bluetooth'],
+                'attributeId' => 1,
+                'type' => AttributeTypeEnum::Integer->value,
+                'value' => 123,
             ],
         ];
     }

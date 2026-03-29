@@ -9,11 +9,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class BooleanAttributeValueRequest extends BaseAttributeValueRequest
 {
-    #[Assert\NotBlank]
-    #[Assert\Type('boolean')]
+    #[Assert\NotBlank(groups: [self::BASE_GROUP])]
+    #[Assert\Type(type: 'boolean', groups: [self::BASE_GROUP])]
     public ?bool $value;
 
-    public function toData(): BooleanAttributeValueData
+    public function toValueData(): BooleanAttributeValueData
     {
         return new BooleanAttributeValueData(value: $this->value);
     }

@@ -31,7 +31,7 @@ final class TextAttributeValueProviderTest extends TestCase
         $attribute = AttributeMother::createWithData(type: self::TYPE, id: 123);
         $data = self::getData();
 
-        $results = $this->createProvider()->handle($attribute, $data);
+        $results = $this->createProvider()->handle($attribute, $data, $attribute->getCreatedBy());
 
         self::assertCount(1, $results);
         $result = $results[0];
@@ -39,6 +39,7 @@ final class TextAttributeValueProviderTest extends TestCase
         $value = $result->getValue();
         self::assertInstanceOf(LocalizedTextValue::class, $value);
         self::assertSame($data->translations, $value->value());
+        self::assertTrue($attribute->getCreatedBy()->equals($result->getCreatedBy()));
     }
 
     #[DataProvider('invalidDataProvider')]
@@ -49,7 +50,7 @@ final class TextAttributeValueProviderTest extends TestCase
     ): void {
         $this->expectException($expectedException);
 
-        $this->createProvider()->handle($attribute, $data);
+        $this->createProvider()->handle($attribute, $data, $attribute->getCreatedBy());
     }
 
     public static function invalidDataProvider(): iterable

@@ -48,6 +48,7 @@ final class DimensionMetadataProviderTest extends TestCase
     private function getData(?float $baseRatio): AttributeOptionData
     {
         return new AttributeOptionData(
+            ulid: null,
             code: 'code',
             translations: [],
             isActive: true,

@@ -7,20 +7,26 @@ namespace App\Tests\Catalog\Support;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum as AttributeTypeEnum;
 use App\Catalog\Domain\Factory\Contract\ProductAttributeValueFactoryInterface;
+use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
 use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Id as ProductAttributeId;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\AttributeValueInterface;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Version;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Normalizer\ProductAttributeValueNormalizer;
 use App\Shared\Domain\Enum\LocaleEnum;
+use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use Faker\Factory;
 use Faker\Generator;
 use RuntimeException;
 
 final readonly class ProductAttributeValueMother
 {
+    public const string DEFAULT_ADMIN_ULID = '01KHVRCA679BJ6PBXX5N3G6RR5';
+
     public function __construct(
         private ProductAttributeValueFactoryInterface $productAttributeValueFactory,
+        private UlidGeneratorInterface $ulidGenerator,
         private Generator $faker,
         private Factory $fakerFactory,
         private ProductAttributeValueNormalizer $normalizer,
@@ -32,12 +38,16 @@ final readonly class ProductAttributeValueMother
         AttributeTypeEnum $attributeType,
         ?int $optionId = null,
         mixed $value = null,
+        ?int $version = null,
+        ?string $createdByUlid = null,
         ?int $id = null,
     ): ProductAttributeValue {
         $attributeOptionId = $optionId ? AttributeOptionId::fromInt($optionId) : null;
 
         return new ProductAttributeValue(
             attributeId: AttributeId::fromInt($attributeId),
+            version: $version ? Version::fromInt($version) : Version::initial(),
+            createdBy: AdminUlid::fromString($createdByUlid ?? self::DEFAULT_ADMIN_ULID),
             attributeOptionId: $attributeOptionId,
             value: self::getFakeAttributeValue($attributeType, $value, $attributeOptionId),
             id: $id ? ProductAttributeId::fromInt($id) : null
@@ -49,6 +59,7 @@ final readonly class ProductAttributeValueMother
         AttributeTypeEnum $attributeType,
         ?int $optionId = null,
         mixed $value = null,
+        ?string $createdByUlid = null,
     ): ProductAttributeValue {
         $attributeValue = $this->getAttributeValue($attributeType, $value, $optionId);
 
@@ -56,6 +67,7 @@ final readonly class ProductAttributeValueMother
             attributeId: $attributeId,
             attributeOptionId: $optionId,
             value: $attributeValue,
+            createdByUlid: $createdByUlid ?? $this->ulidGenerator->next(),
         );
     }
 
@@ -66,8 +78,9 @@ final readonly class ProductAttributeValueMother
     ): ?AttributeValueInterface {
         $arrayValue = match ($attributeType) {
             AttributeTypeEnum::String,
-            AttributeTypeEnum::Text => is_null($value) ? $this->makeTranslations() : (array) $value,
+            AttributeTypeEnum::Text => ['translations' => is_null($value) ? $this->makeTranslations() : (array) $value],
             AttributeTypeEnum::Integer => ['value' => $value ?? $this->faker->numberBetween(1, 1000)],
+            AttributeTypeEnum::Float => ['value' => $value ?? $this->faker->randomFloat(2, 0, 1000)],
             AttributeTypeEnum::Boolean => ['value' => $value ?? $this->faker->boolean()],
             AttributeTypeEnum::Select,
             AttributeTypeEnum::MultiSelect => [],
@@ -94,8 +107,9 @@ final readonly class ProductAttributeValueMother
     ): ?AttributeValueInterface {
         $arrayValue = match ($attributeType) {
             AttributeTypeEnum::String,
-            AttributeTypeEnum::Text => is_null($value) ? self::makeFakeTranslations() : (array) $value,
+            AttributeTypeEnum::Text => ['translations' => is_null($value) ? self::makeFakeTranslations() : (array) $value],
             AttributeTypeEnum::Integer => ['value' => $value ?? 42],
+            AttributeTypeEnum::Float => ['value' => $value ?? 1.23],
             AttributeTypeEnum::Boolean => ['value' => $value ?? true],
             AttributeTypeEnum::Select,
             AttributeTypeEnum::MultiSelect => [],

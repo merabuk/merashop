@@ -15,17 +15,11 @@ trait OutboxEmailFactoryTrait
 {
     protected function getOutboxEmailMother(): OutboxEmailMother
     {
-        /** @var OutboxEmailMother $mother */
-        $mother = self::getContainer()->get(OutboxEmailMother::class);
-
-        return $mother;
+        return self::getContainer()->get(OutboxEmailMother::class);
     }
 
     protected function getOutboxEmailFixture(): OutboxEmailFixture
     {
-        /** @var OutboxEmailFixture $fixture */
-        $fixture = self::getContainer()->get(OutboxEmailFixture::class);
-
-        return $fixture;
+        return self::getContainer()->get(OutboxEmailFixture::class);
     }
 }

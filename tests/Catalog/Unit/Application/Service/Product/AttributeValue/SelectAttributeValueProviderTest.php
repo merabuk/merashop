@@ -33,13 +33,14 @@ final class SelectAttributeValueProviderTest extends TestCase
         $attribute = AttributeMother::createWithData(type: self::TYPE, options: [$option], id: 123);
         $data = self::getData(optionId: $option->getId()->value());
 
-        $results = $this->createProvider()->handle($attribute, $data);
+        $results = $this->createProvider()->handle($attribute, $data, $attribute->getCreatedBy());
 
         self::assertCount(1, $results);
         $result = $results[0];
         self::assertInstanceOf(ProductAttributeValue::class, $result);
         self::assertNull($result->getValue());
         self::assertTrue($option->getId()->equals($result->getAttributeOptionId()));
+        self::assertTrue($attribute->getCreatedBy()->equals($result->getCreatedBy()));
     }
 
     #[DataProvider('invalidDataProvider')]
@@ -50,7 +51,7 @@ final class SelectAttributeValueProviderTest extends TestCase
     ): void {
         $this->expectException($expectedException);
 
-        $this->createProvider()->handle($attribute, $data);
+        $this->createProvider()->handle($attribute, $data, $attribute->getCreatedBy());
     }
 
     public static function invalidDataProvider(): iterable

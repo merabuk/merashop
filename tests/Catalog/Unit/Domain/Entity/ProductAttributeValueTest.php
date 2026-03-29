@@ -6,6 +6,7 @@ namespace App\Tests\Catalog\Unit\Domain\Entity;
 
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
+use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
 use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\BooleanValue;
@@ -44,9 +45,11 @@ final class ProductAttributeValueTest extends TestCase
         $attributeId = AttributeId::fromInt(123);
         $attributeOptionId = $optionId ? AttributeOptionId::fromInt($optionId) : null;
         $attributeValue = $this->normalizer->denormalize($type, $rawValue, $attributeOptionId);
+        $createdBy = AdminUlid::fromString(ProductAttributeValueMother::DEFAULT_ADMIN_ULID);
 
         $productAttributeValue = ProductAttributeValue::create(
             attributeId: $attributeId,
+            createdBy: $createdBy,
             attributeOptionId: $attributeOptionId,
             value: $attributeValue
         );
@@ -58,6 +61,7 @@ final class ProductAttributeValueTest extends TestCase
             self::assertInstanceOf($expectedVoClass, $productAttributeValue->getValue());
         }
         $this->assertVoEqualsOrNull($attributeValue, $productAttributeValue->getValue());
+        self::assertTrue($productAttributeValue->getCreatedBy()->equals($createdBy));
     }
 
     public static function productAttributeValueProvider(): iterable
@@ -66,8 +70,10 @@ final class ProductAttributeValueTest extends TestCase
             'type' => TypeEnum::String,
             'optionId' => null,
             'rawValue' => [
-                'en' => 'string value',
-                'uk' => 'строкове значення',
+                'translations' => [
+                    'en' => 'string value',
+                    'uk' => 'строкове значення',
+                ],
             ],
             'expectedVoClass' => LocalizedStringValue::class,
         ];
@@ -75,8 +81,10 @@ final class ProductAttributeValueTest extends TestCase
             'type' => TypeEnum::Text,
             'optionId' => null,
             'rawValue' => [
-                'en' => 'large text value',
-                'uk' => 'велике текстове значення',
+                'translations' => [
+                    'en' => 'large text value',
+                    'uk' => 'велике текстове значення',
+                ],
             ],
             'expectedVoClass' => LocalizedTextValue::class,
         ];
@@ -140,10 +148,12 @@ final class ProductAttributeValueTest extends TestCase
     {
         $attributeId = AttributeId::fromInt(1);
         $attributeOptionId = AttributeOptionId::fromInt(2);
+        $createdBy = AdminUlid::fromString(ProductAttributeValueMother::DEFAULT_ADMIN_ULID);
 
         $productAttributeValue = ProductAttributeValue::createWithOption(
             attributeId: $attributeId,
-            attributeOptionId: $attributeOptionId
+            attributeOptionId: $attributeOptionId,
+            createdBy: $createdBy,
         );
 
         self::assertTrue($productAttributeValue->getAttributeId()->equals($attributeId));
@@ -154,10 +164,12 @@ final class ProductAttributeValueTest extends TestCase
     {
         $attributeId = AttributeId::fromInt(1);
         $value = IntegerValue::fromInt(42);
+        $createdBy = AdminUlid::fromString(ProductAttributeValueMother::DEFAULT_ADMIN_ULID);
 
         $productAttributeValue = ProductAttributeValue::createWithValue(
             attributeId: $attributeId,
-            value: $value
+            value: $value,
+            createdBy: $createdBy,
         );
 
         self::assertTrue($productAttributeValue->getAttributeId()->equals($attributeId));

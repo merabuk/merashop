@@ -14,7 +14,7 @@ final readonly class Code implements EquatableInterface, Stringable
     use ValueObjectEqualityTrait;
 
     public const int MAX_LENGTH = 64;
-    public const string REGEX = '/^(?![\d-])(?!.*--)[a-z\d-]+(?<!-)$/';
+    public const string REGEX = '/^(?![-])(?!.*--)[a-z\d-]+(?<!-)$/';
 
     private string $code;
 

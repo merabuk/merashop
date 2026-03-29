@@ -6,6 +6,18 @@ namespace App\Tests\Catalog\Support\Traits;
 
 use App\Catalog\Application\Command\CreateProduct\CreateProductCommand;
 use App\Catalog\Application\Command\UpdateProduct\UpdateProductCommand;
+use App\Catalog\Application\DTO\Product\AttributeValue\AttributeValueDataInterface;
+use App\Catalog\Application\DTO\Product\AttributeValue\BooleanAttributeValueData;
+use App\Catalog\Application\DTO\Product\AttributeValue\ColorAttributeValueData;
+use App\Catalog\Application\DTO\Product\AttributeValue\DateAttributeValueData;
+use App\Catalog\Application\DTO\Product\AttributeValue\DimensionAttributeValueData;
+use App\Catalog\Application\DTO\Product\AttributeValue\FloatAttributeValueData;
+use App\Catalog\Application\DTO\Product\AttributeValue\IntegerAttributeValueData;
+use App\Catalog\Application\DTO\Product\AttributeValue\MultiSelectAttributeValueData;
+use App\Catalog\Application\DTO\Product\AttributeValue\SelectAttributeValueData;
+use App\Catalog\Application\DTO\Product\AttributeValue\StringAttributeValueData;
+use App\Catalog\Application\DTO\Product\AttributeValue\TextAttributeValueData;
+use App\Catalog\Application\DTO\Product\AttributeValue\UrlAttributeValueData;
 use App\Catalog\Application\DTO\Product\ProductAttributeValueData;
 use App\Catalog\Application\DTO\Product\ProductPriceData;
 use App\Catalog\Application\DTO\Product\ProductTranslationData;
@@ -18,6 +30,15 @@ use App\Catalog\Domain\ValueObject\Product\AttributeValueCollection;
 use App\Catalog\Domain\ValueObject\Product\PriceCollection;
 use App\Catalog\Domain\ValueObject\Product\Translation;
 use App\Catalog\Domain\ValueObject\Product\Translations;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\BooleanValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\ColorValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\DateValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\DimensionValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\FloatValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\IntegerValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\LocalizedStringValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\LocalizedTextValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\UrlValue;
 use RuntimeException;
 
 trait ProductHelperTrait
@@ -74,10 +95,24 @@ trait ProductHelperTrait
      */
     protected static function getValidAttributeValues(AttributeValueCollection $attributeValues): array
     {
-        return array_map(fn (ProductAttributeValue $pav) => new ProductAttributeValueData(
-            attributeId: $pav->getAttributeId()->value(),
-            value: $pav->getValue()->value(),
-        ), $attributeValues->all());
+        /**
+         * @var array<int, ProductAttributeValue[]> $grouped
+         */
+        $grouped = [];
+
+        foreach ($attributeValues->all() as $attributeValue) {
+            $grouped[$attributeValue->getAttributeId()->value()][] = $attributeValue;
+        }
+
+        $attributeValues = [];
+        foreach ($grouped as $attributeId => $values) {
+            $attributeValues[] = new ProductAttributeValueData(
+                attributeId: $attributeId,
+                value: self::mapProductAttributeValue($values),
+            );
+        }
+
+        return $attributeValues;
     }
 
     /**
@@ -89,5 +124,42 @@ trait ProductHelperTrait
             name: $t->name,
             description: $t->description,
         ), $translations->all());
+    }
+
+    /**
+     * @param ProductAttributeValue[] $pav
+     */
+    private static function mapProductAttributeValue(array $pav): AttributeValueDataInterface
+    {
+        if (count($pav) > 1) {
+            $optionIds = [];
+            foreach ($pav as $attributeValue) {
+                $optionIds[] = $attributeValue->getAttributeOptionId()->value();
+            }
+
+            return new MultiSelectAttributeValueData(optionIds: $optionIds);
+        }
+
+        $value = $pav[0]->getValue();
+
+        if (null === $value) {
+            return new SelectAttributeValueData(optionId: $pav[0]->getAttributeOptionId()->value());
+        }
+
+        return match (true) {
+            $value instanceof BooleanValue => new BooleanAttributeValueData(value: $value->value()),
+            $value instanceof ColorValue => new ColorAttributeValueData(value: $value->value()),
+            $value instanceof DateValue => new DateAttributeValueData(value: $value->value()->format('Y-m-d')),
+            $value instanceof DimensionValue => new DimensionAttributeValueData(
+                magnitude: $value->magnitude(),
+                unitOptionId: $pav[0]->getAttributeOptionId()->value(),
+            ),
+            $value instanceof FloatValue => new FloatAttributeValueData(value: $value->value()),
+            $value instanceof IntegerValue => new IntegerAttributeValueData(value: $value->value()),
+            $value instanceof LocalizedStringValue => new StringAttributeValueData(translations: $value->value()),
+            $value instanceof LocalizedTextValue => new TextAttributeValueData(translations: $value->value()),
+            $value instanceof UrlValue => new UrlAttributeValueData(value: $value->value()),
+            default => throw new RuntimeException(sprintf('Invalid attribute value type: %s', get_debug_type($value))),
+        };
     }
 }

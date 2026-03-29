@@ -85,15 +85,17 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
      */
     public function createFromCommand(CreateProductCommand $command, string $ulid): Product
     {
+        $adminUlid = AdminUlid::fromString($command->adminUlid);
+
         return Product::create(
             ulid: ProductUlid::fromString($ulid),
             sku: Sku::fromString($command->sku),
             status: Status::fromString($command->status),
             translations: $this->mapTranslations($command->translations),
-            prices: $this->mapPrices($command->prices),
-            createdBy: AdminUlid::fromString($command->adminUlid),
+            prices: $this->mapPrices($command->prices, $adminUlid),
+            createdBy: $adminUlid,
             categoryIds: CategoryIdCollection::fromArray($this->mapCategoryIds($command->categoryIds)),
-            attributeValues: $this->mapAttributeValues($command->attributeValues),
+            attributeValues: $this->mapAttributeValues($command->attributeValues, $adminUlid),
         );
     }
 
@@ -106,14 +108,17 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
      */
     public function updateFromCommand(Product $product, UpdateProductCommand $command): void
     {
+        // TODO: implement syncPrices, syncAttributeValues instead of using map... methods
+        $adminUlid = AdminUlid::fromString($command->adminUlid);
+
         $product->update(
             sku: Sku::fromString($command->sku),
             status: Status::fromString($command->status),
             translations: $this->mapTranslations($command->translations),
-            updatedBy: AdminUlid::fromString($command->adminUlid),
-            prices: $this->mapPrices($command->prices),
+            updatedBy: $adminUlid,
+            prices: $this->mapPrices($command->prices, $adminUlid),
             categoryIds: CategoryIdCollection::fromArray($this->mapCategoryIds($command->categoryIds)),
-            attributeValues: $this->mapAttributeValues($command->attributeValues),
+            attributeValues: $this->mapAttributeValues($command->attributeValues, $adminUlid),
         );
     }
 
@@ -137,13 +142,14 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
      * @throws InvalidCatalogValueObjectException
      * @throws ProductPriceStateException
      */
-    private function mapPrices(array $prices): PriceCollection
+    private function mapPrices(array $prices, AdminUlid $adminUlid): PriceCollection
     {
-        return PriceCollection::fromArray(array_map(fn (ProductPriceData $p) => new ProductPrice(
+        return PriceCollection::fromArray(array_map(fn (ProductPriceData $p) => ProductPrice::create(
             price: Price::fromPrimitives($p->amount, $p->currency),
             type: Type::fromString($p->type),
             tax: Tax::fromPrimitives($p->taxValue, $p->taxType),
             taxIncluded: TaxIncludedFlag::fromBool($p->taxIncluded),
+            createdBy: $adminUlid,
             validityPeriod: $p->validFrom && $p->validTo
                 ? ValidityPeriod::fromStrings(from: $p->validFrom, to: $p->validTo)
                 : null,
@@ -158,7 +164,7 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
      * @throws InvalidAttributeIdException
      * @throws UnsupportedAttributeTypeException
      */
-    private function mapAttributeValues(array $attributeValuesData): AttributeValueCollection
+    private function mapAttributeValues(array $attributeValuesData, AdminUlid $adminUlid): AttributeValueCollection
     {
         $attributes = $this->attributeReadRepository->findByIds(ids: $this->mapAttributeIds($attributeValuesData));
 
@@ -185,7 +191,7 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
                     throw new UnsupportedAttributeTypeException(sprintf('Value provider "%s" must implement %s', $type->value, ProductAttributeValueProviderInterface::class));
                 }
 
-                foreach ($provider->handle($attribute, $data->value) as $pav) {
+                foreach ($provider->handle($attribute, $data->value, $adminUlid) as $pav) {
                     $attributeValues[] = $pav;
                 }
             } catch (ContainerExceptionInterface $e) {

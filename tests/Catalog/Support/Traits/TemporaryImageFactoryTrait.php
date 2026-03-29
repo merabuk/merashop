@@ -15,17 +15,11 @@ trait TemporaryImageFactoryTrait
 {
     protected function getTemporaryImageMother(): TemporaryImageMother
     {
-        /** @var TemporaryImageMother $mother */
-        $mother = self::getContainer()->get(TemporaryImageMother::class);
-
-        return $mother;
+        return self::getContainer()->get(TemporaryImageMother::class);
     }
 
     protected function getTemporaryImageFixture(): TemporaryImageFixture
     {
-        /** @var TemporaryImageFixture $fixture */
-        $fixture = self::getContainer()->get(TemporaryImageFixture::class);
-
-        return $fixture;
+        return self::getContainer()->get(TemporaryImageFixture::class);
     }
 }
