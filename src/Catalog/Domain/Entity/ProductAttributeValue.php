@@ -78,9 +78,19 @@ class ProductAttributeValue
         );
     }
 
-    public function updateValue(AttributeValueInterface $value): void
-    {
+    /**
+     * @throws ProductAttributeValueStateException
+     */
+    public function update(
+        AdminUlid $updatedBy,
+        ?AttributeOptionId $attributeOptionId = null,
+        ?AttributeValueInterface $value = null,
+    ): void {
+        $this->attributeOptionId = $attributeOptionId;
         $this->value = $value;
+        $this->updatedBy = $updatedBy;
+
+        $this->ensureIsValidState();
     }
 
     public function getId(): ?Id

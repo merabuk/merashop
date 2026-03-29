@@ -72,7 +72,7 @@ final readonly class ImageCollection extends AbstractCollection
      */
     public function add(ProductImage $image): self
     {
-        if ($this->checkImagesContains($image)) {
+        if ($this->checkImagesContains($image->getUlid())) {
             return $this;
         }
 
@@ -87,6 +87,32 @@ final readonly class ImageCollection extends AbstractCollection
         }
 
         $newItems[] = $image;
+
+        return new self($newItems);
+    }
+
+    /**
+     * @throws ProductImagesMainImageException
+     * @throws ProductImageUniqueException
+     * @throws InvalidProductImageItemException
+     */
+    public function remove(ProductImageUlid $imageUlid): self
+    {
+        if (!$this->checkImagesContains($imageUlid)) {
+            return $this;
+        }
+
+        $removedIsMain = $this->getByUlid($imageUlid)?->isMain()->isTrue() ?? false;
+
+        $newItems = array_values(array_filter(
+            $this->items,
+            fn (ProductImage $item) => !$item->getUlid()->equals($imageUlid)
+        ));
+
+        if ($removedIsMain && !empty($newItems)) {
+            $newItems = $this->resetMainInArray($newItems);
+            $newItems[0]->setAsMain();
+        }
 
         return new self($newItems);
     }
@@ -110,11 +136,11 @@ final readonly class ImageCollection extends AbstractCollection
         return $items;
     }
 
-    private function checkImagesContains(ProductImage $image): bool
+    private function checkImagesContains(ProductImageUlid $imageUlid): bool
     {
         return array_any(
             array: $this->items,
-            callback: fn (ProductImage $existingImage) => $existingImage->getUlid()->equals($image->getUlid())
+            callback: fn (ProductImage $existingImage) => $existingImage->getUlid()->equals($imageUlid)
         );
     }
 

@@ -12,18 +12,19 @@ class AttributeNotFoundException extends CatalogDomainException implements Clien
     private function __construct(
         private readonly string $field,
         private readonly string $value,
+        private readonly ?int $index = null,
     ) {
         parent::__construct();
     }
 
-    public static function withId(int $id): self
+    public static function withId(int $id, ?int $index = null): self
     {
-        return new self('id', (string) $id);
+        return new self(field: 'id', value: (string) $id, index: $index);
     }
 
-    public static function withUlid(string $ulid): self
+    public static function withUlid(string $ulid, ?int $index = null): self
     {
-        return new self('ulid', $ulid);
+        return new self(field: 'ulid', value: $ulid, index: $index);
     }
 
     public function getErrorCode(): string
@@ -39,6 +40,17 @@ class AttributeNotFoundException extends CatalogDomainException implements Clien
         return [
             'field' => $this->field,
             'value' => $this->value,
+        ];
+    }
+
+    public function getExtraData(): array
+    {
+        if (null === $this->index) {
+            return [];
+        }
+
+        return [
+            'index' => $this->index,
         ];
     }
 }

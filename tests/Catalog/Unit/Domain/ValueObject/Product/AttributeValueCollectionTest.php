@@ -56,6 +56,19 @@ final class AttributeValueCollectionTest extends TestCase
         }
     }
 
+    public function testItFindsByBusinessKey(): void
+    {
+        $attributeValues = self::getValidAttributeValues();
+        $vo = AttributeValueCollection::fromArray($attributeValues);
+
+        $attributeValue = $attributeValues[1];
+
+        self::assertSame($attributeValue, $vo->findByBusinessKey(
+            attributeId: $attributeValue->getAttributeId(),
+            attributeOptionId: $attributeValue->getAttributeOptionId()
+        ));
+    }
+
     #[DataProvider('invalidProductAttributeValueCollectionProvider')]
     public function testThrowsExceptionOnInvalidInput(array $invalidValue, string $exceptionClass): void
     {
@@ -74,13 +87,37 @@ final class AttributeValueCollectionTest extends TestCase
     /**
      * @return ProductAttributeValue[]
      */
-    private static function getValidAttributeValues(?array $attributeIds = null): array
+    private static function getValidAttributeValues(?array $attributes = null): array
     {
-        $attributeIds ??= [123, 456, 789];
+        $attributes ??= [
+            [
+                'id' => 123,
+                'type' => AttributeTypeEnum::Integer,
+            ],
+            [
+                'id' => 456,
+                'type' => AttributeTypeEnum::Select,
+                'options' => [
+                    [
+                        'id' => 4561,
+                    ],
+                ],
+            ],
+            [
+                'id' => 789,
+                'type' => AttributeTypeEnum::Dimension,
+                'options' => [
+                    [
+                        'id' => 7891,
+                    ],
+                ],
+            ],
+        ];
 
-        return array_map(fn (int $id) => ProductAttributeValueMother::createWithData(
-            attributeId: $id,
-            attributeType: AttributeTypeEnum::Integer,
-        ), $attributeIds);
+        return array_map(fn (array $a) => ProductAttributeValueMother::createWithData(
+            attributeId: $a['id'],
+            attributeType: $a['type'],
+            optionId: $a['options'][0]['id'] ?? null,
+        ), $attributes);
     }
 }

@@ -22,5 +22,6 @@ enum ErrorCodeEnum: string
     case CategoryChildCanNotBeParentConflictException = 'CATEGORY_MOVE_TO_CHILD_CONFLICT';
     case ProductNotFound = 'PRODUCT_NOT_FOUND';
     case ProductAlreadyExists = 'PRODUCT_ALREADY_EXISTS';
+    case ProductImagesCanNotBeEmpty = 'PRODUCT_IMAGES_CANNOT_BE_EMPTY';
     case OneOfTemporaryImagesNotFoundException = 'ONE_OF_TEMPORARY_IMAGES_NOT_FOUND';
 }

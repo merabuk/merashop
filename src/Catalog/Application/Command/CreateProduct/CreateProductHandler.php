@@ -56,9 +56,9 @@ readonly class CreateProductHandler implements CommandHandlerInterface
 
             $ulid = $this->ulidGenerator->next();
 
-            $product = $this->productFactory->createFromCommand($command, $ulid);
+            $product = $this->productFactory->createFromCommand(command: $command, ulid: $ulid);
 
-            $this->productMediaManager->activateImagesForProduct($product, $temporaryImagesUlids);
+            $this->productMediaManager->activateImagesForProduct(product: $product, imagesUlids: $command->images);
 
             $product = $this->writeRepository->save($product);
 

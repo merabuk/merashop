@@ -107,6 +107,22 @@ final class ImageCollectionTest extends TestCase
         self::assertFalse($newVo->equals($vo));
     }
 
+    public function testItRemovesImageByUlid(): void
+    {
+        $images = self::getValidImages();
+
+        $vo = ImageCollection::fromArray($images);
+
+        $ulid = $images[0]->getUlid();
+        $newVo = $vo->remove($ulid);
+
+        self::assertCount(3, $vo);
+        self::assertCount(2, $newVo);
+        self::assertFalse($vo->equals($newVo));
+        self::assertNotNull($vo->getByUlid($ulid->value()));
+        self::assertNull($newVo->getByUlid($ulid->value()));
+    }
+
     /**
      * @return ProductImage[]
      */

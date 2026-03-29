@@ -68,7 +68,7 @@ final class CreateProductHandlerTest extends TestCase
         );
         $this->expectGenerateUlid($product->getUlid()->value());
         $this->expectFactoryCreateProduct($command, $product);
-        $this->expectActivateImagesForProduct($product, $expectedTemporaryImageUlids);
+        $this->expectActivateImagesForProduct($product, $command->images);
         $this->expectSaveProduct($product);
         $this->expectTemporaryImagesDeletion($expectedTemporaryImageUlids);
 
@@ -232,7 +232,7 @@ final class CreateProductHandlerTest extends TestCase
     }
 
     /**
-     * @param TemporaryImageUlid[] $temporaryImageUlids
+     * @param string[] $temporaryImageUlids
      */
     private function expectActivateImagesForProduct(Product $product, array $temporaryImageUlids): void
     {

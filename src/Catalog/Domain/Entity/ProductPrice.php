@@ -58,6 +58,28 @@ class ProductPrice
         );
     }
 
+    /**
+     * @throws ProductPriceStateException
+     */
+    public function update(
+        Price $price,
+        Type $type,
+        Tax $tax,
+        TaxIncludedFlag $taxIncluded,
+        AdminUlid $updatedBy,
+        ?ValidityPeriod $validityPeriod = null,
+    ): void {
+        $this->ensureTypeAndCurrencyAreTheSame($price, $type);
+
+        $this->price = $price;
+        $this->tax = $tax;
+        $this->taxIncluded = $taxIncluded;
+        $this->validityPeriod = $validityPeriod;
+        $this->updatedBy = $updatedBy;
+
+        $this->ensureIsValidState();
+    }
+
     public function getAmountWithTax(): int
     {
         $baseAmount = $this->price->getAmount();
@@ -134,6 +156,20 @@ class ProductPrice
 
         if ($this->type->isTimeLimited() && null === $this->validityPeriod) {
             throw ProductPriceStateException::becauseItIsTimeLimitedType(['validityPeriod']);
+        }
+    }
+
+    /**
+     * @throws ProductPriceStateException
+     */
+    private function ensureTypeAndCurrencyAreTheSame(Price $newPrice, Type $newType): void
+    {
+        if (!$this->type->equals($newType)) {
+            throw ProductPriceStateException::becauseTypeCanNotBeChanged(from: $this->type->value()->value, to: $newType->value()->value);
+        }
+
+        if ($this->price->getCurrency() !== $newPrice->getCurrency()) {
+            throw ProductPriceStateException::becauseCurrencyCanNotBeChanged(from: $this->price->getCurrency()->value, to: $newPrice->getCurrency()->value);
         }
     }
 }

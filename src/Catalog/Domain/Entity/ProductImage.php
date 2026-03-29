@@ -35,6 +35,21 @@ class ProductImage
         );
     }
 
+    public function setAsMain(): void
+    {
+        $this->isMain = MainImageFlag::fromBool(true);
+    }
+
+    public function unsetMain(): void
+    {
+        $this->isMain = MainImageFlag::fromBool(false);
+    }
+
+    public function updateSortOrder(SortOrder $sortOrder): void
+    {
+        $this->sortOrder = $sortOrder;
+    }
+
     public function getId(): ?Id
     {
         return $this->id;
@@ -58,20 +73,5 @@ class ProductImage
     public function isMain(): MainImageFlag
     {
         return $this->isMain;
-    }
-
-    public function setAsMain(): void
-    {
-        $this->isMain = MainImageFlag::fromBool(true);
-    }
-
-    public function unsetMain(): void
-    {
-        $this->isMain = MainImageFlag::fromBool(false);
-    }
-
-    public function updateSortOrder(SortOrder $sortOrder): void
-    {
-        $this->sortOrder = $sortOrder;
     }
 }

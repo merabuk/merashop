@@ -375,6 +375,7 @@ final readonly class ProductMother
         foreach ($ulids as $i => $ulid) {
             $images[] = ProductImageMother::createWithData(
                 ulid: $ulid,
+                path: 'products/2024/03/19/img_'.($i + 1).'.jpg',
                 sortOrder: $i + 1,
                 isMain: 0 === $i,
                 id: $withFakeIds ? 2220 + $i : null

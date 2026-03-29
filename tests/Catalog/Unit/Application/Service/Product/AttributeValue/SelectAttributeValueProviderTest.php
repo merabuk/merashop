@@ -56,19 +56,25 @@ final class SelectAttributeValueProviderTest extends TestCase
 
     public static function invalidDataProvider(): iterable
     {
+        $optionId1 = 456;
+
         yield 'attribute type mismatch' => [
-            'attribute' => AttributeMother::createWithData(type: TypeEnum::Integer),
+            'attribute' => AttributeMother::createWithData(type: TypeEnum::Integer, id: 123),
             'data' => self::getData(),
             'expectedException' => InvalidArgumentException::class,
         ];
         yield 'data type mismatch' => [
-            'attribute' => AttributeMother::createWithData(type: self::TYPE),
+            'attribute' => AttributeMother::createWithData(type: self::TYPE, options: [
+                AttributeOptionMother::createWithData(id: $optionId1),
+            ], id: 123),
             'data' => new IntegerAttributeValueData(value: 123),
             'expectedException' => InvalidArgumentException::class,
         ];
         yield 'unit option not found' => [
-            'attribute' => AttributeMother::createWithData(type: self::TYPE, options: []),
-            'data' => self::getData(),
+            'attribute' => AttributeMother::createWithData(type: self::TYPE, options: [
+                AttributeOptionMother::createWithData(id: 789),
+            ], id: 123),
+            'data' => self::getData($optionId1),
             'expectedException' => AttributeOptionNotFoundException::class,
         ];
     }

@@ -9,6 +9,7 @@ use App\Catalog\Domain\Enum\TemporaryImage\ContextEnum;
 use App\Catalog\Domain\Exception\Attribute\OneOfAttributesNotFoundException;
 use App\Catalog\Domain\Exception\Category\OneOfCategoriesNotFoundException;
 use App\Catalog\Domain\Exception\Product\ProductAlreadyExistsException;
+use App\Catalog\Domain\Exception\Product\ProductImagesEmptyException;
 use App\Catalog\Domain\Exception\TemporaryImage\OneOfTemporaryImagesNotFoundException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\Repository\CategoryReadRepositoryInterface;
@@ -17,6 +18,7 @@ use App\Catalog\Domain\Repository\TemporaryImageReadRepositoryInterface;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
 use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
 use App\Catalog\Domain\ValueObject\Product\Sku;
+use App\Catalog\Domain\ValueObject\ProductImage\Ulid as ProductImageUlid;
 use App\Catalog\Domain\ValueObject\TemporaryImage\Ulid as TemporaryImageUlid;
 use App\Shared\Domain\Exception\Entity\ConcurrencyException;
 
@@ -35,10 +37,10 @@ final readonly class ProductValidator implements ProductValidatorInterface
      * @param AttributeId[]        $attributeIds
      * @param TemporaryImageUlid[] $temporaryImageUlids
      *
-     * @throws ProductAlreadyExistsException
      * @throws OneOfCategoriesNotFoundException
      * @throws OneOfAttributesNotFoundException
      * @throws OneOfTemporaryImagesNotFoundException
+     * @throws ProductAlreadyExistsException
      */
     public function validateCreation(
         Sku $sku,
@@ -53,9 +55,25 @@ final readonly class ProductValidator implements ProductValidatorInterface
         $this->categoryReadRepository->assertAllExistByIds($categoryIds);
         $this->attributeReadRepository->assertAllExistByIds($attributeIds);
 
-        $this->temporaryImageReadRepository->assertAllExistByUlidsAndContext($temporaryImageUlids, ContextEnum::ProductMain);
+        $this->temporaryImageReadRepository->assertAllExistByUlidsAndContext(
+            ulids: $temporaryImageUlids,
+            context: ContextEnum::ProductMain
+        );
     }
 
+    /**
+     * @param CategoryId[]         $categoryIds
+     * @param AttributeId[]        $attributeIds
+     * @param TemporaryImageUlid[] $temporaryImageUlids
+     * @param ProductImageUlid[]   $productImagesUlidsForDelete
+     *
+     * @throws ConcurrencyException
+     * @throws OneOfCategoriesNotFoundException
+     * @throws OneOfAttributesNotFoundException
+     * @throws OneOfTemporaryImagesNotFoundException
+     * @throws ProductAlreadyExistsException
+     * @throws ProductImagesEmptyException
+     */
     public function validateUpdate(
         Product $product,
         int $version,
@@ -63,6 +81,7 @@ final readonly class ProductValidator implements ProductValidatorInterface
         array $categoryIds,
         array $attributeIds,
         array $temporaryImageUlids,
+        array $productImagesUlidsForDelete,
     ): void {
         if ($product->getVersion()->value() !== $version) {
             throw new ConcurrencyException();
@@ -75,6 +94,20 @@ final readonly class ProductValidator implements ProductValidatorInterface
         $this->categoryReadRepository->assertAllExistByIds($categoryIds);
         $this->attributeReadRepository->assertAllExistByIds($attributeIds);
 
-        $this->temporaryImageReadRepository->assertAllExistByUlidsAndContext($temporaryImageUlids, ContextEnum::ProductMain);
+        $this->temporaryImageReadRepository->assertAllExistByUlidsAndContext(
+            ulids: $temporaryImageUlids,
+            context: ContextEnum::ProductMain
+        );
+
+        if (
+            $product->getStatus()->isActive()
+            && (
+                $product->getImages()->count()
+                - count($productImagesUlidsForDelete)
+                + count($temporaryImageUlids)
+            ) <= 0
+        ) {
+            throw ProductImagesEmptyException::activeProductMustHaveAtLeastOneImage();
+        }
     }
 }

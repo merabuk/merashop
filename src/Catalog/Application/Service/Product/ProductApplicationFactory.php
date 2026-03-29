@@ -13,10 +13,12 @@ use App\Catalog\Application\Service\Product\AttributeValue\ProductAttributeValue
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Entity\Product;
 use App\Catalog\Domain\Entity\ProductPrice;
+use App\Catalog\Domain\Enum\Attribute\TypeEnum as AttributeTypeEnum;
 use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
 use App\Catalog\Domain\Exception\Category\InvalidCategoryIdException;
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
+use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
 use App\Catalog\Domain\Exception\ProductAttributeValue\UnsupportedAttributeTypeException;
 use App\Catalog\Domain\Exception\ProductPrice\ProductPriceStateException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
@@ -103,12 +105,12 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
      * @throws AttributeNotFoundException
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
+     * @throws ProductAttributeValueStateException
      * @throws ProductPriceStateException
      * @throws UnsupportedAttributeTypeException
      */
     public function updateFromCommand(Product $product, UpdateProductCommand $command): void
     {
-        // TODO: implement syncPrices, syncAttributeValues instead of using map... methods
         $adminUlid = AdminUlid::fromString($command->adminUlid);
 
         $product->update(
@@ -116,9 +118,17 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
             status: Status::fromString($command->status),
             translations: $this->mapTranslations($command->translations),
             updatedBy: $adminUlid,
-            prices: $this->mapPrices($command->prices, $adminUlid),
+            prices: $this->syncPrices(
+                product: $product,
+                pricesData: $command->prices,
+                adminUlid: $adminUlid
+            ),
             categoryIds: CategoryIdCollection::fromArray($this->mapCategoryIds($command->categoryIds)),
-            attributeValues: $this->mapAttributeValues($command->attributeValues, $adminUlid),
+            attributeValues: $this->syncAttributeValues(
+                product: $product,
+                attributeValuesData: $command->attributeValues,
+                adminUlid: $adminUlid
+            ),
         );
     }
 
@@ -157,11 +167,60 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
     }
 
     /**
+     * @param ProductPriceData[] $pricesData
+     *
+     * @throws InvalidCatalogValueObjectException
+     * @throws ProductPriceStateException
+     */
+    private function syncPrices(
+        Product $product,
+        array $pricesData,
+        AdminUlid $adminUlid,
+    ): PriceCollection {
+        $currentPrices = $product->getPrices();
+        $syncedPrices = [];
+
+        foreach ($pricesData as $data) {
+            $price = Price::fromPrimitives(amount: $data->amount, currency: $data->currency);
+            $type = Type::fromString($data->type);
+            $tax = Tax::fromPrimitives(value: $data->taxValue, type: $data->taxType);
+            $taxIncluded = TaxIncludedFlag::fromBool($data->taxIncluded);
+            $validityPeriod = $data->validFrom && $data->validTo
+                ? ValidityPeriod::fromStrings(from: $data->validFrom, to: $data->validTo)
+                : null;
+
+            $productPrice = $currentPrices->getByCurrencyAndType(currency: $price->getCurrency(), type: $type->value());
+            if ($productPrice) {
+                $productPrice->update(
+                    price: $price,
+                    type: $type,
+                    tax: $tax,
+                    taxIncluded: $taxIncluded,
+                    updatedBy: $adminUlid,
+                    validityPeriod: $validityPeriod
+                );
+            } else {
+                $productPrice = ProductPrice::create(
+                    price: $price,
+                    type: $type,
+                    tax: $tax,
+                    taxIncluded: $taxIncluded,
+                    createdBy: $adminUlid,
+                    validityPeriod: $validityPeriod
+                );
+            }
+
+            $syncedPrices[] = $productPrice;
+        }
+
+        return PriceCollection::fromArray($syncedPrices);
+    }
+
+    /**
      * @param ProductAttributeValueData[] $attributeValuesData
      *
      * @throws AttributeNotFoundException
      * @throws InvalidCatalogValueObjectException
-     * @throws InvalidAttributeIdException
      * @throws UnsupportedAttributeTypeException
      */
     private function mapAttributeValues(array $attributeValuesData, AdminUlid $adminUlid): AttributeValueCollection
@@ -170,35 +229,93 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
 
         $attributeValues = [];
 
-        foreach ($attributeValuesData as $data) {
-            try {
-                $attribute = array_find($attributes, fn (Attribute $a) => $a->getId()->value() === $data->attributeId);
+        foreach ($attributeValuesData as $i => $data) {
+            $attribute = array_find($attributes, fn (Attribute $a) => $a->getId()->value() === $data->attributeId);
 
-                if (!$attribute) {
-                    // TODO[attribute]: add index support for exception
-                    throw AttributeNotFoundException::withId($data->attributeId);
-                }
+            if (!$attribute) {
+                throw AttributeNotFoundException::withId($data->attributeId, (int) $i);
+            }
 
-                $type = $attribute->getType()->value();
+            $provider = $this->getAttributeValueProvider($attribute->getType()->value());
 
-                if (!$this->providers->has($type->value)) {
-                    throw new UnsupportedAttributeTypeException(sprintf('Container does not have a value provider for attribute type: %s', $type->value));
-                }
-
-                $provider = $this->providers->get($type->value);
-
-                if (false === $provider instanceof ProductAttributeValueProviderInterface) {
-                    throw new UnsupportedAttributeTypeException(sprintf('Value provider "%s" must implement %s', $type->value, ProductAttributeValueProviderInterface::class));
-                }
-
-                foreach ($provider->handle($attribute, $data->value, $adminUlid) as $pav) {
-                    $attributeValues[] = $pav;
-                }
-            } catch (ContainerExceptionInterface $e) {
-                throw new UnsupportedAttributeTypeException(message: 'Fail get value provider', previous: $e);
+            foreach ($provider->handle($attribute, $data->value, $adminUlid) as $pav) {
+                $attributeValues[] = $pav;
             }
         }
 
         return AttributeValueCollection::fromArray($attributeValues);
+    }
+
+    /**
+     * @param ProductAttributeValueData[] $attributeValuesData
+     *
+     * @throws AttributeNotFoundException
+     * @throws InvalidCatalogValueObjectException
+     * @throws ProductAttributeValueStateException
+     * @throws UnsupportedAttributeTypeException
+     */
+    private function syncAttributeValues(
+        Product $product,
+        array $attributeValuesData,
+        AdminUlid $adminUlid,
+    ): AttributeValueCollection {
+        $attributes = $this->attributeReadRepository->findByIds(ids: $this->mapAttributeIds($attributeValuesData));
+
+        $currentAttributeValues = $product->getAttributeValues();
+        $syncedAttributeValues = [];
+
+        foreach ($attributeValuesData as $i => $data) {
+            $attribute = array_find($attributes, fn (Attribute $a) => $a->getId()->value() === $data->attributeId);
+
+            if (!$attribute) {
+                throw AttributeNotFoundException::withId($data->attributeId, (int) $i);
+            }
+
+            $provider = $this->getAttributeValueProvider($attribute->getType()->value());
+
+            $generatedValues = $provider->handle($attribute, $data->value, $adminUlid);
+
+            foreach ($generatedValues as $generated) {
+                $existing = $currentAttributeValues->findByBusinessKey(
+                    attributeId: $generated->getAttributeId(),
+                    attributeOptionId: $generated->getAttributeOptionId()
+                );
+
+                if ($existing) {
+                    $existing->update(
+                        updatedBy: $adminUlid,
+                        attributeOptionId: $generated->getAttributeOptionId(),
+                        value: $generated->getValue(),
+                    );
+                    $syncedAttributeValues[] = $existing;
+                } else {
+                    $syncedAttributeValues[] = $generated;
+                }
+            }
+        }
+
+        return AttributeValueCollection::fromArray($syncedAttributeValues);
+    }
+
+    /**
+     * @throws UnsupportedAttributeTypeException
+     */
+    private function getAttributeValueProvider(AttributeTypeEnum $type): ProductAttributeValueProviderInterface
+    {
+        try {
+            if (!$this->providers->has($type->value)) {
+                throw new UnsupportedAttributeTypeException(sprintf('Container does not have a value provider for attribute type: %s', $type->value));
+            }
+
+            $provider = $this->providers->get($type->value);
+
+            if (false === $provider instanceof ProductAttributeValueProviderInterface) {
+                throw new UnsupportedAttributeTypeException(sprintf('Value provider "%s" must implement %s', $type->value, ProductAttributeValueProviderInterface::class));
+            }
+
+            return $provider;
+        } catch (ContainerExceptionInterface $e) {
+            throw new UnsupportedAttributeTypeException(message: 'Fail get value provider', previous: $e);
+        }
     }
 }

@@ -60,19 +60,44 @@ final class MultiSelectAttributeValueProviderTest extends TestCase
 
     public static function invalidDataProvider(): iterable
     {
+        $optionId1 = 456;
+        $optionId2 = 789;
+
         yield 'attribute type mismatch' => [
-            'attribute' => AttributeMother::createWithData(type: TypeEnum::Integer),
+            'attribute' => AttributeMother::createWithData(type: TypeEnum::Integer, id: 123),
             'data' => self::getData(),
             'expectedException' => InvalidArgumentException::class,
         ];
         yield 'data type mismatch' => [
-            'attribute' => AttributeMother::createWithData(type: self::TYPE),
+            'attribute' => AttributeMother::createWithData(type: self::TYPE, options: [
+                AttributeOptionMother::createWithData(
+                    ulid: '01KMDEC4Z9NSK4YPEW8NG5068T',
+                    code: 'option-1',
+                    id: $optionId1,
+                ),
+                AttributeOptionMother::createWithData(
+                    ulid: '01KMGY62KTY8BJ9J8NHMXHKF4P',
+                    code: 'option-2',
+                    id: $optionId2,
+                ),
+            ], id: 123),
             'data' => new IntegerAttributeValueData(value: 123),
             'expectedException' => InvalidArgumentException::class,
         ];
         yield 'unit option not found' => [
-            'attribute' => AttributeMother::createWithData(type: self::TYPE, options: []),
-            'data' => self::getData(),
+            'attribute' => AttributeMother::createWithData(type: self::TYPE, options: [
+                AttributeOptionMother::createWithData(
+                    ulid: '01KMDEC4Z9NSK4YPEW8NG5068T',
+                    code: 'option-1',
+                    id: $optionId1,
+                ),
+                AttributeOptionMother::createWithData(
+                    ulid: '01KMGY62KTY8BJ9J8NHMXHKF4P',
+                    code: 'option-2',
+                    id: $optionId2,
+                ),
+            ], id: 123),
+            'data' => self::getData([$optionId1, 987]),
             'expectedException' => AttributeOptionNotFoundException::class,
         ];
     }

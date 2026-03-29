@@ -23,4 +23,12 @@ abstract class ServerException extends Exception implements AppExceptionInterfac
     {
         return 'exceptions';
     }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function getExtraData(): array
+    {
+        return [];
+    }
 }

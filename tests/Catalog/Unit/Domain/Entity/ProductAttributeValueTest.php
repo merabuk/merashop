@@ -176,19 +176,50 @@ final class ProductAttributeValueTest extends TestCase
         self::assertTrue($productAttributeValue->getValue()->equals($value));
     }
 
-    public function testItUpdatesAttributeValue(): void
-    {
-        $type = TypeEnum::Integer;
+    #[DataProvider('updateAttributeValueProvider')]
+    public function testItUpdatesAttribute(
+        TypeEnum $type,
+        ?array $data = null,
+        ?int $optionId = null,
+    ): void {
+        $attrubuteOptionId = $optionId ? AttributeOptionId::fromInt($optionId) : null;
         $productAttributeValue = ProductAttributeValueMother::createWithData(
             attributeId: 123,
             attributeType: $type,
-            value: 456
+            optionId: $optionId ? 321 : null,
         );
 
-        $newAttributeValue = $this->normalizer->denormalize($type, ['value' => 789]);
+        $newAttributeValue = $this->normalizer->denormalize($type, $data, $attrubuteOptionId);
 
-        $productAttributeValue->updateValue($newAttributeValue);
+        $productAttributeValue->update(
+            updatedBy: $productAttributeValue->getCreatedBy(),
+            attributeOptionId: $attrubuteOptionId,
+            value: $newAttributeValue,
+        );
 
-        self::assertTrue($productAttributeValue->getValue()->equals($newAttributeValue));
+        $this->assertVoEqualsOrNull($attrubuteOptionId, $productAttributeValue->getAttributeOptionId());
+        $this->assertVoEqualsOrNull($newAttributeValue, $productAttributeValue->getValue());
+        self::assertTrue($productAttributeValue->getUpdatedBy()->equals($productAttributeValue->getCreatedBy()));
+    }
+
+    public static function updateAttributeValueProvider(): iterable
+    {
+        yield 'integer' => [
+            'type' => TypeEnum::Integer,
+            'data' => ['value' => 789],
+        ];
+        yield 'select' => [
+            'type' => TypeEnum::Select,
+            'optionId' => 456,
+        ];
+        yield 'multiselect' => [
+            'type' => TypeEnum::MultiSelect,
+            'optionId' => 789,
+        ];
+        yield 'dimension' => [
+            'type' => TypeEnum::Dimension,
+            'data' => ['magnitude' => 1.2345],
+            'optionId' => 123,
+        ];
     }
 }

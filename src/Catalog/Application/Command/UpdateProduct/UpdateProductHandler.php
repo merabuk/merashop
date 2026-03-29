@@ -52,8 +52,8 @@ readonly class UpdateProductHandler implements CommandHandlerInterface
             $newSku = Sku::fromString($command->sku);
             $categoryIds = $this->productFactory->mapCategoryIds($command->categoryIds);
             $attributeValues = $this->productFactory->mapAttributeIds($command->attributeValues);
-            // TODO: need to separate existing and new images
-            $temporaryImagesUlids = $this->productMediaManager->mapTemporaryImagesUlids($command->images);
+            $temporaryImagesUlids = $this->productMediaManager->mapTemporaryImagesUlids($command->images, $product->getImages());
+            $productImagesUlidsForDelete = $this->productMediaManager->mapProductImagesUlidsForDelete($command->images, $product->getImages());
 
             $this->productValidator->validateUpdate(
                 product: $product,
@@ -62,13 +62,21 @@ readonly class UpdateProductHandler implements CommandHandlerInterface
                 categoryIds: $categoryIds,
                 attributeIds: $attributeValues,
                 temporaryImageUlids: $temporaryImagesUlids,
+                productImagesUlidsForDelete: $productImagesUlidsForDelete,
             );
 
             $this->productFactory->updateFromCommand($product, $command);
 
-            // TODO: need implement method for product media manager
+            $removedPaths = $this->productMediaManager->syncImagesForProduct(
+                product: $product,
+                imagesUlids: $command->images
+            );
 
             $product = $this->writeRepository->save($product);
+
+            $this->productMediaManager->deleteTemporaryImages($temporaryImagesUlids);
+            // TODO: rework deleting images files through event (async)
+            $this->productMediaManager->deleteProductImages($removedPaths);
 
             return $product->getId()->value();
         } catch (
