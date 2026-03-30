@@ -48,15 +48,18 @@ if [ -n "${WORKER_TYPE}" ]; then
         chmod 777 /var/log/xdebug/xdebug.log
     fi
 
-    VERBOSE=""
-    if [ "${APP_RUNTIME_ENV}" = 'local' ]; then VERBOSE="-vv"; fi
+    DEFAULT_VERBOSE=""
+    if [ "${APP_RUNTIME_ENV}" = 'local' ]; then DEFAULT_VERBOSE="-vv"; fi
 
-    echo "Starting Worker [Type: ${WORKER_TYPE}, Transport: ${MESSENGER_TRANSPORT}] (Xdebug: ${XDEBUG_WORKER_ENABLED:-false})"
+    VERBOSE="${APP_VERBOSE:-$DEFAULT_VERBOSE}"
+    if [ "${VERBOSE}" = "none" ]; then VERBOSE=""; fi
+
+    echo "Starting Worker [Type: ${WORKER_TYPE}, Transport: ${MESSENGER_TRANSPORT}] (Xdebug: ${XDEBUG_WORKER_ENABLED:-false} Verbose: ${VERBOSE:-none})"
 
     if [ "${MESSENGER_QUEUES}" ]; then
-        exec su-exec "${USER_NAME}:${USER_GROUP}" php $XDEBUG_OPTS bin/console messenger:consume "${MESSENGER_TRANSPORT}" --queues="${MESSENGER_QUEUES}" "${VERBOSE}" --limit=100 --memory-limit=128M
+        exec su-exec "${USER_NAME}:${USER_GROUP}" php $XDEBUG_OPTS bin/console messenger:consume "${MESSENGER_TRANSPORT}" --queues="${MESSENGER_QUEUES}" ${VERBOSE} --limit=100 --memory-limit=128M
     else
-        exec su-exec "${USER_NAME}:${USER_GROUP}" php $XDEBUG_OPTS bin/console messenger:consume "${MESSENGER_TRANSPORT}" "${VERBOSE}" --limit=100 --memory-limit=128M
+        exec su-exec "${USER_NAME}:${USER_GROUP}" php $XDEBUG_OPTS bin/console messenger:consume "${MESSENGER_TRANSPORT}" ${VERBOSE} --limit=100 --memory-limit=128M
     fi
 
 else

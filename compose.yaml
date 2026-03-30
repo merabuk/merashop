@@ -301,6 +301,7 @@ services:
   catalog-outbox-queue-worker:
     <<: *queue-worker-defaults
     environment:
+      APP_VERBOSE: ${APP_VERBOSE}
       PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
       APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
       WAIT_RABBITMQ: true
@@ -310,6 +311,7 @@ services:
   catalog-internal-queue-worker:
     <<: *queue-worker-defaults
     environment:
+      APP_VERBOSE: ${APP_VERBOSE}
       PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
       APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
       WAIT_RABBITMQ: true
@@ -319,6 +321,7 @@ services:
   customer-external-queue-worker:
     <<: *queue-worker-defaults
     environment:
+      APP_VERBOSE: ${APP_VERBOSE}
       PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
       APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
       WAIT_RABBITMQ: true
@@ -329,6 +332,7 @@ services:
   email-sender-external-queue-worker:
     <<: *queue-worker-defaults
     environment:
+      APP_VERBOSE: ${APP_VERBOSE}
       PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
       APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
       WAIT_RABBITMQ: true
@@ -339,6 +343,7 @@ services:
   email-sender-internal-queue-worker:
     <<: *queue-worker-defaults
     environment:
+      APP_VERBOSE: ${APP_VERBOSE}
       PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
       APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
       WAIT_RABBITMQ: true
@@ -349,6 +354,7 @@ services:
   email-sender-sheduler-worker:
     <<: *queue-worker-defaults
     environment:
+      APP_VERBOSE: ${APP_VERBOSE}
       PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
       APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
       WAIT_RABBITMQ: true
@@ -358,6 +364,7 @@ services:
   identity-access-outbox-queue-worker:
     <<: *queue-worker-defaults
     environment:
+      APP_VERBOSE: ${APP_VERBOSE}
       PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
       APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
       WAIT_RABBITMQ: true
