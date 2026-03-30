@@ -114,7 +114,7 @@ final readonly class ProductMediaManager implements ProductMediaManagerInterface
      * @throws ProductImagesMainImageException
      * @throws ProductImageUniqueException
      */
-    public function syncImagesForProduct(Product $product, array $imagesUlids): array
+    public function syncProductImages(Product $product, array $imagesUlids): array
     {
         $removedPaths = [];
         $toDelete = $this->mapProductImagesUlidsForDelete($imagesUlids, $product->getImages());

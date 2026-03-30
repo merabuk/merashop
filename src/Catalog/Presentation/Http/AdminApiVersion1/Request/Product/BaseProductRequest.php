@@ -20,7 +20,7 @@ abstract class BaseProductRequest implements GroupSequenceProviderInterface
 {
     use ValidateLocalesTrait;
 
-    private const string BASE_GROUP = 'BaseProductRequest';
+    protected const string BASE_GROUP = 'BaseProductRequest';
     private const string FULL_GROUP = 'Full';
 
     #[Assert\NotBlank]

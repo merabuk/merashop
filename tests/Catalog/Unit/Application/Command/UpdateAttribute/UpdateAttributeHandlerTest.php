@@ -414,13 +414,16 @@ final class UpdateAttributeHandlerTest extends TestCase
                 self::equalTo($attribute),
                 self::equalTo($command),
             )
-            ->willReturnCallback(function (Attribute $attr, UpdateAttributeCommand $cmd) use ($expectedState) {
-                $attr->update(
-                    $expectedState->getCode(),
-                    $expectedState->getType(),
-                    $expectedState->getTranslations(),
-                    $expectedState->getUpdatedBy(),
-                    $expectedState->getOptions()
+            ->willReturnCallback(function (
+                Attribute $updatedAttribute,
+                UpdateAttributeCommand $cmd,
+            ) use ($expectedState) {
+                $updatedAttribute->update(
+                    code: $expectedState->getCode(),
+                    type: $expectedState->getType(),
+                    translations: $expectedState->getTranslations(),
+                    updatedBy: $expectedState->getUpdatedBy(),
+                    options: $expectedState->getOptions()
                 );
             });
     }

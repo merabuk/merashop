@@ -55,6 +55,7 @@ final readonly class ProductMother
      * @param ?ProductPrice[]                                           $prices
      * @param ?CategoryId[]                                             $categoryIds
      * @param ?ProductAttributeValue[]                                  $attributeValues
+     * @param ?ProductImage[]                                           $images
      */
     public static function createWithData(
         ?string $ulid = null,

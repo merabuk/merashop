@@ -25,8 +25,10 @@ use App\Catalog\Domain\Entity\Product;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Entity\ProductImage;
 use App\Catalog\Domain\Entity\ProductPrice;
+use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
 use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
 use App\Catalog\Domain\ValueObject\Product\AttributeValueCollection;
+use App\Catalog\Domain\ValueObject\Product\ImageCollection;
 use App\Catalog\Domain\ValueObject\Product\PriceCollection;
 use App\Catalog\Domain\ValueObject\Product\Translation;
 use App\Catalog\Domain\ValueObject\Product\Translations;
@@ -39,6 +41,8 @@ use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\IntegerValue;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\LocalizedStringValue;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\LocalizedTextValue;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\UrlValue;
+use App\Catalog\Domain\ValueObject\ProductImage\Ulid as ProductImageUlid;
+use App\Catalog\Domain\ValueObject\TemporaryImage\Ulid as TemporaryImageUlid;
 use RuntimeException;
 
 trait ProductHelperTrait
@@ -57,18 +61,22 @@ trait ProductHelperTrait
         );
     }
 
-    protected function fillAndGetUpdateCommand(Product $product): UpdateProductCommand
-    {
+    protected function fillAndGetUpdateCommand(
+        Product $product,
+        ?int $version = null,
+        ?string $sku = null,
+        ?array $images = null,
+    ): UpdateProductCommand {
         return new UpdateProductCommand(
             id: $product->getId()->value(),
-            sku: $product->getSku()->value(),
+            sku: $sku ?? $product->getSku()->value(),
             status: $product->getStatus()->asString(),
             prices: self::getValidPrices($product->getPrices()),
             categoryIds: array_map(fn (CategoryId $id) => $id->value(), $product->getCategoryIds()->all()),
             attributeValues: self::getValidAttributeValues($product->getAttributeValues()),
             translations: self::getValidTranslations($product->getTranslations()),
-            images: array_map(fn (ProductImage $pi) => $pi->getUlid()->value(), $product->getImages()->all()),
-            version: $product->getVersion()->value(),
+            images: $images ?? array_map(fn (ProductImage $pi) => $pi->getUlid()->value(), $product->getImages()->all()),
+            version: $version ?? $product->getVersion()->value(),
             adminUlid: $product->getUpdatedBy()->value() ?? throw new RuntimeException("UpdatedBy mustn't be null"),
         );
     }
@@ -124,6 +132,59 @@ trait ProductHelperTrait
             name: $t->name,
             description: $t->description,
         ), $translations->all());
+    }
+
+    /**
+     * @param int[] $categoryIds
+     *
+     * @return CategoryId[]
+     */
+    private static function mapToCategoryIds(array $categoryIds): array
+    {
+        return array_map(fn (int $categoryId) => CategoryId::fromInt($categoryId), $categoryIds);
+    }
+
+    /**
+     * @param ProductAttributeValueData[] $attributeValues
+     *
+     * @return AttributeId[]
+     */
+    private static function mapToAttributeIds(array $attributeValues): array
+    {
+        return array_map(fn (ProductAttributeValueData $d) => AttributeId::fromInt($d->attributeId), $attributeValues);
+    }
+
+    /**
+     * @param string[] $imagesUlids
+     *
+     * @return TemporaryImageUlid[]
+     */
+    private static function mapToTemporaryImagesUlids(array $imagesUlids, ImageCollection $imageCollection): array
+    {
+        $filteredUlids = array_filter($imagesUlids, fn (string $ulid) => null === $imageCollection->getByUlid($ulid));
+
+        return array_values(array_map(fn (string $ulid) => TemporaryImageUlid::fromString($ulid), $filteredUlids));
+    }
+
+    /**
+     * @param string[] $imagesUlids
+     *
+     * @return ProductImageUlid[]
+     */
+    private static function mapToProductImagesUlidsForDelete(
+        array $imagesUlids,
+        ImageCollection $imageCollection,
+    ): array {
+        $map = array_flip($imagesUlids);
+
+        $productImageUlids = [];
+        foreach ($imageCollection as $image) {
+            if (!isset($map[$image->getUlid()->value()])) {
+                $productImageUlids[] = $image->getUlid();
+            }
+        }
+
+        return $productImageUlids;
     }
 
     /**

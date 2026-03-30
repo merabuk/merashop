@@ -152,7 +152,7 @@ final class ProductMediaManagerTest extends TestCase
         $this->expectsGeneratesStoragePaths($temporaryImagesCount);
         $this->expectsStorageMoveImages($temporaryImagesCount);
 
-        $removedPaths = $this->createManager()->syncImagesForProduct($product, $ulids);
+        $removedPaths = $this->createManager()->syncProductImages($product, $ulids);
 
         foreach ($removedPaths as $i => $removedPath) {
             self::assertNotNull($expectedRemovedPaths[$i]);

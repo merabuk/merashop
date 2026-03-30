@@ -11,6 +11,7 @@ use App\Catalog\Domain\Event\ProductImagesRemovedDomainEvent;
 use App\Catalog\Domain\Exception\Attribute\OneOfAttributesNotFoundException;
 use App\Catalog\Domain\Exception\Category\OneOfCategoriesNotFoundException;
 use App\Catalog\Domain\Exception\Product\ProductAlreadyExistsException;
+use App\Catalog\Domain\Exception\Product\ProductImagesEmptyException;
 use App\Catalog\Domain\Exception\Product\ProductNotFoundException;
 use App\Catalog\Domain\Exception\TemporaryImage\OneOfTemporaryImagesNotFoundException;
 use App\Catalog\Domain\Repository\ProductReadRepositoryInterface;
@@ -43,10 +44,11 @@ readonly class UpdateProductHandler implements CommandHandlerInterface
      * @throws ConcurrencyException
      * @throws OneOfAttributesNotFoundException
      * @throws OneOfCategoriesNotFoundException
+     * @throws OneOfTemporaryImagesNotFoundException
      * @throws ProductAlreadyExistsException
+     * @throws ProductImagesEmptyException
      * @throws ProductNotFoundException
      * @throws UpdateProductException
-     * @throws OneOfTemporaryImagesNotFoundException
      */
     public function __invoke(UpdateProductCommand $command): int
     {
@@ -55,7 +57,7 @@ readonly class UpdateProductHandler implements CommandHandlerInterface
 
             $newSku = Sku::fromString($command->sku);
             $categoryIds = $this->productFactory->mapCategoryIds($command->categoryIds);
-            $attributeValues = $this->productFactory->mapAttributeIds($command->attributeValues);
+            $attributeIds = $this->productFactory->mapAttributeIds($command->attributeValues);
             $temporaryImagesUlids = $this->productMediaManager->mapTemporaryImagesUlids($command->images, $product->getImages());
             $productImagesUlidsForDelete = $this->productMediaManager->mapProductImagesUlidsForDelete($command->images, $product->getImages());
 
@@ -64,14 +66,14 @@ readonly class UpdateProductHandler implements CommandHandlerInterface
                 version: $command->version,
                 newSku: $newSku,
                 categoryIds: $categoryIds,
-                attributeIds: $attributeValues,
+                attributeIds: $attributeIds,
                 temporaryImageUlids: $temporaryImagesUlids,
                 productImagesUlidsForDelete: $productImagesUlidsForDelete,
             );
 
             $this->productFactory->updateFromCommand($product, $command);
 
-            $removedPaths = $this->productMediaManager->syncImagesForProduct(
+            $removedPaths = $this->productMediaManager->syncProductImages(
                 product: $product,
                 imagesUlids: $command->images
             );
@@ -93,10 +95,12 @@ readonly class UpdateProductHandler implements CommandHandlerInterface
             |OneOfCategoriesNotFoundException
             |OneOfTemporaryImagesNotFoundException
             |ProductAlreadyExistsException
+            |ProductImagesEmptyException
             |ProductNotFoundException $e
         ) {
             throw $e;
         } catch (Throwable $e) {
+            dump($e);
             throw new UpdateProductException(message: 'Error during updating product', previous: $e);
         }
     }

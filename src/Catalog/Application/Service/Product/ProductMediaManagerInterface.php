@@ -41,7 +41,7 @@ interface ProductMediaManagerInterface
      *
      * @throws FileStorageException
      */
-    public function syncImagesForProduct(Product $product, array $imagesUlids): array;
+    public function syncProductImages(Product $product, array $imagesUlids): array;
 
     /**
      * @param TemporaryImageUlid[] $temporaryImagesUlids
