@@ -14,10 +14,10 @@ use App\Shared\Domain\Event\EventHandlerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 #[AsMessageHandler(bus: BusNameEnum::Event->value, fromTransport: TransportNameEnum::CatalogInternal->value)]
-class CategoryMovedHandler implements EventHandlerInterface
+readonly class CategoryMovedHandler implements EventHandlerInterface
 {
     public function __construct(
-        private readonly CategoryWriteRepositoryInterface $writeRepository,
+        private CategoryWriteRepositoryInterface $writeRepository,
     ) {
     }
 

@@ -7,6 +7,7 @@ namespace App\Catalog\Application\Command\UpdateProduct;
 use App\Catalog\Application\Exception\Product\UpdateProductException;
 use App\Catalog\Application\Service\Product\ProductApplicationFactoryInterface;
 use App\Catalog\Application\Service\Product\ProductMediaManagerInterface;
+use App\Catalog\Domain\Event\ProductImagesRemovedDomainEvent;
 use App\Catalog\Domain\Exception\Attribute\OneOfAttributesNotFoundException;
 use App\Catalog\Domain\Exception\Category\OneOfCategoriesNotFoundException;
 use App\Catalog\Domain\Exception\Product\ProductAlreadyExistsException;
@@ -20,7 +21,9 @@ use App\Catalog\Domain\ValueObject\Product\Sku;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
 use App\Shared\Domain\Exception\Entity\ConcurrencyException;
+use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
 
 #[AsMessageHandler(bus: BusNameEnum::Command->value)]
@@ -32,6 +35,7 @@ readonly class UpdateProductHandler implements CommandHandlerInterface
         private ProductApplicationFactoryInterface $productFactory,
         private ProductMediaManagerInterface $productMediaManager,
         private ProductWriteRepositoryInterface $writeRepository,
+        private MessageBusInterface $eventBus,
     ) {
     }
 
@@ -75,8 +79,12 @@ readonly class UpdateProductHandler implements CommandHandlerInterface
             $product = $this->writeRepository->save($product);
 
             $this->productMediaManager->deleteTemporaryImages($temporaryImagesUlids);
-            // TODO: rework deleting images files through event (async)
-            $this->productMediaManager->deleteProductImages($removedPaths);
+
+            if (!empty($removedPaths)) {
+                $this->eventBus->dispatch(new ProductImagesRemovedDomainEvent(
+                    productImagePaths: array_map(fn (RelativeFilePath $path) => $path->value(), $removedPaths),
+                ));
+            }
 
             return $product->getId()->value();
         } catch (
