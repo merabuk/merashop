@@ -56,10 +56,15 @@ readonly class UpdateProductHandler implements CommandHandlerInterface
             $product = $this->readRepository->getById(Id::fromInt($command->id));
 
             $newSku = Sku::fromString($command->sku);
-            $categoryIds = $this->productFactory->mapCategoryIds($command->categoryIds);
-            $attributeIds = $this->productFactory->mapAttributeIds($command->attributeValues);
-            $temporaryImagesUlids = $this->productMediaManager->mapTemporaryImagesUlids($command->images, $product->getImages());
-            $productImagesUlidsForDelete = $this->productMediaManager->mapProductImagesUlidsForDelete($command->images, $product->getImages());
+            $categoryIds = $this->productFactory->mapCategoryIds(categoryIds: $command->categoryIds);
+            $attributeIds = $this->productFactory->mapAttributeIds(attributeValues: $command->attributeValues);
+            $temporaryImagesUlids = $this->productMediaManager->mapTemporaryImagesUlids(
+                imagesUlids: $command->images,
+                imageCollection: $product->getImages());
+            $productImagesUlidsForDelete = $this->productMediaManager->mapProductImagesUlidsForDelete(
+                imagesUlids: $command->images,
+                imageCollection: $product->getImages()
+            );
 
             $this->productValidator->validateUpdate(
                 product: $product,
@@ -100,7 +105,6 @@ readonly class UpdateProductHandler implements CommandHandlerInterface
         ) {
             throw $e;
         } catch (Throwable $e) {
-            dump($e);
             throw new UpdateProductException(message: 'Error during updating product', previous: $e);
         }
     }

@@ -88,7 +88,7 @@ final readonly class ProductValidator implements ProductValidatorInterface
         }
 
         if (!$product->getSku()->equals($newSku) && $this->productReadRepository->existsBySku($newSku)) {
-            throw new ProductAlreadyExistsException();
+            throw ProductAlreadyExistsException::becauseSkuAlreadyExists($newSku->value());
         }
 
         $this->categoryReadRepository->assertAllExistByIds($categoryIds);

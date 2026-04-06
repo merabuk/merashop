@@ -30,14 +30,14 @@ class UpdateProductController extends AbstractController
     public const string ROUTE_NAME = 'catalog.admin.api.v1.products.update';
 
     #[Route(
-        path: '/products',
+        path: '/products/{id}',
         name: self::ROUTE_NAME,
         requirements: ['id' => Requirement::POSITIVE_INT],
         defaults: [
             ApiRouteParams::ENTITY_LABEL => 'common.product.entityName',
             ApiRouteParams::ENTITY_DOMAIN => 'catalog',
         ],
-        methods: [Request::METHOD_POST],
+        methods: [Request::METHOD_PUT],
         format: JsonEncoder::FORMAT
     )]
     public function __invoke(

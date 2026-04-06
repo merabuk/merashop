@@ -114,7 +114,6 @@ final class Version20260212170526 extends AbstractMigration
         );
         $this->addSql('CREATE INDEX idx_product_images_product_id ON product_images (product_id)');
         $this->addSql('CREATE UNIQUE INDEX uniq_product_images_ulid ON product_images (ulid)');
-        $this->addSql('CREATE UNIQUE INDEX uniq_product_images_main ON product_images (product_id) WHERE (is_main = true)');
 
         $this->addSql(
             'ALTER TABLE product_prices

@@ -12,8 +12,9 @@ use App\Catalog\Domain\Enum\TemporaryImage\ContextEnum;
 use App\Catalog\Domain\Repository\ProductReadRepositoryInterface;
 use App\Catalog\Domain\ValueObject\Product\Sku;
 use App\Catalog\Domain\ValueObject\Product\Translation;
-use App\Catalog\Presentation\Http\AdminApiVersion1\Controller\Product\CreateProductController;
+use App\Catalog\Presentation\Http\AdminApiVersion1\Controller\Product\UpdateProductController;
 use App\Shared\Domain\Enum\CurrencyEnum;
+use App\Shared\Domain\Enum\ErrorCodeEnum as SharedErrorCodeEnum;
 use App\Shared\Domain\Enum\TaxTypeEnum;
 use App\Tests\Catalog\Support\Traits\AttributeFactoryTrait;
 use App\Tests\Catalog\Support\Traits\CatalogStorageTestTrait;
@@ -29,7 +30,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-final class CreateProductControllerTest extends WebTestCase
+final class UpdateProductControllerTest extends WebTestCase
 {
     use AttributeFactoryTrait;
     use ApiAuthTrait;
@@ -41,8 +42,8 @@ final class CreateProductControllerTest extends WebTestCase
     use ProductFactoryTrait;
     use TemporaryImageFactoryTrait;
 
-    private const string ROUTE_NAME = CreateProductController::ROUTE_NAME;
-    private const string METHOD = Request::METHOD_POST;
+    private const string ROUTE_NAME = UpdateProductController::ROUTE_NAME;
+    private const string METHOD = Request::METHOD_PUT;
 
     protected function tearDown(): void
     {
@@ -55,7 +56,7 @@ final class CreateProductControllerTest extends WebTestCase
     {
         $client = self::createClient();
 
-        $this->requestJson(client: $client, method: self::METHOD, uri: $this->getUrl());
+        $this->requestJson(client: $client, method: self::METHOD, uri: $this->getUrl(['id' => 123]));
 
         $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
@@ -65,12 +66,12 @@ final class CreateProductControllerTest extends WebTestCase
         $client = self::createClient();
         $this->loginAsUser();
 
-        $this->requestJson(client: $client, method: self::METHOD, uri: $this->getUrl());
+        $this->requestJson(client: $client, method: self::METHOD, uri: $this->getUrl(['id' => 123]));
 
         $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
-    public function testItSuccessfullyCreatesProduct(): void
+    public function testItSuccessfullyUpdatesProduct(): void
     {
         $client = self::createClient();
         $this->loginAsAdmin();
@@ -93,11 +94,36 @@ final class CreateProductControllerTest extends WebTestCase
         $category1 = $this->getCategoryFixture()->create(slug: 'electronics');
         $category2 = $this->getCategoryFixture()->create(slug: 'phones');
 
+        $image1 = $this->getProductImageMother()->create(isMain: true);
+        $image2 = $this->getProductImageMother()->create(isMain: false);
+
         $context = ContextEnum::ProductMain;
         $temporaryImage1 = $this->getTemporaryImageFixture()->create(context: $context);
         $temporaryImage2 = $this->getTemporaryImageFixture()->create(context: $context);
         $this->putImageToStorage($temporaryImage1->getPath()->value());
         $this->putImageToStorage($temporaryImage2->getPath()->value());
+
+        $product = $this->getProductFixture()->create(
+            status: StatusEnum::Draft,
+            prices: [
+                $this->getProductPriceMother()->create(
+                    amount: 1000,
+                    currency: CurrencyEnum::USD,
+                    type: ProductPriceTypeEnum::Regular,
+                    taxValue: 100,
+                    taxType: TaxTypeEnum::Fixed,
+                    taxIncluded: false,
+                ),
+            ],
+            categoryIds: [$category1->getId()],
+            attributeValues: [
+                $this->getProductAttributeValueMother()->create(
+                    attributeId: $attribute1->getId()->value(),
+                    attributeType: $attribute1->getType()->value(),
+                ),
+            ],
+            images: [$image1, $image2],
+        );
 
         $payload = [
             'sku' => 'APL-IPH17P-256SLV',
@@ -130,24 +156,173 @@ final class CreateProductControllerTest extends WebTestCase
                 ],
             ],
             'translations' => self::validTranslations(),
-            'images' => [$temporaryImage1->getUlid()->value(), $temporaryImage2->getUlid()->value()],
+            'images' => [
+                $image2->getUlid()->value(),
+                $temporaryImage1->getUlid()->value(),
+                $temporaryImage2->getUlid()->value(),
+            ],
+            'version' => $product->getVersion()->value(),
         ];
 
         $this->requestJson(
             client: $client,
             method: self::METHOD,
-            uri: $this->getUrl(),
+            uri: $this->getUrl(['id' => $product->getId()->value()]),
             payload: $payload,
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+        $this->assertResponseIsSuccessful();
 
         $data = $this->getResponseData($client);
         self::assertArrayHasKey('message', $data);
-        self::assertStringContainsString('Product was successfully created', $data['message']);
+        self::assertStringContainsString('Product was successfully updated', $data['message']);
 
-        $exists = $this->getReadRepository()->existsBySku(Sku::fromString($payload['sku']));
-        self::assertTrue($exists, 'Product was not saved to database');
+        $updated = $this->getReadRepository()->findById($product->getId());
+        self::assertSame($payload['sku'], $updated->getSku()->value());
+        self::assertSame($payload['status'], $updated->getStatus()->value()->value);
+        self::assertCount(3, $updated->getImages());
+        self::assertNull($updated->getImages()->getByUlid($image1->getUlid()));
+        self::assertTrue($updated->getImages()->all()[0]->isMain()->isTrue());
+    }
+
+    public function testIfReturns404WhenProductNotFound(): void
+    {
+        $client = self::createClient();
+        $this->loginAsAdmin();
+
+        $payload = [
+            'sku' => 'NOT-FOUND',
+            'status' => StatusEnum::Draft->value,
+            'prices' => self::getValidPrices(),
+            'categoryIds' => [],
+            'attributeValues' => [],
+            'translations' => self::validTranslations(),
+            'images' => [],
+            'version' => 1,
+        ];
+
+        $this->requestJson(
+            client: $client,
+            method: self::METHOD,
+            uri: $this->getUrl(['id' => 123]),
+            payload: $payload,
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+
+        $data = $this->getResponseData($client);
+        $this->assertExceptionMessage(
+            data: $data,
+            expectedCode: ErrorCodeEnum::ProductNotFound->value,
+            expectedContainMessage: 'Product with id "123" not found',
+        );
+    }
+
+    #[DataProvider('oneOfGivenDataNotFoundProvider')]
+    public function testItReturns404WhenOneOfGivenDataNotFound(
+        ErrorCodeEnum $expectedCode,
+        string $expectedContainMessage,
+        array $additionalPayload = [],
+    ): void {
+        $client = self::createClient();
+        $this->loginAsAdmin();
+
+        $product = $this->getProductFixture()->create();
+
+        $payload = [
+            'sku' => $product->getSku()->value(),
+            'status' => StatusEnum::Draft->value,
+            'prices' => self::getValidPrices(),
+            'categoryIds' => [],
+            'attributeValues' => [],
+            'translations' => self::validTranslations(),
+            'images' => [],
+            'version' => $product->getVersion()->value(),
+        ];
+
+        $payload = array_merge($payload, $additionalPayload);
+
+        $this->requestJson(
+            client: $client,
+            method: self::METHOD,
+            uri: $this->getUrl(['id' => $product->getId()->value()]),
+            payload: $payload,
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+
+        $data = $this->getResponseData($client);
+        $this->assertExceptionMessage(
+            data: $data,
+            expectedCode: $expectedCode->value,
+            expectedContainMessage: $expectedContainMessage,
+        );
+    }
+
+    public static function oneOfGivenDataNotFoundProvider(): iterable
+    {
+        yield 'one of category ids not found' => [
+            'expectedCode' => ErrorCodeEnum::OneOfCategoriesNotFound,
+            'expectedContainMessage' => 'One or more categories not found',
+            'additionalPayload' => [
+                'categoryIds' => [123],
+            ],
+        ];
+        yield 'one of attribute values not found' => [
+            'expectedCode' => ErrorCodeEnum::OneOfAttributesNotFound,
+            'expectedContainMessage' => 'One or more attributes not found',
+            'additionalPayload' => [
+                'attributeValues' => [[
+                    'attributeId' => 123,
+                    'type' => AttributeTypeEnum::Integer->value,
+                    'value' => 12345,
+                ]],
+            ],
+        ];
+        yield 'one of temporary images not found' => [
+            'expectedCode' => ErrorCodeEnum::OneOfTemporaryImagesNotFound,
+            'expectedContainMessage' => 'One or more temporary images not found',
+            'additionalPayload' => [
+                'images' => [
+                    '01KKTVY7D6D7S1BCSBB3GQA8B3',
+                ],
+            ],
+        ];
+    }
+
+    public function testItReturns409OnConcurrencyError(): void
+    {
+        $client = self::createClient();
+        $this->loginAsAdmin();
+
+        $product = $this->getProductFixture()->create();
+
+        $payload = [
+            'sku' => $product->getSku()->value(),
+            'status' => StatusEnum::Draft->value,
+            'prices' => self::getValidPrices(),
+            'categoryIds' => [],
+            'attributeValues' => [],
+            'translations' => self::validTranslations(),
+            'images' => [],
+            'version' => $product->getVersion()->value() + 1,
+        ];
+
+        $this->requestJson(
+            client: $client,
+            method: self::METHOD,
+            uri: $this->getUrl(['id' => $product->getId()->value()]),
+            payload: $payload,
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
+
+        $data = $this->getResponseData($client);
+        $this->assertExceptionMessage(
+            data: $data,
+            expectedCode: SharedErrorCodeEnum::ConcurrencyError->value,
+            expectedContainMessage: 'The Product has been already modified. Please refresh the page and try again'
+        );
     }
 
     public function testItReturns409WhenSkuAlreadyExists(): void
@@ -156,27 +331,25 @@ final class CreateProductControllerTest extends WebTestCase
         $this->loginAsAdmin();
 
         $existingProduct = $this->getProductFixture()->create();
+        $product = $this->getProductFixture()->create();
 
         $payload = [
             'sku' => $existingProduct->getSku()->value(),
             'status' => StatusEnum::Draft->value,
-            'prices' => [
-                [
-                    'amount' => 100_000,
-                    'currency' => CurrencyEnum::UAH->value,
-                    'type' => ProductPriceTypeEnum::Regular->value,
-                    'taxValue' => 100,
-                    'taxType' => TaxTypeEnum::Fixed->value,
-                    'taxIncluded' => false,
-                ],
-            ],
+            'prices' => self::getValidPrices(),
             'categoryIds' => [],
             'attributeValues' => [],
             'translations' => self::validTranslations(),
             'images' => [],
+            'version' => $product->getVersion()->value(),
         ];
 
-        $this->requestJson(client: $client, method: self::METHOD, uri: $this->getUrl(), payload: $payload);
+        $this->requestJson(
+            client: $client,
+            method: self::METHOD,
+            uri: $this->getUrl(['id' => $product->getId()->value()]),
+            payload: $payload,
+        );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
 
@@ -184,7 +357,7 @@ final class CreateProductControllerTest extends WebTestCase
         $this->assertExceptionMessage(
             data: $data,
             expectedCode: ErrorCodeEnum::ProductAlreadyExists->value,
-            expectedContainMessage: sprintf('Product with sku "%s" already exists', $payload['sku']),
+            expectedContainMessage: sprintf('Product with sku "%s" already exists', $payload['sku'])
         );
     }
 
@@ -197,11 +370,12 @@ final class CreateProductControllerTest extends WebTestCase
         $this->requestJson(
             client: $client,
             method: self::METHOD,
-            uri: $this->getUrl(),
-            payload: $payload
+            uri: $this->getUrl(['id' => 123]),
+            payload: $payload,
         );
 
         $this->assertResponseIsUnprocessable();
+
         $data = $this->getResponseData($client);
 
         $this->assertValidationErrors(responseData: $data, expectedErrorFields: $expectedErrorFields);
@@ -218,8 +392,16 @@ final class CreateProductControllerTest extends WebTestCase
             'categoryIds' => self::getFakeValidCategoryIds(),
             'attributeValues' => self::getFakeValidAttributeValues(),
             'images' => self::getFakeValidImageUlids(),
+            'version' => 1,
         ];
 
+        yield 'invalid version' => [
+            'payload' => [
+                ...$payload,
+                'version' => -1,
+            ],
+            'expectedErrorFields' => ['version'],
+        ];
         yield 'empty sku' => [
             'payload' => [
                 ...$payload,
@@ -570,14 +752,29 @@ final class CreateProductControllerTest extends WebTestCase
         ];
     }
 
+    public function testItReturns404OnInvalidRouteParameterFormat(): void
+    {
+        $client = self::createClient();
+        $this->loginAsAdmin();
+
+        $this->requestJson(
+            client: $client,
+            method: self::METHOD,
+            uri: '/admin/api/v1/catalog/products/invalid-id'
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+        $data = $this->getResponseData($client);
+        $this->assertExceptionMessage(
+            data: $data,
+            expectedCode: SharedErrorCodeEnum::NotFound->value,
+            expectedContainMessage: 'No route found for'
+        );
+    }
+
     private function getUrl(array $params = []): string
     {
         return $this->getBaseUrl(self::ROUTE_NAME, $params);
-    }
-
-    private function getReadRepository(): ProductReadRepositoryInterface
-    {
-        return $this->getContainer()->get(ProductReadRepositoryInterface::class);
     }
 
     private static function getValidPrices(): array
@@ -675,5 +872,10 @@ final class CreateProductControllerTest extends WebTestCase
             '01KKTVY7D6D7S1BCSBB3GQA8B4',
             '01KKTVY7D6D7S1BCSBB3GQA8B5',
         ];
+    }
+
+    private function getReadRepository(): ProductReadRepositoryInterface
+    {
+        return $this->getContainer()->get(ProductReadRepositoryInterface::class);
     }
 }

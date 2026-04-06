@@ -83,7 +83,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
 
         $data = $this->getResponseData($client);
         self::assertArrayHasKey('message', $data);
-        $this->assertStringContainsString('Attribute was successfully updated', $data['message']);
+        self::assertStringContainsString('Attribute was successfully updated', $data['message']);
 
         $updated = $this->getReadRepository()->findById($attribute->getId());
         self::assertSame($payload['code'], $updated->getCode()->value());
@@ -135,6 +135,35 @@ final class UpdateAttributeControllerTest extends WebTestCase
         ];
     }
 
+    public function testIfReturns404WhenAttributeNotFound(): void
+    {
+        $client = self::createClient();
+        $this->loginAsAdmin();
+
+        $payload = [
+            'code' => 'not-found',
+            'type' => TypeEnum::Text->value,
+            'translations' => self::validAttributeTranslations(),
+            'version' => 1,
+        ];
+
+        $this->requestJson(
+            client: $client,
+            method: self::METHOD,
+            uri: $this->getUrl(['id' => 123]),
+            payload: $payload,
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+
+        $data = $this->getResponseData($client);
+        $this->assertExceptionMessage(
+            data: $data,
+            expectedCode: ErrorCodeEnum::AttributeNotFound->value,
+            expectedContainMessage: 'Attribute with id "123" not found',
+        );
+    }
+
     public function testItReturns409WhenTypeCanNotBeChanged(): void
     {
         $client = self::createClient();
@@ -157,6 +186,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
+
         $data = $this->getResponseData($client);
         $this->assertExceptionMessage(
             data: $data,
@@ -187,6 +217,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
+
         $data = $this->getResponseData($client);
         $this->assertExceptionMessage(
             data: $data,
@@ -438,7 +469,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
         $this->requestJson(
             client: $client,
             method: self::METHOD,
-            uri: '/admin/api/v1/catalog/attributes/invalid-string'
+            uri: '/admin/api/v1/catalog/attributes/invalid-id'
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);

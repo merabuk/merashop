@@ -11,6 +11,6 @@ class OneOfTemporaryImagesNotFoundException extends CatalogDomainException imple
 {
     public function getErrorCode(): string
     {
-        return ErrorCodeEnum::OneOfTemporaryImagesNotFoundException->value;
+        return ErrorCodeEnum::OneOfTemporaryImagesNotFound->value;
     }
 }

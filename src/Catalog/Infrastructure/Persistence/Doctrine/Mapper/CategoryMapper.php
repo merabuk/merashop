@@ -47,7 +47,6 @@ final readonly class CategoryMapper implements MapperInterface
         $orm = new OrmCategory();
 
         $orm->ulid = $domain->getUlid()->value();
-        $orm->version = $domain->getVersion()->value();
         $orm->createdBy = $domain->getCreatedBy()->value();
 
         $this->mapToExistingOrm($domain, $orm);

@@ -51,7 +51,6 @@ final readonly class AttributeMapper implements MapperInterface
         $orm->ulid = $domain->getUlid()->value();
         $orm->code = $domain->getCode()->value();
         $orm->type = $domain->getType()->value();
-        $orm->version = $domain->getVersion()->value();
         $orm->createdBy = $domain->getCreatedBy()->value();
         $orm->updatedBy = $domain->getUpdatedBy()?->value();
 
@@ -156,7 +155,6 @@ final readonly class AttributeMapper implements MapperInterface
                 $ormOption = new OrmAttributeOption();
                 $ormOption->attribute = $orm;
                 $ormOption->ulid = $do->getUlid()->value();
-                $ormOption->version = $do->getVersion()->value();
                 $ormOption->createdBy = $do->getCreatedBy()->value();
 
                 $orm->options->add($ormOption);

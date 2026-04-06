@@ -65,7 +65,6 @@ final readonly class ProductMapper implements MapperInterface
         $orm = new OrmProduct();
 
         $orm->ulid = $domain->getUlid()->value();
-        $orm->version = $domain->getVersion()->value();
         $orm->createdBy = $domain->getCreatedBy()->value();
 
         $this->mapToExistingOrm($domain, $orm);
@@ -176,7 +175,6 @@ final readonly class ProductMapper implements MapperInterface
                 $ormProductPrice->product = $orm;
                 $ormProductPrice->type = $dp->getType()->value();
                 $ormProductPrice->currency = $dp->getPrice()->getCurrency();
-                $ormProductPrice->version = $dp->getVersion()->value();
                 $ormProductPrice->createdBy = $dp->getCreatedBy()->value();
 
                 $orm->prices->add($ormProductPrice);
@@ -318,7 +316,6 @@ final readonly class ProductMapper implements MapperInterface
                     className: OrmAttribute::class,
                     id: $dv->getAttributeId()->value()
                 );
-                $ormValue->version = $dv->getVersion()->value();
                 $ormValue->createdBy = $dv->getCreatedBy()->value();
 
                 $orm->attributeValues->add($ormValue);
@@ -349,6 +346,7 @@ final readonly class ProductMapper implements MapperInterface
 
         $existingOrmImages = [];
         foreach ($orm->images as $ormImage) {
+            $ormImage->isMain = false;
             $existingOrmImages[$ormImage->ulid] = $ormImage;
         }
 

@@ -44,7 +44,6 @@ use PHPUnit\Framework\TestCase;
 use stdClass;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Throwable;
 
 final class UpdateProductHandlerTest extends TestCase
 {
@@ -220,7 +219,7 @@ final class UpdateProductHandlerTest extends TestCase
             attributeIds: $expectedAttributeIds,
             temporaryImages: $temporaryImageUlids,
             productImagesForDelete: $productImagesUlidsForDelete,
-            exception: new $exceptionClass(),
+            exceptionClass: $exceptionClass,
         );
 
         $this->updateProductFactoryNeverCalled();
@@ -271,7 +270,7 @@ final class UpdateProductHandlerTest extends TestCase
         $this->readRepository->expects(self::once())
             ->method('getById')
             ->with(self::callback(fn (ProductId $id) => $id->value() === $productId))
-            ->willThrowException(new ProductNotFoundException());
+            ->willThrowException(ProductNotFoundException::withId($productId));
     }
 
     /**
@@ -370,7 +369,7 @@ final class UpdateProductHandlerTest extends TestCase
         array $attributeIds,
         array $temporaryImages,
         array $productImagesForDelete,
-        ?Throwable $exception = null,
+        ?string $exceptionClass = null,
     ): void {
         $invokeContext = $this->productValidator->expects(self::once())
             ->method('validateUpdate')
@@ -384,7 +383,11 @@ final class UpdateProductHandlerTest extends TestCase
                 self::equalTo($productImagesForDelete),
             );
 
-        if ($exception) {
+        if ($exceptionClass) {
+            $exception = ProductAlreadyExistsException::class === $exceptionClass
+                ? ProductAlreadyExistsException::becauseSkuAlreadyExists($command->sku)
+                : new $exceptionClass();
+
             $invokeContext->willThrowException($exception);
         }
     }

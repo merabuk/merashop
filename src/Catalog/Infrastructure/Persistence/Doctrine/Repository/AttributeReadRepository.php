@@ -55,7 +55,7 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
     public function findById(Id $id): ?Attribute
     {
         $qb = $this->createBaseQueryBuilder();
-        $this->joinOptions($qb);
+        $this->joinRelations($qb);
 
         $orm = $this->_findById(id: $id, alias: self::ALIAS, qb: $qb);
 
@@ -74,7 +74,7 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
         }
 
         $qb = $this->createBaseQueryBuilder();
-        $this->joinOptions($qb);
+        $this->joinRelations($qb);
 
         return $this->_findByIds(
             ids: $ids,
@@ -95,7 +95,7 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
     {
         $qb = $this->createBaseQueryBuilder();
 
-        $this->joinOptions($qb);
+        $this->joinRelations($qb);
 
         $orm = $this->_findByUlid(ulid: $ulid, alias: self::ALIAS, qb: $qb);
 
@@ -130,7 +130,7 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
     {
         $qb = $this->createBaseQueryBuilder();
 
-        $this->joinOptions(qb: $qb, withOptions: false);
+        $this->joinRelations(qb: $qb, withOptions: false);
 
         if ($criteria->filters->has('search')) {
             $search = $this->_prepareSearchValue($criteria->filters->get('search'));
@@ -155,17 +155,27 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
         return $this->createQueryBuilder(self::ALIAS);
     }
 
-    private function joinOptions(QueryBuilder $qb, bool $withOptions = true): void
+    private function joinRelations(QueryBuilder $qb, bool $withOptions = true): void
+    {
+        $this->joinTranslations($qb);
+
+        if ($withOptions) {
+            $this->joinOptions($qb);
+        }
+    }
+
+    private function joinTranslations(QueryBuilder $qb): void
     {
         $qb->leftJoin(self::ALIAS.'.translations', self::ALIAS_TRANSLATIONS)
             ->addSelect(self::ALIAS_TRANSLATIONS);
+    }
 
-        if ($withOptions) {
-            $qb->leftJoin(self::ALIAS.'.options', self::ALIAS_OPTIONS)
-                ->addSelect(self::ALIAS_OPTIONS)
-                ->leftJoin(self::ALIAS_OPTIONS.'.translations', self::ALIAS_OPTION_TRANSLATIONS)
-                ->addSelect(self::ALIAS_OPTION_TRANSLATIONS);
-        }
+    private function joinOptions(QueryBuilder $qb): void
+    {
+        $qb->leftJoin(self::ALIAS.'.options', self::ALIAS_OPTIONS)
+            ->addSelect(self::ALIAS_OPTIONS)
+            ->leftJoin(self::ALIAS_OPTIONS.'.translations', self::ALIAS_OPTION_TRANSLATIONS)
+            ->addSelect(self::ALIAS_OPTION_TRANSLATIONS);
     }
 
     /**

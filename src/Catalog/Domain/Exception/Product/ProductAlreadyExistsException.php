@@ -10,14 +10,16 @@ use App\Shared\Domain\Exception\Contracts\ClientFacingExceptionInterface;
 
 final class ProductAlreadyExistsException extends CatalogConflictException implements ClientFacingExceptionInterface
 {
-    private string $sku = 'sku';
+    public function __construct(
+        private readonly string $field,
+        private readonly string $value,
+    ) {
+        parent::__construct();
+    }
 
     public static function becauseSkuAlreadyExists(string $sku): self
     {
-        $exception = new self();
-        $exception->sku = $sku;
-
-        return $exception;
+        return new self(field: 'sku', value: $sku);
     }
 
     public function getErrorCode(): string
@@ -30,6 +32,9 @@ final class ProductAlreadyExistsException extends CatalogConflictException imple
      */
     public function getMessageData(): array
     {
-        return ['sku' => $this->sku];
+        return [
+            'field' => $this->field,
+            'value' => $this->value,
+        ];
     }
 }

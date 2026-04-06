@@ -23,5 +23,5 @@ enum ErrorCodeEnum: string
     case ProductNotFound = 'PRODUCT_NOT_FOUND';
     case ProductAlreadyExists = 'PRODUCT_ALREADY_EXISTS';
     case ProductImagesCanNotBeEmpty = 'PRODUCT_IMAGES_CANNOT_BE_EMPTY';
-    case OneOfTemporaryImagesNotFoundException = 'ONE_OF_TEMPORARY_IMAGES_NOT_FOUND';
+    case OneOfTemporaryImagesNotFound = 'ONE_OF_TEMPORARY_IMAGES_NOT_FOUND';
 }

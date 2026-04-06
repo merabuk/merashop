@@ -8,10 +8,10 @@ use App\Catalog\Domain\Exception\Product\InvalidProductIdException;
 use App\Shared\Domain\Exception\Services\Validation\IntegerIsNotUnsignedException;
 use App\Shared\Domain\Service\Validation\IntegerValidator;
 use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
+use App\Shared\Domain\ValueObject\Contract\IdInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
-use Stringable;
 
-final readonly class Id implements EquatableInterface, Stringable
+final readonly class Id implements IdInterface, EquatableInterface
 {
     use ValueObjectEqualityTrait;
 

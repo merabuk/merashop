@@ -77,7 +77,7 @@ final class CreateAttributeControllerTest extends WebTestCase
 
         $data = $this->getResponseData($client);
         self::assertArrayHasKey('message', $data);
-        $this->assertStringContainsString('Attribute was successfully created', $data['message']);
+        self::assertStringContainsString('Attribute was successfully created', $data['message']);
 
         $exists = $this->getReadRepository()->existsByCode(Code::fromString($payload['code']));
         self::assertTrue($exists, 'Attribute was not saved to database');

@@ -29,7 +29,7 @@ abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
         callback: 'getAttributeTypes',
         message: 'catalog.attribute.type_invalid'
     )]
-    public ?string $type;
+    public ?string $type = null;
 
     /**
      * @var ?AttributeTranslationRequest[] $translations

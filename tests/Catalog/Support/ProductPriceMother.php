@@ -18,11 +18,14 @@ use App\Catalog\Domain\ValueObject\ProductPrice\Version;
 use App\Shared\Domain\Enum\CurrencyEnum;
 use App\Shared\Domain\Enum\TaxTypeEnum;
 use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
+use App\Tests\Shared\Support\Traits\DateTimeHelperTrait;
 use DateTimeImmutable;
 use Faker\Generator;
 
 final readonly class ProductPriceMother
 {
+    use DateTimeHelperTrait;
+
     public const string DEFAULT_ADMIN_ULID = '01KHVRCA679BJ6PBXX5N3G6RR5';
 
     public function __construct(
@@ -88,8 +91,12 @@ final readonly class ProductPriceMother
         $type ??= $this->faker->randomElement(TypeEnum::cases());
 
         if (TypeEnum::Sale === $type) {
-            $validFrom ??= $this->faker->dateTimeBetween('-1 year', '+1 year');
-            $validTo ??= $this->faker->dateTimeBetween($validFrom->format(DateTimeImmutable::ATOM), '+2 years');
+            $validFrom ??= $this->toDateTimeImmutable(
+                $this->faker->dateTimeBetween('-1 year', '+1 year')
+            );
+            $validTo ??= $this->toDateTimeImmutable(
+                $this->faker->dateTimeBetween($validFrom->format($validFrom::ATOM), '+2 years')
+            );
         }
 
         return $this->productPriceFactory->createForTest(
@@ -99,8 +106,8 @@ final readonly class ProductPriceMother
             taxValue: $taxValue ?? random_int(1, 100) / 100,
             taxType: $taxType ?? $this->faker->randomElement(TaxTypeEnum::cases()),
             taxIncluded: $taxIncluded ?? $this->faker->boolean(),
-            validFrom: $validFrom ?? $this->faker->dateTime(),
-            validTo: $validTo ?? $this->faker->dateTime(),
+            validFrom: $validFrom,
+            validTo: $validTo,
             createdByUlid: $createdByUlid ?? $this->ulidGenerator->next(),
         );
     }

@@ -204,6 +204,12 @@ final class CreateProductHandlerTest extends TestCase
         array $temporaryImageUlids,
         string $exceptionClass,
     ): void {
+        if (ProductAlreadyExistsException::class === $exceptionClass) {
+            $exception = ProductAlreadyExistsException::becauseSkuAlreadyExists($sku->value());
+        } else {
+            $exception = new $exceptionClass();
+        }
+
         $this->productValidator->expects(self::once())
             ->method('validateCreation')
             ->with(
@@ -212,7 +218,7 @@ final class CreateProductHandlerTest extends TestCase
                 self::equalTo($attributeIds),
                 self::equalTo($temporaryImageUlids),
             )
-            ->willThrowException(new $exceptionClass());
+            ->willThrowException($exception);
     }
 
     private function expectFactoryCreateProduct(CreateProductCommand $command, Product $product): void

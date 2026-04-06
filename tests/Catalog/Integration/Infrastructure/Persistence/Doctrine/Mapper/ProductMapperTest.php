@@ -61,7 +61,7 @@ final class ProductMapperTest extends KernelTestCase
         self::assertSame($domainProduct->getSku()->value(), $ormProduct->sku);
         self::assertSame($domainProduct->getStatus()->value(), $ormProduct->status);
         $this->assertOrmTranslationsMatch($domainProduct, $ormProduct);
-        self::assertSame($domainProduct->getVersion()->value(), $ormProduct->version);
+        self::assertNull($ormProduct->version);
         self::assertSame($domainProduct->getCreatedBy()->value(), $ormProduct->createdBy);
         $this->assertOrmPricesMatch($domainProduct, $ormProduct);
         $this->assertOrmCategoriesMatch($domainProduct, $ormProduct);

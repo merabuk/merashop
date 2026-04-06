@@ -54,7 +54,7 @@ final class AttributeMapperTest extends KernelTestCase
         self::assertSame($domainAttribute->getCode()->value(), $ormAttribute->code);
         self::assertSame($domainAttribute->getType()->value(), $ormAttribute->type);
         $this->assertOrmTranslationsMatch($domainAttribute, $ormAttribute);
-        self::assertSame($domainAttribute->getVersion()->value(), $ormAttribute->version);
+        self::assertNull($ormAttribute->version);
         self::assertSame($domainAttribute->getCreatedBy()->value(), $ormAttribute->createdBy);
         $this->assertOrmOptionsMatch($domainAttribute, $ormAttribute);
         self::assertSame($domainAttribute->getUpdatedBy()?->value(), $ormAttribute->updatedBy);
@@ -167,7 +167,7 @@ final class AttributeMapperTest extends KernelTestCase
                 self::assertSame($domainTranslation->value, $ormTranslation->value);
             }
             self::assertSame($domainOption->isActive()->value(), $ormOption->isActive);
-            self::assertSame($domainOption->getVersion()->value(), $ormOption->version);
+            self::assertNull($ormOption->version);
             self::assertSame($domainOption->getCreatedBy()->value(), $ormOption->createdBy);
             if ($domain->getType()->is(TypeEnum::Dimension)) {
                 self::assertNotNull($ormOption->valueJson);

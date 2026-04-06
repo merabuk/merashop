@@ -35,6 +35,11 @@ when@dev:
 when@test:
   monolog:
     handlers:
+      doctrine_filter:
+        type: stream
+        path: /dev/null
+        level: info
+        channels: [ "doctrine" ]
       main:
         type: fingers_crossed
         action_level: error
