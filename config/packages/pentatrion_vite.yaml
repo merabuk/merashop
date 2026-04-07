@@ -1,0 +1,10 @@
+pentatrion_vite:
+  public_directory: 'public'
+  default_config: 'default'
+  proxy_origin: 'https://merashop.test'
+
+  configs:
+    default:
+      build_directory: 'build'
+      script_attributes:
+        type: 'module'

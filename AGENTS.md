@@ -98,6 +98,19 @@ src/Shared/Domain/
 
 The translation folder is standardized at `src/<ModuleName>/Presentation/Http/translations/`, except for infrastructure-specific translations (e.g., in `EmailSender`).
 
+Base `assets` folder structure (TypeScript enabled):
+```bash
+assets/
+├── app.ts               # Global entry point (TS)
+├── App.vue              # Root component (lang="ts")
+├── modules/
+│   ├── Shared/
+│   │   ├── constants.ts     # Global constants (Headers, Route names, etc.)
+│   │   ├── api-client.ts    # Axios wrapper with TraceId integration
+│   │   └── types.ts         # Global TS interfaces/types
+│   ...
+```
+
 ## 3. Coding Standards & Constraints
 
 ### Domain Layer

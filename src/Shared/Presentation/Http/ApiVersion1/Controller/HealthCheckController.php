@@ -2,12 +2,13 @@
 
 namespace App\Shared\Presentation\Http\ApiVersion1\Controller;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-class HealthCheckController
+class HealthCheckController extends AbstractController
 {
     public const string ROUTE_NAME = 'shared.api.v1.health-check';
 

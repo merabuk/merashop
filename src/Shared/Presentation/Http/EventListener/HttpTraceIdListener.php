@@ -14,7 +14,7 @@ use Symfony\Component\HttpKernel\Event\ResponseEvent;
 
 final readonly class HttpTraceIdListener
 {
-    public const string TRACE_ID_HEADER = 'Merashop-Trace-Id';
+    public const string TRACE_ID_HEADER = 'MeraShop-Trace-Id';
 
     public function __construct(
         private TraceIdContextInterface $traceIdContext,

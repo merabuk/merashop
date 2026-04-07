@@ -1,3 +1,9 @@
+shared.public.web:
+  resource:
+    path: ../Web/Controller/
+    namespace: App\Shared\Presentation\Http\Web\Controller
+  type: attribute
+
 shared.public.api.v1:
   resource:
     path: ../ApiVersion1/Controller/

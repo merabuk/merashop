@@ -13,12 +13,6 @@
 /phpunit.xml
 /.phpunit.cache/
 ###< phpunit/phpunit ###
-
-###> symfony/asset-mapper ###
-/public/assets/
-/assets/vendor/
-###< symfony/asset-mapper ###
-
 .idea
 
 ###> friendsofphp/php-cs-fixer ###
@@ -33,3 +27,9 @@ phpstan.neon
 ###> deptrac/deptrac ###
 /.deptrac.cache
 ###< deptrac/deptrac ###
+
+###> pentatrion/vite-bundle ###
+/node_modules/
+/public/build/
+/assets/vendor/
+###< pentatrion/vite-bundle ###

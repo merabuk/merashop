@@ -37,6 +37,12 @@ services:
     depends_on:
       - pgsql
       - redis
+      - node
+    restart: on-failure
+
+  node:
+    platform: ${PLATFORM_ARCHITECTURE:-linux/amd64}
+    pull_policy: always
     restart: on-failure
 
   rabbitmq:

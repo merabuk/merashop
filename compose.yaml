@@ -233,6 +233,20 @@ services:
       - ./docker/app/php/conf.d/zzz-settings-override-local.ini:/usr/local/etc/php/conf.d/zzz-settings-override.ini
     working_dir: /var/www
 
+  node:
+    image: node:20-alpine3.21
+    working_dir: /app
+    environment:
+      APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
+      PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./:/app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    networks:
+      - merashop-network
+
   rabbitmq:
     image: rabbitmq:4.2-management-alpine
     environment:
