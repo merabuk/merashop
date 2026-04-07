@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\Service\Validation;
 
-use App\Shared\Domain\Exception\InvalidStringException;
-use App\Shared\Domain\Exception\Services\StringEmptyException;
-use App\Shared\Domain\Exception\Services\StringMaxLengthException;
-use App\Shared\Domain\Exception\Services\StringMinLengthException;
+use App\Shared\Domain\Exception\Services\Validation\InvalidStringException;
+use App\Shared\Domain\Exception\Services\Validation\StringEmptyException;
+use App\Shared\Domain\Exception\Services\Validation\StringMaxLengthException;
+use App\Shared\Domain\Exception\Services\Validation\StringMinLengthException;
 
 final class StringValidator
 {
@@ -27,7 +27,7 @@ final class StringValidator
         }
 
         if ($normalize) {
-            $value = self::normalize($value);
+            $value = self::normalize(value: $value, trim: false);
         }
 
         $length = mb_strlen($value);
@@ -43,8 +43,12 @@ final class StringValidator
         return $value;
     }
 
-    private static function normalize(string $value): string
+    public static function normalize(string $value, bool $trim = true): string
     {
+        if ($trim) {
+            $value = mb_trim($value);
+        }
+
         return preg_replace([
             '/ +/',
             '/ *(\r?\n) */',

@@ -49,6 +49,12 @@ final class CodeTest extends TestCase
     {
         yield 'empty' => [''];
         yield 'only spaces' => ['   '];
+        yield 'regex mismatch' => ['CODE'];
+        yield 'contains special characters' => ['code!'];
+        yield 'contains spaces' => ['code with spaces'];
+        yield 'leading dash' => ['-code'];
+        yield 'trailing dash' => ['code-'];
+        yield 'multiple dashes' => ['some--code'];
         yield 'too long' => [str_repeat('a', Code::MAX_LENGTH + 1)];
     }
 }

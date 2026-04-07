@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Shared\Unit\Presentation\Http\EventListener;
 
 use App\Shared\Domain\Exception\Request\InvalidRequestHeaderValueException;
-use App\Shared\Domain\Exception\Services\TraceIdFactoryException;
+use App\Shared\Domain\Exception\Services\Tracing\TraceIdFactoryException;
 use App\Shared\Domain\Service\Tracing\TraceIdContextInterface;
 use App\Shared\Domain\Service\Tracing\TraceIdFactoryInterface;
 use App\Shared\Presentation\Http\EventListener\HttpTraceIdListener;

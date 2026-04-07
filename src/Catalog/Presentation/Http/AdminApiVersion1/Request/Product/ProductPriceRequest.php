@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Catalog\Presentation\Http\AdminApiVersion1\Request\Product;
 
+use App\Catalog\Application\DTO\Product\ProductPriceData;
 use App\Catalog\Domain\Enum\ProductPrice\TypeEnum;
 use App\Catalog\Domain\ValueObject\ProductPrice\Tax;
 use App\Shared\Domain\Enum\CurrencyEnum;
@@ -16,47 +17,66 @@ use Throwable;
 
 final class ProductPriceRequest
 {
-    #[Assert\NotBlank]
-    #[Assert\PositiveOrZero]
+    public const string BASE_GROUP = 'ProductPriceRequest';
+
+    #[Assert\NotBlank(groups: [self::BASE_GROUP])]
+    #[Assert\PositiveOrZero(groups: [self::BASE_GROUP])]
     public ?int $amount = null;
 
-    #[Assert\NotBlank]
-    #[Assert\Currency(message: 'catalog.product_price.currency_invalid_format')]
+    #[Assert\NotBlank(groups: [self::BASE_GROUP])]
+    #[Assert\Currency(message: 'catalog.product_price.currency_invalid_format', groups: [self::BASE_GROUP])]
     #[Assert\Choice(
         callback: 'getAvailableCurrencies',
-        message: 'catalog.product_price.currency_not_supported'
+        message: 'catalog.product_price.currency_not_supported',
+        groups: [self::BASE_GROUP],
     )]
     public ?string $currency = null;
 
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(groups: [self::BASE_GROUP])]
     #[Assert\Choice(
         callback: 'getProductPriceTypes',
-        message: 'catalog.product_price.type_invalid'
+        message: 'catalog.product_price.type_invalid',
+        groups: [self::BASE_GROUP],
     )]
     public ?string $type = null;
 
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(groups: [self::BASE_GROUP])]
     #[Assert\Choice(
         callback: 'getProductPriceTaxTypes',
-        message: 'catalog.product_price.tax_type_invalid'
+        message: 'catalog.product_price.tax_type_invalid',
+        groups: [self::BASE_GROUP],
     )]
     public ?string $taxType = null;
 
-    #[Assert\NotBlank]
-    #[Assert\Type('numeric')]
+    #[Assert\NotBlank(groups: [self::BASE_GROUP])]
+    #[Assert\Type(type: 'numeric', groups: [self::BASE_GROUP])]
     public ?float $taxValue = null;
 
-    #[Assert\NotNull]
-    #[Assert\Type(type: 'bool')]
+    #[Assert\NotNull(groups: [self::BASE_GROUP])]
+    #[Assert\Type(type: 'bool', groups: [self::BASE_GROUP])]
     public ?bool $taxIncluded = null;
 
-    #[Assert\DateTime(format: DateTimeValueObject::INPUT_FORMAT)]
+    #[Assert\DateTime(format: DateTimeValueObject::INPUT_FORMAT, groups: [self::BASE_GROUP])]
     public ?string $validFrom = null;
 
-    #[Assert\DateTime(format: DateTimeValueObject::INPUT_FORMAT)]
+    #[Assert\DateTime(format: DateTimeValueObject::INPUT_FORMAT, groups: [self::BASE_GROUP])]
     public ?string $validTo = null;
 
-    #[Assert\Callback]
+    public function toData(): ProductPriceData
+    {
+        return new ProductPriceData(
+            amount: $this->amount,
+            currency: $this->currency,
+            type: $this->type,
+            taxValue: $this->taxValue,
+            taxType: $this->taxType,
+            taxIncluded: $this->taxIncluded,
+            validFrom: $this->validFrom,
+            validTo: $this->validTo,
+        );
+    }
+
+    #[Assert\Callback(groups: [self::BASE_GROUP])]
     public function validateTaxValue(ExecutionContextInterface $context): void
     {
         if (null === $this->taxType) {
@@ -76,7 +96,7 @@ final class ProductPriceRequest
         }
     }
 
-    #[Assert\Callback]
+    #[Assert\Callback(groups: [self::BASE_GROUP])]
     public function validatePeriod(ExecutionContextInterface $context): void
     {
         if ($this->type === TypeEnum::Sale->value) {

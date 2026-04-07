@@ -8,6 +8,7 @@ use App\Catalog\Domain\Entity\Product;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Entity\ProductImage;
 use App\Catalog\Domain\Entity\ProductPrice;
+use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum as AttributeTypeEnum;
 use App\Catalog\Domain\Enum\Product\StatusEnum;
 use App\Catalog\Domain\Enum\ProductPrice\TypeEnum as ProductPriceTypeEnum;
@@ -43,6 +44,7 @@ final readonly class ProductMother
         private Generator $faker,
         private Factory $fakerFactory,
         private CategoryFixture $categoryFixture,
+        private AttributeOptionMother $attributeOptionMother,
         private AttributeFixture $attributeFixture,
         private ProductAttributeValueMother $productAttributeValueMother,
     ) {
@@ -53,6 +55,7 @@ final readonly class ProductMother
      * @param ?ProductPrice[]                                           $prices
      * @param ?CategoryId[]                                             $categoryIds
      * @param ?ProductAttributeValue[]                                  $attributeValues
+     * @param ?ProductImage[]                                           $images
      */
     public static function createWithData(
         ?string $ulid = null,
@@ -302,10 +305,20 @@ final readonly class ProductMother
 
         $values = [];
         foreach ($attributeTypes as $type) {
-            $attribute = $this->attributeFixture->create(type: $type);
+            if (TypeEnum::Image === $type) {
+                continue;
+            }
+
+            $options = null;
+            if ($type->hasOptions()) {
+                $options = [$this->attributeOptionMother->create()];
+            }
+
+            $attribute = $this->attributeFixture->create(type: $type, options: $options);
             $values[] = $this->productAttributeValueMother->create(
                 attributeId: $attribute->getId()?->value() ?? throw new RuntimeException('Attribute ID is null'),
-                attributeType: $attribute->getType()->value()
+                attributeType: $attribute->getType()->value(),
+                optionId: $attribute->getOptions()->all()[0]?->getId()->value() ?? null,
             );
         }
 
@@ -318,9 +331,15 @@ final readonly class ProductMother
 
         $attributeValues = [];
         foreach ($attributeTypes as $i => $type) {
+            if (TypeEnum::Image === $type) {
+                // not supported yet
+                continue;
+            }
+
             $attributeValues[] = ProductAttributeValueMother::createWithData(
                 attributeId: 5550 + $i,
                 attributeType: $type,
+                optionId: $type->hasOptions() ? 6660 + $i : null
             );
         }
 
@@ -357,6 +376,7 @@ final readonly class ProductMother
         foreach ($ulids as $i => $ulid) {
             $images[] = ProductImageMother::createWithData(
                 ulid: $ulid,
+                path: 'products/2024/03/19/img_'.($i + 1).'.jpg',
                 sortOrder: $i + 1,
                 isMain: 0 === $i,
                 id: $withFakeIds ? 2220 + $i : null

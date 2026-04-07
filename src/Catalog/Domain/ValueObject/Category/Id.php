@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Catalog\Domain\ValueObject\Category;
 
 use App\Catalog\Domain\Exception\Category\InvalidCategoryIdException;
-use App\Shared\Domain\Exception\Services\IntegerIsNotUnsignedException;
+use App\Shared\Domain\Exception\Services\Validation\IntegerIsNotUnsignedException;
 use App\Shared\Domain\Service\Validation\IntegerValidator;
 use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\IdInterface;

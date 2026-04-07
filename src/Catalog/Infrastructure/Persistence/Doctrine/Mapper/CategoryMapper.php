@@ -47,7 +47,6 @@ final readonly class CategoryMapper implements MapperInterface
         $orm = new OrmCategory();
 
         $orm->ulid = $domain->getUlid()->value();
-        $orm->version = $domain->getVersion()->value();
         $orm->createdBy = $domain->getCreatedBy()->value();
 
         $this->mapToExistingOrm($domain, $orm);
@@ -120,27 +119,30 @@ final readonly class CategoryMapper implements MapperInterface
     {
         $domainTranslations = $domain->getTranslations();
 
-        foreach ($orm->translations as $ormTranslation) {
-            if (null === $domainTranslations->get($ormTranslation->locale)) {
+        $existingOrmTranslations = [];
+        foreach ($orm->translations as $t) {
+            $existingOrmTranslations[$t->locale] = $t;
+        }
+
+        foreach ($existingOrmTranslations as $locale => $ormTranslation) {
+            if (!$domainTranslations->has($locale)) {
                 $orm->translations->removeElement($ormTranslation);
             }
         }
 
         foreach ($domainTranslations as $locale => $translation) {
-            $existing = $orm->translations->filter(fn (OrmCategoryTranslation $t) => $t->locale === $locale)->first();
+            $ormTranslation = $existingOrmTranslations[$locale] ?? null;
 
-            if ($existing) {
-                $existing->name = $translation->name;
-                $existing->description = $translation->description;
-            } else {
-                $newOrmTranslation = new OrmCategoryTranslation();
-                $newOrmTranslation->category = $orm;
-                $newOrmTranslation->locale = $locale;
-                $newOrmTranslation->name = $translation->name;
-                $newOrmTranslation->description = $translation->description;
+            if (!$ormTranslation) {
+                $ormTranslation = new OrmCategoryTranslation();
+                $ormTranslation->category = $orm;
+                $ormTranslation->locale = $locale;
 
-                $orm->translations->add($newOrmTranslation);
+                $orm->translations->add($ormTranslation);
             }
+
+            $ormTranslation->name = $translation->name;
+            $ormTranslation->description = $translation->description;
         }
     }
 }

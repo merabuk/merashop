@@ -7,8 +7,9 @@ namespace App\Tests\Catalog\Unit\Domain\Entity;
 use App\Catalog\Domain\Entity\Product;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Entity\ProductPrice;
+use App\Catalog\Domain\Enum\Attribute\TypeEnum as AttributeTypeEnum;
 use App\Catalog\Domain\Enum\Product\StatusEnum;
-use App\Catalog\Domain\Enum\ProductPrice\TypeEnum;
+use App\Catalog\Domain\Enum\ProductPrice\TypeEnum as ProductPriceTypeEnum;
 use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
 use App\Catalog\Domain\ValueObject\Product\AttributeValueCollection;
@@ -65,10 +66,9 @@ final class ProductTest extends TestCase
         }
         self::assertCount($prices->count(), $product->getPrices());
         foreach ($prices as $price) {
-            $actualPrice = array_find(
-                array: $product->getPrices()->all(),
-                callback: fn (ProductPrice $p) => $p->getType()->equals($price->getType())
-                    && $p->getPrice()->equals($price->getPrice())
+            $actualPrice = $product->getPrices()->getByCurrencyAndType(
+                currency: $price->getPrice()->getCurrency(),
+                type: $price->getType()->value()
             );
             self::assertNotNull($actualPrice);
             self::assertNull($actualPrice->getId());
@@ -87,9 +87,9 @@ final class ProductTest extends TestCase
         }
         self::assertCount($attributeValues->count(), $product->getAttributeValues());
         foreach ($attributeValues as $attributeValue) {
-            $actualAttributeValue = array_find(
-                array: $product->getAttributeValues()->all(),
-                callback: fn (ProductAttributeValue $pav) => $pav->getAttributeId()->equals($attributeValue->getAttributeId())
+            $actualAttributeValue = $product->getAttributeValues()->findByBusinessKey(
+                attributeId: $attributeValue->getAttributeId(),
+                attributeOptionId: $attributeValue->getAttributeOptionId()
             );
             self::assertNotNull($actualAttributeValue);
             self::assertTrue($attributeValue->getValue()->equals($actualAttributeValue->getValue()));
@@ -97,7 +97,7 @@ final class ProductTest extends TestCase
         self::assertEmpty($product->getImages());
     }
 
-    public function testUpdateChangesState(): void
+    public function testItUpdateChangesState(): void
     {
         $product = ProductMother::createWithData(
             sku: 'OLD-TEST-SKU',
@@ -117,11 +117,11 @@ final class ProductTest extends TestCase
         $newPrices = PriceCollection::fromArray([
             ProductPriceMother::createWithData(
                 currency: CurrencyEnum::UAH,
-                type: TypeEnum::Regular,
+                type: ProductPriceTypeEnum::Regular,
             ),
             ProductPriceMother::createWithData(
                 currency: CurrencyEnum::USD,
-                type: TypeEnum::Regular,
+                type: ProductPriceTypeEnum::Regular,
             ),
         ]);
         $updatedBy = AdminUlid::fromString(ProductMother::DEFAULT_ADMIN_ULID);
@@ -149,10 +149,9 @@ final class ProductTest extends TestCase
         }
         self::assertCount($newPrices->count(), $product->getPrices());
         foreach ($newPrices as $price) {
-            $actualPrice = array_find(
-                array: $product->getPrices()->all(),
-                callback: fn (ProductPrice $p) => $p->getType()->equals($price->getType())
-                    && $p->getPrice()->equals($price->getPrice())
+            $actualPrice = $product->getPrices()->getByCurrencyAndType(
+                currency: $price->getPrice()->getCurrency(),
+                type: $price->getType()->value()
             );
             self::assertNotNull($actualPrice);
             self::assertTrue($price->getTax()->equals($actualPrice->getTax()));
@@ -168,9 +167,9 @@ final class ProductTest extends TestCase
         }
         self::assertCount($newAttributeValues->count(), $product->getAttributeValues());
         foreach ($newAttributeValues as $attributeValue) {
-            $actualAttributeValue = array_find(
-                array: $product->getAttributeValues()->all(),
-                callback: fn (ProductAttributeValue $pav) => $pav->getAttributeId()->equals($attributeValue->getAttributeId())
+            $actualAttributeValue = $product->getAttributeValues()->findByBusinessKey(
+                attributeId: $attributeValue->getAttributeId(),
+                attributeOptionId: $attributeValue->getAttributeOptionId()
             );
             self::assertNotNull($actualAttributeValue);
             self::assertTrue($attributeValue->getValue()->equals($actualAttributeValue->getValue()));
@@ -179,7 +178,7 @@ final class ProductTest extends TestCase
 
     public function testAddImage(): void
     {
-        $product = ProductMother::createWithData();
+        $product = ProductMother::createWithData(images: []);
 
         self::assertCount(0, $product->getImages());
 
@@ -212,7 +211,7 @@ final class ProductTest extends TestCase
 
     public function testItSetsImages(): void
     {
-        $product = ProductMother::createWithData();
+        $product = ProductMother::createWithData(images: []);
 
         self::assertCount(0, $product->getImages());
 
@@ -226,6 +225,51 @@ final class ProductTest extends TestCase
 
         self::assertCount(1, $product->getImages());
         self::assertTrue($product->getImages()->equals($images));
+    }
+
+    public function testItRemovesImageByUlid(): void
+    {
+        $product = ProductMother::createWithData();
+
+        $count = $product->getImages()->count();
+
+        self::assertTrue($count > 1);
+
+        $image1 = $product->getImages()->all()[0];
+
+        $product->removeImage($image1->getUlid());
+
+        self::assertCount($count - 1, $product->getImages());
+    }
+
+    public function testItReordersImages(): void
+    {
+        $product = ProductMother::createWithData();
+
+        $orderedUlids = [];
+        foreach ($product->getImages() as $image) {
+            $orderedUlids[] = $image->getUlid()->value();
+        }
+
+        $reversed = array_reverse($orderedUlids);
+
+        $product->reorderImages($reversed);
+
+        $actualOrderedUlids = [];
+        foreach ($product->getImages() as $image) {
+            $sortOrder = $image->getSortOrder()->value();
+            $actualOrderedUlids[$image->getUlid()->value()] = $sortOrder;
+
+            if (0 === $sortOrder) {
+                self::assertTrue($image->isMain()->isTrue());
+            } else {
+                self::assertTrue($image->isMain()->isFalse());
+            }
+        }
+
+        foreach ($reversed as $i => $ulid) {
+            self::assertSame($i, $actualOrderedUlids[$ulid]);
+        }
     }
 
     /**
@@ -245,7 +289,7 @@ final class ProductTest extends TestCase
     private static function getValidPrices(): array
     {
         $currencies = CurrencyEnum::cases();
-        $productPriceTypes = TypeEnum::cases();
+        $productPriceTypes = ProductPriceTypeEnum::cases();
 
         $prices = [];
         foreach ($currencies as $currency) {
@@ -274,6 +318,9 @@ final class ProductTest extends TestCase
     {
         $attributeIds ??= [321, 654, 987];
 
-        return array_map(fn (int $id) => ProductAttributeValueMother::createWithData(attributeId: $id), $attributeIds);
+        return array_map(fn (int $id) => ProductAttributeValueMother::createWithData(
+            attributeId: $id,
+            attributeType: AttributeTypeEnum::Integer
+        ), $attributeIds);
     }
 }

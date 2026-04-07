@@ -8,16 +8,18 @@ use App\Catalog\Domain\Enum\ErrorCodeEnum;
 use App\Catalog\Domain\Exception\CatalogConflictException;
 use App\Shared\Domain\Exception\Contracts\ClientFacingExceptionInterface;
 
-class ProductAlreadyExistsException extends CatalogConflictException implements ClientFacingExceptionInterface
+final class ProductAlreadyExistsException extends CatalogConflictException implements ClientFacingExceptionInterface
 {
-    private string $sku = 'sku';
+    public function __construct(
+        private readonly string $field,
+        private readonly string $value,
+    ) {
+        parent::__construct();
+    }
 
     public static function becauseSkuAlreadyExists(string $sku): self
     {
-        $exception = new self();
-        $exception->sku = $sku;
-
-        return $exception;
+        return new self(field: 'sku', value: $sku);
     }
 
     public function getErrorCode(): string
@@ -30,6 +32,9 @@ class ProductAlreadyExistsException extends CatalogConflictException implements 
      */
     public function getMessageData(): array
     {
-        return ['sku' => $this->sku];
+        return [
+            'field' => $this->field,
+            'value' => $this->value,
+        ];
     }
 }

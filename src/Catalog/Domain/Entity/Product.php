@@ -19,6 +19,8 @@ use App\Catalog\Domain\ValueObject\Product\Status;
 use App\Catalog\Domain\ValueObject\Product\Translations;
 use App\Catalog\Domain\ValueObject\Product\Ulid;
 use App\Catalog\Domain\ValueObject\Product\Version;
+use App\Catalog\Domain\ValueObject\ProductImage\SortOrder;
+use App\Catalog\Domain\ValueObject\ProductImage\Ulid as ProductImageUlid;
 
 class Product
 {
@@ -27,7 +29,7 @@ class Product
         private Sku $sku,
         private Status $status,
         private Translations $translations,
-        private Version $version,
+        private readonly Version $version,
         private readonly AdminUlid $createdBy,
         private PriceCollection $prices,
         private CategoryIdCollection $categoryIds,
@@ -88,6 +90,8 @@ class Product
 
     /**
      * @throws InvalidProductImageItemException
+     * @throws ProductImagesMainImageException
+     * @throws ProductImageUniqueException
      */
     public function addImage(ProductImage $image): void
     {
@@ -97,6 +101,32 @@ class Product
     public function setImages(ImageCollection $images): void
     {
         $this->images = $images;
+    }
+
+    /**
+     * @throws ProductImagesMainImageException
+     * @throws ProductImageUniqueException
+     * @throws InvalidProductImageItemException
+     */
+    public function removeImage(ProductImageUlid $ulid): void
+    {
+        $this->images = $this->images->remove($ulid);
+    }
+
+    /**
+     * @param string[] $orderedUlids
+     */
+    public function reorderImages(array $orderedUlids): void
+    {
+        $map = array_flip($orderedUlids);
+
+        foreach ($this->images as $image) {
+            $sortOrder = $map[$image->getUlid()->value()] ?? 999;
+
+            $image->updateSortOrder(SortOrder::fromInt($sortOrder));
+
+            0 === $sortOrder ? $image->setAsMain() : $image->unsetMain();
+        }
     }
 
     public function getId(): ?Id

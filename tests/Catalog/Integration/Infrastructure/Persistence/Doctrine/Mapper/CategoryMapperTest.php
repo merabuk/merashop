@@ -48,7 +48,7 @@ final class CategoryMapperTest extends KernelTestCase
         self::assertSame($domainCategory->getSortOrder()->value(), $ormCategory->sortOrder);
         self::assertSame($domainCategory->getStatus()->value(), $ormCategory->status);
         $this->assertOrmTranslationsMatch($domainCategory, $ormCategory);
-        self::assertSame($domainCategory->getVersion()->value(), $ormCategory->version);
+        self::assertNull($ormCategory->version);
         self::assertSame($domainCategory->getCreatedBy()->value(), $ormCategory->createdBy);
         self::assertSame($domainCategory->getUpdatedBy()?->value(), $ormCategory->updatedBy);
 

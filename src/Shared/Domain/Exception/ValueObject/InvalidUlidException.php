@@ -2,7 +2,7 @@
 
 namespace App\Shared\Domain\Exception\ValueObject;
 
-use App\Shared\Domain\Exception\Services\InvalidUlidException as BaseInvalidUlidException;
+use App\Shared\Domain\Exception\Services\Identity\InvalidUlidException as BaseInvalidUlidException;
 
 final class InvalidUlidException extends InvalidValueObjectExceptionInterface
 {

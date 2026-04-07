@@ -34,4 +34,32 @@ final class ProductImageTest extends TestCase
         self::assertTrue($productImage->getSortOrder()->equals($sortOrder));
         self::assertTrue($productImage->isMain()->equals($isMain));
     }
+
+    public function testItSetsAsMain(): void
+    {
+        $productImage = ProductImageMother::createWithData(isMain: false);
+
+        $productImage->setAsMain();
+
+        self::assertTrue($productImage->isMain()->isTrue());
+    }
+
+    public function testIsUnsetsMain(): void
+    {
+        $productImage = ProductImageMother::createWithData(isMain: true);
+
+        $productImage->unsetMain();
+
+        self::assertFalse($productImage->isMain()->isTrue());
+    }
+
+    public function testItUpdatesSortOrder(): void
+    {
+        $productImage = ProductImageMother::createWithData(sortOrder: 1);
+        $newSortOrder = SortOrder::fromInt(2);
+
+        $productImage->updateSortOrder($newSortOrder);
+
+        self::assertTrue($productImage->getSortOrder()->equals($newSortOrder));
+    }
 }

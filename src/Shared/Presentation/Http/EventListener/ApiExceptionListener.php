@@ -173,6 +173,7 @@ class ApiExceptionListener
         $errorCode = $exception->getErrorCode();
         $errorMessageData = $exception->getMessageData();
         $exceptionTranslationDomain = $exception->getTranslationDomain();
+        $extraData = $exception->getExtraData();
 
         if (
             $exception instanceof EntityContextAwareExceptionInterface
@@ -198,7 +199,8 @@ class ApiExceptionListener
                 parameters: $errorMessageData,
                 domain: $this->translationDomainResolver->resolveIcuDomain($exceptionTranslationDomain),
             ),
-            statusCode: $statusCode
+            statusCode: $statusCode,
+            extraData: $extraData,
         );
     }
 

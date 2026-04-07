@@ -5,11 +5,15 @@ declare(strict_types=1);
 namespace App\Catalog\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Catalog\Domain\Entity\Product;
+use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
+use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
+use App\Catalog\Domain\Exception\ProductPrice\ProductPriceStateException;
 use App\Catalog\Domain\Repository\ProductWriteRepositoryInterface;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProduct;
 use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
-use App\Shared\Domain\Exception\Markers\ValueObjectExceptionInterface;
+use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
+use App\Shared\Domain\Exception\ValueObject\InvalidRelativePathException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
@@ -21,8 +25,13 @@ final class ProductWriteRepository extends BaseProductRepository implements Prod
     /**
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
+     * @throws InvalidCatalogValueObjectException
+     * @throws InvalidLocaleException
+     * @throws InvalidRelativePathException
      * @throws ORMException
-     * @throws ValueObjectExceptionInterface
+     * @throws OptimisticLockException
+     * @throws ProductAttributeValueStateException
+     * @throws ProductPriceStateException
      */
     public function save(Product $product): Product
     {
@@ -43,13 +52,16 @@ final class ProductWriteRepository extends BaseProductRepository implements Prod
     protected function findOrmForUpdateFallback(string $stringId): ?OrmProduct
     {
         $orm = $this->getEntityManager()->createQueryBuilder()
-            ->select('p', 't', 'c', 'av', 'a')
+            ->select('p', 'pt', 'c', 'pav', 'a', 'o', 'pp', 'pi')
             ->from(OrmProduct::class, 'p')
-            ->leftJoin('p.translations', 't')
+            ->leftJoin('p.translations', 'pt')
             ->leftJoin('p.categories', 'c')
-            ->leftJoin('p.attributeValues', 'av')
-            ->leftJoin('av.attribute', 'a')
-            ->where('a.id = :id')
+            ->leftJoin('p.attributeValues', 'pav')
+            ->leftJoin('pav.attribute', 'a')
+            ->leftJoin('pav.option', 'o')
+            ->leftJoin('p.prices', 'pp')
+            ->leftJoin('p.images', 'pi')
+            ->where('p.id = :id')
             ->setParameter('id', $stringId)
             ->getQuery()
             ->getOneOrNullResult();

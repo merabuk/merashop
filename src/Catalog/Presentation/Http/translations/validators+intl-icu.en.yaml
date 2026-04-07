@@ -1,6 +1,8 @@
 catalog:
   attribute:
     type_invalid: "The selected attribute type is invalid. Allowed values are: {choices}"
+    options_empty: "Attribute options cannot be empty"
+    option_code_duplicate: "Attribute option code must be unique for the attribute"
   category:
     status_invalid: "The selected category status is invalid. Allowed values are: {choices}"
   product:
@@ -9,6 +11,7 @@ catalog:
     prices_duplicate: "Duplicate price found for currency '{key}'"
     categories_empty: "Categories array cannot be empty"
     attribute_values_empty: "Attribute values array cannot be empty"
+    attribute_id_duplicate: "Duplicate attribute ID found"
     images_empty: "Images array cannot be empty"
   product_price:
     currency_invalid_format: "The selected currency is invalid. Allowed format is: ISO 4217"
@@ -17,3 +20,5 @@ catalog:
     tax_type_invalid: "The selected tax type is invalid. Allowed values are: {choices}"
     tax_value_invalid: "The selected tax value is invalid"
     invalid_range: "The selected price validity period is invalid"
+  product_attribute_value:
+    type_invalid: "The selected attribute value type is invalid. Allowed values are: {choices}"

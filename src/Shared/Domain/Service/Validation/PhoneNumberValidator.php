@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\Service\Validation;
 
-use App\Shared\Domain\Exception\InvalidPhoneNumberException;
-use App\Shared\Domain\Exception\Services\PhoneNumberFormatException;
-use App\Shared\Domain\Exception\Services\PhoneNumberMaxLengthException;
+use App\Shared\Domain\Exception\Services\Validation\InvalidPhoneNumberException;
+use App\Shared\Domain\Exception\Services\Validation\PhoneNumberFormatException;
+use App\Shared\Domain\Exception\Services\Validation\PhoneNumberMaxLengthException;
 
 final class PhoneNumberValidator
 {

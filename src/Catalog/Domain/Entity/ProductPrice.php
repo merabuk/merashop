@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\Entity;
 
+use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceVersionException;
 use App\Catalog\Domain\Exception\ProductPrice\ProductPriceStateException;
+use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\ProductPrice\Id;
 use App\Catalog\Domain\ValueObject\ProductPrice\Price;
 use App\Catalog\Domain\ValueObject\ProductPrice\Tax;
 use App\Catalog\Domain\ValueObject\ProductPrice\TaxIncludedFlag;
 use App\Catalog\Domain\ValueObject\ProductPrice\Type;
 use App\Catalog\Domain\ValueObject\ProductPrice\ValidityPeriod;
+use App\Catalog\Domain\ValueObject\ProductPrice\Version;
 use DateTimeImmutable;
 
 class ProductPrice
@@ -23,9 +26,57 @@ class ProductPrice
         private Type $type,
         private Tax $tax,
         private TaxIncludedFlag $taxIncluded,
+        private readonly Version $version,
+        private readonly AdminUlid $createdBy,
         private ?ValidityPeriod $validityPeriod = null,
+        private ?AdminUlid $updatedBy = null,
         private readonly ?Id $id = null,
     ) {
+        $this->ensureIsValidState();
+    }
+
+    /**
+     * @throws InvalidProductPriceVersionException
+     * @throws ProductPriceStateException
+     */
+    public static function create(
+        Price $price,
+        Type $type,
+        Tax $tax,
+        TaxIncludedFlag $taxIncluded,
+        AdminUlid $createdBy,
+        ?ValidityPeriod $validityPeriod = null,
+    ): self {
+        return new self(
+            price: $price,
+            type: $type,
+            tax: $tax,
+            taxIncluded: $taxIncluded,
+            version: Version::initial(),
+            createdBy: $createdBy,
+            validityPeriod: $validityPeriod,
+        );
+    }
+
+    /**
+     * @throws ProductPriceStateException
+     */
+    public function update(
+        Price $price,
+        Type $type,
+        Tax $tax,
+        TaxIncludedFlag $taxIncluded,
+        AdminUlid $updatedBy,
+        ?ValidityPeriod $validityPeriod = null,
+    ): void {
+        $this->ensureTypeAndCurrencyAreTheSame($price, $type);
+
+        $this->price = $price;
+        $this->tax = $tax;
+        $this->taxIncluded = $taxIncluded;
+        $this->validityPeriod = $validityPeriod;
+        $this->updatedBy = $updatedBy;
+
         $this->ensureIsValidState();
     }
 
@@ -69,9 +120,24 @@ class ProductPrice
         return $this->taxIncluded;
     }
 
+    public function getVersion(): Version
+    {
+        return $this->version;
+    }
+
+    public function getCreatedBy(): AdminUlid
+    {
+        return $this->createdBy;
+    }
+
     public function getValidityPeriod(): ?ValidityPeriod
     {
         return $this->validityPeriod;
+    }
+
+    public function getUpdatedBy(): ?AdminUlid
+    {
+        return $this->updatedBy;
     }
 
     public function getId(): ?Id
@@ -90,6 +156,20 @@ class ProductPrice
 
         if ($this->type->isTimeLimited() && null === $this->validityPeriod) {
             throw ProductPriceStateException::becauseItIsTimeLimitedType(['validityPeriod']);
+        }
+    }
+
+    /**
+     * @throws ProductPriceStateException
+     */
+    private function ensureTypeAndCurrencyAreTheSame(Price $newPrice, Type $newType): void
+    {
+        if (!$this->type->equals($newType)) {
+            throw ProductPriceStateException::becauseTypeCanNotBeChanged(from: $this->type->value()->value, to: $newType->value()->value);
+        }
+
+        if ($this->price->getCurrency() !== $newPrice->getCurrency()) {
+            throw ProductPriceStateException::becauseCurrencyCanNotBeChanged(from: $this->price->getCurrency()->value, to: $newPrice->getCurrency()->value);
         }
     }
 }

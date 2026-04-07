@@ -15,17 +15,11 @@ trait CustomerProfileFactoryTrait
 {
     protected function getCustomerProfileMother(): CustomerProfileMother
     {
-        /** @var CustomerProfileMother $mother */
-        $mother = self::getContainer()->get(CustomerProfileMother::class);
-
-        return $mother;
+        return self::getContainer()->get(CustomerProfileMother::class);
     }
 
     protected function getCustomerProfileFixture(): CustomerProfileFixture
     {
-        /** @var CustomerProfileFixture $fixture */
-        $fixture = self::getContainer()->get(CustomerProfileFixture::class);
-
-        return $fixture;
+        return self::getContainer()->get(CustomerProfileFixture::class);
     }
 }

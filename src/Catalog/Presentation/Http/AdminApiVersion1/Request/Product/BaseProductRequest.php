@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Catalog\Presentation\Http\AdminApiVersion1\Request\Product;
 
+use App\Catalog\Application\DTO\Product\ProductAttributeValueData;
+use App\Catalog\Application\DTO\Product\ProductPriceData;
+use App\Catalog\Application\DTO\Product\ProductTranslationData;
 use App\Catalog\Domain\Enum\Product\StatusEnum;
 use App\Catalog\Domain\ValueObject\Product\Sku;
+use App\Catalog\Presentation\Http\AdminApiVersion1\Request\Product\AttributeValue\BaseAttributeValueRequest;
 use App\Shared\Presentation\Http\Request\ValidateLocalesTrait;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -16,7 +20,7 @@ abstract class BaseProductRequest implements GroupSequenceProviderInterface
 {
     use ValidateLocalesTrait;
 
-    private const string BASE_GROUP = 'BaseProductRequest';
+    protected const string BASE_GROUP = 'BaseProductRequest';
     private const string FULL_GROUP = 'Full';
 
     #[Assert\NotBlank]
@@ -34,17 +38,17 @@ abstract class BaseProductRequest implements GroupSequenceProviderInterface
     /**
      * @var ProductPriceRequest[] $prices
      */
-    #[Assert\NotBlank]
-    #[Assert\Count(min: 1, minMessage: 'catalog.product.prices_empty')]
-    #[Assert\Valid]
+    #[Assert\NotBlank(groups: [ProductPriceRequest::BASE_GROUP])]
+    #[Assert\Count(min: 1, minMessage: 'catalog.product.prices_empty', groups: [ProductPriceRequest::BASE_GROUP])]
+    #[Assert\Valid(groups: [ProductPriceRequest::BASE_GROUP])]
     public ?array $prices;
 
     /**
      * @var ?ProductTranslationRequest[] $translations
      */
-    #[Assert\NotBlank]
-    #[Assert\Count(min: 1, minMessage: 'shared.common.translations_empty')]
-    #[Assert\Valid]
+    #[Assert\NotBlank(groups: [ProductTranslationRequest::BASE_GROUP])]
+    #[Assert\Count(min: 1, minMessage: 'shared.common.translations_empty', groups: [ProductTranslationRequest::BASE_GROUP])]
+    #[Assert\Valid(groups: [ProductTranslationRequest::BASE_GROUP])]
     public ?array $translations;
 
     /**
@@ -52,18 +56,17 @@ abstract class BaseProductRequest implements GroupSequenceProviderInterface
      */
     #[Assert\NotBlank(groups: [self::FULL_GROUP])]
     #[Assert\Count(min: 1, minMessage: 'catalog.product.categories_empty', groups: [self::FULL_GROUP])]
-    #[Assert\All([
+    #[Assert\All(constraints: [
         new Assert\NotBlank(),
         new Assert\Positive(),
-    ])]
+    ], groups: [self::FULL_GROUP])]
     public ?array $categoryIds;
 
     /**
-     * @var ProductAttributeValueRequest[] $attributeValues
+     * @var BaseAttributeValueRequest[]
      */
-    #[Assert\NotBlank(groups: [self::FULL_GROUP])]
-    #[Assert\Count(min: 1, minMessage: 'catalog.product.attribute_values_empty', groups: [self::FULL_GROUP])]
-    #[Assert\Valid]
+    #[Assert\NotBlank(groups: [BaseAttributeValueRequest::BASE_GROUP])]
+    #[Assert\Valid(groups: [BaseAttributeValueRequest::BASE_GROUP])]
     public ?array $attributeValues;
 
     /**
@@ -71,13 +74,13 @@ abstract class BaseProductRequest implements GroupSequenceProviderInterface
      */
     #[Assert\NotBlank(groups: [self::FULL_GROUP])]
     #[Assert\Count(min: 1, minMessage: 'catalog.product.images_empty', groups: [self::FULL_GROUP])]
-    #[Assert\All([
+    #[Assert\All(constraints: [
         new Assert\NotBlank(),
         new Assert\Ulid(),
-    ])]
+    ], groups: [self::FULL_GROUP])]
     public ?array $images;
 
-    #[Assert\Callback]
+    #[Assert\Callback(groups: [ProductPriceRequest::BASE_GROUP])]
     public function validateUniquePrices(ExecutionContextInterface $context): void
     {
         if (!isset($this->prices)) {
@@ -102,11 +105,33 @@ abstract class BaseProductRequest implements GroupSequenceProviderInterface
         }
     }
 
+    #[Assert\Callback(groups: [BaseAttributeValueRequest::BASE_GROUP])]
+    public function validateUniqueAttributes(ExecutionContextInterface $context): void
+    {
+        $ids = array_map(fn (BaseAttributeValueRequest $v) => $v->attributeId, $this->attributeValues ?? []);
+
+        $checkedExists = [];
+
+        foreach ($ids as $i => $id) {
+            if (isset($checkedExists[$id])) {
+                $context->buildViolation('catalog.product.attribute_id_duplicate')
+                    ->atPath("attributeValues[{$i}]")
+                    ->addViolation();
+            }
+            $checkedExists[$id] = true;
+        }
+    }
+
     public function getGroupSequence(): array
     {
-        $groups = [self::BASE_GROUP];
+        $groups = [
+            self::BASE_GROUP,
+            ProductTranslationRequest::BASE_GROUP,
+        ];
 
         if ($this->status === StatusEnum::Active->value) {
+            $groups[] = ProductPriceRequest::BASE_GROUP;
+            $groups[] = BaseAttributeValueRequest::BASE_GROUP;
             $groups[] = self::FULL_GROUP;
         }
 
@@ -137,5 +162,29 @@ abstract class BaseProductRequest implements GroupSequenceProviderInterface
     protected function getRequestTranslationKey(): string
     {
         return 'translations';
+    }
+
+    /**
+     * @return ProductPriceData[]
+     */
+    protected function mapAndGetPrices(): array
+    {
+        return array_map(fn (ProductPriceRequest $p) => $p->toData(), $this->prices);
+    }
+
+    /**
+     * @return ProductAttributeValueData[]
+     */
+    protected function mapAndGetAttributeValues(): array
+    {
+        return array_map(fn (BaseAttributeValueRequest $v) => $v->toData(), $this->attributeValues);
+    }
+
+    /**
+     * @return ProductTranslationData[]
+     */
+    protected function mapAndGetTranslations(): array
+    {
+        return array_map(fn (ProductTranslationRequest $t) => $t->toData(), $this->translations);
     }
 }

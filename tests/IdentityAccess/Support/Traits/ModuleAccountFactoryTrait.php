@@ -15,17 +15,11 @@ trait ModuleAccountFactoryTrait
 {
     protected function getModuleAccountMother(): ModuleAccountMother
     {
-        /** @var ModuleAccountMother $mother */
-        $mother = self::getContainer()->get(ModuleAccountMother::class);
-
-        return $mother;
+        return self::getContainer()->get(ModuleAccountMother::class);
     }
 
     protected function getModuleAccountFixture(): ModuleAccountFixture
     {
-        /** @var ModuleAccountFixture $fixture */
-        $fixture = self::getContainer()->get(ModuleAccountFixture::class);
-
-        return $fixture;
+        return self::getContainer()->get(ModuleAccountFixture::class);
     }
 }

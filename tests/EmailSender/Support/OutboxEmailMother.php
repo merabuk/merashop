@@ -21,7 +21,7 @@ use App\EmailSender\Domain\ValueObject\OutboxEmail\ScheduledAt;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Status;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Subject;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\To;
-use App\Shared\Domain\Exception\Services\TraceIdFactoryException;
+use App\Shared\Domain\Exception\Services\Tracing\TraceIdFactoryException;
 use App\Shared\Domain\Service\Tracing\TraceIdFactoryInterface;
 use App\Shared\Domain\ValueObject\Tracing\TraceId;
 use DateTimeImmutable;

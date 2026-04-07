@@ -6,7 +6,7 @@ namespace App\Catalog\Domain\ValueObject\Category;
 
 use App\Catalog\Domain\Exception\Category\InvalidCategoryDescriptionException;
 use App\Catalog\Domain\Exception\Category\InvalidCategoryNameException;
-use App\Shared\Domain\Exception\InvalidStringException;
+use App\Shared\Domain\Exception\Services\Validation\InvalidStringException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Domain\Service\Validation\StringValidator;
 use App\Shared\Domain\ValueObject\Contract\TranslationInterface;
@@ -33,13 +33,13 @@ final readonly class Translation implements TranslationInterface
     ) {
         $this->locale = Locale::fromString($locale);
         try {
-            $this->name = StringValidator::validate($name, self::NAME_MAX_LENGTH);
+            $this->name = StringValidator::validate(rawValue: $name, maxLength: self::NAME_MAX_LENGTH);
         } catch (InvalidStringException $e) {
             throw InvalidCategoryNameException::fromBaseException($e);
         }
         try {
             $this->description = $description
-                ? StringValidator::validate($description, self::DESCRIPTION_MAX_LENGTH)
+                ? StringValidator::validate(rawValue: $description, maxLength: self::DESCRIPTION_MAX_LENGTH)
                 : null;
         } catch (InvalidStringException $e) {
             throw InvalidCategoryDescriptionException::fromBaseException($e);

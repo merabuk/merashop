@@ -1,5 +1,6 @@
 monolog:
   channels:
+    - doctrine
     - email_sender
     - deprecation # Deprecations are logged in the dedicated "deprecation" channel when it exists
 
@@ -9,6 +10,12 @@ monolog:
       path: "%kernel.logs_dir%/email_sender.log"
       level: info
       channels: [ "email_sender" ]
+    doctrine_filter:
+      type: stream
+      path: "php://stderr"
+      level: info
+      channels: [ "doctrine" ]
+      formatter: monolog.formatter.json
 
 when@dev:
   monolog:
@@ -17,7 +24,7 @@ when@dev:
         type: rotating_file
         path: "%kernel.logs_dir%/%kernel.environment%.log"
         level: debug
-        channels: ["!event"]
+        channels: ["!event", "!doctrine"]
         formatter: monolog.formatter.json
         max_files: 5
       console:
@@ -28,6 +35,11 @@ when@dev:
 when@test:
   monolog:
     handlers:
+      doctrine_filter:
+        type: stream
+        path: /dev/null
+        level: info
+        channels: [ "doctrine" ]
       main:
         type: fingers_crossed
         action_level: error

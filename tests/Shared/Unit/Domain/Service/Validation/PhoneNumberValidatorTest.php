@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Shared\Unit\Domain\Service\Validation;
 
-use App\Shared\Domain\Exception\Services\PhoneNumberFormatException;
-use App\Shared\Domain\Exception\Services\PhoneNumberMaxLengthException;
+use App\Shared\Domain\Exception\Services\Validation\PhoneNumberFormatException;
+use App\Shared\Domain\Exception\Services\Validation\PhoneNumberMaxLengthException;
 use App\Shared\Domain\Service\Validation\PhoneNumberValidator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;

@@ -44,7 +44,7 @@ final class GetAttributeItemHandlerTest extends TestCase
 
         $this->readRepository->expects(self::once())
             ->method('getById')
-            ->willThrowException(new AttributeNotFoundException());
+            ->willThrowException(AttributeNotFoundException::withId($fakeId));
 
         $query = $this->fillAndGetQuery(id: $fakeId);
 

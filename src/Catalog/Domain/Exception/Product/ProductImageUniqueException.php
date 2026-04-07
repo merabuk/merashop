@@ -6,7 +6,7 @@ namespace App\Catalog\Domain\Exception\Product;
 
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 
-class ProductImageUniqueException extends InvalidCatalogValueObjectException
+final class ProductImageUniqueException extends InvalidCatalogValueObjectException
 {
     public static function becauseDuplicateImage(string $ulid): self
     {

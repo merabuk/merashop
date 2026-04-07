@@ -28,7 +28,7 @@ class Category
         private SortOrder $sortOrder,
         private Status $status,
         private Translations $translations,
-        private Version $version,
+        private readonly Version $version,
         private readonly AdminUlid $createdBy,
         private ?AdminUlid $updatedBy = null,
         private readonly ?Id $id = null,

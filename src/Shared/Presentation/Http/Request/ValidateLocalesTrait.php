@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 trait ValidateLocalesTrait
 {
     #[Assert\Callback]
-    public function validateLocales(ExecutionContextInterface $context): void
+    public function _validateLocales(ExecutionContextInterface $context): void
     {
         $translations = $this->getTranslations();
         if (empty($translations)) {

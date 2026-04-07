@@ -6,7 +6,7 @@ namespace App\Catalog\Presentation\Http\AdminApiVersion1\Controller\Attribute;
 
 use App\Catalog\Application\Query\GetAttributeList\GetAttributeListQuery;
 use App\Catalog\Domain\Entity\Attribute;
-use App\Catalog\Presentation\Http\AdminApiVersion1\Resource\Attribute\GetAttributeListResponse;
+use App\Catalog\Presentation\Http\AdminApiVersion1\Resource\Attribute\GetAttributeListResource;
 use App\Shared\Application\Query\QueryBusInterface;
 use App\Shared\Application\Security\AuthIdentity;
 use App\Shared\Domain\Criteria\Listing\PaginatedResult;
@@ -50,7 +50,7 @@ class GetAttributeListController extends AbstractController
 
         return $this->createPaginatedResponse(
             result: $result,
-            resourceMapper: fn (Attribute $attr) => GetAttributeListResponse::fromAttribute($attr),
+            resourceMapper: fn (Attribute $attr) => GetAttributeListResource::fromAttribute($attr),
             unit: 'attributes'
         );
     }

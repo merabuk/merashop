@@ -15,17 +15,11 @@ trait CategoryFactoryTrait
 {
     protected function getCategoryMother(): CategoryMother
     {
-        /** @var CategoryMother $mother */
-        $mother = self::getContainer()->get(CategoryMother::class);
-
-        return $mother;
+        return self::getContainer()->get(CategoryMother::class);
     }
 
     protected function getCategoryFixture(): CategoryFixture
     {
-        /** @var CategoryFixture $fixture */
-        $fixture = self::getContainer()->get(CategoryFixture::class);
-
-        return $fixture;
+        return self::getContainer()->get(CategoryFixture::class);
     }
 }

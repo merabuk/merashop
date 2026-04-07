@@ -15,17 +15,11 @@ trait RefreshTokenFactoryTrait
 {
     protected function getRefreshTokenMother(): RefreshTokenMother
     {
-        /** @var RefreshTokenMother $mother */
-        $mother = self::getContainer()->get(RefreshTokenMother::class);
-
-        return $mother;
+        return self::getContainer()->get(RefreshTokenMother::class);
     }
 
     protected function getRefreshTokenFixture(): RefreshTokenFixture
     {
-        /** @var RefreshTokenFixture $fixture */
-        $fixture = self::getContainer()->get(RefreshTokenFixture::class);
-
-        return $fixture;
+        return self::getContainer()->get(RefreshTokenFixture::class);
     }
 }

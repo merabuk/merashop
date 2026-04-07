@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\Service\Validation;
 
-use App\Shared\Domain\Exception\Services\InvalidUuidException;
+use App\Shared\Domain\Exception\Services\Identity\InvalidUuidException;
 
 final class UuidValidator
 {

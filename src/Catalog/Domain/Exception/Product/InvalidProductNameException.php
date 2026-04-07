@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Catalog\Domain\Exception\Product;
 
 use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
-use App\Shared\Domain\Exception\InvalidStringException;
+use App\Shared\Domain\Exception\Services\Validation\InvalidStringException;
 
 final class InvalidProductNameException extends InvalidCatalogValueObjectException
 {

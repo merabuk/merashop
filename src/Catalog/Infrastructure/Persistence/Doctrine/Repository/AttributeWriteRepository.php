@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Catalog\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Catalog\Domain\Entity\Attribute;
+use App\Catalog\Domain\Exception\Attribute\AttributeStateException;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
 use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
@@ -18,6 +19,7 @@ final class AttributeWriteRepository extends BaseAttributeRepository implements 
     use WriteRepositoryTrait;
 
     /**
+     * @throws AttributeStateException
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
      * @throws ORMException

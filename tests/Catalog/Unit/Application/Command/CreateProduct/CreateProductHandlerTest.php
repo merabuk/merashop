@@ -7,8 +7,8 @@ namespace App\Tests\Catalog\Unit\Application\Command\CreateProduct;
 use App\Catalog\Application\Command\CreateProduct\CreateProductCommand;
 use App\Catalog\Application\Command\CreateProduct\CreateProductHandler;
 use App\Catalog\Application\DTO\Product\ProductAttributeValueData;
-use App\Catalog\Application\Service\ProductApplicationFactoryInterface;
-use App\Catalog\Application\Service\ProductMediaManagerInterface;
+use App\Catalog\Application\Service\Product\ProductApplicationFactoryInterface;
+use App\Catalog\Application\Service\Product\ProductMediaManagerInterface;
 use App\Catalog\Domain\Entity\Product;
 use App\Catalog\Domain\Entity\ProductAttributeValue;
 use App\Catalog\Domain\Entity\ProductImage;
@@ -68,7 +68,7 @@ final class CreateProductHandlerTest extends TestCase
         );
         $this->expectGenerateUlid($product->getUlid()->value());
         $this->expectFactoryCreateProduct($command, $product);
-        $this->expectActivateImagesForProduct($product, $expectedTemporaryImageUlids);
+        $this->expectActivateImagesForProduct($product, $command->images);
         $this->expectSaveProduct($product);
         $this->expectTemporaryImagesDeletion($expectedTemporaryImageUlids);
 
@@ -204,6 +204,12 @@ final class CreateProductHandlerTest extends TestCase
         array $temporaryImageUlids,
         string $exceptionClass,
     ): void {
+        if (ProductAlreadyExistsException::class === $exceptionClass) {
+            $exception = ProductAlreadyExistsException::becauseSkuAlreadyExists($sku->value());
+        } else {
+            $exception = new $exceptionClass();
+        }
+
         $this->productValidator->expects(self::once())
             ->method('validateCreation')
             ->with(
@@ -212,7 +218,7 @@ final class CreateProductHandlerTest extends TestCase
                 self::equalTo($attributeIds),
                 self::equalTo($temporaryImageUlids),
             )
-            ->willThrowException(new $exceptionClass());
+            ->willThrowException($exception);
     }
 
     private function expectFactoryCreateProduct(CreateProductCommand $command, Product $product): void
@@ -232,7 +238,7 @@ final class CreateProductHandlerTest extends TestCase
     }
 
     /**
-     * @param TemporaryImageUlid[] $temporaryImageUlids
+     * @param string[] $temporaryImageUlids
      */
     private function expectActivateImagesForProduct(Product $product, array $temporaryImageUlids): void
     {
@@ -254,29 +260,19 @@ final class CreateProductHandlerTest extends TestCase
         $this->writeRepository->expects(self::once())
             ->method('save')
             ->with(self::callback(function (Product $updatedProduct) use ($product): bool {
-                $ulidCorrect = $product->getUlid()->equals($updatedProduct->getUlid());
-                $skuCorrect = $product->getSku()->equals($updatedProduct->getSku());
-                $statusCorrect = $product->getStatus()->equals($updatedProduct->getStatus());
-                $translationsCorrect = $product->getTranslations()->equals($updatedProduct->getTranslations());
-                $versionCorrect = $product->getVersion()->equals($updatedProduct->getVersion());
-                $createdByCorrect = $product->getCreatedBy()->equals($updatedProduct->getCreatedBy());
-                $pricesCorrect = $product->getPrices()->equals($updatedProduct->getPrices());
-                $categoryIdsCorrect = $product->getCategoryIds()->equals($updatedProduct->getCategoryIds());
-                $attributeValuesCorrect = $product->getAttributeValues()->equals($updatedProduct->getAttributeValues());
-                $imagesCorrect = $product->getImages()->equals($updatedProduct->getImages());
-                $updatedByCorrect = null === $updatedProduct->getUpdatedBy();
+                self::assertTrue($product->getUlid()->equals($updatedProduct->getUlid()));
+                self::assertTrue($product->getSku()->equals($updatedProduct->getSku()));
+                self::assertTrue($product->getStatus()->equals($updatedProduct->getStatus()));
+                self::assertTrue($product->getTranslations()->equals($updatedProduct->getTranslations()));
+                self::assertTrue($product->getVersion()->equals($updatedProduct->getVersion()));
+                self::assertTrue($product->getCreatedBy()->equals($updatedProduct->getCreatedBy()));
+                self::assertTrue($product->getPrices()->equals($updatedProduct->getPrices()));
+                self::assertTrue($product->getCategoryIds()->equals($updatedProduct->getCategoryIds()));
+                self::assertTrue($product->getAttributeValues()->equals($updatedProduct->getAttributeValues()));
+                self::assertTrue($product->getImages()->equals($updatedProduct->getImages()));
+                self::assertNull($updatedProduct->getUpdatedBy());
 
-                return $ulidCorrect
-                    && $skuCorrect
-                    && $statusCorrect
-                    && $translationsCorrect
-                    && $versionCorrect
-                    && $createdByCorrect
-                    && $pricesCorrect
-                    && $categoryIdsCorrect
-                    && $attributeValuesCorrect
-                    && $imagesCorrect
-                    && $updatedByCorrect;
+                return true;
             }))
             ->willReturn($product);
     }

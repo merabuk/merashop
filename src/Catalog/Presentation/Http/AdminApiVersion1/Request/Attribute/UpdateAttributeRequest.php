@@ -9,8 +9,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class UpdateAttributeRequest extends BaseAttributeRequest
 {
-    #[Assert\NotBlank]
-    #[Assert\Positive]
+    #[Assert\NotBlank(groups: [self::BASE_GROUP])]
+    #[Assert\Positive(groups: [self::BASE_GROUP])]
     public ?int $version;
 
     public function toCommand(int $id, string $adminUlid): UpdateAttributeCommand
@@ -19,7 +19,8 @@ class UpdateAttributeRequest extends BaseAttributeRequest
             id: $id,
             code: $this->code,
             type: $this->type,
-            translations: $this->translations,
+            translations: $this->mapAndGetTranslations(),
+            options: $this->mapAndGetOptions(),
             version: $this->version,
             adminUlid: $adminUlid,
         );

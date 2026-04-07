@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace App\Catalog\Application\Command\UpdateAttribute;
 
 use App\Catalog\Application\Exception\Attribute\UpdateAttributeException;
+use App\Catalog\Application\Service\Attribute\AttributeApplicationFactoryInterface;
 use App\Catalog\Domain\Exception\Attribute\AttributeAlreadyExistsException;
 use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
+use App\Catalog\Domain\Exception\Attribute\AttributeTypeCanNotBeChangedException;
+use App\Catalog\Domain\Exception\AttributeOption\AttributeOptionNotFoundException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
 use App\Catalog\Domain\Service\Attribute\AttributeValidatorInterface;
-use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Id;
-use App\Catalog\Domain\ValueObject\Attribute\Translations;
 use App\Catalog\Domain\ValueObject\Attribute\Type;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
@@ -27,6 +28,7 @@ readonly class UpdateAttributeHandler implements CommandHandlerInterface
     public function __construct(
         private AttributeReadRepositoryInterface $readRepository,
         private AttributeValidatorInterface $attributeValidator,
+        private AttributeApplicationFactoryInterface $attributeFactory,
         private AttributeWriteRepositoryInterface $writeRepository,
     ) {
     }
@@ -34,6 +36,8 @@ readonly class UpdateAttributeHandler implements CommandHandlerInterface
     /**
      * @throws AttributeAlreadyExistsException
      * @throws AttributeNotFoundException
+     * @throws AttributeOptionNotFoundException
+     * @throws AttributeTypeCanNotBeChangedException
      * @throws UpdateAttributeException
      * @throws ConcurrencyException
      */
@@ -42,18 +46,27 @@ readonly class UpdateAttributeHandler implements CommandHandlerInterface
         try {
             $attribute = $this->readRepository->getById(Id::fromInt($command->id));
             $newCode = Code::fromString($command->code);
+            $newType = Type::fromString($command->type);
+            $optionUlids = $this->attributeFactory->mapAttributeOptionUlids($command->options);
 
-            $this->attributeValidator->validateUpdate($attribute, $command->version, $newCode);
-
-            $attribute->update(
-                code: $newCode,
-                type: Type::fromString($command->type),
-                translations: Translations::fromArray($command->translations),
-                updatedBy: AdminUlid::fromString($command->adminUlid),
+            $this->attributeValidator->validateUpdate(
+                attribute: $attribute,
+                version: $command->version,
+                newCode: $newCode,
+                newType: $newType,
+                optionsUlids: $optionUlids,
             );
 
+            $this->attributeFactory->updateFromCommand(attribute: $attribute, command: $command);
+
             $this->writeRepository->save($attribute);
-        } catch (AttributeAlreadyExistsException|AttributeNotFoundException|ConcurrencyException $e) {
+        } catch (
+            AttributeAlreadyExistsException
+            |AttributeNotFoundException
+            |AttributeOptionNotFoundException
+            |AttributeTypeCanNotBeChangedException
+            |ConcurrencyException $e
+        ) {
             throw $e;
         } catch (Throwable $e) {
             throw new UpdateAttributeException(message: 'Error during updating attribute', previous: $e);

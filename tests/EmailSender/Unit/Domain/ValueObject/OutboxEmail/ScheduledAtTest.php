@@ -37,7 +37,7 @@ final class ScheduledAtTest extends TestCase
 
     public function testItProvidesEqualityCheckWithDateTime(): void
     {
-        $this->assertDateTimeEquality(ScheduledAt::class);
+        $this->assertDateTimeEqualityWithDateTime(ScheduledAt::class);
     }
 
     public function testItIsAfter(): void

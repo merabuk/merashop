@@ -38,7 +38,7 @@ final class LockedAtTest extends TestCase
 
     public function testItProvidesEqualityCheckWithDateTime(): void
     {
-        $this->assertDateTimeEquality(LockedAt::class);
+        $this->assertDateTimeEqualityWithDateTime(LockedAt::class);
     }
 
     public function testItIsAfter(): void

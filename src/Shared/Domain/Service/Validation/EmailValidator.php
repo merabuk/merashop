@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\Service\Validation;
 
-use App\Shared\Domain\Exception\InvalidEmailAddressException;
-use App\Shared\Domain\Exception\Services\EmailAddressFormatException;
-use App\Shared\Domain\Exception\Services\EmailAddressMaxLengthException;
+use App\Shared\Domain\Exception\Services\Validation\EmailAddressFormatException;
+use App\Shared\Domain\Exception\Services\Validation\EmailAddressMaxLengthException;
+use App\Shared\Domain\Exception\Services\Validation\InvalidEmailAddressException;
 
 final class EmailValidator
 {

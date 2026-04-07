@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Shared\Unit\Domain\Service\Validation;
 
-use App\Shared\Domain\Exception\Services\InvalidUlidException;
+use App\Shared\Domain\Exception\Services\Identity\InvalidUlidException;
 use App\Shared\Domain\Service\Validation\UlidValidator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;

@@ -27,6 +27,16 @@ trait UlidGenerationTrait
             ->willReturn($expectedUlid);
     }
 
+    /**
+     * @param string[] $ulids
+     */
+    protected function expectGenerateManyUlids(array $ulids): void
+    {
+        $this->ulidGenerator->expects(self::exactly(count($ulids)))
+            ->method('next')
+            ->willReturnOnConsecutiveCalls(...$ulids);
+    }
+
     protected function generateUlidNeverCalled(): void
     {
         $this->ulidGenerator->expects(self::never())->method('next');

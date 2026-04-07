@@ -11,7 +11,25 @@ enum TypeEnum: string
     use StringEnumTrait;
 
     case String = 'string';
-    case Int = 'int';
+    case Text = 'text';
+    case Integer = 'integer';
+    case Float = 'float';
     case Boolean = 'boolean';
     case Select = 'select';
+    case MultiSelect = 'multiselect';
+    case Color = 'color';
+    case Date = 'date';
+    case Url = 'url';
+    case Dimension = 'dimension';
+    case Image = 'image';
+
+    public function hasOptions(): bool
+    {
+        return match ($this) {
+            self::Select,
+            self::MultiSelect,
+            self::Dimension => true,
+            default => false,
+        };
+    }
 }

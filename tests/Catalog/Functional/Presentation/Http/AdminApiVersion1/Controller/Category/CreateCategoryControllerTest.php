@@ -82,10 +82,10 @@ final class CreateCategoryControllerTest extends WebTestCase
 
         $data = $this->getResponseData($client);
         self::assertArrayHasKey('message', $data);
-        $this->assertStringContainsString('Category was successfully created', $data['message']);
+        self::assertStringContainsString('Category was successfully created', $data['message']);
 
         $exists = $this->getReadRepository()->existsBySlug(Slug::fromString($payload['slug']));
-        $this->assertTrue($exists, 'Category was not saved to database');
+        self::assertTrue($exists, 'Category was not saved to database');
     }
 
     public function testItReturns409WhenSlugAlreadyExists(): void

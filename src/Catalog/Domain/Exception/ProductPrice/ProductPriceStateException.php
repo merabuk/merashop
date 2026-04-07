@@ -30,6 +30,16 @@ final class ProductPriceStateException extends CatalogDomainException
         ));
     }
 
+    public static function becauseTypeCanNotBeChanged(string $from, string $to): self
+    {
+        return new self(sprintf('Product price type can not be changed from "%s" to "%s"', $from, $to));
+    }
+
+    public static function becauseCurrencyCanNotBeChanged(string $from, string $to): self
+    {
+        return new self(sprintf('Product price currency can not be changed from "%s" to "%s"', $from, $to));
+    }
+
     public function getErrorCode(): string
     {
         return 'PRODUCT_PRICE_STATE_EXCEPTION';

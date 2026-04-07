@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Catalog\Unit\Domain\Service\Product;
 
+use App\Catalog\Domain\Entity\ProductImage;
 use App\Catalog\Domain\Enum\TemporaryImage\ContextEnum;
 use App\Catalog\Domain\Exception\Attribute\OneOfAttributesNotFoundException;
 use App\Catalog\Domain\Exception\Category\OneOfCategoriesNotFoundException;
 use App\Catalog\Domain\Exception\Product\ProductAlreadyExistsException;
+use App\Catalog\Domain\Exception\Product\ProductImagesEmptyException;
 use App\Catalog\Domain\Exception\TemporaryImage\OneOfTemporaryImagesNotFoundException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\Repository\CategoryReadRepositoryInterface;
@@ -168,7 +170,8 @@ final class ProductValidatorTest extends TestCase
             newSku: $newSku,
             categoryIds: $newCategoryIds,
             attributeIds: $newAttributeIds,
-            temporaryImageUlids: $newTemporaryImageUlids
+            temporaryImageUlids: $newTemporaryImageUlids,
+            productImagesUlidsForDelete: [$product->getImages()->all()[0]->getUlid()],
         );
     }
 
@@ -189,7 +192,8 @@ final class ProductValidatorTest extends TestCase
             newSku: $this->getSku(),
             categoryIds: $this->getCategoryIds(),
             attributeIds: $this->getAttributeIds(),
-            temporaryImageUlids: $this->getTemporaryImageUlids()
+            temporaryImageUlids: $this->getTemporaryImageUlids(),
+            productImagesUlidsForDelete: [],
         );
     }
 
@@ -211,7 +215,8 @@ final class ProductValidatorTest extends TestCase
             newSku: $newSku,
             categoryIds: $this->getCategoryIds(),
             attributeIds: $this->getAttributeIds(),
-            temporaryImageUlids: $this->getTemporaryImageUlids()
+            temporaryImageUlids: $this->getTemporaryImageUlids(),
+            productImagesUlidsForDelete: [],
         );
     }
 
@@ -234,7 +239,8 @@ final class ProductValidatorTest extends TestCase
             newSku: $newSku,
             categoryIds: $newCategoryIds,
             attributeIds: $this->getAttributeIds(),
-            temporaryImageUlids: $this->getTemporaryImageUlids()
+            temporaryImageUlids: $this->getTemporaryImageUlids(),
+            productImagesUlidsForDelete: []
         );
     }
 
@@ -258,7 +264,8 @@ final class ProductValidatorTest extends TestCase
             newSku: $newSku,
             categoryIds: $newCategoryIds,
             attributeIds: $newAttributeIds,
-            temporaryImageUlids: $this->getTemporaryImageUlids()
+            temporaryImageUlids: $this->getTemporaryImageUlids(),
+            productImagesUlidsForDelete: [],
         );
     }
 
@@ -288,7 +295,38 @@ final class ProductValidatorTest extends TestCase
             newSku: $newSku,
             categoryIds: $newCategoryIds,
             attributeIds: $newAttributeIds,
-            temporaryImageUlids: $newTemporaryImageUlids
+            temporaryImageUlids: $newTemporaryImageUlids,
+            productImagesUlidsForDelete: [],
+        );
+    }
+
+    public function testThrowsExceptionWhenActiveProductCanNotHaveEmptyImages(): void
+    {
+        $product = ProductMother::createWithData();
+        $newSku = $this->getSku();
+        $newCategoryIds = $this->getCategoryIds();
+        $newAttributeIds = $this->getAttributeIds();
+        $newTemporaryImageUlids = [];
+        $productImagesUlidsForDelete = array_map(
+            static fn (ProductImage $pi) => $pi->getUlid(),
+            $product->getImages()->all()
+        );
+
+        $this->givenSkuIsAvailable($newSku);
+        $this->givenCategoriesExist($newCategoryIds);
+        $this->givenAttributesExist($newAttributeIds);
+        $this->givenTemporaryImagesExist($newTemporaryImageUlids);
+
+        $this->expectException(ProductImagesEmptyException::class);
+
+        $this->createValidator()->validateUpdate(
+            product: $product,
+            version: $product->getVersion()->value(),
+            newSku: $newSku,
+            categoryIds: $newCategoryIds,
+            attributeIds: $newAttributeIds,
+            temporaryImageUlids: $newTemporaryImageUlids,
+            productImagesUlidsForDelete: $productImagesUlidsForDelete,
         );
     }
 

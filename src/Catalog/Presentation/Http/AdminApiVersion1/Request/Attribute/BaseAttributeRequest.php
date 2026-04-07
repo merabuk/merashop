@@ -4,15 +4,21 @@ declare(strict_types=1);
 
 namespace App\Catalog\Presentation\Http\AdminApiVersion1\Request\Attribute;
 
+use App\Catalog\Application\DTO\Attribute\AttributeOptionData;
+use App\Catalog\Application\DTO\Attribute\AttributeTranslationData;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
-use App\Catalog\Domain\ValueObject\Attribute\Translation;
 use App\Shared\Presentation\Http\Request\ValidateLocalesTrait;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Component\Validator\GroupSequenceProviderInterface;
 
-abstract class BaseAttributeRequest
+#[Assert\GroupSequenceProvider]
+abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
 {
     use ValidateLocalesTrait;
+
+    protected const string BASE_GROUP = 'BaseAttributeRequest';
 
     #[Assert\NotBlank]
     #[Assert\Length(min: 1, max: Code::MAX_LENGTH)]
@@ -23,25 +29,86 @@ abstract class BaseAttributeRequest
         callback: 'getAttributeTypes',
         message: 'catalog.attribute.type_invalid'
     )]
-    public ?string $type;
+    public ?string $type = null;
 
     /**
-     * @var ?array<string, array{name: string}> $translations
+     * @var ?AttributeTranslationRequest[] $translations
      */
-    #[Assert\NotBlank]
-    #[Assert\Count(min: 1, minMessage: 'shared.common.translations_empty')]
-    #[Assert\All([
-        new Assert\Collection(
-            fields: [
-                'name' => [
-                    new Assert\NotBlank(),
-                    new Assert\Length(min: 1, max: Translation::NAME_MAX_LENGTH),
-                ],
-            ],
-            allowExtraFields: false
-        ),
-    ])]
+    #[Assert\NotBlank(groups: [AttributeTranslationRequest::BASE_GROUP])]
+    #[Assert\Count(
+        min: 1,
+        minMessage: 'shared.common.translations_empty',
+        groups: [AttributeTranslationRequest::BASE_GROUP],
+    )]
+    #[Assert\Valid(groups: [AttributeTranslationRequest::BASE_GROUP])]
     public ?array $translations;
+
+    /**
+     * @var ?AttributeOptionRequest[] $options
+     */
+    #[Assert\NotBlank(groups: [
+        TypeEnum::Select->value,
+        TypeEnum::MultiSelect->value,
+        TypeEnum::Dimension->value,
+    ])]
+    #[Assert\Count(min: 1, minMessage: 'catalog.attribute.options_empty', groups: [
+        TypeEnum::Select->value,
+        TypeEnum::MultiSelect->value,
+        TypeEnum::Dimension->value,
+    ])]
+    #[Assert\Valid(groups: [
+        AttributeOptionRequest::BASE_GROUP,
+        AttributeOptionTranslationRequest::BASE_GROUP,
+        TypeEnum::Select->value,
+        TypeEnum::MultiSelect->value,
+        TypeEnum::Dimension->value,
+    ])]
+    public ?array $options;
+
+    #[Assert\Callback(groups: [AttributeOptionRequest::BASE_GROUP])]
+    public function validateUniqueOptions(ExecutionContextInterface $context): void
+    {
+        if (!isset($this->options)) {
+            return;
+        }
+
+        $registry = [];
+        foreach ($this->options as $index => $option) {
+            if (!isset($option->code)) {
+                continue;
+            }
+
+            if (isset($registry[$option->code])) {
+                $context->buildViolation('catalog.attribute.option_code_duplicate')
+                    ->atPath("options[{$index}]")
+                    ->addViolation();
+            }
+
+            $registry[$option->code] = true;
+        }
+    }
+
+    #[Assert\Callback(groups: [AttributeTranslationRequest::BASE_GROUP])]
+    public function validateLocales(ExecutionContextInterface $context): void
+    {
+        $this->_validateLocales($context);
+    }
+
+    public function getGroupSequence(): array
+    {
+        $groups = [self::BASE_GROUP, AttributeTranslationRequest::BASE_GROUP];
+
+        if ($type = TypeEnum::tryFrom((string) $this->type)) {
+            $groups[] = $type->value;
+
+            if ($type->hasOptions()) {
+                $groups[] = AttributeOptionRequest::BASE_GROUP;
+                $groups[] = AttributeOptionTranslationRequest::BASE_GROUP;
+            }
+        }
+
+        return $groups;
+    }
 
     /**
      * @return string[]
@@ -50,22 +117,47 @@ abstract class BaseAttributeRequest
     {
         return [
             TypeEnum::String->value,
-            TypeEnum::Int->value,
+            TypeEnum::Integer->value,
+            TypeEnum::Float->value,
             TypeEnum::Boolean->value,
             TypeEnum::Select->value,
+            TypeEnum::MultiSelect->value,
+            TypeEnum::Color->value,
+            TypeEnum::Date->value,
+            TypeEnum::Text->value,
+            TypeEnum::Url->value,
+            TypeEnum::Dimension->value,
         ];
     }
 
     /**
-     * @return array<string, array{name: string}>
+     * @return array<string, true>
      */
     protected function getTranslations(): array
     {
-        return $this->translations ?? [];
+        return isset($this->translations)
+            ? array_map(fn (AttributeTranslationRequest $translation) => true, $this->translations)
+            : [];
     }
 
     protected function getRequestTranslationKey(): string
     {
         return 'translations';
+    }
+
+    /**
+     * @return AttributeTranslationData[]
+     */
+    protected function mapAndGetTranslations(): array
+    {
+        return array_map(fn (AttributeTranslationRequest $t) => $t->toData(), $this->translations);
+    }
+
+    /**
+     * @return AttributeOptionData[]
+     */
+    protected function mapAndGetOptions(): array
+    {
+        return array_map(fn (AttributeOptionRequest $o) => $o->toData(), $this->options ?? []);
     }
 }

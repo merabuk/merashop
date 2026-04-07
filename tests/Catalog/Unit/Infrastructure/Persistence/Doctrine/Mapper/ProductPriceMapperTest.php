@@ -37,6 +37,9 @@ final class ProductPriceMapperTest extends TestCase
         $orm->taxIncluded = true;
         $orm->validFrom = $clock->now();
         $orm->validTo = $clock->now()->modify('+1 month');
+        $orm->version = 1;
+        $orm->createdBy = ProductPriceMother::DEFAULT_ADMIN_ULID;
+        $orm->updatedBy = ProductPriceMother::DEFAULT_ADMIN_ULID;
 
         $domain = $this->mapper->toDomain($orm);
 
@@ -49,6 +52,9 @@ final class ProductPriceMapperTest extends TestCase
         self::assertSame($orm->taxIncluded, $domain->getTaxIncluded()->value());
         self::assertSame($orm->validFrom, $domain->getValidityPeriod()->getFrom()->value());
         self::assertSame($orm->validTo, $domain->getValidityPeriod()->getTo()->value());
+        self::assertSame($orm->version, $domain->getVersion()->value());
+        self::assertSame($orm->createdBy, $domain->getCreatedBy()->value());
+        self::assertSame($orm->updatedBy, $domain->getUpdatedBy()->value());
     }
 
     public function testMapToDomainThrowsExceptionWhenOrmMissingId(): void
@@ -62,15 +68,21 @@ final class ProductPriceMapperTest extends TestCase
 
     public function testMapToExistingOrm(): void
     {
-        $domain = ProductPriceMother::createWithData(type: TypeEnum::Sale, id: 123);
+        $domain = ProductPriceMother::createWithData(
+            currency: CurrencyEnum::USD,
+            type: TypeEnum::Sale,
+            id: 123
+        );
         $orm = new OrmProductPrice();
+        $orm->currency = CurrencyEnum::UAH;
+        $orm->type = TypeEnum::Regular;
 
         $this->mapper->mapToExistingOrm($domain, $orm);
 
         self::assertNull($orm->id);
         self::assertSame($domain->getPrice()->getAmount(), $orm->amount);
-        self::assertSame($domain->getPrice()->getCurrency(), $orm->currency);
-        self::assertSame($domain->getType()->value(), $orm->type);
+        self::assertSame(CurrencyEnum::UAH, $orm->currency);
+        self::assertSame(TypeEnum::Regular, $orm->type);
         self::assertSame((string) $domain->getTax()->getValue(), $orm->taxValue);
         self::assertSame($domain->getTax()->getType(), $orm->taxType);
         self::assertSame($domain->getTaxIncluded()->value(), $orm->taxIncluded);

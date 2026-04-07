@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Catalog\Presentation\Http\AdminApiVersion1\Controller\Attribute;
 
 use App\Catalog\Presentation\Http\AdminApiVersion1\Request\Attribute\CreateAttributeRequest;
-use App\Catalog\Presentation\Http\AdminApiVersion1\Resource\Attribute\CreateAttributeResponse;
+use App\Catalog\Presentation\Http\AdminApiVersion1\Resource\Attribute\CreateAttributeResource;
 use App\Shared\Application\Command\CommandBusInterface;
 use App\Shared\Application\Security\AuthIdentity;
 use App\Shared\Domain\Service\TranslationDomainResolverInterface;
@@ -47,8 +47,8 @@ class CreateAttributeController extends AbstractController
 
         $commandBus->execute($command);
 
-        return new JsonResponse(
-            data: new CreateAttributeResponse(message: $this->makeSuccessMessageForEntity(
+        return $this->json(
+            data: new CreateAttributeResource(message: $this->makeSuccessMessageForEntity(
                 translator: $translator,
                 translationDomainResolver: $translationDomainResolver,
                 messageKey: 'common.messages.create_success',

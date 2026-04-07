@@ -6,7 +6,7 @@ namespace App\Catalog\Presentation\Http\AdminApiVersion1\Controller\Attribute;
 
 use App\Catalog\Application\Query\GetAttributeItem\GetAttributeItemQuery;
 use App\Catalog\Domain\Entity\Attribute;
-use App\Catalog\Presentation\Http\AdminApiVersion1\Resource\Attribute\GetAttributeItemResponse;
+use App\Catalog\Presentation\Http\AdminApiVersion1\Resource\Attribute\GetAttributeItemResource;
 use App\Shared\Application\Query\QueryBusInterface;
 use App\Shared\Application\Security\AuthIdentity;
 use App\Shared\Presentation\Http\Attribute\CurrentAuthEntityIdentity;
@@ -47,6 +47,6 @@ class GetAttributeItemController extends AbstractController
         /** @var Attribute $attribute */
         $attribute = $queryBus->execute($query);
 
-        return new JsonResponse(GetAttributeItemResponse::fromAttribute($attribute));
+        return $this->json(GetAttributeItemResource::fromAttribute($attribute));
     }
 }

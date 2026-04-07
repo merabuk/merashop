@@ -38,7 +38,7 @@ final class PasswordChangedAtTest extends TestCase
 
     public function testItProvidesEqualityCheckWithDateTime(): void
     {
-        $this->assertDateTimeEquality(PasswordChangedAt::class);
+        $this->assertDateTimeEqualityWithDateTime(PasswordChangedAt::class);
     }
 
     public function testItIsAfter(): void

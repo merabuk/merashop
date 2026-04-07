@@ -5,106 +5,221 @@ declare(strict_types=1);
 namespace App\Tests\Catalog\Unit\Domain\Entity;
 
 use App\Catalog\Domain\Entity\ProductAttributeValue;
-use App\Catalog\Domain\Exception\ProductAttribute\UnsupportedAttributeTypeException;
+use App\Catalog\Domain\Enum\Attribute\TypeEnum;
+use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
-use App\Catalog\Domain\ValueObject\ProductAttribute\ArrayValue;
-use App\Catalog\Domain\ValueObject\ProductAttribute\BooleanValue;
-use App\Catalog\Domain\ValueObject\ProductAttribute\IntegerValue;
-use App\Catalog\Domain\ValueObject\ProductAttribute\StringValue;
+use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\BooleanValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\ColorValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\DateValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\DimensionValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\FloatValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\IntegerValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\LocalizedStringValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\LocalizedTextValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\UrlValue;
+use App\Catalog\Infrastructure\Persistence\Doctrine\Normalizer\ProductAttributeValueNormalizer;
 use App\Tests\Catalog\Support\ProductAttributeValueMother;
+use App\Tests\Shared\Support\Traits\ValueObjectAssertionTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use stdClass;
 
 final class ProductAttributeValueTest extends TestCase
 {
-    #[DataProvider('productAttributeValueProvider')]
-    public function testItResolvesProductAttributeValue(mixed $rawValue, string $expectedVoClass): void
-    {
-        $attributeValue = ProductAttributeValue::resolveValue($rawValue);
+    use ValueObjectAssertionTrait;
 
-        self::assertInstanceOf($expectedVoClass, $attributeValue);
-        self::assertSame($rawValue, $attributeValue->value());
+    private ProductAttributeValueNormalizer $normalizer;
+
+    protected function setUp(): void
+    {
+        $this->normalizer = new ProductAttributeValueNormalizer();
     }
 
     #[DataProvider('productAttributeValueProvider')]
-    public function testItCreatesProductAttributeValue(mixed $rawValue, string $expectedVoClass): void
-    {
+    public function testItCreatesProductAttributeValue(
+        TypeEnum $type,
+        ?int $optionId,
+        ?array $rawValue,
+        ?string $expectedVoClass,
+    ): void {
         $attributeId = AttributeId::fromInt(123);
-        $attributeValue = ProductAttributeValue::resolveValue($rawValue);
+        $attributeOptionId = $optionId ? AttributeOptionId::fromInt($optionId) : null;
+        $attributeValue = $this->normalizer->denormalize($type, $rawValue, $attributeOptionId);
+        $createdBy = AdminUlid::fromString(ProductAttributeValueMother::DEFAULT_ADMIN_ULID);
 
         $productAttributeValue = ProductAttributeValue::create(
             attributeId: $attributeId,
+            createdBy: $createdBy,
+            attributeOptionId: $attributeOptionId,
             value: $attributeValue
         );
 
         self::assertNull($productAttributeValue->getId());
         self::assertTrue($productAttributeValue->getAttributeId()->equals($attributeId));
-        self::assertInstanceOf($expectedVoClass, $productAttributeValue->getValue());
-        self::assertTrue($productAttributeValue->getValue()->equals($attributeValue));
-    }
-
-    #[DataProvider('productAttributeValueProvider')]
-    public function testItCreatesWithRawValue(mixed $rawValue, string $expectedVoClass): void
-    {
-        $attributeId = AttributeId::fromInt(1);
-
-        $productAttributeValue = ProductAttributeValue::createWithRawValue(
-            attributeId: $attributeId,
-            value: $rawValue
-        );
-
-        self::assertTrue($productAttributeValue->getAttributeId()->equals($attributeId));
-        self::assertInstanceOf($expectedVoClass, $productAttributeValue->getValue());
-        self::assertSame($rawValue, $productAttributeValue->getValue()->value());
+        $this->assertVoEqualsOrNull($attributeOptionId, $productAttributeValue->getAttributeOptionId());
+        if (null !== $expectedVoClass) {
+            self::assertInstanceOf($expectedVoClass, $productAttributeValue->getValue());
+        }
+        $this->assertVoEqualsOrNull($attributeValue, $productAttributeValue->getValue());
+        self::assertTrue($productAttributeValue->getCreatedBy()->equals($createdBy));
     }
 
     public static function productAttributeValueProvider(): iterable
     {
-        yield 'string' => [
-            'rawValue' => 'Some text',
-            'expectedVoClass' => StringValue::class,
+        yield 'localized string' => [
+            'type' => TypeEnum::String,
+            'optionId' => null,
+            'rawValue' => [
+                'translations' => [
+                    'en' => 'string value',
+                    'uk' => 'строкове значення',
+                ],
+            ],
+            'expectedVoClass' => LocalizedStringValue::class,
+        ];
+        yield 'localized text' => [
+            'type' => TypeEnum::Text,
+            'optionId' => null,
+            'rawValue' => [
+                'translations' => [
+                    'en' => 'large text value',
+                    'uk' => 'велике текстове значення',
+                ],
+            ],
+            'expectedVoClass' => LocalizedTextValue::class,
         ];
         yield 'int' => [
-            'rawValue' => 42,
+            'type' => TypeEnum::Integer,
+            'optionId' => null,
+            'rawValue' => ['value' => 42],
             'expectedVoClass' => IntegerValue::class,
         ];
+        yield 'float' => [
+            'type' => TypeEnum::Float,
+            'optionId' => null,
+            'rawValue' => ['value' => 1.23],
+            'expectedVoClass' => FloatValue::class,
+        ];
         yield 'boolean' => [
-            'rawValue' => true,
+            'type' => TypeEnum::Boolean,
+            'optionId' => null,
+            'rawValue' => ['value' => true],
             'expectedVoClass' => BooleanValue::class,
         ];
-        yield 'array' => [
-            'rawValue' => ['a', 'b'],
-            'expectedVoClass' => ArrayValue::class,
+        yield 'select' => [
+            'type' => TypeEnum::Select,
+            'optionId' => 321,
+            'rawValue' => [],
+            'expectedVoClass' => null,
+        ];
+        yield 'multiselect' => [
+            'type' => TypeEnum::MultiSelect,
+            'optionId' => 456,
+            'rawValue' => [],
+            'expectedVoClass' => null,
+        ];
+        yield 'color' => [
+            'type' => TypeEnum::Color,
+            'optionId' => null,
+            'rawValue' => ['value' => '#ffffff'],
+            'expectedVoClass' => ColorValue::class,
+        ];
+        yield 'date' => [
+            'type' => TypeEnum::Date,
+            'optionId' => null,
+            'rawValue' => ['value' => '2023-01-01'],
+            'expectedVoClass' => DateValue::class,
+        ];
+        yield 'url' => [
+            'type' => TypeEnum::Url,
+            'optionId' => null,
+            'rawValue' => ['value' => 'https://example.com'],
+            'expectedVoClass' => UrlValue::class,
+        ];
+        yield 'dimension' => [
+            'type' => TypeEnum::Dimension,
+            'optionId' => 789,
+            'rawValue' => ['magnitude' => 1234.5],
+            'expectedVoClass' => DimensionValue::class,
         ];
     }
 
-    #[DataProvider('notSupportedValueTypeProvider')]
-    public function testThrowsExceptionWhenNotSupportedValueType(mixed $value): void
+    public function testItCreatesWithOption(): void
     {
-        $this->expectException(UnsupportedAttributeTypeException::class);
+        $attributeId = AttributeId::fromInt(1);
+        $attributeOptionId = AttributeOptionId::fromInt(2);
+        $createdBy = AdminUlid::fromString(ProductAttributeValueMother::DEFAULT_ADMIN_ULID);
 
-        ProductAttributeValue::resolveValue($value);
-    }
-
-    public static function notSupportedValueTypeProvider(): iterable
-    {
-        yield 'float value' => [1.23];
-        yield 'object value' => [new stdClass()];
-        yield 'null value' => [null];
-    }
-
-    public function testItUpdatesAttributeValue(): void
-    {
-        $productAttributeValue = ProductAttributeValueMother::createWithData(
-            attributeId: 123,
-            value: 'old value'
+        $productAttributeValue = ProductAttributeValue::createWithOption(
+            attributeId: $attributeId,
+            attributeOptionId: $attributeOptionId,
+            createdBy: $createdBy,
         );
 
-        $newAttributeValue = ProductAttributeValue::resolveValue('new value');
+        self::assertTrue($productAttributeValue->getAttributeId()->equals($attributeId));
+        self::assertTrue($productAttributeValue->getAttributeOptionId()->equals($attributeOptionId));
+    }
 
-        $productAttributeValue->updateValue($newAttributeValue);
+    public function testItCreatesWithValue(): void
+    {
+        $attributeId = AttributeId::fromInt(1);
+        $value = IntegerValue::fromInt(42);
+        $createdBy = AdminUlid::fromString(ProductAttributeValueMother::DEFAULT_ADMIN_ULID);
 
-        self::assertTrue($productAttributeValue->getValue()->equals($newAttributeValue));
+        $productAttributeValue = ProductAttributeValue::createWithValue(
+            attributeId: $attributeId,
+            value: $value,
+            createdBy: $createdBy,
+        );
+
+        self::assertTrue($productAttributeValue->getAttributeId()->equals($attributeId));
+        self::assertTrue($productAttributeValue->getValue()->equals($value));
+    }
+
+    #[DataProvider('updateAttributeValueProvider')]
+    public function testItUpdatesAttribute(
+        TypeEnum $type,
+        ?array $data = null,
+        ?int $optionId = null,
+    ): void {
+        $attrubuteOptionId = $optionId ? AttributeOptionId::fromInt($optionId) : null;
+        $productAttributeValue = ProductAttributeValueMother::createWithData(
+            attributeId: 123,
+            attributeType: $type,
+            optionId: $optionId ? 321 : null,
+        );
+
+        $newAttributeValue = $this->normalizer->denormalize($type, $data, $attrubuteOptionId);
+
+        $productAttributeValue->update(
+            updatedBy: $productAttributeValue->getCreatedBy(),
+            attributeOptionId: $attrubuteOptionId,
+            value: $newAttributeValue,
+        );
+
+        $this->assertVoEqualsOrNull($attrubuteOptionId, $productAttributeValue->getAttributeOptionId());
+        $this->assertVoEqualsOrNull($newAttributeValue, $productAttributeValue->getValue());
+        self::assertTrue($productAttributeValue->getUpdatedBy()->equals($productAttributeValue->getCreatedBy()));
+    }
+
+    public static function updateAttributeValueProvider(): iterable
+    {
+        yield 'integer' => [
+            'type' => TypeEnum::Integer,
+            'data' => ['value' => 789],
+        ];
+        yield 'select' => [
+            'type' => TypeEnum::Select,
+            'optionId' => 456,
+        ];
+        yield 'multiselect' => [
+            'type' => TypeEnum::MultiSelect,
+            'optionId' => 789,
+        ];
+        yield 'dimension' => [
+            'type' => TypeEnum::Dimension,
+            'data' => ['magnitude' => 1.2345],
+            'optionId' => 123,
+        ];
     }
 }

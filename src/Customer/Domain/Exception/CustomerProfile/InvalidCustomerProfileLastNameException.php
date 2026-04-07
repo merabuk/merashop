@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Customer\Domain\Exception\CustomerProfile;
 
 use App\Customer\Domain\Exception\InvalidCustomerValueObjectException;
-use App\Shared\Domain\Exception\InvalidStringException;
+use App\Shared\Domain\Exception\Services\Validation\InvalidStringException;
 
 final class InvalidCustomerProfileLastNameException extends InvalidCustomerValueObjectException
 {

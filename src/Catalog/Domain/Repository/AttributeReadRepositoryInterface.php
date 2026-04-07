@@ -18,9 +18,16 @@ interface AttributeReadRepositoryInterface
     /**
      * @throws AttributeNotFoundException
      */
-    public function getById(Id $id, bool $withTranslations = true): Attribute;
+    public function getById(Id $id): Attribute;
 
-    public function findById(Id $id, bool $withTranslations = true): ?Attribute;
+    public function findById(Id $id): ?Attribute;
+
+    /**
+     * @param Id[] $ids
+     *
+     * @return Attribute[]
+     */
+    public function findByIds(array $ids): array;
 
     public function findByUlid(Ulid $ulid): ?Attribute;
 

@@ -13,7 +13,8 @@ class CreateAttributeRequest extends BaseAttributeRequest
         return new CreateAttributeCommand(
             code: $this->code,
             type: $this->type,
-            translations: $this->translations,
+            translations: $this->mapAndGetTranslations(),
+            options: $this->mapAndGetOptions(),
             adminUlid: $adminUlid,
         );
     }

@@ -314,7 +314,7 @@ final class UpdateCategoryControllerTest extends WebTestCase
         $this->requestJson(
             client: $client,
             method: self::METHOD,
-            uri: '/admin/api/v1/catalog/categories/invalid-string'
+            uri: '/admin/api/v1/catalog/categories/invalid-id'
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);

@@ -9,6 +9,7 @@ use App\Catalog\Domain\Enum\ErrorCodeEnum;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Presentation\Http\AdminApiVersion1\Controller\Attribute\UpdateAttributeController;
 use App\Shared\Domain\Enum\ErrorCodeEnum as SharedErrorCodeEnum;
+use App\Tests\Catalog\Support\AttributeOptionMother;
 use App\Tests\Catalog\Support\Traits\AttributeFactoryTrait;
 use App\Tests\Shared\Support\Traits\ApiAuthTrait;
 use App\Tests\Shared\Support\Traits\ApiRequestTrait;
@@ -56,35 +57,142 @@ final class UpdateAttributeControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
-    public function testItSuccessfullyUpdatesAttribute(): void
-    {
+    #[DataProvider('validAttributeProvider')]
+    public function testItSuccessfullyUpdatesAttribute(
+        TypeEnum $type,
+        array $payload,
+        array $options = [],
+        int $expectedOptionsCount = 0,
+    ): void {
         $client = self::createClient();
         $this->loginAsAdmin();
 
-        $attribute = $this->getAttributeFixture()->create(code: 'brand');
-
-        $payload = [
-            'code' => 'brand_updated',
-            'type' => 'string',
-            'version' => $attribute->getVersion()->value(),
-            'translations' => self::validTranslations(),
-        ];
+        $attribute = $this->getAttributeFixture()->create(type: $type, options: $options);
 
         $this->requestJson(
             client: $client,
             method: self::METHOD,
             uri: $this->getUrl(['id' => $attribute->getId()->value()]),
-            payload: $payload
+            payload: [
+                'version' => $attribute->getVersion()->value(),
+                ...$payload,
+            ],
         );
 
         $this->assertResponseIsSuccessful();
 
         $data = $this->getResponseData($client);
         self::assertArrayHasKey('message', $data);
-        $this->assertStringContainsString('Attribute was successfully updated', $data['message']);
+        self::assertStringContainsString('Attribute was successfully updated', $data['message']);
 
         $updated = $this->getReadRepository()->findById($attribute->getId());
-        $this->assertSame('brand_updated', $updated->getCode()->value());
+        self::assertSame($payload['code'], $updated->getCode()->value());
+        self::assertSame($payload['type'], $updated->getType()->value()->value);
+        self::assertCount($expectedOptionsCount, $updated->getOptions());
+    }
+
+    public static function validAttributeProvider(): iterable
+    {
+        yield 'without options with type change' => [
+            'type' => TypeEnum::String,
+            'payload' => [
+                'code' => 'brand-updated',
+                'type' => TypeEnum::Text->value,
+                'translations' => self::validAttributeTranslations(),
+            ],
+        ];
+        yield 'with options' => [
+            'type' => TypeEnum::Select,
+            'payload' => [
+                'code' => 'brand-updated',
+                'type' => TypeEnum::Select->value,
+                'translations' => self::validAttributeTranslations(),
+                'options' => [
+                    [
+                        'ulid' => '01KMDEC4Z9NSK4YPEW8NG5068T',
+                        'code' => 'updated-existing-option',
+                        'translations' => self::getAttributeOptionTranslations(),
+                        'isActive' => true,
+                    ],
+                    [
+                        'code' => 'added-new-option',
+                        'translations' => self::getAttributeOptionTranslations(),
+                        'isActive' => true,
+                    ],
+                ],
+            ],
+            'options' => [
+                AttributeOptionMother::createWithData(
+                    ulid: '01KMDEC4Z9NSK4YPEW8NG5068T',
+                    code: 'for-update',
+                ),
+                AttributeOptionMother::createWithData(
+                    ulid: '01KMGY62KTY8BJ9J8NHMXHKF4P',
+                    code: 'for-deactivation',
+                ),
+            ],
+            'expectedOptionsCount' => 3,
+        ];
+    }
+
+    public function testIfReturns404WhenAttributeNotFound(): void
+    {
+        $client = self::createClient();
+        $this->loginAsAdmin();
+
+        $payload = [
+            'code' => 'not-found',
+            'type' => TypeEnum::Text->value,
+            'translations' => self::validAttributeTranslations(),
+            'version' => 1,
+        ];
+
+        $this->requestJson(
+            client: $client,
+            method: self::METHOD,
+            uri: $this->getUrl(['id' => 123]),
+            payload: $payload,
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+
+        $data = $this->getResponseData($client);
+        $this->assertExceptionMessage(
+            data: $data,
+            expectedCode: ErrorCodeEnum::AttributeNotFound->value,
+            expectedContainMessage: 'Attribute with id "123" not found',
+        );
+    }
+
+    public function testItReturns409WhenTypeCanNotBeChanged(): void
+    {
+        $client = self::createClient();
+        $this->loginAsAdmin();
+
+        $attribute = $this->getAttributeFixture()->create(type: TypeEnum::Integer);
+
+        $payload = [
+            'code' => $attribute->getCode()->value(),
+            'version' => $attribute->getVersion()->value(),
+            'type' => TypeEnum::String->value,
+            'translations' => self::validAttributeTranslations(),
+        ];
+
+        $this->requestJson(
+            client: $client,
+            method: self::METHOD,
+            uri: $this->getUrl(['id' => $attribute->getId()->value()]),
+            payload: $payload,
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
+
+        $data = $this->getResponseData($client);
+        $this->assertExceptionMessage(
+            data: $data,
+            expectedCode: ErrorCodeEnum::AttributeTypeCanNotBeChanged->value,
+            expectedContainMessage: 'Attribute type cannot be changed',
+        );
     }
 
     public function testItReturns409OnConcurrencyError(): void
@@ -92,12 +200,12 @@ final class UpdateAttributeControllerTest extends WebTestCase
         $client = self::createClient();
         $this->loginAsAdmin();
 
-        $attribute = $this->getAttributeFixture()->create(code: 'old');
+        $attribute = $this->getAttributeFixture()->create(code: 'old', type: TypeEnum::String);
 
         $payload = [
             'code' => 'new',
-            'type' => 'string',
-            'translations' => self::validTranslations(),
+            'type' => $attribute->getType()->value()->value,
+            'translations' => self::validAttributeTranslations(),
             'version' => $attribute->getVersion()->value() + 1,
         ];
 
@@ -109,6 +217,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
+
         $data = $this->getResponseData($client);
         $this->assertExceptionMessage(
             data: $data,
@@ -122,13 +231,13 @@ final class UpdateAttributeControllerTest extends WebTestCase
         $client = self::createClient();
         $this->loginAsAdmin();
 
-        $existingAttribute = $this->getAttributeFixture()->create(code: 'existing');
-        $attribute = $this->getAttributeFixture()->create(code: 'old');
+        $existingAttribute = $this->getAttributeFixture()->create(code: 'existing', type: TypeEnum::String);
+        $attribute = $this->getAttributeFixture()->create(code: 'old', type: TypeEnum::String);
 
         $payload = [
             'code' => $existingAttribute->getCode()->value(),
-            'type' => TypeEnum::String->value,
-            'translations' => self::validTranslations(),
+            'type' => $attribute->getType()->value()->value,
+            'translations' => self::validAttributeTranslations(),
             'version' => $attribute->getVersion()->value(),
         ];
 
@@ -149,22 +258,57 @@ final class UpdateAttributeControllerTest extends WebTestCase
         );
     }
 
+    public function testItReturns409WhenGivenAttributeOptionUlidNotFound(): void
+    {
+        $client = self::createClient();
+        $this->loginAsAdmin();
+
+        $option = AttributeOptionMother::createWithData();
+        $attribute = $this->getAttributeFixture()->create(type: TypeEnum::Select, options: [$option]);
+
+        $payload = [
+            'code' => $attribute->getCode()->value(),
+            'type' => $attribute->getType()->value()->value,
+            'translations' => self::validAttributeTranslations(),
+            'version' => $attribute->getVersion()->value(),
+            'options' => [
+                [
+                    'ulid' => '01KMDEC4Z9NSK4YPEW8NG5068T',
+                    'code' => $option->getCode()->value(),
+                    'translations' => $option->getTranslations()->toArray(),
+                    'isActive' => $option->isActive()->value(),
+                ],
+            ],
+        ];
+
+        $this->requestJson(
+            client: $client,
+            method: self::METHOD,
+            uri: $this->getUrl(['id' => $attribute->getId()->value()]),
+            payload: $payload
+        );
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+
+        $data = $this->getResponseData($client);
+        $this->assertExceptionMessage(
+            data: $data,
+            expectedCode: ErrorCodeEnum::AttributeOptionNotFound->value,
+            expectedContainMessage: sprintf('Attribute option with ulid "%s" not found', $payload['options'][0]['ulid'])
+        );
+    }
+
     #[DataProvider('invalidAttributeProvider')]
     public function testItReturns422OnInvalidData(array $payload, array $expectedErrorFields): void
     {
         $client = self::createClient();
         $this->loginAsAdmin();
 
-        $attribute = $this->getAttributeFixture()->create();
-
         $this->requestJson(
             client: $client,
             method: self::METHOD,
-            uri: $this->getUrl(['id' => $attribute->getId()->value()]),
-            payload: [
-                'version' => $attribute->getVersion()->value(),
-                ...$payload,
-            ],
+            uri: $this->getUrl(['id' => 1]),
+            payload: $payload,
         );
 
         $this->assertResponseIsUnprocessable();
@@ -179,8 +323,13 @@ final class UpdateAttributeControllerTest extends WebTestCase
         $payload = [
             'code' => 'brand',
             'type' => TypeEnum::String->value,
-            'translations' => self::validTranslations(),
+            'translations' => self::validAttributeTranslations(),
             'version' => 1,
+        ];
+        $optionPayload = [
+            'code' => 'brand-name-1',
+            'translations' => self::getAttributeOptionTranslations(),
+            'isActive' => true,
         ];
 
         yield 'empty code' => [
@@ -206,12 +355,109 @@ final class UpdateAttributeControllerTest extends WebTestCase
             ],
             'expectedErrorFields' => ['translations', 'translations[xx]'],
         ];
+        yield 'invalid attribute translation name' => [
+            'payload' => [
+                ...$payload,
+                'translations' => [
+                    ...self::validAttributeTranslations(),
+                    'en' => ['name' => ''],
+                ],
+            ],
+            'expectedErrorFields' => ['translations[en].name'],
+        ];
         yield 'invalid version' => [
             'payload' => [
                 ...$payload,
                 'version' => -1,
             ],
             'expectedErrorFields' => ['version'],
+        ];
+        yield 'empty options' => [
+            'payload' => [
+                ...$payload,
+                'type' => TypeEnum::Select->value,
+            ],
+            'expectedErrorFields' => ['options'],
+        ];
+        yield 'invalid option ulid' => [
+            'payload' => [
+                ...$payload,
+                'type' => TypeEnum::Select->value,
+                'options' => [
+                    [
+                        ...$optionPayload,
+                        'ulid' => 'ulid',
+                    ],
+                ],
+            ],
+            'expectedErrorFields' => ['options[0].ulid'],
+        ];
+        yield 'invalid option code' => [
+            'payload' => [
+                ...$payload,
+                'type' => TypeEnum::Select->value,
+                'options' => [
+                    [
+                        ...$optionPayload,
+                        'code' => '',
+                    ],
+                ],
+            ],
+            'expectedErrorFields' => ['options[0].code'],
+        ];
+        yield 'invalid option locale and missed required locales' => [
+            'payload' => [
+                ...$payload,
+                'type' => TypeEnum::Select->value,
+                'options' => [
+                    [
+                        ...$optionPayload,
+                        'translations' => [
+                            'xx' => ['value' => 'Option'],
+                        ],
+                    ],
+                ],
+            ],
+            'expectedErrorFields' => ['options[0].translations', 'options[0].translations[xx]'],
+        ];
+        yield 'invalid option translation value' => [
+            'payload' => [
+                ...$payload,
+                'type' => TypeEnum::Select->value,
+                'options' => [
+                    [
+                        ...$optionPayload,
+                        'translations' => [
+                            ...self::getAttributeOptionTranslations(),
+                            'en' => ['value' => ''],
+                        ],
+                    ],
+                ],
+            ],
+            'expectedErrorFields' => ['options[0].translations[en].value'],
+        ];
+        yield 'invalid option active' => [
+            'payload' => [
+                ...$payload,
+                'type' => TypeEnum::Select->value,
+                'options' => [
+                    [
+                        ...$optionPayload,
+                        'isActive' => 'invalid_value',
+                    ],
+                ],
+            ],
+            'expectedErrorFields' => ['options[0].isActive'],
+        ];
+        yield 'invalid option base ratio' => [
+            'payload' => [
+                ...$payload,
+                'type' => TypeEnum::Dimension->value,
+                'options' => [
+                    $optionPayload,
+                ],
+            ],
+            'expectedErrorFields' => ['options[0].baseRatio'],
         ];
     }
 
@@ -223,7 +469,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
         $this->requestJson(
             client: $client,
             method: self::METHOD,
-            uri: '/admin/api/v1/catalog/attributes/invalid-string'
+            uri: '/admin/api/v1/catalog/attributes/invalid-id'
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
@@ -245,11 +491,19 @@ final class UpdateAttributeControllerTest extends WebTestCase
         return self::getContainer()->get(AttributeReadRepositoryInterface::class);
     }
 
-    private static function validTranslations(): array
+    private static function validAttributeTranslations(): array
     {
         return [
             'en' => ['name' => 'Brand'],
             'uk' => ['name' => 'Бренд'],
+        ];
+    }
+
+    private static function getAttributeOptionTranslations(): array
+    {
+        return [
+            'en' => ['value' => 'Option'],
+            'uk' => ['value' => 'Опція'],
         ];
     }
 }

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Domain\ValueObject\ModuleAccount;
 
 use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountIdException;
-use App\Shared\Domain\Exception\Services\IntegerIsNotUnsignedException;
+use App\Shared\Domain\Exception\Services\Validation\IntegerIsNotUnsignedException;
 use App\Shared\Domain\Service\Validation\IntegerValidator;
 use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;

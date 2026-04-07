@@ -4,62 +4,93 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\Entity;
 
-use App\Catalog\Domain\Exception\ProductAttribute\UnsupportedAttributeTypeException;
+use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeValueVersionException;
+use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
+use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\Attribute\Id as AttributeId;
-use App\Catalog\Domain\ValueObject\ProductAttribute\ArrayValue;
-use App\Catalog\Domain\ValueObject\ProductAttribute\AttributeValueInterface;
-use App\Catalog\Domain\ValueObject\ProductAttribute\BooleanValue;
-use App\Catalog\Domain\ValueObject\ProductAttribute\Id;
-use App\Catalog\Domain\ValueObject\ProductAttribute\IntegerValue;
-use App\Catalog\Domain\ValueObject\ProductAttribute\StringValue;
+use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Id;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\AttributeValueInterface;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\DimensionValue;
+use App\Catalog\Domain\ValueObject\ProductAttributeValue\Version;
 
 class ProductAttributeValue
 {
+    /**
+     * @throws ProductAttributeValueStateException
+     */
     public function __construct(
         private readonly AttributeId $attributeId,
-        private AttributeValueInterface $value,
+        private Version $version,
+        private AdminUlid $createdBy,
+        private ?AttributeOptionId $attributeOptionId = null,
+        private ?AttributeValueInterface $value = null,
+        private ?AdminUlid $updatedBy = null,
         private readonly ?Id $id = null,
     ) {
+        $this->ensureIsValidState();
     }
 
     /**
-     * @throws UnsupportedAttributeTypeException
+     * @throws InvalidProductAttributeValueVersionException
+     * @throws ProductAttributeValueStateException
      */
-    public static function createWithRawValue(AttributeId $attributeId, mixed $value): self
-    {
-        return new self(
+    public static function createWithOption(
+        AttributeId $attributeId,
+        AttributeOptionId $attributeOptionId,
+        AdminUlid $createdBy,
+    ): self {
+        return self::create(
             attributeId: $attributeId,
-            value: self::resolveValue($value),
+            createdBy: $createdBy,
+            attributeOptionId: $attributeOptionId
         );
     }
 
-    public static function create(
+    /**
+     * @throws InvalidProductAttributeValueVersionException
+     * @throws ProductAttributeValueStateException
+     */
+    public static function createWithValue(
         AttributeId $attributeId,
         AttributeValueInterface $value,
+        AdminUlid $createdBy,
+    ): self {
+        return self::create(attributeId: $attributeId, createdBy: $createdBy, value: $value);
+    }
+
+    /**
+     * @throws InvalidProductAttributeValueVersionException
+     * @throws ProductAttributeValueStateException
+     */
+    public static function create(
+        AttributeId $attributeId,
+        AdminUlid $createdBy,
+        ?AttributeOptionId $attributeOptionId = null,
+        ?AttributeValueInterface $value = null,
     ): self {
         return new self(
             attributeId: $attributeId,
+            version: Version::initial(),
+            createdBy: $createdBy,
+            attributeOptionId: $attributeOptionId,
             value: $value
         );
     }
 
-    public function updateValue(AttributeValueInterface $value): void
-    {
-        $this->value = $value;
-    }
-
     /**
-     * @throws UnsupportedAttributeTypeException
+     * @throws ProductAttributeValueStateException
      */
-    public static function resolveValue(mixed $value): AttributeValueInterface
-    {
-        return match (true) {
-            is_string($value) => StringValue::fromString($value),
-            is_int($value) => IntegerValue::fromInt($value),
-            is_bool($value) => BooleanValue::fromBool($value),
-            is_array($value) => ArrayValue::fromArray($value),
-            default => throw UnsupportedAttributeTypeException::becauseIsItNotSupportedType(get_debug_type($value)),
-        };
+    public function update(
+        AdminUlid $updatedBy,
+        ?AttributeOptionId $attributeOptionId = null,
+        ?AttributeValueInterface $value = null,
+    ): void {
+        $this->attributeOptionId = $attributeOptionId;
+        $this->value = $value;
+        $this->updatedBy = $updatedBy;
+
+        $this->ensureIsValidState();
     }
 
     public function getId(): ?Id
@@ -72,8 +103,48 @@ class ProductAttributeValue
         return $this->attributeId;
     }
 
-    public function getValue(): AttributeValueInterface
+    public function getVersion(): Version
+    {
+        return $this->version;
+    }
+
+    public function getCreatedBy(): AdminUlid
+    {
+        return $this->createdBy;
+    }
+
+    public function getAttributeOptionId(): ?AttributeOptionId
+    {
+        return $this->attributeOptionId;
+    }
+
+    public function getValue(): ?AttributeValueInterface
     {
         return $this->value;
+    }
+
+    public function getUpdatedBy(): ?AdminUlid
+    {
+        return $this->updatedBy;
+    }
+
+    /**
+     * @throws ProductAttributeValueStateException
+     */
+    private function ensureIsValidState(): void
+    {
+        $allowBoth = $this->value instanceof DimensionValue;
+
+        if ($allowBoth && (null === $this->attributeOptionId || null === $this->value)) {
+            throw ProductAttributeValueStateException::becauseOneFieldIsNull(['attributeOptionId', 'value']);
+        }
+
+        if (false === $allowBoth && null === $this->attributeOptionId && null === $this->value) {
+            throw ProductAttributeValueStateException::becauseAllFieldsAreNull(['attributeOptionId', 'value']);
+        }
+
+        if (false === $allowBoth && $this->attributeOptionId && $this->value) {
+            throw ProductAttributeValueStateException::becauseAllFieldsAreNotNull(['attributeOptionId', 'value']);
+        }
     }
 }

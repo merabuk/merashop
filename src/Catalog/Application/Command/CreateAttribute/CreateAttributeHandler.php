@@ -5,18 +5,12 @@ declare(strict_types=1);
 namespace App\Catalog\Application\Command\CreateAttribute;
 
 use App\Catalog\Application\Exception\Attribute\CreateAttributeException;
-use App\Catalog\Domain\Entity\Attribute;
+use App\Catalog\Application\Service\Attribute\AttributeApplicationFactoryInterface;
 use App\Catalog\Domain\Exception\Attribute\AttributeAlreadyExistsException;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
 use App\Catalog\Domain\Service\Attribute\AttributeValidatorInterface;
-use App\Catalog\Domain\ValueObject\AdminUlid;
-use App\Catalog\Domain\ValueObject\Attribute\Code;
-use App\Catalog\Domain\ValueObject\Attribute\Translations;
-use App\Catalog\Domain\ValueObject\Attribute\Type;
-use App\Catalog\Domain\ValueObject\Attribute\Ulid;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
-use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Throwable;
 
@@ -25,7 +19,7 @@ readonly class CreateAttributeHandler implements CommandHandlerInterface
 {
     public function __construct(
         private AttributeValidatorInterface $attributeValidator,
-        private UlidGeneratorInterface $ulidGenerator,
+        private AttributeApplicationFactoryInterface $attributeFactory,
         private AttributeWriteRepositoryInterface $writeRepository,
     ) {
     }
@@ -37,19 +31,9 @@ readonly class CreateAttributeHandler implements CommandHandlerInterface
     public function __invoke(CreateAttributeCommand $command): int
     {
         try {
-            $code = Code::fromString($command->code);
+            $attribute = $this->attributeFactory->createFromCommand($command);
 
-            $this->attributeValidator->validateCreation($code);
-
-            $ulid = $this->ulidGenerator->next();
-
-            $attribute = Attribute::create(
-                ulid: Ulid::fromString($ulid),
-                code: $code,
-                type: Type::fromString($command->type),
-                translations: Translations::fromArray($command->translations),
-                createdBy: AdminUlid::fromString($command->adminUlid),
-            );
+            $this->attributeValidator->validateCreation(code: $attribute->getCode());
 
             $attribute = $this->writeRepository->save($attribute);
 

@@ -15,17 +15,11 @@ trait AdminAccountFactoryTrait
 {
     protected function getAdminAccountMother(): AdminAccountMother
     {
-        /** @var AdminAccountMother $mother */
-        $mother = self::getContainer()->get(AdminAccountMother::class);
-
-        return $mother;
+        return self::getContainer()->get(AdminAccountMother::class);
     }
 
     protected function getAdminAccountFixture(): AdminAccountFixture
     {
-        /** @var AdminAccountFixture $fixture */
-        $fixture = self::getContainer()->get(AdminAccountFixture::class);
-
-        return $fixture;
+        return self::getContainer()->get(AdminAccountFixture::class);
     }
 }
