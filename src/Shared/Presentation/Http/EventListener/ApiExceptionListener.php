@@ -222,10 +222,6 @@ class ApiExceptionListener
 
     private function logAndResponseWithBaseUnexpectedError(Throwable $exception): JsonResponse
     {
-        dump([
-            'exception' => $exception,
-        ]);
-
         $this->logger->error($exception->getMessage(), [
             'exception_class' => get_class($exception),
             'trace' => $exception->getTraceAsString(),

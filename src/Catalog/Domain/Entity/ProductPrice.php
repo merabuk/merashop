@@ -26,7 +26,7 @@ class ProductPrice
         private Type $type,
         private Tax $tax,
         private TaxIncludedFlag $taxIncluded,
-        private Version $version,
+        private readonly Version $version,
         private readonly AdminUlid $createdBy,
         private ?ValidityPeriod $validityPeriod = null,
         private ?AdminUlid $updatedBy = null,
