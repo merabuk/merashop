@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, AxiosError, AxiosResponse } from 'axios';
 import { HTTP_HEADERS, DOM_DATA_ATTRIBUTES } from '@shared/constants';
-import type { ApiError } from '@shared/types';
+import { getActiveLocale } from '@shared/services/locale-provider';
+import type { ApiError } from '@shared/types/error';
 
 const rootElement = document.getElementById('app');
 const currentTraceId = rootElement?.dataset[DOM_DATA_ATTRIBUTES.TRACE_ID] || 'no-trace-id';
@@ -10,15 +11,17 @@ const apiClient: AxiosInstance = axios.create({
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        [HTTP_HEADERS.ACCEPT_LANGUAGE]: getActiveLocale(),
         [HTTP_HEADERS.TRACE_ID]: currentTraceId,
         [HTTP_HEADERS.REQUESTED_WITH]: 'XMLHttpRequest'
     }
 });
 
 apiClient.interceptors.request.use((config) => {
-    // If JWT becomes available in the future, we'll add it here
-    // const token = localStorage.getItem('auth_token');
-    // if (token) config.headers.Authorization = `Bearer ${token}`;
+    const token = localStorage.getItem('access_token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
 });
 

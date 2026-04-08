@@ -128,14 +128,24 @@ The translation folder is standardized at `src/<ModuleName>/Presentation/Http/tr
 Base `assets` folder structure (TypeScript enabled):
 ```bash
 assets/
-├── app.ts               # Global entry point (TS)
-├── App.vue              # Root component (lang="ts")
+├── app.ts                         # Global entry point (TS)
+├── App.vue                        # Root component (lang="ts")
 ├── modules/
 │   ├── Shared/
-│   │   ├── constants.ts     # Global constants (Headers, Route names, etc.)
-│   │   ├── api-client.ts    # Axios wrapper with TraceId integration
-│   │   └── types.ts         # Global TS interfaces/types
+│   │   ├── components/            # Shared components 
+│   │   ├── i18n/                  # Internationalization
+│   │   ├── services/              # Global services
+│   │   ├── store/
+│   │   │   └── useSessionStore.ts # Global state (User, TraceId, Auth status)
+│   │   ├── types/                 # Global TS interfaces/types
+│   │   ├── api-client.ts          # Axios wrapper with TraceId integration
+│   │   ├── constants.ts           # Global constants (Headers, Route names, etc.)
+│   ├── Catalog/
+│   │   ├── store/
+│   │   │   └── useCatalogStore.ts # Specific state (Filters, last view)
+│   │   ├── views/                 # Main catalog views
 │   ...
+├── shims.d.ts                     # TypeScript type definitions
 ```
 
 ## Databases & Migrations

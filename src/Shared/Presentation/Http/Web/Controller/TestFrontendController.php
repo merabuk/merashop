@@ -15,4 +15,21 @@ class TestFrontendController extends AbstractController
     {
         return $this->render('base.html.twig');
     }
+
+    #[Route('/admin/login', name: 'admin_login')]
+    public function login(): Response
+    {
+        return $this->render('base.html.twig', [
+            'vue_component' => 'LoginView',
+        ]);
+    }
+
+    #[Route('/admin/dashboard', name: 'admin_dashboard')]
+    public function dashboard(): Response
+    {
+        // Тут в ідеалі має бути перевірка токена, але для тесту:
+        return $this->render('base.html.twig', [
+            'vue_component' => 'AdminLayout',
+        ]);
+    }
 }

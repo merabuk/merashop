@@ -13,9 +13,11 @@
         "skipLibCheck": true,
         "noEmit": true,
         "baseUrl": ".",
+        "types": ["vite/client"],
         "paths": {
             "@/*": ["assets/*"],
             "@catalog/*": ["assets/modules/Catalog/*"],
+            "@identity-access/*": ["assets/modules/IdentityAccess/*"],
             "@shared/*": ["assets/modules/Shared/*"]
         }
     },

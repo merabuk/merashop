@@ -101,14 +101,24 @@ The translation folder is standardized at `src/<ModuleName>/Presentation/Http/tr
 Base `assets` folder structure (TypeScript enabled):
 ```bash
 assets/
-├── app.ts               # Global entry point (TS)
-├── App.vue              # Root component (lang="ts")
+├── app.ts                         # Global entry point (TS)
+├── App.vue                        # Root component (lang="ts")
 ├── modules/
 │   ├── Shared/
-│   │   ├── constants.ts     # Global constants (Headers, Route names, etc.)
-│   │   ├── api-client.ts    # Axios wrapper with TraceId integration
-│   │   └── types.ts         # Global TS interfaces/types
+│   │   ├── components/            # Shared components 
+│   │   ├── i18n/                  # Internationalization
+│   │   ├── services/              # Global services
+│   │   ├── store/
+│   │   │   └── useSessionStore.ts # Global state (User, TraceId, Auth status)
+│   │   ├── types/                 # Global TS interfaces/types
+│   │   ├── api-client.ts          # Axios wrapper with TraceId integration
+│   │   ├── constants.ts           # Global constants (Headers, Route names, etc.)
+│   ├── Catalog/
+│   │   ├── store/
+│   │   │   └── useCatalogStore.ts # Specific state (Filters, last view)
+│   │   ├── views/                 # Main catalog views
 │   ...
+├── shims.d.ts                     # TypeScript type definitions
 ```
 
 ## 3. Coding Standards & Constraints
@@ -139,6 +149,19 @@ assets/
     - Any service that interacts with infrastructure (API, DB, Mailer, etc.) must have an interface in the `Domain` layer and its implementation in the `Infrastructure` layer.
     - **Exception**: Simple stateless services, pure logic helpers, or validators (e.g., `StringHelper`, `StringValidator`) located in `Shared` or `Domain` may exist as final classes without an interface, provided they have no external dependencies.
     - If a service is likely to be mocked in unit tests of other components, prefer using an interface.
+
+### Frontend Layer (Assets)
+- **TypeScript**: Mandatory use of strict typing for all frontend components and services.
+- **Module Independence**: Every frontend module must be self-contained within `assets/modules/{ModuleName}`.
+- **State Management (Pinia)**:
+    - Each module must have its own `store/` directory.
+    - Direct modification of another module's store state is strictly forbidden.
+    - Inter-module communication at the state level should be handled via the `Shared` store or explicit actions.
+- **Tracing**: Every API call via `apiClient` must automatically include the `MeraShop-Trace-Id` header retrieved from the initial page state.
+- **Type Definitions**:
+    - All interfaces and enums must be placed in a `types/` directory within their respective module.
+    - Global types used by multiple modules must reside in `assets/modules/Shared/types/`.
+    - Do not define business-logic interfaces inside `.vue` or `store.ts` files to prevent circular dependencies.
 
 ### Persistence & Mapping
 - **Database Isolation**: Each module MUST use its own dedicated connection and entity manager. Cross-module database queries are strictly forbidden.

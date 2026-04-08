@@ -25,7 +25,9 @@ export default defineConfig({
         alias: {
             '@': path.resolve(__dirname, './assets'),
             '@catalog': path.resolve(__dirname, './assets/modules/Catalog'),
+            '@identity-access': path.resolve(__dirname, './assets/modules/IdentityAccess'),
             '@shared': path.resolve(__dirname, './assets/modules/Shared'),
+            'vue': 'vue/dist/vue.esm-bundler.js'
         }
     },
     server: {

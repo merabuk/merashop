@@ -1,3 +1,9 @@
+catalog.admin.web:
+  resource:
+    path: ../AdminWeb/Controller/
+    namespace: App\Catalog\Presentation\Http\AdminWeb\Controller
+  type: attribute
+
 catalog.admin.api.v1:
   resource:
     path: ../AdminApiVersion1/Controller/

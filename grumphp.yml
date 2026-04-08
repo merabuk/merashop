@@ -19,7 +19,6 @@ grumphp:
     fix_by_default: true
   extensions: []
   tasks:
-    # --- COMMON TASKS ---
     git_blacklist:
       keywords:
         - " dd\\("
@@ -31,7 +30,6 @@ grumphp:
         - "set_time_limit"
     yamllint:
       parse_custom_tags: true
-    # --- PHP TASKS ---
     composer: ~
     phpcsfixer:
       config: .php-cs-fixer.dist.php
@@ -45,7 +43,6 @@ grumphp:
       depfile: deptrac-modules.yaml
       metadata:
         task: deptrac
-    # --- FRONTEND TASKS (with Shell) ---
     shell:
       scripts:
         - [ "docker", "compose", "exec", "-T", "node", "npm", "run", "lint" ]
