@@ -90,12 +90,14 @@ src/ModuleName/Infrastructure/ # Technical implementations
 
 src/ModuleName/Presentation/ # Entry points
 ├── Console                  # CLI Commands
-└── Http                     # Web API
+└── Http                     # Web API/Web entry points
     ├── ApiVersion1          # Public API
     │   ├── Controller       # Controllers
     │   ├── Request          # Validated Request DTOs (MapRequestPayload)
     │   └── Resource         # Response formatters (JsonSerializable)
     ├── AdminApiVersion1     # Admin API
+    ├── AdminWeb             # Admin Web entry points (SPA entry points)
+    │   └── Controller       # Controllers
     ├── InternalApiVersion1  # M2M/Internal API
     ├── EventListener        # Request/Response listeners, exception handling
     └── translations         # Translations for the module (exceptions, validation, module-name)
@@ -128,23 +130,44 @@ The translation folder is standardized at `src/<ModuleName>/Presentation/Http/tr
 Base `assets` folder structure (TypeScript enabled):
 ```bash
 assets/
-├── app.ts                         # Global entry point (TS)
+├── admin.ts                       # Global Admin entry point
+├── shop.ts                        # Global Public entry point
 ├── App.vue                        # Root component (lang="ts")
 ├── modules/
 │   ├── Shared/
-│   │   ├── components/            # Shared components 
+│   │   ├── components/            # Shared components (global, admin, shop)
 │   │   ├── i18n/                  # Internationalization
+│   │   │   ├── <locale>.ts        # General(common) formatted locale translations
+│   │   │   └── index.ts           # Global configuration and utilities
+│   │   ├── layouts/               # Layouts
+│   │   │   ├── admin/             # Admin layouts
+│   │   │   └── shop/              # Shop layouts
 │   │   ├── services/              # Global services
 │   │   ├── store/
 │   │   │   └── useSessionStore.ts # Global state (User, TraceId, Auth status)
 │   │   ├── types/                 # Global TS interfaces/types
-│   │   ├── api-client.ts          # Axios wrapper with TraceId integration
+│   │   │   ├── admin/             # Admin specific interfaces/types
+│   │   │   ├── shop/              # Shop specific interfaces/types
+│   │   │   └── *.enum.ts          # General(common) enums
+│   │   ├── admin-api-client.ts    # Admin Axios wrapper with TraceId integration
+│   │   ├── shop-api-client.ts     # Shop Axios wrapper with TraceId integration
 │   │   ├── constants.ts           # Global constants (Headers, Route names, etc.)
 │   ├── Catalog/
+│   │   ├── api/                   # API clients/endpoints
+│   │   │   ├── admin/             # Admin specific endpoints
+│   │   │   └── shop/              # Public specific endpoints
+│   │   ├── i18n/                  # Internationalization
+│   │   │   ├── <locale>.ts        # Module specific formatted locale translations
 │   │   ├── store/
-│   │   │   └── useCatalogStore.ts # Specific state (Filters, last view)
+│   │   │   └── use<*>Store.ts       # Specific state (Filters, last view)
+│   │   ├── types/                 # Module specific interfaces/types
+│   │   │   ├── admin/             # Admin specific interfaces/types
+│   │   │   └── shop/              # Public specific interfaces/types
 │   │   ├── views/                 # Main catalog views
+│   │   │   ├── admin/             # Admin views
+│   │   │   └── shop/              # Public views
 │   ...
+├── styles/                        # Global css
 ├── shims.d.ts                     # TypeScript type definitions
 ```
 

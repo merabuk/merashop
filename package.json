@@ -15,22 +15,24 @@
         "@vue/eslint-config-prettier": "^10.2.0",
         "@vue/eslint-config-typescript": "^14.7.0",
         "autoprefixer": "^10.4.27",
-        "axios": "^1.14.0",
         "eslint": "^10.2.0",
         "eslint-plugin-vue": "^10.8.0",
         "postcss": "^8.5.8",
-        "prettier": "^3.8.1",
+        "@tailwindcss/postcss": "^4.2.2",
         "tailwindcss": "^4.2.2",
+        "prettier": "^3.8.1",
         "typescript": "^6.0.2",
         "vite": "^8.0",
         "vite-plugin-symfony": "^8.2",
         "vue-tsc": "^3.2.6"
     },
     "dependencies": {
-        "@tailwindcss/postcss": "^4.2.2",
+        "axios": "^1.14.0",
         "jwt-decode": "^4.0.0",
+        "lucide-vue-next": "^1.0.0",
         "pinia": "^3.0.4",
         "vue": "^3.5.32",
-        "vue-i18n": "^11.3.2"
+        "vue-i18n": "^11.3.2",
+        "zod": "^4.3.6"
     }
 }

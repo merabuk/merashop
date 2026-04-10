@@ -16,20 +16,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { SUPPORTED_LOCALES } from '@shared/types/locale';
-import { LOCALE } from '@shared/constants';
+    import { ref } from 'vue';
+    import { useI18n } from 'vue-i18n';
+    import { SUPPORTED_LOCALES } from '@shared/types/locale';
+    import { LOCALE } from '@shared/constants';
 
 
-const { locale } = useI18n();
-const currentLocale = ref(locale.value);
+    const { locale } = useI18n();
+    const currentLocale = ref(locale.value);
 
-const handleLocaleChange = () => {
-    locale.value = currentLocale.value;
+    const handleLocaleChange = () => {
+        locale.value = currentLocale.value;
 
-    document.cookie = `${LOCALE.COOKIE_NAME}=${currentLocale.value};path=/;max-age=31536000`;
+        document.cookie = `${LOCALE.COOKIE_NAME}=${currentLocale.value};path=/;max-age=31536000`;
 
-    window.location.reload();
-};
+        window.location.reload();
+    };
 </script>

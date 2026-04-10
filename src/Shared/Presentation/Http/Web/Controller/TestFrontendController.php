@@ -10,25 +10,17 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class TestFrontendController extends AbstractController
 {
-    #[Route('/test-vue', name: 'app_test_vue')]
+    #[Route('/test-vue', name: 'shared.web.v1.test-vue')]
     public function index(): Response
     {
         return $this->render('base.html.twig');
     }
 
-    #[Route('/admin/login', name: 'admin_login')]
-    public function login(): Response
-    {
-        return $this->render('base.html.twig', [
-            'vue_component' => 'LoginView',
-        ]);
-    }
-
-    #[Route('/admin/dashboard', name: 'admin_dashboard')]
+    #[Route('/admin/dashboard', name: 'shared.web.v1.admin-dashboard')]
     public function dashboard(): Response
     {
-        // Тут в ідеалі має бути перевірка токена, але для тесту:
-        return $this->render('base.html.twig', [
+        // Ideally, there should be a token check here, but for testing purposes:
+        return $this->render('admin_base.html.twig', [
             'vue_component' => 'AdminLayout',
         ]);
     }

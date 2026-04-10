@@ -4,7 +4,7 @@
             <div class="p-8">
                 <div class="text-center mb-8">
                     <h1 class="text-2xl font-bold text-gray-800">MeraShop <span class="text-merashop-500">Admin</span></h1>
-                    <p class="text-gray-500">{{ $t('admin.auth.login_title') }}</p>
+                    <p class="text-gray-500">{{ $t('auth.admin.login_title') }}</p>
                 </div>
 
                 <form @submit.prevent="handleLogin" class="space-y-6">
@@ -13,7 +13,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('common.username') }} / Email</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('auth.admin.username') }} / Email</label>
                         <input v-model="form.username" type="text"
                                class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-merashop-500 outline-none transition"
                                :class="{'border-red-500': violations.username}" required>
@@ -21,7 +21,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('common.password') }}</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('auth.admin.password') }}</label>
                         <input v-model="form.password" type="password"
                                class="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-merashop-500 outline-none transition"
                                :class="{'border-red-500': violations.password}" required>
@@ -41,47 +41,42 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
-import axios from 'axios';
-import apiClient from '@shared/api-client';
-import { useSessionStore } from '@shared/store/useSessionStore';
-import type { AuthResponse } from '@shared/types/auth';
-import type { ApiError } from '@shared/types/error';
+    import { ref, reactive } from 'vue';
+    import adminApiClient from '@shared/admin-api-client';
+    import { useSessionStore } from '@shared/store/useSessionStore';
+    import type { AuthResponse } from '@shared/types/auth';
+    import type { ApiError } from '@shared/types/error';
+    import { IDENTITY_ACCESS_API_ENDPOINTS } from "@identity-access/api/endpoints";
+    import { ADMIN_WEB_ENDPOINTS } from "@shared/web/admin/endpoints";
+    import { GrantType} from "@identity-access/types/grant_type.enum";
 
-const session = useSessionStore();
-const loading = ref(false);
-const errorMsg = ref('');
-const violations = reactive<Record<string, string>>({});
+    const session = useSessionStore();
+    const loading = ref(false);
+    const errorMsg = ref('');
+    const violations = reactive<Record<string, string>>({});
 
-const form = reactive({
-    grant_type: 'password',
-    username: '',
-    password: ''
-});
+    const form = reactive({
+        grant_type: GrantType.Password,
+        username: '',
+        password: ''
+    });
 
-async function handleLogin() {
-    loading.value = true;
-    errorMsg.value = '';
-    Object.keys(violations).forEach(k => delete violations[k]);
+    async function handleLogin() {
+        loading.value = true;
+        errorMsg.value = '';
+        Object.keys(violations).forEach(k => delete violations[k]);
 
-    try {
-        const { data } = await apiClient.post<AuthResponse>('/admin/api/v1/identity-access/auth/token', form);
-        session.setAuth(data);
-        window.location.href = '/admin/dashboard';
-    } catch (e: unknown) {
-        console.error('Login error:', e);
-
-        if (axios.isAxiosError(e) && e.response) {
-            const err = e.response.data as ApiError;
-            errorMsg.value = err.message || 'Authorization error';
+        try {
+            const { data } = await adminApiClient.post<AuthResponse>(IDENTITY_ACCESS_API_ENDPOINTS.ADMIN.AUTH.TOKEN, form);
+            session.setAuth(data);
+            window.location.href = ADMIN_WEB_ENDPOINTS.DASHBOARD;
+        } catch (e: unknown) {
+            const err = e as ApiError;
             err.violations?.forEach(v => {
-                violations[v.property] = v.message;
+                violations[v.field] = v.message;
             });
-        } else {
-            errorMsg.value = 'An unexpected error has occurred';
+        } finally {
+            loading.value = false;
         }
-    } finally {
-        loading.value = false;
     }
-}
 </script>

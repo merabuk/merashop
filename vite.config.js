@@ -17,7 +17,8 @@ export default defineConfig({
         manifest: true,
         rollupOptions: {
             input: {
-                app: './assets/app.ts'
+                admin: './assets/admin.ts',
+                shop: './assets/shop.ts'
             },
         }
     },

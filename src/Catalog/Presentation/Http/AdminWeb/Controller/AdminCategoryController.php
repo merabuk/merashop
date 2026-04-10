@@ -10,10 +10,10 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class AdminCategoryController extends AbstractController
 {
-    #[Route('/admin/catalog/categories', name: 'admin_catalog_categories')]
+    #[Route('/admin/catalog/categories', name: 'catalog.admin.web.v1.categories.list')]
     public function index(): Response
     {
-        return $this->render('base.html.twig', [
+        return $this->render('admin_base.html.twig', [
             'vue_component' => 'CategoryListView',
         ]);
     }

@@ -1,0 +1,16 @@
+messages:
+  temporary_image:
+    upload_success: "Зображення «{entity}» успішно завантажено"
+
+common:
+  messages:
+    create_success: "{entity} успішно створено"
+    update_success: "{entity} успішно оновлено"
+  attribute:
+    entityName: "Атрибут"
+  category:
+    entityName: "Категорія"
+  product:
+    entityName: "Товар"
+  temporary_image:
+    entityName: "Тимчасове зображення"

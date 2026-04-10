@@ -1,0 +1,51 @@
+export default {
+    catalog: {
+        title: 'Catalog',
+        common: {
+            name: 'Name',
+            code: 'Code',
+            type: 'Type',
+            actions: 'Actions',
+            is_active: 'Active',
+            value: 'Value'
+        },
+        attributes: {
+            title: 'Product Attributes',
+            description: 'Manage product attributes of your store',
+            add: 'Add Attribute',
+            empty_list: 'Attribute list is empty',
+            empty_list_alter: 'Add your first attribute to get started.',
+            translation_title: 'Translations',
+            types: {
+                string: 'String',
+                text: 'Text',
+                integer: 'Integer',
+                float: 'Float',
+                boolean: 'Boolean',
+                select: 'Select',
+                multiselect: 'Multi-select',
+                color: 'Color',
+                date: 'Date',
+                url: 'URL',
+                dimension: 'Dimension',
+                image: 'Image'
+            }
+        },
+        options: {
+            title: 'Attribute Options',
+            add: 'Add Option',
+            code: 'Option Code',
+            base_ratio: 'Ratio'
+        },
+        categories: {
+            title: 'Product Categories',
+            add: 'Add Category',
+            empty_list: 'Category list is empty',
+        },
+        products: {
+            title: 'Products',
+            add: 'Add Product',
+            empty_list: 'Product list is empty',
+        }
+    }
+};

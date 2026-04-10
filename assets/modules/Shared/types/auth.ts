@@ -1,6 +1,6 @@
 export enum UserType {
-    ADMIN = 'admin',
-    CUSTOMER = 'customer'
+    Admin = 'admin',
+    Customer = 'customer'
 }
 
 export interface JwtPayload {

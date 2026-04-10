@@ -23,6 +23,7 @@ final class AttributeOptionRequest
 
     #[Assert\NotBlank(groups: [self::BASE_GROUP])]
     #[Assert\Length(min: 1, max: Code::MAX_LENGTH, groups: [self::BASE_GROUP])]
+    #[Assert\Regex(pattern: Code::REGEX, groups: [self::BASE_GROUP])]
     public ?string $code;
 
     /**
