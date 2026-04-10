@@ -9,7 +9,7 @@ use App\Shared\Application\Query\QueryInterface;
 final readonly class GetAttributeItemQuery implements QueryInterface
 {
     public function __construct(
-        public int $id,
+        public string $ulid,
     ) {
     }
 }

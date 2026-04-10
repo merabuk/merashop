@@ -29,20 +29,20 @@ class GetAttributeItemController extends AbstractController
      * @throws HandlerFailedException
      */
     #[Route(
-        path: '/attributes/{id}',
+        path: '/attributes/{ulid}',
         name: self::ROUTE_NAME,
-        requirements: ['id' => Requirement::POSITIVE_INT],
+        requirements: ['ulid' => Requirement::ULID],
         methods: [Request::METHOD_GET],
         format: JsonEncoder::FORMAT
     )]
     public function __invoke(
-        int $id,
+        string $ulid,
         #[CurrentAuthEntityIdentity] AuthIdentity $identity,
         QueryBusInterface $queryBus,
     ): JsonResponse {
         $this->denyAccessUnlessAdmin($identity);
 
-        $query = new GetAttributeItemQuery($id);
+        $query = new GetAttributeItemQuery(ulid: $ulid);
 
         /** @var Attribute $attribute */
         $attribute = $queryBus->execute($query);

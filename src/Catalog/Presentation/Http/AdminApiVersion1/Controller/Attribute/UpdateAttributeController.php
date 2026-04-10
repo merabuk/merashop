@@ -34,9 +34,9 @@ class UpdateAttributeController extends AbstractController
      * @throws HandlerFailedException
      */
     #[Route(
-        path: '/attributes/{id}',
+        path: '/attributes/{ulid}',
         name: self::ROUTE_NAME,
-        requirements: ['id' => Requirement::POSITIVE_INT],
+        requirements: ['ulid' => Requirement::ULID],
         defaults: [
             ApiRouteParams::ENTITY_LABEL => 'common.attribute.entityName',
             ApiRouteParams::ENTITY_DOMAIN => 'catalog',
@@ -45,7 +45,7 @@ class UpdateAttributeController extends AbstractController
         format: JsonEncoder::FORMAT
     )]
     public function __invoke(
-        int $id,
+        string $ulid,
         #[MapRequestPayload] UpdateAttributeRequest $request,
         #[CurrentAuthEntityIdentity] AuthIdentity $identity,
         CommandBusInterface $commandBus,
@@ -54,7 +54,7 @@ class UpdateAttributeController extends AbstractController
     ): JsonResponse {
         $this->denyAccessUnlessAdmin($identity);
 
-        $command = $request->toCommand(id: $id, adminUlid: $identity->id);
+        $command = $request->toCommand(ulid: $ulid, adminUlid: $identity->id);
 
         $commandBus->execute($command);
 

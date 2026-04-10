@@ -6,6 +6,7 @@ use App\Shared\Domain\Criteria\Listing\PaginatedResult;
 use App\Shared\Domain\Criteria\Paging\Cursor;
 use App\Shared\Domain\Criteria\Sorting\Sort;
 use App\Shared\Domain\Entity\HasIdInterface;
+use App\Shared\Domain\Entity\HasUlidInterface;
 use App\Shared\Domain\Exception\Database\OneOfEntitiesNotFoundException;
 use App\Shared\Domain\ValueObject\Contract\IdInterface;
 use App\Shared\Domain\ValueObject\Identity\Ulid;
@@ -202,19 +203,20 @@ trait ReadRepositoryTrait
         ?Sort $sort,
         callable $mapCallback,
         string $alias = 'e',
+        string $identifierField = 'ulid',
     ): PaginatedResult {
-        $sortField = $sort->field ?? 'id';
+        $sortField = $sort->field ?? $identifierField;
         $direction = $sort->direction ?? Sort::ASC;
 
         if ($cursor->lastSeenIdentifier) {
             $operator = (Sort::DESC === $direction) ? '<' : '>';
-            $qb->andWhere("{$alias}.{$sortField} {$operator} :lastId")
-                ->setParameter('lastId', $cursor->lastSeenIdentifier);
+            $qb->andWhere("{$alias}.{$identifierField} {$operator} :identifier")
+                ->setParameter('identifier', $cursor->lastSeenIdentifier);
         }
 
         $qb->orderBy("{$alias}.{$sortField}", $direction);
-        if ('id' !== $sortField) {
-            $qb->addOrderBy("{$alias}.id", $direction);
+        if ($identifierField !== $sortField) {
+            $qb->addOrderBy("{$alias}.{$identifierField}", $direction);
         }
 
         $qb->setMaxResults($cursor->perPage);
@@ -222,18 +224,16 @@ trait ReadRepositoryTrait
         $paginator = new Paginator($qb, fetchJoinCollection: true);
 
         $totalCount = $paginator->count();
-        $results = [];
-        foreach ($paginator as $ormEntity) {
-            $results[] = $ormEntity;
-        }
+        $results = iterator_to_array($paginator);
 
         $items = array_map($mapCallback, $results);
 
         $lastItem = end($items);
         $nextCursor = null;
 
-        // TODO: solution for admin api, refactor this when pagination will be needed for public api
-        if ($lastItem instanceof HasIdInterface && null !== $lastItem->getId()) {
+        if ($lastItem instanceof HasUlidInterface) {
+            $nextCursor = $lastItem->getUlid()->value();
+        } elseif ($lastItem instanceof HasIdInterface && null !== $lastItem->getId()) {
             $nextCursor = (string) $lastItem->getId()->value();
         }
 

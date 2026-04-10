@@ -8,6 +8,7 @@ use App\Catalog\Application\Query\GetAttributeItem\GetAttributeItemHandler;
 use App\Catalog\Application\Query\GetAttributeItem\GetAttributeItemQuery;
 use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
+use App\Catalog\Domain\ValueObject\Attribute\Ulid;
 use App\Tests\Catalog\Support\AttributeMother;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -23,15 +24,14 @@ final class GetAttributeItemHandlerTest extends TestCase
 
     public function testItHandleSuccess(): void
     {
-        $fakeId = 123;
-        $attribute = AttributeMother::createWithData(id: $fakeId);
+        $attribute = AttributeMother::createWithData();
 
         $this->readRepository->expects(self::once())
-            ->method('getById')
-            ->with($attribute->getId())
+            ->method('getByUlid')
+            ->with(self::equalTo($attribute->getUlid()))
             ->willReturn($attribute);
 
-        $query = $this->fillAndGetQuery(id: $fakeId);
+        $query = $this->fillAndGetQuery(ulid: $attribute->getUlid()->value());
 
         $result = $this->createHandler()($query);
 
@@ -40,22 +40,23 @@ final class GetAttributeItemHandlerTest extends TestCase
 
     public function testThrowsExceptionIfAttributeDoesNotExist(): void
     {
-        $fakeId = 123;
+        $notFoundUlid = AttributeMother::DEFAULT_ULID;
 
         $this->readRepository->expects(self::once())
-            ->method('getById')
-            ->willThrowException(AttributeNotFoundException::withId($fakeId));
+            ->method('getByUlid')
+            ->with(self::callback(fn (Ulid $ulid) => $ulid->value() === $notFoundUlid))
+            ->willThrowException(AttributeNotFoundException::withUlid($notFoundUlid));
 
-        $query = $this->fillAndGetQuery(id: $fakeId);
+        $query = $this->fillAndGetQuery(ulid: $notFoundUlid);
 
         $this->expectException(AttributeNotFoundException::class);
 
         $this->createHandler()($query);
     }
 
-    private function fillAndGetQuery(int $id): GetAttributeItemQuery
+    private function fillAndGetQuery(string $ulid): GetAttributeItemQuery
     {
-        return new GetAttributeItemQuery($id);
+        return new GetAttributeItemQuery($ulid);
     }
 
     private function createHandler(): GetAttributeItemHandler

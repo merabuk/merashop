@@ -9,6 +9,7 @@ use App\Catalog\Domain\Exception\Attribute\OneOfAttributesNotFoundException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Catalog\Domain\ValueObject\Attribute\Id;
+use App\Catalog\Domain\ValueObject\Attribute\Ulid;
 use App\Shared\Domain\Criteria\Filtering\Filters;
 use App\Shared\Domain\Criteria\Listing\Criteria;
 use App\Shared\Domain\Criteria\Paging\Cursor;
@@ -71,6 +72,13 @@ final class AttributeReadRepositoryTest extends KernelTestCase
 
         self::assertNotNull($found);
         self::assertSame($attribute->getId()->value(), $found->getId()->value());
+    }
+
+    public function testGetByUlidThrowsExceptionWhenNotFound(): void
+    {
+        $this->expectException(AttributeNotFoundException::class);
+
+        $this->repository->getByUlid(Ulid::fromString($this->getAttributeMother()::DEFAULT_ULID));
     }
 
     public function testExistsByCode(): void

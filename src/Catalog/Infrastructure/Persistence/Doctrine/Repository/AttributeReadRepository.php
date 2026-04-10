@@ -85,6 +85,19 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
     }
 
     /**
+     * @throws AttributeNotFoundException
+     * @throws AttributeStateException
+     * @throws EntityIdMissingException
+     * @throws IncompatibleMappedEntityException
+     * @throws InvalidCatalogValueObjectException
+     * @throws InvalidLocaleException
+     */
+    public function getByUlid(Ulid $ulid): Attribute
+    {
+        return $this->findByUlid($ulid) ?? throw AttributeNotFoundException::withUlid($ulid->value());
+    }
+
+    /**
      * @throws AttributeStateException
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException

@@ -15,8 +15,9 @@ use App\Catalog\Domain\ValueObject\Attribute\Type;
 use App\Catalog\Domain\ValueObject\Attribute\Ulid;
 use App\Catalog\Domain\ValueObject\Attribute\Version;
 use App\Shared\Domain\Entity\HasIdInterface;
+use App\Shared\Domain\Entity\HasUlidInterface;
 
-class Attribute implements HasIdInterface
+class Attribute implements HasIdInterface, HasUlidInterface
 {
     /**
      * @throws AttributeStateException

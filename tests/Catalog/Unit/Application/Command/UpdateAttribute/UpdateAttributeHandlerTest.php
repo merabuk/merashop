@@ -18,9 +18,9 @@ use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
 use App\Catalog\Domain\Service\Attribute\AttributeValidatorInterface;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
-use App\Catalog\Domain\ValueObject\Attribute\Id;
 use App\Catalog\Domain\ValueObject\Attribute\OptionCollection;
 use App\Catalog\Domain\ValueObject\Attribute\Type;
+use App\Catalog\Domain\ValueObject\Attribute\Ulid;
 use App\Catalog\Domain\ValueObject\AttributeOption\Ulid as AttributeOptionUlid;
 use App\Shared\Domain\Exception\Entity\ConcurrencyException;
 use App\Tests\Catalog\Support\AttributeMother;
@@ -64,7 +64,7 @@ final class UpdateAttributeHandlerTest extends TestCase
         $expectedAttributeOptionUlids = $this->getExpectedAttributeOptionUlids($expectedAttribute);
 
         $this->exceptMapAttributeOptionUlids(input: $command->options, result: $expectedAttributeOptionUlids);
-        $this->expectAttributeFound(attribute: $existingAttribute, attributeId: $command->id);
+        $this->expectAttributeFound(attribute: $existingAttribute, attributeUlid: $command->ulid);
         $this->expectPassValidation(
             attribute: $existingAttribute,
             command: $command,
@@ -152,7 +152,7 @@ final class UpdateAttributeHandlerTest extends TestCase
         $attribute = AttributeMother::createWithData(id: 123);
         $command = $this->fillAndGetUpdateCommand(attribute: $attribute);
 
-        $this->expectAttributeNotFound($attribute->getId());
+        $this->expectAttributeNotFound($attribute->getUlid());
         $this->mapAttributeOptionUlidsNeverCalled();
         $this->attributeValidatorNeverCalled();
         $this->saveAttributeNeverCalled();
@@ -169,7 +169,7 @@ final class UpdateAttributeHandlerTest extends TestCase
 
         $expectedAttributeOptionUlids = $this->getExpectedAttributeOptionUlids($attribute);
 
-        $this->expectAttributeFound(attribute: $attribute, attributeId: $command->id);
+        $this->expectAttributeFound(attribute: $attribute, attributeUlid: $command->ulid);
         $this->exceptMapAttributeOptionUlids(input: $command->options, result: $expectedAttributeOptionUlids);
         $this->givenTypeCanNotBeChanged(
             attribute: $attribute,
@@ -193,7 +193,7 @@ final class UpdateAttributeHandlerTest extends TestCase
 
         $expectedAttributeOptionUlids = $this->getExpectedAttributeOptionUlids($attribute);
 
-        $this->expectAttributeFound(attribute: $attribute, attributeId: $command->id);
+        $this->expectAttributeFound(attribute: $attribute, attributeUlid: $command->ulid);
         $this->exceptMapAttributeOptionUlids(input: $command->options, result: $expectedAttributeOptionUlids);
         $this->givenVersionIsInvalid(
             attribute: $attribute,
@@ -214,7 +214,7 @@ final class UpdateAttributeHandlerTest extends TestCase
 
         $expectedAttributeOptionUlids = $this->getExpectedAttributeOptionUlids($attribute);
 
-        $this->expectAttributeFound(attribute: $attribute, attributeId: $command->id);
+        $this->expectAttributeFound(attribute: $attribute, attributeUlid: $command->ulid);
         $this->exceptMapAttributeOptionUlids(input: $command->options, result: $expectedAttributeOptionUlids);
         $this->givenCodeIsTaken(
             attribute: $attribute,
@@ -241,7 +241,7 @@ final class UpdateAttributeHandlerTest extends TestCase
             options: $options
         );
 
-        $this->expectAttributeFound(attribute: $attribute, attributeId: $command->id);
+        $this->expectAttributeFound(attribute: $attribute, attributeUlid: $command->ulid);
         $this->exceptMapAttributeOptionUlids(input: $command->options, result: $expectedAttributeOptionUlids);
         $this->givenOptionUlidNotFound(
             attribute: $attribute,
@@ -265,20 +265,20 @@ final class UpdateAttributeHandlerTest extends TestCase
         );
     }
 
-    private function expectAttributeFound(Attribute $attribute, int $attributeId): void
+    private function expectAttributeFound(Attribute $attribute, string $attributeUlid): void
     {
         $this->readRepository->expects(self::once())
-            ->method('getById')
-            ->with(self::callback(fn (Id $id) => $id->value() === $attributeId))
+            ->method('getByUlid')
+            ->with(self::callback(fn (Ulid $ulid) => $ulid->value() === $attributeUlid))
             ->willReturn($attribute);
     }
 
-    private function expectAttributeNotFound(Id $attributeId): void
+    private function expectAttributeNotFound(Ulid $attributeUlid): void
     {
         $this->readRepository->expects(self::once())
-            ->method('getById')
-            ->with(self::callback(fn (Id $id) => $id->equals($attributeId)))
-            ->willThrowException(AttributeNotFoundException::withId($attributeId->value()));
+            ->method('getByUlid')
+            ->with(self::callback(fn (Ulid $ulid) => $ulid->equals($attributeUlid)))
+            ->willThrowException(AttributeNotFoundException::withUlid($attributeUlid->value()));
     }
 
     /**

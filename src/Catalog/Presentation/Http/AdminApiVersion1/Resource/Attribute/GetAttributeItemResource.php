@@ -12,7 +12,7 @@ use JsonSerializable;
 final readonly class GetAttributeItemResource implements JsonSerializable
 {
     public function __construct(
-        public int $id,
+        public string $id,
         public string $code,
         public string $type,
         /**
@@ -30,7 +30,7 @@ final readonly class GetAttributeItemResource implements JsonSerializable
     public static function fromAttribute(Attribute $attribute): self
     {
         return new self(
-            id: $attribute->getId()->value(),
+            id: $attribute->getUlid()->value(),
             code: $attribute->getCode()->value(),
             type: $attribute->getType()->value()->value,
             translations: array_map(
