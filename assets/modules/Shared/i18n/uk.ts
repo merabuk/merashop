@@ -12,6 +12,7 @@ export default {
         management: 'Управління',
         catalog: 'Каталог',
         customers: 'Клієнти',
+        slug: 'Slug',
         errors: {
             session_expired: 'Сесія закінчилася. Будь ласка, увійдіть знову',
             access_denied: 'Доступ заборонено. Ви не маєте прав для виконання цієї дії',

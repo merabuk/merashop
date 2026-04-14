@@ -7,7 +7,6 @@ import { computed, FunctionalComponent } from 'vue';
 import {
     TagIcon,
     Package,
-    ChartBarStacked,
     ChevronDownIcon,
     ChevronUpIcon,
     Users,
@@ -15,13 +14,14 @@ import {
     HelpCircle,
     SquareChartGantt,
     Settings,
+    Shirt,
 } from 'lucide-vue-next';
 import { IconEnum } from "@shared/types/admin/icon.enum";
 
 const ICON_MAP: Record<IconEnum, FunctionalComponent> = {
     [IconEnum.Attributes]: TagIcon,
     [IconEnum.Catalog]: Package,
-    [IconEnum.Categories]: ChartBarStacked,
+    [IconEnum.Categories]: Shirt,
     [IconEnum.ChevronDown]: ChevronDownIcon,
     [IconEnum.ChevronUp]: ChevronUpIcon,
     [IconEnum.Customers]: Users,

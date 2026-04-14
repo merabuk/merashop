@@ -11,11 +11,11 @@ import { CATALOG_ADMIN_API_ENDPOINTS } from '@catalog/api/admin/endpoints';
 
 export const useAttributeStore = defineStore('catalog-attributes', () => {
     const { t } = useI18n();
-    const items = ref<AttributeListItem[]>([]);
+    const attributes = ref<AttributeListItem[]>([]);
     const isLoading = ref(false);
     const error = ref<ApiError | null>(null);
 
-    async function fetchItems() {
+    async function fetchAttributes() {
         isLoading.value = true;
         const locale = getActiveLocale();
 
@@ -24,7 +24,7 @@ export const useAttributeStore = defineStore('catalog-attributes', () => {
                 CATALOG_ADMIN_API_ENDPOINTS.ATTRIBUTES.LIST
             );
 
-            items.value = response.data.map((raw: AttributeListResponse): AttributeListItem => {
+            attributes.value = response.data.map((raw: AttributeListResponse): AttributeListItem => {
                 return {
                     ulid: raw.ulid,
                     code: raw.code,
@@ -47,5 +47,5 @@ export const useAttributeStore = defineStore('catalog-attributes', () => {
         }
     }
 
-    return { items, isLoading, error, fetchItems };
+    return { attributes, isLoading, error, fetchAttributes };
 });

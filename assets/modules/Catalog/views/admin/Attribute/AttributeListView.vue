@@ -3,9 +3,7 @@
         <div class="max-w-7xl mx-auto space-y-6">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h2 class="text-2xl font-bold text-gray-900 tracking-tight">
-                        {{ t('catalog.attributes.title') }}
-                    </h2>
+                    <BaseBreadcrumbs :items="breadcrumbs" />
                     <p class="text-sm text-gray-500 mt-1">{{ t('catalog.attributes.description') }}</p>
                 </div>
                 <a
@@ -51,25 +49,25 @@
                         </tr>
                     </template>
 
-                    <template v-else-if="attributeStore.items.length > 0">
-                        <tr v-for="item in attributeStore.items" :key="item.ulid" class="hover:bg-gray-50 transition-colors">
+                    <template v-else-if="attributeStore.attributes.length > 0">
+                        <tr v-for="attribute in attributeStore.attributes" :key="attribute.ulid" class="hover:bg-gray-50 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-semibold text-gray-900">{{ item.name }}</div>
+                                <div class="text-sm font-semibold text-gray-900">{{ attribute.name }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded font-mono text-xs border border-gray-200">
-                                    {{ item.code }}
+                                    {{ attribute.code }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span :class="getTypeClass(item.type)" class="px-2 py-0.5 rounded-full border text-[10px] font-bold uppercase tracking-wide">
-                                    {{ item.type }}
+                                <span :class="getTypeClass(attribute.type)" class="px-2 py-0.5 rounded-full border text-[10px] font-bold uppercase tracking-wide">
+                                    {{ attribute.type }}
                                 </span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex justify-end space-x-3">
                                     <a
-                                        :href="ADMIN_WEB_ENDPOINTS.ATTRIBUTES.EDIT(item.ulid)"
+                                        :href="ADMIN_WEB_ENDPOINTS.ATTRIBUTES.EDIT(attribute.ulid)"
                                         class="text-gray-400 hover:text-merashop-500 transition-colors">✏️</a>
                                     <button class="text-gray-400 hover:text-red-500 transition-colors">🗑️</button>
                                 </div>
@@ -97,15 +95,22 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import AdminLayout from '@shared/layouts/admin/AdminLayout.vue';
+import BaseBreadcrumbs from "@shared/components/admin/UI/BaseBreadcrumbs.vue";
 import { useAttributeStore } from '@catalog/store/useAttributeStore';
 import { ADMIN_WEB_ENDPOINTS } from "@shared/web/admin/endpoints";
 import { AttributeType } from "@catalog/types/attribute.enum";
+import { BreadcrumbItem } from "@shared/types/admin/breadcrumb.interface.ts";
+import { IconEnum } from "@shared/types/admin/icon.enum.ts";
 
 const { t } = useI18n();
 const attributeStore = useAttributeStore();
+const breadcrumbs: BreadcrumbItem[] = [
+    { label: t('catalog.title'), icon: IconEnum.Catalog },
+    { label: t('catalog.attributes.title'), icon: IconEnum.Attributes }
+];
 
 onMounted(() => {
-    attributeStore.fetchItems();
+    attributeStore.fetchAttributes();
 });
 
 const TYPE_COLORS: Record<AttributeType, string> = {

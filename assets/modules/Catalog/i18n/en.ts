@@ -16,7 +16,7 @@ export default {
             add: 'Add Attribute',
             edit: 'Edit Attribute',
             empty_list: 'Attribute list is empty',
-            empty_list_alter: 'Add your first attribute to get started.',
+            empty_list_alter: 'Add your first attribute to get started',
             translation_title: 'Translations',
             types: {
                 string: 'String',
@@ -42,8 +42,10 @@ export default {
         },
         categories: {
             title: 'Product Categories',
+            description: 'Manage product categories of your store',
             add: 'Add Category',
             empty_list: 'Category list is empty',
+            empty_list_alter: 'Add your first category to get started',
         },
         products: {
             title: 'Products',

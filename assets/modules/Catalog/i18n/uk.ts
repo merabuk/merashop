@@ -16,7 +16,7 @@ export default {
             add: 'Створити атрибут',
             edit: 'Редагувати атрибут',
             empty_list: 'Атрибутів ще не створено',
-            empty_list_alter: 'Додайте свій перший атрибут, щоб почати роботу.',
+            empty_list_alter: 'Додайте свій перший атрибут, щоб почати роботу',
             translation_title: 'Переклади',
             types: {
                 string: 'Рядок',
@@ -42,13 +42,10 @@ export default {
         },
         categories: {
             title: 'Категорії товарів',
+            description: 'Керуйте категоріями товарів вашого магазину',
             add: 'Додати категорію',
             empty_list: 'Список категорій порожній',
-            table: {
-                name: 'Назва',
-                slug: 'Slug',
-                actions: 'Дії'
-            }
+            empty_list_alter: 'Додайте свою першу категорію, щоб почати роботу',
         },
         products: {
             title: 'Продукти',
