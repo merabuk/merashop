@@ -205,13 +205,20 @@ trait ReadRepositoryTrait
         string $alias = 'e',
         string $identifierField = 'ulid',
     ): PaginatedResult {
+        $isUlid = 'ulid' === $identifierField;
+        $lastSeenIdentifier = $cursor->lastSeenIdentifier;
         $sortField = $sort->field ?? $identifierField;
         $direction = $sort->direction ?? Sort::ASC;
 
-        if ($cursor->lastSeenIdentifier) {
+        if ($lastSeenIdentifier) {
             $operator = (Sort::DESC === $direction) ? '<' : '>';
             $qb->andWhere("{$alias}.{$identifierField} {$operator} :identifier")
-                ->setParameter('identifier', $cursor->lastSeenIdentifier);
+                ->setParameter(
+                    key: 'identifier',
+                    value: $isUlid
+                        ? UlidPersistenceHelper::toBaseString($lastSeenIdentifier)
+                        : $lastSeenIdentifier
+                );
         }
 
         $qb->orderBy("{$alias}.{$sortField}", $direction);
@@ -219,26 +226,35 @@ trait ReadRepositoryTrait
             $qb->addOrderBy("{$alias}.{$identifierField}", $direction);
         }
 
-        $qb->setMaxResults($cursor->perPage);
+        $limit = $cursor->perPage;
+        $qb->setMaxResults($limit + 1);
 
         $paginator = new Paginator($qb, fetchJoinCollection: true);
 
         $totalCount = $paginator->count();
-        $results = iterator_to_array($paginator);
+        $ormResults = iterator_to_array($paginator);
 
-        $items = array_map($mapCallback, $results);
+        $hasMore = count($ormResults) > $limit;
 
-        $lastItem = end($items);
+        if ($hasMore) {
+            array_pop($ormResults);
+        }
+
+        $domainItems = array_map($mapCallback, $ormResults);
+
         $nextCursor = null;
+        if ($hasMore && !empty($domainItems)) {
+            $lastDomainItem = end($domainItems);
 
-        if ($lastItem instanceof HasUlidInterface) {
-            $nextCursor = $lastItem->getUlid()->value();
-        } elseif ($lastItem instanceof HasIdInterface && null !== $lastItem->getId()) {
-            $nextCursor = (string) $lastItem->getId()->value();
+            if ($lastDomainItem instanceof HasUlidInterface) {
+                $nextCursor = $lastDomainItem->getUlid()->value();
+            } elseif ($lastDomainItem instanceof HasIdInterface && null !== $lastDomainItem->getId()) {
+                $nextCursor = (string) $lastDomainItem->getId()->value();
+            }
         }
 
         return new PaginatedResult(
-            items: $items,
+            items: $domainItems,
             totalCount: $totalCount,
             nextCursor: $nextCursor
         );

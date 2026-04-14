@@ -40,7 +40,7 @@
                     </thead>
 
                     <tbody class="bg-white divide-y divide-gray-200">
-                    <template v-if="attributeStore.isLoading">
+                    <template v-if="attributeStore.isInitialLoading">
                         <tr v-for="i in 3" :key="i" class="animate-pulse">
                             <td class="px-6 py-4"><div class="h-4 bg-gray-200 rounded w-3/4"></div></td>
                             <td class="px-6 py-4"><div class="h-4 bg-gray-200 rounded w-1/2"></div></td>
@@ -86,6 +86,19 @@
                     </tr>
                     </tbody>
                 </table>
+                <div v-if="attributeStore.hasMore" class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-center">
+                    <button
+                        @click="attributeStore.fetchAttributes(true)"
+                        :disabled="attributeStore.isLoading"
+                        class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-merashop-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    >
+                        <span v-if="attributeStore.isLoading" class="mr-2 animate-spin">⏳</span>
+                        {{ t('common.pagination.load_more') }}
+                        <span class="ml-2 text-gray-400">
+                            ({{ attributeStore.attributes.length }} / {{ attributeStore.totalCount }})
+                        </span>
+                    </button>
+                </div>
             </div>
         </div>
     </AdminLayout>

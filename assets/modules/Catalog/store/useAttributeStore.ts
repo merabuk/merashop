@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useI18n } from "vue-i18n";
 import axios, { type AxiosResponse } from 'axios';
 import adminApiClient from '@shared/adminApiClient';
@@ -8,30 +8,59 @@ import { LOCALE } from '@shared/constants';
 import type { AttributeListItem, AttributeListResponse } from '@catalog/types/admin/attribute.interface';
 import { ERROR_CODES, type ApiError } from '@shared/types/error';
 import { CATALOG_ADMIN_API_ENDPOINTS } from '@catalog/api/admin/endpoints';
+import { parsePaginationHeaders } from '@shared/services/paginationHeaderParser';
+import { PAGINATION_PARAMETERS } from "@shared/types/pagination.constants.ts";
 
 export const useAttributeStore = defineStore('catalog-attributes', () => {
     const { t } = useI18n();
     const attributes = ref<AttributeListItem[]>([]);
     const isLoading = ref(false);
+    const isInitialLoading = ref(true);
     const error = ref<ApiError | null>(null);
 
-    async function fetchAttributes() {
+    const nextCursor = ref<string | null>(null);
+    const totalCount = ref(0);
+    const hasMore = computed(() => nextCursor.value !== null);
+
+    async function fetchAttributes(isLoadMore = false) {
+        if (isLoading.value) {
+            return;
+        }
+
         isLoading.value = true;
-        const locale = getActiveLocale();
+        error.value = null;
+
+        const params = new URLSearchParams();
+        if (isLoadMore && nextCursor.value) {
+            params.append(PAGINATION_PARAMETERS.LAST_SEEN_ID, nextCursor.value);
+        }
+
+        // params.append('sortField', 'code');
+        // params.append('sortDir', 'ASC');
 
         try {
             const response: AxiosResponse<AttributeListResponse[]> = await adminApiClient.get(
-                CATALOG_ADMIN_API_ENDPOINTS.ATTRIBUTES.LIST
+                `${CATALOG_ADMIN_API_ENDPOINTS.ATTRIBUTES.LIST}?${params.toString()}`
             );
 
-            attributes.value = response.data.map((raw: AttributeListResponse): AttributeListItem => {
-                return {
-                    ulid: raw.ulid,
-                    code: raw.code,
-                    type: raw.type,
-                    name: raw.translations[locale]?.name || raw.translations[LOCALE.DEFAULT]?.name || raw.code
-                };
-            });
+            const meta = parsePaginationHeaders(response);
+            const locale = getActiveLocale();
+
+            const newItems = response.data.map((raw: AttributeListResponse): AttributeListItem => ({
+                ulid: raw.ulid,
+                code: raw.code,
+                type: raw.type,
+                name: raw.translations[locale]?.name || raw.translations[LOCALE.DEFAULT]?.name || raw.code
+            }));
+
+            if (isLoadMore) {
+                attributes.value.push(...newItems);
+            } else {
+                attributes.value = newItems;
+            }
+
+            nextCursor.value = meta.nextCursor;
+            totalCount.value = meta.totalCount;
 
         } catch (e: unknown) {
             if (axios.isAxiosError(e) && e.response) {
@@ -39,13 +68,29 @@ export const useAttributeStore = defineStore('catalog-attributes', () => {
             } else {
                 error.value = {
                     errorCode: ERROR_CODES.UNEXPECTED_ERROR,
-                    message: t('common.error.server_error')
+                    message: t('common.errors.server_error')
                 };
             }
         } finally {
             isLoading.value = false;
+            isInitialLoading.value = false;
         }
     }
 
-    return { attributes, isLoading, error, fetchAttributes };
+    function reset() {
+        attributes.value = [];
+        nextCursor.value = null;
+        isInitialLoading.value = true;
+    }
+
+    return {
+        attributes,
+        isLoading,
+        isInitialLoading,
+        error,
+        hasMore,
+        totalCount,
+        fetchAttributes,
+        reset
+    };
 });

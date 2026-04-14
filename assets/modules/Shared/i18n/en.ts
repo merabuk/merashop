@@ -31,6 +31,9 @@ export default {
             not_ends_with: 'Must not end with "{chars}"',
             not_multiple_in_row: 'Must not contain "{chars}" in a row {times} or more times',
         },
+        pagination: {
+            load_more: 'Load more',
+        }
     },
     auth: {
         admin: {

@@ -108,18 +108,18 @@ adminApiClient.interceptors.response.use(
         const apiErrorData = response?.data as ApiError;
 
         if (status === 401) {
-            toaster.error(t('common.error.session_expired'));
+            toaster.error(t('common.errors.session_expired'));
             session.logout();
         }
         if (status === 403) {
-            toaster.error(t('common.error.access_denied'));
+            toaster.error(t('common.errors.access_denied'));
         }
         if (status === 422) {
             toaster.error(apiErrorData.message);
             return Promise.reject(apiErrorData);
         }
         if (undefined === status || status >= 500) {
-            toaster.error(t('common.error.server_error'));
+            toaster.error(t('common.errors.server_error'));
         }
 
         return Promise.reject(apiErrorData || error);

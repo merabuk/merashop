@@ -31,6 +31,9 @@ export default {
             not_ends_with: 'Не може закінчуватися на "{chars}"',
             not_multiple_in_row: 'Не може містити "{chars}" в рядку {times} або більше разів підряд',
         },
+        pagination: {
+            load_more: 'Завантажити більше',
+        }
     },
     auth: {
         admin: {

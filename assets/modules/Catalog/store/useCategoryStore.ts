@@ -25,7 +25,7 @@ export const useCategoryStore = defineStore('catalog-categories', () => {
             } else {
                 error.value = {
                     errorCode: ERROR_CODES.UNEXPECTED_ERROR,
-                    message: t('common.error.server_error')
+                    message: t('common.errors.server_error')
                 };
             }
         } finally {
