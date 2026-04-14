@@ -7,12 +7,14 @@ export default {
             type: 'Type',
             actions: 'Actions',
             is_active: 'Active',
-            value: 'Value'
+            value: 'Value',
+            color: 'Color',
         },
         attributes: {
             title: 'Product Attributes',
             description: 'Manage product attributes of your store',
             add: 'Add Attribute',
+            edit: 'Edit Attribute',
             empty_list: 'Attribute list is empty',
             empty_list_alter: 'Add your first attribute to get started.',
             translation_title: 'Translations',
@@ -29,7 +31,8 @@ export default {
                 url: 'URL',
                 dimension: 'Dimension',
                 image: 'Image'
-            }
+            },
+            type_change_not_allowed: 'Changing attribute type is not allowed',
         },
         options: {
             title: 'Attribute Options',

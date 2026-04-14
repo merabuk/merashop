@@ -10,7 +10,8 @@
 </template>
 
 <script setup lang="ts">
-    import Icon from '@shared/components/Icon.vue';
+import Icon from '@shared/components/admin/UI/Icon.vue';
+import type { IconEnum } from '@shared/types/admin/icon.enum';
 
-    defineProps<{ href: string, label: string, icon?: string, isActive: boolean }>();
+defineProps<{ href: string, label: string, icon?: IconEnum, isActive: boolean }>();
 </script>

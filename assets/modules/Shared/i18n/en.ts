@@ -1,9 +1,11 @@
 export default {
     common: {
+        loading: 'Loading...',
         login: 'Login',
         logging : 'Logging...',
         logout: 'Logout',
         save: 'Save',
+        save_changes: 'Save changes',
         saving: 'Saving...',
         cancel: 'Cancel',
         dashboard: 'Dashboard',
@@ -11,7 +13,12 @@ export default {
         catalog: 'Catalog',
         customers: 'Customers',
         errors: {
+            session_expired: 'Session expired. Please log in again',
+            access_denied: 'Access denied. You do not have permission to perform this action',
+            server_error: 'An unexpected error occurred. Please try again later',
             fail_load: 'Loading error',
+            fail_load_entity_data: 'Failed to load entity data',
+            ulid_not_found: 'ULID not found',
             required: 'Required field',
             format: 'Wrong format',
             positive: 'Must be greater than 0',

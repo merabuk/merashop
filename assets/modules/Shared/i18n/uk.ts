@@ -1,9 +1,11 @@
 export default {
     common: {
+        loading: 'Завантаження...',
         login: 'Увійти',
         logging : 'Вхід...',
         logout: 'Вийти',
         save: 'Зберегти',
+        save_changes: 'Зберегти зміни',
         saving: 'Збереження...',
         cancel: 'Скасувати',
         dashboard: 'Панель керування',
@@ -11,7 +13,12 @@ export default {
         catalog: 'Каталог',
         customers: 'Клієнти',
         errors: {
+            session_expired: 'Сесія закінчилася. Будь ласка, увійдіть знову',
+            access_denied: 'Доступ заборонено. Ви не маєте прав для виконання цієї дії',
+            server_error: 'Виникла непередбачувана помилка. Будь ласка, спробуйте пізніше',
             fail_load: 'Помилка завантаження',
+            fail_load_entity_data: 'Не вдалося завантажити дані',
+            ulid_not_found: 'ULID не знайдено',
             required: 'Це поле є обов’язковим',
             format: 'Невірний формат',
             positive: 'Має бути більше 0',

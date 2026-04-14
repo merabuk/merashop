@@ -136,39 +136,30 @@ assets/
 ├── modules/
 │   ├── Shared/
 │   │   ├── components/            # Shared components (global, admin, shop)
+│   │   │   └── admin/
+│   │   │       └── UI/            # Shared UI components layer
 │   │   ├── i18n/                  # Internationalization
-│   │   │   ├── <locale>.ts        # General(common) formatted locale translations
-│   │   │   └── index.ts           # Global configuration and utilities
-│   │   ├── layouts/               # Layouts
-│   │   │   ├── admin/             # Admin layouts
-│   │   │   └── shop/              # Shop layouts
-│   │   ├── services/              # Global services
+│   │   │   ├── <locale>.ts        # General locale translations
+│   │   │   └── index.ts           # Global i18n configuration
+│   │   ├── layouts/               # Layouts (admin, shop)
+│   │   ├── services/              # Global services (appFactory.ts, localeProvider.ts, etc.)
 │   │   ├── store/
 │   │   │   └── useSessionStore.ts # Global state (User, TraceId, Auth status)
 │   │   ├── types/                 # Global TS interfaces/types
-│   │   │   ├── admin/             # Admin specific interfaces/types
-│   │   │   ├── shop/              # Shop specific interfaces/types
-│   │   │   └── *.enum.ts          # General(common) enums
-│   │   ├── admin-api-client.ts    # Admin Axios wrapper with TraceId integration
-│   │   ├── shop-api-client.ts     # Shop Axios wrapper with TraceId integration
-│   │   ├── constants.ts           # Global constants (Headers, Route names, etc.)
+│   │   ├── adminApiClient.ts      # Admin Axios wrapper
+│   │   ├── shopApiClient.ts       # Shop Axios wrapper
+│   │   └── constants.ts           # Global constants
 │   ├── Catalog/
 │   │   ├── api/                   # API clients/endpoints
-│   │   │   ├── admin/             # Admin specific endpoints
-│   │   │   └── shop/              # Public specific endpoints
+│   │   ├── composables/           # Module-level composables (e.g., useAttributeForm.ts)
 │   │   ├── i18n/                  # Internationalization
-│   │   │   ├── <locale>.ts        # Module specific formatted locale translations
 │   │   ├── store/
-│   │   │   └── use<*>Store.ts       # Specific state (Filters, last view)
+│   │   │   └── use<*>Store.ts     # Specific state
 │   │   ├── types/                 # Module specific interfaces/types
-│   │   │   ├── admin/             # Admin specific interfaces/types
-│   │   │   └── shop/              # Public specific interfaces/types
-│   │   ├── views/                 # Main catalog views
-│   │   │   ├── admin/             # Admin views
-│   │   │   └── shop/              # Public views
+│   │   └── views/                 # Main catalog views
 │   ...
-├── styles/                        # Global css
-├── shims.d.ts                     # TypeScript type definitions
+├── styles/                        # Global CSS
+└── shims.d.ts                     # TypeScript type definitions
 ```
 
 ## Databases & Migrations
@@ -285,7 +276,7 @@ This command:
 - Will assemble and launch Docker containers.
 - Install dependencies via Composer.
 - Generate `APP_SECRET` in `.env.local`.
-- ~~Perform database migrations.~~
+- Perform all module database migrations.
 
 ### 3. Access to the application
 - Web: [merashop.test](http://merashop.test)
@@ -293,6 +284,40 @@ This command:
 - Admin API: [admin-api.merashop.test](http://admin-api.merashop.test)
 - Sources: [sources.merashop.test](http://sources.merashop.test)
 
+## Frontend Development
+
+The frontend is built with **Vue 3**, **Vite**, and **TypeScript**.
+
+### Quick Start
+
+1. **Launch dev server**:
+    
+   Server automaticaly launches with docker container `node`. This starts the Vite dev server with Hot Module Replacement (HMR).
+
+2. **Type-checking**:
+   ```bash
+   docker compose exec node npm run type-check
+   ```
+   Runs `vue-tsc` to verify TypeScript types across the project.
+
+3. **Linting**:
+   ```bash
+   docker compose exec -T node npm run lint
+   ```
+   Checks code for style and formatting issues.
+
+### Architecture & Aliases
+
+We use path aliases to maintain clean imports and module isolation:
+- `@shared` -> `assets/modules/Shared/`
+- `@catalog` -> `assets/modules/Catalog/`
+- `@identity-access` -> `assets/modules/IdentityAccess/`
+
+### Composables
+
+Shared logic and stateful UI patterns are extracted into **Composables**.
+- **Location**: `assets/modules/{Module}/composables/`
+- **Naming**: Use the `use*` prefix (e.g., `useAttributeForm.ts`).
 
 ## Development Workflow
 ### ORM & Mapping Standards

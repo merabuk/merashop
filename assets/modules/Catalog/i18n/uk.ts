@@ -7,12 +7,14 @@ export default {
             type: 'Тип даних',
             actions: 'Дії',
             is_active: 'Активний(а)',
-            value: 'Значення'
+            value: 'Значення',
+            color: 'Колір',
         },
         attributes: {
             title: 'Атрибути товарів',
             description: 'Керування характеристиками товарів вашого магазину',
             add: 'Створити атрибут',
+            edit: 'Редагувати атрибут',
             empty_list: 'Атрибутів ще не створено',
             empty_list_alter: 'Додайте свій перший атрибут, щоб почати роботу.',
             translation_title: 'Переклади',
@@ -29,7 +31,8 @@ export default {
                 url: 'Посилання',
                 dimension: 'Розмір/Габарити',
                 image: 'Зображення'
-            }
+            },
+            type_change_not_allowed: 'Зміна типу атрибуту заборонена'
         },
         options: {
             title: 'Опції атрибута',

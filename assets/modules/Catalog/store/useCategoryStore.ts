@@ -1,12 +1,14 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import adminApiClient from '@shared/admin-api-client';
-import type { CategoryInterface } from '@catalog/types/admin/category.interface';
-import type { ApiError } from '@shared/types/error';
+import { useI18n } from "vue-i18n";
 import axios, { type AxiosResponse } from 'axios';
+import adminApiClient from '@shared/adminApiClient';
+import { ERROR_CODES, type ApiError } from '@shared/types/error';
+import type { CategoryInterface } from '@catalog/types/admin/category.interface';
 import { CATALOG_ADMIN_API_ENDPOINTS } from '@catalog/api/admin/endpoints';
 
 export const useCategoryStore = defineStore('catalog-categories', () => {
+    const { t } = useI18n();
     const categories = ref<CategoryInterface[]>([]);
     const isLoading = ref(false);
     const error = ref<ApiError | null>(null);
@@ -21,7 +23,10 @@ export const useCategoryStore = defineStore('catalog-categories', () => {
             if (axios.isAxiosError(e) && e.response) {
                 error.value = e.response.data as ApiError;
             } else {
-                error.value = { errorCode: 'UnexpectedError', message: 'An unexpected error occurred' };
+                error.value = {
+                    errorCode: ERROR_CODES.UNEXPECTED_ERROR,
+                    message: t('common.error.server_error')
+                };
             }
         } finally {
             isLoading.value = false;

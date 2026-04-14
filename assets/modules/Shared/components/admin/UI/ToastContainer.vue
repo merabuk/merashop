@@ -26,16 +26,16 @@
 </template>
 
 <script setup lang="ts">
-    import { useToastStore, ToastType } from '@shared/store/useToastStore';
+import { useToastStore, ToastType } from '@shared/store/useToastStore';
 
-    const toastStore = useToastStore();
+const toastStore = useToastStore();
 
-    const getTypeClasses = (type: ToastType) => {
-        switch (type) {
-            case ToastType.Success: return 'border-emerald-500 text-emerald-800';
-            case ToastType.Error: return 'border-red-500 text-red-800';
-            case ToastType.Warning: return 'border-amber-500 text-amber-800';
-            default: return 'border-blue-500 text-blue-800';
-        }
-    };
+const getTypeClasses = (type: ToastType) => {
+    switch (type) {
+        case ToastType.Success: return 'border-emerald-500 text-emerald-800';
+        case ToastType.Error: return 'border-red-500 text-red-800';
+        case ToastType.Warning: return 'border-amber-500 text-amber-800';
+        default: return 'border-blue-500 text-blue-800';
+    }
+};
 </script>

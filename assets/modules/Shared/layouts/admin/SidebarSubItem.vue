@@ -15,12 +15,13 @@
 </template>
 
 <script setup lang="ts">
-    import Icon from '@shared/components/Icon.vue';
-    
-    defineProps<{
-        href: string,
-        label: string,
-        isActive: boolean,
-        icon?: string
-    }>();
+import Icon from '@shared/components/admin/UI/Icon.vue';
+import { IconEnum } from "@shared/types/admin/icon.enum";
+
+defineProps<{
+    href: string,
+    label: string,
+    isActive: boolean,
+    icon?: IconEnum
+}>();
 </script>

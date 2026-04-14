@@ -11,7 +11,7 @@ use JsonSerializable;
 final readonly class GetAttributeListResource implements JsonSerializable
 {
     public function __construct(
-        public string $id,
+        public string $ulid,
         public string $code,
         public string $type,
         /**
@@ -25,7 +25,7 @@ final readonly class GetAttributeListResource implements JsonSerializable
     public static function fromAttribute(Attribute $attribute): self
     {
         return new self(
-            id: $attribute->getUlid()->value(),
+            ulid: $attribute->getUlid()->value(),
             code: $attribute->getCode()->value(),
             type: $attribute->getType()->value()->value,
             translations: array_map(
@@ -42,7 +42,7 @@ final readonly class GetAttributeListResource implements JsonSerializable
     public function jsonSerialize(): array
     {
         return [
-            'id' => $this->id,
+            'ulid' => $this->ulid,
             'code' => $this->code,
             'type' => $this->type,
             'translations' => array_map(

@@ -15,9 +15,9 @@
     <body>
         <div id="app"
              data-component="{{ vue_component|default('App') }}"
+             data-ulid="{{ vue_props.ulid|default('') }}"
              data-trace-id="{{ app.request.attributes.get('trace_id')|default('no-trace-id') }}"
-             data-user="{{ app.user ? app.user.userIdentifier : 'guest' }}">
-        </div>
+        ></div>
         {% block body %}{% endblock %}
     </body>
 </html>

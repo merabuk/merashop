@@ -109,39 +109,30 @@ assets/
 ├── modules/
 │   ├── Shared/
 │   │   ├── components/            # Shared components (global, admin, shop)
+│   │   │   └── admin/
+│   │   │       └── UI/            # Shared UI components layer
 │   │   ├── i18n/                  # Internationalization
-│   │   │   ├── <locale>.ts        # General(common) formatted locale translations
-│   │   │   └── index.ts           # Global configuration and utilities
-│   │   ├── layouts/               # Layouts
-│   │   │   ├── admin/             # Admin layouts
-│   │   │   └── shop/              # Shop layouts
-│   │   ├── services/              # Global services
+│   │   │   ├── <locale>.ts        # General locale translations
+│   │   │   └── index.ts           # Global i18n configuration
+│   │   ├── layouts/               # Layouts (admin, shop)
+│   │   ├── services/              # Global services (appFactory.ts, localeProvider.ts, etc.)
 │   │   ├── store/
 │   │   │   └── useSessionStore.ts # Global state (User, TraceId, Auth status)
 │   │   ├── types/                 # Global TS interfaces/types
-│   │   │   ├── admin/             # Admin specific interfaces/types
-│   │   │   ├── shop/              # Shop specific interfaces/types
-│   │   │   └── *.enum.ts          # General(common) enums
-│   │   ├── admin-api-client.ts    # Admin Axios wrapper with TraceId integration
-│   │   ├── shop-api-client.ts     # Shop Axios wrapper with TraceId integration
-│   │   ├── constants.ts           # Global constants (Headers, Route names, etc.)
+│   │   ├── adminApiClient.ts      # Admin Axios wrapper
+│   │   ├── shopApiClient.ts       # Shop Axios wrapper
+│   │   └── constants.ts           # Global constants
 │   ├── Catalog/
 │   │   ├── api/                   # API clients/endpoints
-│   │   │   ├── admin/             # Admin specific endpoints
-│   │   │   └── shop/              # Public specific endpoints
+│   │   ├── composables/           # Module-level composables (e.g., useAttributeForm.ts)
 │   │   ├── i18n/                  # Internationalization
-│   │   │   ├── <locale>.ts        # Module specific formatted locale translations
 │   │   ├── store/
-│   │   │   └── use<*>Store.ts       # Specific state (Filters, last view)
+│   │   │   └── use<*>Store.ts     # Specific state
 │   │   ├── types/                 # Module specific interfaces/types
-│   │   │   ├── admin/             # Admin specific interfaces/types
-│   │   │   └── shop/              # Public specific interfaces/types
-│   │   ├── views/                 # Main catalog views
-│   │   │   ├── admin/             # Admin views
-│   │   │   └── shop/              # Public views
+│   │   └── views/                 # Main catalog views
 │   ...
-├── styles/                        # Global css
-├── shims.d.ts                     # TypeScript type definitions
+├── styles/                        # Global CSS
+└── shims.d.ts                     # TypeScript type definitions
 ```
 
 ## 3. Coding Standards & Constraints
@@ -190,6 +181,26 @@ assets/
     - `@catalog` -> `assets/modules/Catalog/`
     - `@identity-access` -> `assets/modules/IdentityAccess/`
     - `@shared` -> `assets/modules/Shared/`
+- **File Naming**: TypeScript service/utility files must use camelCase (e.g., `adminApiClient.ts`, `domDataProvider.ts`).
+
+### Vue/Frontend Coding Standards
+
+- **Composables**:
+    - Extracted logic should be placed in `composables/admin/` or `composables/shop/` within the module.
+    - Naming convention: `use<Name>` (e.g., `useAttributeForm.ts`).
+- **Error Handling in Views**:
+    - Always wrap API calls in `try/catch` or handle rejections.
+    - Use `catch (e: unknown)` and extract `ApiError` from the response (handled by interceptors).
+    - For validation errors, use optional chaining when accessing violations (e.g., `err.violations?.forEach(...)`). Avoid manual null/undefined checks for `violations`.
+- **Icons**:
+    - Use `IconEnum` for all icons.
+    - Never pass raw string literals to `<Icon>` components or `icon` props.
+- **Loading States**:
+    - Initial page load: Use `isInitialLoading`. Set to `true` by default, set to `false` in `finally` block of the initial fetch.
+    - Form submission: Use `isLoading`. Set to `true` before the call and `false` in `finally`.
+- **Internationalization (i18n)**:
+    - All user-facing strings must go through the `t()` function.
+    - In interceptors or non-component files, use a shared i18n accessor.
 
 ### Persistence & Mapping
 - **Database Isolation**: Each module MUST use its own dedicated connection and entity manager. Cross-module database queries are strictly forbidden.

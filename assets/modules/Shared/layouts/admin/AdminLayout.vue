@@ -29,17 +29,17 @@
 </template>
 
 <script setup lang="ts">
-    import { computed } from 'vue';
-    import { useSessionStore } from '@shared/store/useSessionStore';
-    import LanguageSwitcher from '@shared/components/LanguageSwitcher.vue';
-    import AdminSidebar from '@shared/layouts/admin/AdminSidebar.vue';
-    import ToastContainer from '@shared/components/ToastContainer.vue';
-    
-    const session = useSessionStore();
-    
-    defineProps<{
-        currentComponent?: string
-    }>();
-    
-    const vueComponent = computed(() => document.getElementById('app')?.dataset.component || 'App');
+import { computed } from 'vue';
+import { useSessionStore } from '@shared/store/useSessionStore';
+import LanguageSwitcher from '@shared/components/admin/UI/LanguageSwitcher.vue';
+import AdminSidebar from '@shared/layouts/admin/AdminSidebar.vue';
+import ToastContainer from '@shared/components/admin/UI/ToastContainer.vue';
+
+const session = useSessionStore();
+
+defineProps<{
+    currentComponent?: string
+}>();
+
+const vueComponent = computed(() => document.getElementById('app')?.dataset.component || 'App');
 </script>

@@ -13,10 +13,16 @@ init: ## Initialize the project (copy .env, generate secrets, etc.)
 	@docker compose exec app composer install
 	@docker compose exec app php -r "if (!getenv('APP_SECRET')) echo 'APP_SECRET=' . bin2hex(random_bytes(16)) . PHP_EOL;" >> .env.local
 	@echo "APP_SECRET generated in .env.local if it was missing"
-	@#docker compose exec app php bin/console doctrine:migrations:migrate --no-interaction
+	@$(MAKE) migrate
 
 up:
 	docker compose up -d
+
+migrate:
+	docker compose exec app php bin/console doctrine:migrations:migrate --em=catalog --configuration=config/migrations/catalog.php --no-interaction
+	docker compose exec app php bin/console doctrine:migrations:migrate --em=customer --configuration=config/migrations/customer.php --no-interaction
+	docker compose exec app php bin/console doctrine:migrations:migrate --em=email_sender --configuration=config/migrations/email_sender.php --no-interaction
+	docker compose exec app php bin/console doctrine:migrations:migrate --em=identity_access --configuration=config/migrations/identity_access.php --no-interaction
 
 down:
 	docker compose down

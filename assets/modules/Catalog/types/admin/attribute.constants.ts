@@ -21,3 +21,11 @@ export const ATTRIBUTE_TYPES_HAS_OPTIONS: readonly AttributeType[] = [
     AttributeType.MultiSelect,
     AttributeType.Dimension,
 ] as const;
+
+export const ATTRIBUTE_TYPES_ALLOWED_TO_CHANGE: (current: AttributeType) => Array<AttributeType> = (current) => {
+    if (AttributeType.String === current || AttributeType.Text === current) {
+        return [AttributeType.String, AttributeType.Text];
+    }
+
+    return [];
+}

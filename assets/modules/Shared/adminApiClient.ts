@@ -1,12 +1,13 @@
 import axios, { AxiosInstance, AxiosError, AxiosResponse } from 'axios';
 import { HTTP_HEADERS, DOM_DATA_ATTRIBUTES } from '@shared/constants';
-import { getActiveLocale } from '@shared/services/locale-provider';
+import { getActiveLocale } from '@shared/services/localeProvider';
 import type { ApiError } from '@shared/types/error';
 import type { AuthResponse } from '@shared/types/auth';
 import { useSessionStore } from '@shared/store/useSessionStore';
 import { IDENTITY_ACCESS_API_ENDPOINTS } from '@identity-access/api/endpoints';
 import { GrantType } from '@identity-access/types/grant_type.enum';
 import { useToastStore } from "@shared/store/useToastStore";
+import { i18n } from '@shared/i18n';
 
 const rootElement = document.getElementById('app');
 const currentTraceId = rootElement?.dataset[DOM_DATA_ATTRIBUTES.TRACE_ID] || 'no-trace-id';
@@ -99,6 +100,7 @@ adminApiClient.interceptors.request.use(async (config) => {
 adminApiClient.interceptors.response.use(
     (response: AxiosResponse) => response,
     async (error: AxiosError<ApiError>) => {
+        const t = i18n.global.t as (key: string) => string;
         const toaster = useToastStore();
         const session = useSessionStore();
         const { response } = error;
@@ -106,18 +108,18 @@ adminApiClient.interceptors.response.use(
         const apiErrorData = response?.data as ApiError;
 
         if (status === 401) {
-            toaster.error('Session expired. Please log in again.');
+            toaster.error(t('common.error.session_expired'));
             session.logout();
         }
         if (status === 403) {
-            toaster.error('Access denied. You do not have permission to perform this action.');
+            toaster.error(t('common.error.access_denied'));
         }
         if (status === 422) {
             toaster.error(apiErrorData.message);
             return Promise.reject(apiErrorData);
         }
-        if (!status || status >= 500) {
-            toaster.error('An unexpected error occurred. Please try again later.');
+        if (undefined === status || status >= 500) {
+            toaster.error(t('common.error.server_error'));
         }
 
         return Promise.reject(apiErrorData || error);

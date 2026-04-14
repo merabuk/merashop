@@ -46,4 +46,5 @@ grumphp:
     shell:
       scripts:
         - [ "docker", "compose", "exec", "-T", "node", "npm", "run", "lint" ]
+        - [ "docker", "compose", "exec", "-T", "node", "npm", "run", "type-check" ]
       triggered_by: [ css, ts, js, vue ]

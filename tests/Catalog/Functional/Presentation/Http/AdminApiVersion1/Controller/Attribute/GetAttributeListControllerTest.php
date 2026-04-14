@@ -84,7 +84,7 @@ final class GetAttributeListControllerTest extends WebTestCase
 
         $data = $this->getResponseData($client);
         $this->assertCount($perPage, $data);
-        $this->assertResponseHeaderSame('X-Next-Cursor', (string) end($data)['id']);
+        $this->assertResponseHeaderSame('X-Next-Cursor', (string) end($data)['ulid']);
     }
 
     public function testItFiltersBySearchTerm(): void
