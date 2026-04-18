@@ -5,7 +5,6 @@ export default {
             name: 'Назва',
             code: 'Технічний код',
             type: 'Тип даних',
-            actions: 'Дії',
             is_active: 'Активний(а)',
             value: 'Значення',
             color: 'Колір',
@@ -18,6 +17,7 @@ export default {
             empty_list: 'Атрибутів ще не створено',
             empty_list_alter: 'Додайте свій перший атрибут, щоб почати роботу',
             translation_title: 'Переклади',
+            search_placeholder: 'Шукати атрибути',
             types: {
                 string: 'Рядок',
                 text: 'Текст',

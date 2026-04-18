@@ -5,7 +5,6 @@ export default {
             name: 'Name',
             code: 'Code',
             type: 'Type',
-            actions: 'Actions',
             is_active: 'Active',
             value: 'Value',
             color: 'Color',
@@ -18,6 +17,7 @@ export default {
             empty_list: 'Attribute list is empty',
             empty_list_alter: 'Add your first attribute to get started',
             translation_title: 'Translations',
+            search_placeholder: 'Search attributes',
             types: {
                 string: 'String',
                 text: 'Text',

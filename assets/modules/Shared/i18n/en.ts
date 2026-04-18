@@ -1,5 +1,6 @@
 export default {
     common: {
+        actions: 'Actions',
         loading: 'Loading...',
         login: 'Login',
         logging : 'Logging...',
@@ -33,6 +34,7 @@ export default {
         },
         pagination: {
             load_more: 'Load more',
+            per_page: 'Per page',
         }
     },
     auth: {

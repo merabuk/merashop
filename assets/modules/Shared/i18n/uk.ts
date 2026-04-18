@@ -1,5 +1,6 @@
 export default {
     common: {
+        actions: 'Дії',
         loading: 'Завантаження...',
         login: 'Увійти',
         logging : 'Вхід...',
@@ -33,6 +34,7 @@ export default {
         },
         pagination: {
             load_more: 'Завантажити більше',
+            per_page: 'На сторінці',
         }
     },
     auth: {

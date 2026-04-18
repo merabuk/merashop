@@ -28,6 +28,7 @@ grumphp:
         - "ini_set"
         - "error_reporting"
         - "set_time_limit"
+        - "console.log\\("
     yamllint:
       parse_custom_tags: true
     composer: ~

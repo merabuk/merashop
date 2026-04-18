@@ -15,36 +15,62 @@
                 </a>
             </div>
 
+            <div class="flex flex-col md:flex-row gap-4 items-center justify-between bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+                <Search
+                    v-model="localSearch"
+                    @update:model-value="debouncedSetSearch"
+                    :is-loading="attributeStore.isLoading"
+                    :placeholder="t('catalog.attributes.search_placeholder')"
+                />
+
+                <PerPage
+                    v-model="localPerPage"
+                    @update:model-value="attributeStore.setPerPage"
+                />
+            </div>
+
             <div v-if="attributeStore.error" class="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r-lg shadow-sm">
                 <p class="font-bold">{{ t('common.errors.fail_load') }}</p>
                 <p class="text-sm">{{ attributeStore.error.message }}</p>
             </div>
 
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <table class="min-w-full divide-y divide-gray-200">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
+                <table class="min-w-200 divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                     <tr>
-                        <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                            {{ t('catalog.common.name') }}
-                        </th>
-                        <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                            {{ t('catalog.common.code') }}
-                        </th>
-                        <th scope="col" class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                            {{ t('catalog.common.type') }}
-                        </th>
+                        <ColumnHeader
+                            class="w-3/6"
+                            @click="attributeStore.toggleSort(ATTRIBUTE_SORT_FIELDS.NAME)"
+                            :name="t('catalog.common.name')"
+                            :show-sort="attributeStore.sortField === ATTRIBUTE_SORT_FIELDS.NAME"
+                            :sort-dir="attributeStore.sortDir"
+                        />
+                        <ColumnHeader
+                            class="w-2/6"
+                            @click="attributeStore.toggleSort(ATTRIBUTE_SORT_FIELDS.CODE)"
+                            :name="t('catalog.common.code')"
+                            :show-sort="attributeStore.sortField === ATTRIBUTE_SORT_FIELDS.CODE"
+                            :sort-dir="attributeStore.sortDir"
+                        />
+                        <ColumnHeader
+                            class="w-1/6"
+                            @click="attributeStore.toggleSort(ATTRIBUTE_SORT_FIELDS.TYPE)"
+                            :name="t('catalog.common.type')"
+                            :show-sort="attributeStore.sortField === ATTRIBUTE_SORT_FIELDS.TYPE"
+                            :sort-dir="attributeStore.sortDir"
+                        />
                         <th scope="col" class="relative px-6 py-4">
-                            <span class="sr-only">{{ t('catalog.common.actions') }}</span>
+                            <span class="sr-only">{{ t('common.actions') }}</span>
                         </th>
                     </tr>
                     </thead>
 
                     <tbody class="bg-white divide-y divide-gray-200">
                     <template v-if="attributeStore.isInitialLoading">
-                        <tr v-for="i in 3" :key="i" class="animate-pulse">
-                            <td class="px-6 py-4"><div class="h-4 bg-gray-200 rounded w-3/4"></div></td>
-                            <td class="px-6 py-4"><div class="h-4 bg-gray-200 rounded w-1/2"></div></td>
-                            <td class="px-6 py-4"><div class="h-6 bg-gray-200 rounded-full w-20"></div></td>
+                        <tr v-for="i in localPerPage" :key="i" class="animate-pulse">
+                            <td class="px-6 py-4"><div class="h-4 bg-gray-200 rounded w-3/6"></div></td>
+                            <td class="px-6 py-4"><div class="h-4 bg-gray-200 rounded w-2/6"></div></td>
+                            <td class="px-6 py-4"><div class="h-6 bg-gray-200 rounded-full w-1/6"></div></td>
                             <td class="px-6 py-4 text-right"><div class="h-4 bg-gray-200 rounded w-10 ml-auto"></div></td>
                         </tr>
                     </template>
@@ -86,34 +112,35 @@
                     </tr>
                     </tbody>
                 </table>
-                <div v-if="attributeStore.hasMore" class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-center">
-                    <button
-                        @click="attributeStore.fetchAttributes(true)"
-                        :disabled="attributeStore.isLoading"
-                        class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-merashop-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                    >
-                        <span v-if="attributeStore.isLoading" class="mr-2 animate-spin">⏳</span>
-                        {{ t('common.pagination.load_more') }}
-                        <span class="ml-2 text-gray-400">
-                            ({{ attributeStore.attributes.length }} / {{ attributeStore.totalCount }})
-                        </span>
-                    </button>
-                </div>
+                <LoadMore
+                    v-if="attributeStore.hasMore"
+                    @click="attributeStore.fetchAttributes(true)"
+                    :is-loading="attributeStore.isLoading"
+                    :text="t('common.pagination.load_more')"
+                    :value="`${attributeStore.attributes.length} / ${attributeStore.totalCount}`"
+                />
             </div>
         </div>
     </AdminLayout>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { debounce } from '@shared/services/debounce';
 import AdminLayout from '@shared/layouts/admin/AdminLayout.vue';
 import BaseBreadcrumbs from "@shared/components/admin/UI/BaseBreadcrumbs.vue";
+import ColumnHeader from "@shared/components/admin/UI/Table/ColumnHeader.vue";
+import LoadMore from "@shared/components/admin/UI/Table/LoadMore.vue";
+import PerPage from "@shared/components/admin/UI/Table/PerPage.vue";
+import Search from "@shared/components/admin/UI/Table/Search.vue";
 import { useAttributeStore } from '@catalog/store/useAttributeStore';
 import { ADMIN_WEB_ENDPOINTS } from "@shared/web/admin/endpoints";
 import { AttributeType } from "@catalog/types/attribute.enum";
+import { ATTRIBUTE_SORT_FIELDS } from '@catalog/types/admin/attribute.constants';
 import { BreadcrumbItem } from "@shared/types/admin/breadcrumb.interface.ts";
 import { IconEnum } from "@shared/types/admin/icon.enum.ts";
+import { DEFAULT_PER_PAGE } from '@shared/types/pagination.constants.ts';
 
 const { t } = useI18n();
 const attributeStore = useAttributeStore();
@@ -121,6 +148,11 @@ const breadcrumbs: BreadcrumbItem[] = [
     { label: t('catalog.title'), icon: IconEnum.Catalog },
     { label: t('catalog.attributes.title'), icon: IconEnum.Attributes }
 ];
+
+const localSearch = ref('');
+const debouncedSetSearch = debounce(attributeStore.setSearchQuery)
+
+const localPerPage = ref(DEFAULT_PER_PAGE);
 
 onMounted(() => {
     attributeStore.fetchAttributes();

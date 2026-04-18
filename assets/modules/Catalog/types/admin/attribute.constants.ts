@@ -16,6 +16,16 @@ export const ATTRIBUTE_CONSTRAINTS = {
     },
 } as const;
 
+export const ATTRIBUTE_SORT_FIELDS = {
+    CODE: 'code',
+    NAME: 'name',
+    TYPE: 'type',
+} as const;
+
+export type AttributeSortField = typeof ATTRIBUTE_SORT_FIELDS.CODE
+    | typeof ATTRIBUTE_SORT_FIELDS.NAME
+    | typeof ATTRIBUTE_SORT_FIELDS.TYPE;
+
 export const ATTRIBUTE_TYPES_HAS_OPTIONS: readonly AttributeType[] = [
     AttributeType.Select,
     AttributeType.MultiSelect,

@@ -100,7 +100,7 @@ final class GetAttributeListControllerTest extends WebTestCase
             method: self::METHOD,
             uri: $this->getUrl(),
             parameters: [
-                'filter' => ['search' => $attribute->getCode()->value()],
+                'filters' => ['search' => $attribute->getCode()->value()],
             ],
         );
 

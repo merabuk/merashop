@@ -8,6 +8,8 @@ use App\Shared\Domain\Criteria\Sorting\Sort;
 use App\Shared\Domain\Entity\HasIdInterface;
 use App\Shared\Domain\Entity\HasUlidInterface;
 use App\Shared\Domain\Exception\Database\OneOfEntitiesNotFoundException;
+use App\Shared\Domain\Exception\InvalidArgumentException;
+use App\Shared\Domain\Service\Utility\StringHelper;
 use App\Shared\Domain\ValueObject\Contract\IdInterface;
 use App\Shared\Domain\ValueObject\Identity\Ulid;
 use App\Shared\Infrastructure\Persistence\Doctrine\Criteria\Restrictions\ComparisonOperatorEnum;
@@ -207,8 +209,12 @@ trait ReadRepositoryTrait
     ): PaginatedResult {
         $isUlid = 'ulid' === $identifierField;
         $lastSeenIdentifier = $cursor->lastSeenIdentifier;
-        $sortField = $sort->field ?? $identifierField;
+        $sortFieldWithAlias = $sort->field ?? $alias.'.'.$identifierField;
         $direction = $sort->direction ?? Sort::ASC;
+
+        if (!str_contains($sortFieldWithAlias, '.')) {
+            throw new InvalidArgumentException('Sort field must be in format "alias.field"');
+        }
 
         if ($lastSeenIdentifier) {
             $operator = (Sort::DESC === $direction) ? '<' : '>';
@@ -221,8 +227,8 @@ trait ReadRepositoryTrait
                 );
         }
 
-        $qb->orderBy("{$alias}.{$sortField}", $direction);
-        if ($identifierField !== $sortField) {
+        $qb->orderBy("{$sortFieldWithAlias}", $direction);
+        if ($identifierField !== StringHelper::after(subject: $sortFieldWithAlias, search: '.')) {
             $qb->addOrderBy("{$alias}.{$identifierField}", $direction);
         }
 
