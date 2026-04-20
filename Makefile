@@ -46,4 +46,4 @@ test:
 	docker compose exec app vendor/bin/phpunit
 
 markdownlint:
-	@bash $(SCRIPT_DIR)/lint-markdown.sh
+	docker compose exec node ./node_modules/.bin/markdownlint --fix --ignore vendor .

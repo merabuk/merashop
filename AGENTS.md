@@ -420,7 +420,7 @@ When creating or modifying custom Docker images (e.g., `app`, `nginx`, `filebeat
 
 1. **Versioning**: Always use specific tags for base images (e.g., `alpine:3.21`, `php:8.4-fpm-alpine3.21`) instead of `latest` to ensure build reproducibility.
 2. **Layer Optimization (Caching)**:
-    - Order operations from least frequent to most frequent changes.
+    - Order operations from the least frequent to most frequent changes.
     - Copy dependency files (`composer.json`, `package.json`, etc.) and install dependencies before copying the rest of the source code.
     - Use multi-stage builds to keep production images lean.
     - Use cache mounts (`--mount=type=cache`) for package managers (apk, composer, pecl) where supported.
