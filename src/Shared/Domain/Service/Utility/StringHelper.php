@@ -19,13 +19,13 @@ final class StringHelper
 
     public static function after(string $subject, string $search): string
     {
-        if ($search === '') {
+        if ('' === $search) {
             return $subject;
         }
 
         $pos = mb_strpos($subject, $search);
 
-        if ($pos === false) {
+        if (false === $pos) {
             return $subject;
         }
 

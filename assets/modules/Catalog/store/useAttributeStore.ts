@@ -105,7 +105,7 @@ export const useAttributeStore = defineStore('catalog-attributes', () => {
             sortDir.value = SORT_PARAMETERS.ASC;
         }
         reset();
-        fetchAttributes();
+        fetchAttributes().then();
     }
 
     function reset() {
@@ -117,13 +117,13 @@ export const useAttributeStore = defineStore('catalog-attributes', () => {
     function setPerPage(val: number) {
         perPage.value = val;
         reset();
-        fetchAttributes();
+        fetchAttributes().then();
     }
 
     function setSearchQuery(val: string) {
         searchQuery.value = val;
         reset();
-        fetchAttributes();
+        fetchAttributes().then();
     }
 
     return {
