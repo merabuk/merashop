@@ -234,8 +234,7 @@ services:
     working_dir: /var/www
 
   node:
-    image: node:20-alpine3.21
-    working_dir: /app
+    image: merashop/node:latest
     environment:
       APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
       PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
@@ -243,9 +242,9 @@ services:
       - "5173:5173"
     volumes:
       - ./:/app
-    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
     networks:
       - merashop-network
+    working_dir: /app
 
   rabbitmq:
     image: rabbitmq:4.2-management-alpine

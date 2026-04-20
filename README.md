@@ -4,15 +4,22 @@ Online store on Symfony.
 
 ## Table of Contents
 
-- [Project Structure](#project-structure)
+- [Project structure](#project-structure)
+  - [Domain Structure](#domain-structure)
+  - [Directory Structure](#directory-structure)
 - [Databases & Migrations](#databases--migrations)
   - [Create or sync databases](#create-or-sync-databases)
-  - [Running migrations](#running-migrations)
-  - [Making migrations](#making-migrations)
+  - [Remove old module databases](#remove-old-module-databases)
+  - [Running Migrations](#running-migrations)
+  - [Making Migrations](#making-migrations)
 - [Quick Start](#quick-start)
-  - [Preparing the environment](#1-preparing-the-environment)
-  - [Project deployment](#2-project-deployment)
-  - [Access to the application](#3-access-to-the-application)
+  - [1. Preparing the environment](#1-preparing-the-environment)
+  - [2. Project deployment](#2-project-deployment)
+  - [3. Access to the application](#3-access-to-the-application)
+- [Frontend Development](#frontend-development)
+  - [Quick Start (Frontend)](#quick-start-frontend)
+  - [Architecture & Aliases](#architecture--aliases)
+  - [Composables](#composables)
 - [Development Workflow](#development-workflow)
   - [ORM & Mapping Standards](#orm--mapping-standards)
   - [Repository Standards](#repository-standards)
@@ -20,11 +27,16 @@ Online store on Symfony.
   - [Code Quality Tools](#code-quality-tools)
 - [Tests](#tests)
 - [Infrastructure & Docker](#infrastructure--docker)
+  - [Custom Images Principles](#custom-images-principles)
 - [Observability](#observability)
+  - [Access to logs](#access-to-logs)
+  - [Local Development and Testing](#local-development-and-testing)
+  - [Features](#features)
 
 ## Project structure
 
 The project is organized using modular architecture (Modular Monolith) in the directory `src/`:
+
 - `Catalog` - products, categories, and attributes in the store.
 - `Customer` - customer profiles and related domain logic.
 - `EmailSender` - module for sending notifications.
@@ -34,23 +46,24 @@ The project is organized using modular architecture (Modular Monolith) in the di
 ### Domain Structure
 
 Each module follows the principles of DDD (Domain-Driven Design) and has a clear separation of layers:
+
 - `Domain` - business logic and entities.
-    - **Value Objects (VO)**: Use VO for all properties to ensure type safety and validation.
-        - Model-specific VOs are grouped in subfolders named after their entities (e.g., `ValueObject/UserAccount/EmailAddress.php`).
-        - Every VO must have a specific domain exception.
-    - **Exceptions**: Each module follows a strict exception hierarchy:
-        - `AppExceptionInterface` (interface, in `Shared`) - base interface for all application exceptions.
-        - `ServerException` (abstract class, in `Shared`) - base exception with `getErrorCode()` method.
-        - `{Module}ExceptionInterface` (interface) - module marker.
-        - `{Module}DomainException` (abstract class) - base domain exception, inherits from `LogicException` or `ServerException`.
-        - `Invalid{Module}ValueObjectException` (abstract class) - base exception for all VOs in the module.
-        - Specific VO exceptions (e.g., `InvalidUserAccountEmailException`) must inherit from the base VO exception.
-    - **Exception Handling**: Each module contains its own exception handler (e.g., `src/IdentityAccess/Presentation/Http/EventListener/ApiIdentityAccessExceptionListener.php`) to manage module-specific error responses and maintain independence.
+  - **Value Objects (VO)**: Use VO for all properties to ensure type safety and validation.
+    - Model-specific VOs are grouped in subfolders named after their entities (e.g., `ValueObject/UserAccount/EmailAddress.php`).
+    - Every VO must have a specific domain exception.
+  - **Exceptions**: Each module follows a strict exception hierarchy:
+    - `AppExceptionInterface` (interface, in `Shared`) - base interface for all application exceptions.
+    - `ServerException` (abstract class, in `Shared`) - base exception with `getErrorCode()` method.
+    - `{Module}ExceptionInterface` (interface) - module marker.
+    - `{Module}DomainException` (abstract class) - base domain exception, inherits from `LogicException` or `ServerException`.
+    - `Invalid{Module}ValueObjectException` (abstract class) - base exception for all VOs in the module.
+    - Specific VO exceptions (e.g., `InvalidUserAccountEmailException`) must inherit from the base VO exception.
+  - **Exception Handling**: Each module contains its own exception handler (e.g., `src/IdentityAccess/Presentation/Http/EventListener/ApiIdentityAccessExceptionListener.php`) to manage module-specific error responses and maintain independence.
 - `Application` - services and commands.
 - `Infrastructure` - implementation of interfaces, databases, external APIs.
 - `Presentation` - entry points to the module.
-    - `Http` - controllers, requests, resources, and HTTP-specific event listeners.
-    - `Console` - CLI commands, and Console-specific event listeners.
+  - `Http` - controllers, requests, resources, and HTTP-specific event listeners.
+  - `Console` - CLI commands, and Console-specific event listeners.
 - `/config/modules/*` - module-specific configurations collected by `Kernel.php`.
 
 ### Directory Structure
@@ -104,6 +117,7 @@ src/ModuleName/Presentation/ # Entry points
 ```
 
 Also, every module can have its own specific folders which are not listed above
+
 ```bash
 src/EmailSender/Infrastructure/
 │ ...
@@ -113,6 +127,7 @@ src/EmailSender/Infrastructure/
 │   └── translations # translations for the module (emails)
 │ ...
 ```
+
 ```bash
 src/Shared/Domain/
 │ ...
@@ -128,6 +143,7 @@ src/Shared/Domain/
 The translation folder is standardized at `src/<ModuleName>/Presentation/Http/translations/`, except for infrastructure-specific translations (e.g., in `EmailSender`).
 
 Base `assets` folder structure (TypeScript enabled):
+
 ```bash
 assets/
 ├── admin.ts                       # Global Admin entry point
@@ -179,25 +195,31 @@ docker compose exec -T pgsql bash /docker-entrypoint-initdb.d/init-db.sh
 If a module was removed (e.g., `Users`) and its database still exists in the PostgreSQL volume, drop it manually.
 
 1. Check existing databases:
+
     ```bash
     docker compose exec -T pgsql bash -lc 'psql -U "$POSTGRES_USER" -d postgres -c "\\l"'
     ```
 
 2. Terminate active connections to the target database (replace `users_db` with the real name):
+
     ```bash
     docker compose exec -T pgsql bash -lc 'psql -U "$POSTGRES_USER" -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = users_db;"'
     ```
 
 3. Drop the database:
+
     ```bash
     docker compose exec -T pgsql bash -lc 'psql -U "$POSTGRES_USER" -d postgres -c "DROP DATABASE users_db;"'
     ```
 
 **Windows (PowerShell) note:** `$POSTGRES_USER` is inside the container, so PowerShell will not expand it. Either pass the user explicitly:
+
 ```powershell
 docker compose exec -T pgsql psql -U merashop_u -d postgres -c "DROP DATABASE users_db;"
 ```
+
 or use PowerShell verbatim mode to avoid quote parsing:
+
 ```powershell
 docker compose exec -T pgsql --% bash -lc "psql -U "$POSTGRES_USER" -d postgres -c 'DROP DATABASE users_db;'"
 ```
@@ -209,21 +231,25 @@ If you also removed the module’s configuration, ensure the related `POSTGRES_D
 Migrations are run separately for each module using their respective entity managers and configurations:
 
 **Catalog:**
+
 ```bash
 php bin/console doctrine:migrations:migrate --em=catalog --configuration=config/migrations/catalog.php --no-interaction
 ```
 
 **Customer:**
+
 ```bash
 php bin/console doctrine:migrations:migrate --em=customer --configuration=config/migrations/customer.php --no-interaction
 ```
 
 **EmailSender:**
+
 ```bash
 php bin/console doctrine:migrations:migrate --em=email_sender --configuration=config/migrations/email_sender.php --no-interaction
 ```
 
 **IdentityAccess:**
+
 ```bash
 php bin/console doctrine:migrations:migrate --em=identity_access --configuration=config/migrations/identity_access.php --no-interaction
 ```
@@ -233,21 +259,25 @@ php bin/console doctrine:migrations:migrate --em=identity_access --configuration
 Make migration files for each module using their respective entity managers and configurations:
 
 **Catalog:**
+
 ```bash
 php bin/console doctrine:migrations:diff --em=catalog --configuration=config/migrations/catalog.php --no-interaction
 ```
 
 **Customer:**
+
 ```bash
 php bin/console doctrine:migrations:diff --em=customer --configuration=config/migrations/customer.php --no-interaction
 ```
 
 **EmailSender:**
+
 ```bash
 php bin/console doctrine:migrations:diff --em=email_sender --configuration=config/migrations/email_sender.php --no-interaction
 ```
 
 **IdentityAccess:**
+
 ```bash
 php bin/console doctrine:migrations:diff --em=identity_access --configuration=config/migrations/identity_access.php --no-interaction
 ```
@@ -255,6 +285,7 @@ php bin/console doctrine:migrations:diff --em=identity_access --configuration=co
 ## Quick Start
 
 ### 1. Preparing the environment
+
 Add local domains to your file `hosts` (`/etc/hosts` on Linux/macOS or `C:\Windows\System32\drivers\etc\hosts` on Windows):
 
 ```bash
@@ -265,6 +296,7 @@ Add local domains to your file `hosts` (`/etc/hosts` on Linux/macOS or `C:\Windo
 ```
 
 ### 2. Project deployment
+
 For quick project initialization, use `Makefile`:
 
 ```bash
@@ -272,6 +304,7 @@ make init
 ```
 
 This command:
+
 - Copy `.env` to `.env.local` (if not exists).
 - Will assemble and launch Docker containers.
 - Install dependencies via Composer.
@@ -279,6 +312,7 @@ This command:
 - Perform all module database migrations.
 
 ### 3. Access to the application
+
 - Web: [merashop.test](http://merashop.test)
 - Public API: [api.merashop.test](http://api.merashop.test)
 - Admin API: [admin-api.merashop.test](http://admin-api.merashop.test)
@@ -286,29 +320,34 @@ This command:
 
 ## Frontend Development
 
-The frontend is built with **Vue 3**, **Vite**, and **TypeScript**.
+The frontend is built with **Vue 3.5**, **Vite**, and **TypeScript**.
 
-### Quick Start
+### Quick Start (Frontend)
 
 1. **Launch dev server**:
-    
+
    Server automaticaly launches with docker container `node`. This starts the Vite dev server with Hot Module Replacement (HMR).
 
 2. **Type-checking**:
+
    ```bash
    docker compose exec node npm run type-check
    ```
+
    Runs `vue-tsc` to verify TypeScript types across the project.
 
 3. **Linting**:
+
    ```bash
    docker compose exec -T node npm run lint
    ```
+
    Checks code for style and formatting issues.
 
 ### Architecture & Aliases
 
 We use path aliases to maintain clean imports and module isolation:
+
 - `@shared` -> `assets/modules/Shared/`
 - `@catalog` -> `assets/modules/Catalog/`
 - `@identity-access` -> `assets/modules/IdentityAccess/`
@@ -316,10 +355,12 @@ We use path aliases to maintain clean imports and module isolation:
 ### Composables
 
 Shared logic and stateful UI patterns are extracted into **Composables**.
+
 - **Location**: `assets/modules/{Module}/composables/`
 - **Naming**: Use the `use*` prefix (e.g., `useAttributeForm.ts`).
 
 ## Development Workflow
+
 ### ORM & Mapping Standards
 
 - **Table Names**: Table names should not include module prefixes (e.g., use `products` instead of `catalog_products`).
@@ -343,28 +384,28 @@ Shared logic and stateful UI patterns are extracted into **Composables**.
 - **Write Repositories**: Must use `WriteRepositoryTrait` for standard `save` and `delete` operations to ensure consistency and reduce boilerplate.
 - **Base Classes**: All repository implementations must inherit from an entity-specific base class (e.g., `BaseProductRepository`) that encapsulates the `Mapper` and `ManagerRegistry`.
 - **Entities**:
-    - **Every entity**
-        - must have a mapper class implementing `App\Shared\Infrastructure\Persistence\Doctrine\Mapping\EntityMapperInterface`.
-        - should reuse existing infrastructure helpers (e.g., `App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait`) to avoid duplication.
-    - **Complex entities**
-        - (many relations, collections, translations, or special mapping rules)
-        - MUST use dependency injection of `App\Shared\Infrastructure\Persistence\Doctrine\Interface\ProxyReferenceProviderInterface`
-        - register interface implementation in a config file (e.g. `config/modules/catalog.yaml`).
+  - **Every entity**
+    - must have a mapper class implementing `App\Shared\Infrastructure\Persistence\Doctrine\Mapping\EntityMapperInterface`.
+    - should reuse existing infrastructure helpers (e.g., `App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait`) to avoid duplication.
+  - **Complex entities**
+    - (many relations, collections, translations, or special mapping rules)
+    - MUST use dependency injection of `App\Shared\Infrastructure\Persistence\Doctrine\Interface\ProxyReferenceProviderInterface`
+    - register interface implementation in a config file (e.g. `config/modules/catalog.yaml`).
 
 ### Translations
 
 - **Standardization**:
-    - Most modules: `src/<ModuleName>/Presentation/Http/translations/`.
-    - `EmailSender` module: `src/EmailSender/Infrastructure/Resources/translations/`.
+  - Most modules: `src/<ModuleName>/Presentation/Http/translations/`.
+  - `EmailSender` module: `src/EmailSender/Infrastructure/Resources/translations/`.
 - **Naming Convention**: Use the `{domain}+intl-icu.{locale}.{extension}` format (e.g., `catalog+intl-icu.en.yaml`).
 - **ICU Support**: The `+intl-icu` suffix is mandatory for all translation files to enable advanced message formatting.
 - **Domains**:
-    - `{module_name}`: General messages and entity names (YAML).
-    - `{module_name}_exceptions`: Domain exception messages (PHP).
-    - `validators`: Request validation messages (YAML).
-        - Content format: `[context].[group].[item]`.
-    - `email_sender` (`EmailSender` only): Email-specific messages (YAML).
-        - Content format: `[email_type].[template_name].[part]`.
+  - `{module_name}`: General messages and entity names (YAML).
+  - `{module_name}_exceptions`: Domain exception messages (PHP).
+  - `validators`: Request validation messages (YAML).
+    - Content format: `[context].[group].[item]`.
+  - `email_sender` (`EmailSender` only): Email-specific messages (YAML).
+    - Content format: `[email_type].[template_name].[part]`.
 - **Consistency**: Use `ResponseMessageTrait` for standard success messages (e.g., `common.messages.create_success`) and define entity names under `common.<entity>.entityName`.
 
 ### Code Quality Tools
@@ -409,21 +450,25 @@ The project uses PHPUnit for testing. Tests are organized by module to support t
 
 **Automatic Database Preparation:**
 The project is configured to automatically migrate all module databases before running tests. This is handled by `tests/bootstrap.php`. When you run `phpunit`, it will:
+
 1. Load the test environment.
 2. Run migrations for all entity managers currently configured in `tests/bootstrap.php` (`customer`, `email_sender`, `identity_access`, `catalog`).
 3. Ensure the databases are ready for testing.
 
 **Run all tests:**
+
 ```bash
 php vendor/bin/phpunit
 ```
 
 **Run tests for a specific module:**
+
 ```bash
 php vendor/bin/phpunit --testsuite identity_access
 ```
 
 **Test Structure:**
+
 - `tests/{ModuleName}/Unit` - Logic and Domain tests.
 - `tests/{ModuleName}/Integration` - Infrastructure and Persistence tests.
 - `tests/{ModuleName}/Functional` - Application and API tests.
@@ -434,6 +479,7 @@ php vendor/bin/phpunit --testsuite identity_access
 The project uses custom Docker images for key services to ensure consistency across different environments and to fix specific infrastructure issues (like permissions or pre-bundled configs).
 
 ### Custom Images Principles
+
 - **Versioning**: We use fixed versions for base images to prevent "it works on my machine" issues.
 - **Caching**: Dockerfiles are optimized for build speed by layering dependencies separately from the application code.
 - **Portability**: All configuration files required for a service to run are bundled within the image or managed via environment variables.
@@ -445,12 +491,15 @@ For more details on infrastructure standards, see [AGENTS.md](./AGENTS.md#7-infr
 The project uses ELK stack (Elasticsearch, Logstash/Filebeat, Kibana) for logging.
 
 ### Access to logs
+
 - Kibana: [localhost:5601](http://localhost:5601)
 
 ### Local Development and Testing
 
 #### Logging
+
 To test the production-like logging locally:
+
 1. Ensure the `config/packages/monolog.yaml` file `when@dev.monolog.handlers.main.formatter` option has `monolog.formatter.json` value.
 2. Ensure the `filebeat` container is running.
 3. Check logs in Kibana. By default, Symfony logs to `var/log/dev.log`, and Filebeat reads it.
@@ -458,11 +507,14 @@ To test the production-like logging locally:
 #### Writing tests
 
 ##### Object Mother Pattern
+
 To minimize edits when changing domain models, "Mother" classes are used(`tests/{Module}/Support/{Entity}Mother.php`):
- - `createWithData()` **(static)**: For unit tests. Does not require Kernel, uses hardcoded valid data.
- - `create()` **(instance)**: For integration/functional tests. Requires DI, uses Faker and factories.
+
+- `createWithData()` **(static)**: For unit tests. Does not require Kernel, uses hardcoded valid data.
+- `create()` **(instance)**: For integration/functional tests. Requires DI, uses Faker and factories.
 
 ### Features
+
 - **TraceId**: Each request is assigned a unique `TraceId` (**UUID v7**), which is automatically added to all log entries via `TraceIdProcessor`. This allows tracing the entire lifecycle of a request across different modules.
 - **JSON Logging**: In the `prod` environment, logs are formatted as JSON for easy ingestion by Filebeat.
 - **Dedicated Channels**: Modules use separate logging channels (e.g., `email_sender`) to simplify filtering.

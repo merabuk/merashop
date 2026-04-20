@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
 
-set -e # Stop execution on error
+set -e
 
-# Color settings for output
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
 # 1. Find files via git
 MD_FILES=$(git ls-files | grep -E '\.(md|markdown)$' || true)
@@ -16,51 +15,52 @@ if [[ -z "$MD_FILES" ]]; then
     exit 0
 fi
 
-# 2. Function to run markdownlint
-run_markdownlint() {
+# 2. Set the path to the linter
+# Priority: local node_modules -> global markdownlint -> mdl
+if [ -f "./node_modules/.bin/markdownlint" ]; then
+    LINTER="./node_modules/.bin/markdownlint"
+elif command -v markdownlint >/dev/null 2>&1; then
+    LINTER="markdownlint"
+elif command -v mdl >/dev/null 2>&1; then
+    LINTER="mdl"
+else
+    echo -e "${RED}Error: No linter found.${NC}"
+    echo "Install it locally: npm i --save-dev markdownlint-cli"
+    exit 127
+fi
+
+# 3. Function to run markdownlint
+run_linter() {
     local fix_mode=$1
     local config_args=""
 
-    if [[ -f .markdownlint.json ]]; then
-        config_args="-c .markdownlint.json"
-    fi
-
-    if [[ "$fix_mode" == "--fix" ]]; then
-        markdownlint --fix $config_args $MD_FILES
+    # If it's markdownlint (not mdl), add the config
+    if [[ "$LINTER" == *"markdownlint"* ]]; then
+        [[ -f .markdownlint.json ]] && config_args="-c .markdownlint.json"
+        $LINTER $fix_mode $config_args $MD_FILES
     else
-        markdownlint $config_args $MD_FILES
+        $LINTER $MD_FILES
     fi
 }
 
-# 3. The basic logic behind choosing a tool
-if command -v markdownlint >/dev/null 2>&1; then
-    echo "Running markdownlint..."
+# 4. Runtime base logic
+echo "Using linter: $LINTER"
 
-    # Attempt to launch without fixes
-    if run_markdownlint; then
-        echo -e "${GREEN}Done markdownlint!${NC}"
-    else
-        echo -e "${RED}markdownlint found issues.${NC}"
-
-        # Checking the interactivity of the terminal
-        if [[ -t 0 ]]; then
-            read -r -p "Fix issues automatically with --fix? [y/N]: " answer
-            if [[ "$answer" =~ ^[Yy] ]]; then
-                echo "Applying fixes..."
-                run_markdownlint "--fix"
-                echo "Verifying fixes..."
-                run_markdownlint
-                exit $?
-            fi
-        fi
-        exit 1
-    fi
-
-elif command -v mdl >/dev/null 2>&1; then
-    echo "Running mdl..."
-    mdl $MD_FILES
+if run_linter; then
+    echo -e "${GREEN}Done! Everything looks good.${NC}"
 else
-    echo -e "${RED}Error: No linter found.${NC}"
-    echo "Install: npm i -g markdownlint-cli OR gem install mdl"
-    exit 127
+    echo -e "${RED}Linter found issues.${NC}"
+
+    # Checking for interactivity (if you're running it manually in the terminal)
+    if [[ -t 0 && "$LINTER" == *"markdownlint"* ]]; then
+        read -r -p "Fix issues automatically with --fix? [y/N]: " answer
+        if [[ "$answer" =~ ^[Yy] ]]; then
+            echo "Applying fixes..."
+            run_linter "--fix"
+            echo "Verifying..."
+            run_linter
+            exit $?
+        fi
+    fi
+    exit 1
 fi

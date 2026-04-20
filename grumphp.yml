@@ -48,4 +48,5 @@ grumphp:
       scripts:
         - [ "docker", "compose", "exec", "-T", "node", "npm", "run", "lint" ]
         - [ "docker", "compose", "exec", "-T", "node", "npm", "run", "type-check" ]
+        - [ "docker", "compose", "exec", "-T", "node", "sh", "scripts/lint-markdown.sh" ]
       triggered_by: [ css, ts, js, vue ]
