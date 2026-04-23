@@ -27,12 +27,12 @@ import AttributeForm from "@catalog/components/admin/Attribute/AttributeForm.vue
 import { BreadcrumbItem } from "@shared/types/admin/breadcrumb.interface";
 import { IconEnum } from "@shared/types/admin/icon.enum";
 import { useAttributeForm } from '@catalog/composables/admin/useAttributeForm';
-import adminApiClient from '@shared/adminApiClient';
+import adminApiClient from '@shared/api/adminApiClient.ts';
 import { AttributeCreateResponse } from "@catalog/types/admin/attribute.interface";
-import { CATALOG_ADMIN_API_ENDPOINTS } from '@catalog/api/admin/endpoints';
-import { ADMIN_WEB_ENDPOINTS } from "@shared/web/admin/endpoints";
+import { CATALOG_API_ENDPOINTS } from '@catalog/paths/admin/api.ts';
+import { ADMIN_WEB_ENDPOINTS } from "@shared/paths/admin/web.ts";
 import type { ApiError } from '@shared/types/error';
-import { useToastStore } from '@shared/store/useToastStore';
+import { useToastStore } from '@shared/stores/admin/useToastStore.ts';
 
 const { t } = useI18n();
 const { form, violations, needsOptions, addOption, removeOption, validate } = useAttributeForm();
@@ -53,7 +53,7 @@ async function handleSubmit() {
 
     isLoading.value = true;
     try {
-        const { data } = await adminApiClient.post<AttributeCreateResponse>(CATALOG_ADMIN_API_ENDPOINTS.ATTRIBUTES.CREATE, form);
+        const { data } = await adminApiClient.post<AttributeCreateResponse>(CATALOG_API_ENDPOINTS.ATTRIBUTES.CREATE, form);
         toast.persist(data.message);
         window.location.href = ADMIN_WEB_ENDPOINTS.ATTRIBUTES.LIST;
     } catch (e: unknown) {

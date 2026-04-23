@@ -1,5 +1,5 @@
 import type { AxiosResponse } from 'axios';
-import type { PaginationMeta } from '@shared/types/pagination.interface';
+import type { PaginationMeta } from '@shared/types/admin/pagination.interface.ts';
 
 export function parsePaginationHeaders(response: AxiosResponse): PaginationMeta {
     const contentRange = response.headers['content-range'];

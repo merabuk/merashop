@@ -2,10 +2,10 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { useI18n } from "vue-i18n";
 import axios, { type AxiosResponse } from 'axios';
-import adminApiClient from '@shared/adminApiClient';
-import { ERROR_CODES, type ApiError } from '@shared/types/error';
-import type { CategoryInterface } from '@catalog/types/admin/category.interface';
-import { CATALOG_ADMIN_API_ENDPOINTS } from '@catalog/api/admin/endpoints';
+import adminApiClient from '@shared/api/adminApiClient.ts';
+import { ERROR_CODES, type ApiError } from '@shared/types/error.ts';
+import type { CategoryInterface } from '@catalog/types/admin/category.interface.ts';
+import { CATALOG_API_ENDPOINTS } from '@catalog/paths/admin/api.ts';
 
 export const useCategoryStore = defineStore('catalog-categories', () => {
     const { t } = useI18n();
@@ -17,7 +17,7 @@ export const useCategoryStore = defineStore('catalog-categories', () => {
         isLoading.value = true;
         error.value = null;
         try {
-            const response: AxiosResponse<CategoryInterface[]> = await adminApiClient.get(CATALOG_ADMIN_API_ENDPOINTS.CATEGORIES.LIST);
+            const response: AxiosResponse<CategoryInterface[]> = await adminApiClient.get(CATALOG_API_ENDPOINTS.CATEGORIES.LIST);
             categories.value = response.data;
         } catch (e: unknown) {
             if (axios.isAxiosError(e) && e.response) {

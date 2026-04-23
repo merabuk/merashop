@@ -108,36 +108,38 @@ Base `assets` folder structure (TypeScript enabled):
 
 ```bash
 assets/
-├── admin.ts                       # Global Admin entry point
-├── shop.ts                        # Global Public entry point
-├── App.vue                        # Root component (lang="ts")
+├── admin.ts                           # Global Admin entry point
+├── shop.ts                            # Global Public entry point
 ├── modules/
 │   ├── Shared/
-│   │   ├── components/            # Shared components (global, admin, shop)
+│   │   ├── api/                       # Axios clients
+│   │   ├── config/                    # App config & constants
+│   │   ├── components/                # Shared components (global, admin, shop)
 │   │   │   └── admin/
-│   │   │       └── UI/            # Shared UI components layer
-│   │   ├── i18n/                  # Internationalization
-│   │   │   ├── <locale>.ts        # General locale translations
-│   │   │   └── index.ts           # Global i18n configuration
-│   │   ├── layouts/               # Layouts (admin, shop)
-│   │   ├── services/              # Global services (appFactory.ts, localeProvider.ts, etc.)
-│   │   ├── store/
-│   │   │   └── useSessionStore.ts # Global state (User, TraceId, Auth status)
-│   │   ├── types/                 # Global TS interfaces/types
-│   │   ├── adminApiClient.ts      # Admin Axios wrapper
-│   │   ├── shopApiClient.ts       # Shop Axios wrapper
-│   │   └── constants.ts           # Global constants
+│   │   │       └── UI/                # Shared UI components layer
+│   │   ├── i18n/                      # Internationalization
+│   │   │   ├── <locale>.ts            # General locale translations
+│   │   │   └── index.ts               # Global i18n configuration
+│   │   ├── layouts/                   # Layouts
+│   │   ├── paths/                     # Application page paths (admin, shop)
+│   │   ├── services/                  # Global services
+│   │   ├── stores/                    # Global stores
+│   │   │   └── admin/
+│   │   │       └── useSessionStore.ts # Global state (User, TraceId, Auth status)
+│   │   └── types/                     # Global TS interfaces/types
 │   ├── Catalog/
-│   │   ├── api/                   # API clients/endpoints
-│   │   ├── composables/           # Module-level composables (e.g., useAttributeForm.ts)
-│   │   ├── i18n/                  # Internationalization
-│   │   ├── store/
-│   │   │   └── use<*>Store.ts     # Specific state
-│   │   ├── types/                 # Module specific interfaces/types
-│   │   └── views/                 # Main catalog views
+│   │   ├── components/                # Module-level components
+│   │   ├── composables/               # Module-level composables
+│   │   ├── i18n/                      # Module-level Internationalization
+│   │   ├── paths/                     # Module-level page paths or api endpoints
+│   │   ├── stores/
+│   │   │   └── use<*>Store.ts         # Module-level state
+│   │   ├── types/                     # Module-level interfaces/types
+│   │   ├── validators/                # Module-level validators
+│   │   └── views/                     # Module-level catalog views
 │   ...
-├── styles/                        # Global CSS
-└── shims.d.ts                     # TypeScript type definitions
+├── styles/                            # Global CSS
+└── shims.d.ts                         # TypeScript type definitions
 ```
 
 ## 3. Coding Standards & Constraints

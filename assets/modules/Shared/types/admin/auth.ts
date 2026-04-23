@@ -1,7 +1,4 @@
-export enum UserType {
-    Admin = 'admin',
-    Customer = 'customer'
-}
+import { UserType } from '@shared/types/user.ts';
 
 export interface JwtPayload {
     iss: string;

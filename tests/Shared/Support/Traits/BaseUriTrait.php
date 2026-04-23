@@ -13,6 +13,6 @@ trait BaseUriTrait
 {
     protected function getBaseUrl(string $routeName, array $params = []): string
     {
-        return static::getContainer()->get('router')->generate($routeName, $params);
+        return static::getContainer()->get('web')->generate($routeName, $params);
     }
 }

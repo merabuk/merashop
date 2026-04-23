@@ -2,21 +2,21 @@ import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { useI18n } from "vue-i18n";
 import axios, { type AxiosResponse } from 'axios';
-import adminApiClient from '@shared/adminApiClient';
-import { getActiveLocale } from '@shared/services/localeProvider';
-import { LOCALE } from '@shared/constants';
-import type { AttributeListItem, AttributeListResponse } from '@catalog/types/admin/attribute.interface';
-import type { AttributeSortField } from '@catalog/types/admin/attribute.constants';
-import { ERROR_CODES, type ApiError } from '@shared/types/error';
-import { CATALOG_ADMIN_API_ENDPOINTS } from '@catalog/api/admin/endpoints';
-import { parsePaginationHeaders } from '@shared/services/paginationHeaderParser';
+import adminApiClient from '@shared/api/adminApiClient.ts';
+import { getActiveLocale } from '@shared/services/localeProvider.ts';
+import { LOCALE } from '@shared/config/locale.ts';
+import type { AttributeListItem, AttributeListResponse } from '@catalog/types/admin/attribute.interface.ts';
+import type { AttributeSortField } from '@catalog/types/admin/attribute.constants.ts';
+import { ERROR_CODES, type ApiError } from '@shared/types/error.ts';
+import { CATALOG_API_ENDPOINTS } from '@catalog/paths/admin/api.ts';
+import { parsePaginationHeaders } from '@shared/services/paginationHeaderParser.ts';
 import {
     PAGINATION_PARAMETERS,
     DEFAULT_PER_PAGE,
     FILTER_PARAMETERS,
     SORT_PARAMETERS,
     type SortDirection
-} from '@shared/types/pagination.constants.ts';
+} from '@shared/types/admin/pagination.constants.ts';
 
 export const useAttributeStore = defineStore('catalog-attributes', () => {
     const { t } = useI18n();
@@ -58,7 +58,7 @@ export const useAttributeStore = defineStore('catalog-attributes', () => {
 
         try {
             const response: AxiosResponse<AttributeListResponse[]> = await adminApiClient.get(
-                `${CATALOG_ADMIN_API_ENDPOINTS.ATTRIBUTES.LIST}?${params.toString()}`
+                `${CATALOG_API_ENDPOINTS.ATTRIBUTES.LIST}?${params.toString()}`
             );
 
             const meta = parsePaginationHeaders(response);

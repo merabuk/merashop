@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import { useToastStore, ToastType } from '@shared/store/useToastStore';
+import { useToastStore, ToastType } from '@shared/stores/admin/useToastStore.ts';
 
 const toastStore = useToastStore();
 

@@ -1,7 +1,7 @@
 import { createI18n, type VueMessageType } from 'vue-i18n';
 import type { LocaleMessage } from '@intlify/core-base';
 import { getActiveLocale } from '@shared/services/localeProvider';
-import { LOCALE } from '@shared/constants';
+import { LOCALE } from '@shared/config/locale';
 import { SUPPORTED_LOCALE_CODES, type SupportedLocaleCode } from '@shared/types/locale';
 
 const moduleFiles = import.meta.glob<{ default: object }>('@/modules/**/i18n/*.ts', { eager: true });

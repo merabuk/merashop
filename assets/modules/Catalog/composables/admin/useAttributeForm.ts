@@ -3,7 +3,7 @@ import { useI18n } from 'vue-i18n';
 import { SUPPORTED_LOCALES } from '@shared/types/locale';
 import { AttributeType } from '@catalog/types/attribute.enum';
 import { ATTRIBUTE_TYPES_HAS_OPTIONS } from '@catalog/types/admin/attribute.constants';
-import { createAttributeSchema } from '@catalog/api/admin/attribute-validator';
+import { createAttributeSchema } from '@catalog/validators/admin/attribute-validator.ts';
 import type { AttributeOption, OptionTranslation } from "@catalog/types/admin/option.interface";
 import type { AttributeTranslation } from "@catalog/types/admin/attribute.interface";
 

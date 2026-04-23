@@ -36,7 +36,7 @@ import { useAttributeForm } from '@catalog/composables/admin/useAttributeForm';
 import { AttributeType } from '@catalog/types/attribute.enum';
 import { SUPPORTED_LOCALES } from '@shared/types/locale';
 import { getTargetUlid } from "@shared/services/domDataProvider";
-import adminApiClient from '@shared/adminApiClient';
+import adminApiClient from '@shared/api/adminApiClient.ts';
 import type { AttributeItemResponse, AttributeUpdateResponse } from "@catalog/types/admin/attribute.interface";
 import type {
     AttributeOption,
@@ -44,9 +44,9 @@ import type {
     AttributeItemOptionItemResponse
 } from "@catalog/types/admin/option.interface";
 import type { ApiError } from "@shared/types/error";
-import { CATALOG_ADMIN_API_ENDPOINTS } from '@catalog/api/admin/endpoints';
-import { ADMIN_WEB_ENDPOINTS } from "@shared/web/admin/endpoints";
-import { useToastStore } from '@shared/store/useToastStore';
+import { CATALOG_API_ENDPOINTS } from '@catalog/paths/admin/api.ts';
+import { ADMIN_WEB_ENDPOINTS } from "@shared/paths/admin/web.ts";
+import { useToastStore } from '@shared/stores/admin/useToastStore.ts';
 
 const targetUlid = getTargetUlid();
 const { t } = useI18n();
@@ -69,7 +69,7 @@ onMounted(async () => {
 
     try {
         const { data } = await adminApiClient.get<AttributeItemResponse>(
-            CATALOG_ADMIN_API_ENDPOINTS.ATTRIBUTES.GET(targetUlid)
+            CATALOG_API_ENDPOINTS.ATTRIBUTES.GET(targetUlid)
         );
 
         form.code = data.code;
@@ -125,7 +125,7 @@ async function handleSubmit() {
     isLoading.value = true;
     try {
         const { data } = await adminApiClient.put<AttributeUpdateResponse>(
-            CATALOG_ADMIN_API_ENDPOINTS.ATTRIBUTES.UPDATE(targetUlid),
+            CATALOG_API_ENDPOINTS.ATTRIBUTES.UPDATE(targetUlid),
             form
         );
         toast.persist(data.message);

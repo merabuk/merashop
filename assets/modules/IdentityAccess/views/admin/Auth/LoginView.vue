@@ -43,12 +43,12 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
-import adminApiClient from '@shared/adminApiClient';
-import { useSessionStore } from '@shared/store/useSessionStore';
-import type { AuthResponse } from '@shared/types/auth';
+import adminApiClient from '@shared/api/adminApiClient.ts';
+import { useSessionStore } from '@shared/stores/admin/useSessionStore.ts';
+import type { AuthResponse } from '@shared/types/admin/auth.ts';
 import type { ApiError } from '@shared/types/error';
-import { IDENTITY_ACCESS_API_ENDPOINTS } from "@identity-access/api/endpoints";
-import { ADMIN_WEB_ENDPOINTS } from "@shared/web/admin/endpoints";
+import { IDENTITY_ACCESS_API_ENDPOINTS } from "@identity-access/paths/admin/api.ts";
+import { ADMIN_WEB_ENDPOINTS } from "@shared/paths/admin/web.ts";
 import { GrantType} from "@identity-access/types/grant_type.enum";
 
 const { t } = useI18n();

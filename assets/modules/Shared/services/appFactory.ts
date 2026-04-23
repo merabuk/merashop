@@ -1,9 +1,10 @@
 import { Component, createApp, defineAsyncComponent } from 'vue';
 import { createPinia } from 'pinia';
 import { i18n } from '@shared/i18n';
-import { useSessionStore } from '@shared/store/useSessionStore';
-import { APP_NAME, DOM_DATA_ATTRIBUTES } from '@shared/constants';
-import { useToastStore } from '@shared/store/useToastStore';
+import { useSessionStore } from '@shared/stores/admin/useSessionStore.ts';
+import { DOM_DATA_ATTRIBUTES } from '@shared/config/dom.ts';
+import { useToastStore } from '@shared/stores/admin/useToastStore.ts';
+import { APP_NAME } from '@shared/config/app.ts';
 
 export function createMeraShopApp(views: Record<string, () => Promise<Component>>) {
     const components: Record<string, Component> = {};
@@ -19,7 +20,14 @@ export function createMeraShopApp(views: Record<string, () => Promise<Component>
     const rootElement = document.getElementById('app');
 
     if (rootElement) {
-        const componentName = rootElement.dataset.component || 'App';
+        const componentName = rootElement.dataset.component;
+
+        if (!componentName) {
+            console.error(`❌[${APP_NAME}] Missing component name in dataset.`);
+
+            return;
+        }
+
         const RootComponent = components[componentName];
 
         if (!RootComponent) {
@@ -38,7 +46,6 @@ export function createMeraShopApp(views: Record<string, () => Promise<Component>
 
         const session = useSessionStore();
         session.initialize({
-            userJson: rootElement.dataset[DOM_DATA_ATTRIBUTES.USER] ?? 'guest',
             currentTraceId: rootElement.dataset[DOM_DATA_ATTRIBUTES.TRACE_ID] ?? 'unknown'
         });
 

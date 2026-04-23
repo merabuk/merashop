@@ -11,7 +11,7 @@ export default {
         },
         attributes: {
             title: 'Product Attributes',
-            description: 'Manage product attributes of your store',
+            description: 'Manage product attributes of your stores',
             add: 'Add Attribute',
             edit: 'Edit Attribute',
             empty_list: 'Attribute list is empty',
@@ -42,7 +42,7 @@ export default {
         },
         categories: {
             title: 'Product Categories',
-            description: 'Manage product categories of your store',
+            description: 'Manage product categories of your stores',
             add: 'Add Category',
             empty_list: 'Category list is empty',
             empty_list_alter: 'Add your first category to get started',

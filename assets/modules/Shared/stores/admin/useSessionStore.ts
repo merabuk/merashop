@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { jwtDecode } from 'jwt-decode';
-import type { JwtPayload, SessionUser, AuthResponse } from '@shared/types/auth';
+import type { JwtPayload, SessionUser, AuthResponse } from '@shared/types/admin/auth.ts';
 
 export const useSessionStore = defineStore('session', () => {
     const accessToken = ref<string | null>(localStorage.getItem('access_token'));
@@ -24,7 +24,7 @@ export const useSessionStore = defineStore('session', () => {
 
     const isAuthenticated = computed(() => !!accessToken.value);
 
-    function initialize(data: { userJson: string | undefined; currentTraceId: string }) {
+    function initialize(data: { currentTraceId: string }) {
         traceId.value = data.currentTraceId;
 
         if (accessToken.value && !userPayload.value) {

@@ -71,7 +71,7 @@ import { useI18n } from 'vue-i18n';
 import Icon from '@shared/components/admin/UI/Icon.vue';
 import SidebarItem from '@shared/layouts/admin/SidebarItem.vue';
 import SidebarSubItem from '@shared/layouts/admin/SidebarSubItem.vue';
-import { ADMIN_WEB_ENDPOINTS } from "@shared/web/admin/endpoints";
+import { ADMIN_WEB_ENDPOINTS } from "@shared/paths/admin/web.ts";
 import { IconEnum } from "@shared/types/admin/icon.enum";
 import { AdminSidebarView, CATALOG_VIEWS } from "@shared/types/admin/sidebar.constants.ts";
 

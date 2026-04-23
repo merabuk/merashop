@@ -19,7 +19,7 @@
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { SUPPORTED_LOCALES } from '@shared/types/locale';
-import { LOCALE } from '@shared/constants';
+import { LOCALE } from '@shared/config/locale';
 
 
 const { locale } = useI18n();

@@ -1,4 +1,4 @@
-import { LOCALE } from '@shared/constants';
+import { LOCALE } from '@shared/config/locale';
 
 export const getActiveLocale = (): string => {
     const htmlLang = document.documentElement.lang;

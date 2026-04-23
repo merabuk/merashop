@@ -134,13 +134,13 @@ import ColumnHeader from "@shared/components/admin/UI/Table/ColumnHeader.vue";
 import LoadMore from "@shared/components/admin/UI/Table/LoadMore.vue";
 import PerPage from "@shared/components/admin/UI/Table/PerPage.vue";
 import Search from "@shared/components/admin/UI/Table/Search.vue";
-import { useAttributeStore } from '@catalog/store/useAttributeStore';
-import { ADMIN_WEB_ENDPOINTS } from "@shared/web/admin/endpoints";
+import { useAttributeStore } from '@catalog/stores/admin/useAttributeStore.ts';
+import { ADMIN_WEB_ENDPOINTS } from "@shared/paths/admin/web.ts";
 import { AttributeType } from "@catalog/types/attribute.enum";
 import { ATTRIBUTE_SORT_FIELDS } from '@catalog/types/admin/attribute.constants';
 import { BreadcrumbItem } from "@shared/types/admin/breadcrumb.interface.ts";
 import { IconEnum } from "@shared/types/admin/icon.enum.ts";
-import { DEFAULT_PER_PAGE } from '@shared/types/pagination.constants.ts';
+import { DEFAULT_PER_PAGE } from '@shared/types/admin/pagination.constants.ts';
 
 const { t } = useI18n();
 const attributeStore = useAttributeStore();

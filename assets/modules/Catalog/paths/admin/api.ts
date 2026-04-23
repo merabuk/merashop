@@ -1,4 +1,4 @@
-export const CATALOG_ADMIN_API_ENDPOINTS = {
+export const CATALOG_API_ENDPOINTS = {
     ATTRIBUTES: {
         LIST: '/admin/api/v1/catalog/attributes',
         CREATE: '/admin/api/v1/catalog/attributes',
