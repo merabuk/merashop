@@ -1,0 +1,29 @@
+# Frontend module boundary rules.
+# Documents which modules are allowed to import from which.
+# Mirrors the backend deptrac-modules.yaml convention.
+# Enforced via dependency-cruiser (.dependency-cruiser.yml).
+
+parameters:
+  paths:
+    - ./assets
+
+  layers:
+    - name: Shared
+      collectors:
+        - type: directory
+          value: /assets/modules/Shared/.*
+    - name: Catalog
+      collectors:
+        - type: directory
+          value: /assets/modules/Catalog/.*
+    - name: IdentityAccess
+      collectors:
+        - type: directory
+          value: /assets/modules/IdentityAccess/.*
+
+  ruleset:
+    Shared: ~
+    Catalog:
+      - Shared
+    IdentityAccess:
+      - Shared
