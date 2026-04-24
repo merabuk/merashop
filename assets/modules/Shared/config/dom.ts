@@ -1,5 +1,5 @@
 export const DOM_DATA_ATTRIBUTES = {
     TRACE_ID: 'traceId',
-    USER: 'user',
+    ULID: 'ulid',
     COMPONENT: 'component',
 } as const;

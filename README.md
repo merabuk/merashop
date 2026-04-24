@@ -7,6 +7,8 @@ Online store on Symfony.
 - [Project structure](#project-structure)
   - [Domain Structure](#domain-structure)
   - [Directory Structure](#directory-structure)
+    - [Backend Structure](#backend-structure)
+    - [Frontend Structure](#frontend-structure)
 - [Databases & Migrations](#databases--migrations)
   - [Create or sync databases](#create-or-sync-databases)
   - [Remove old module databases](#remove-old-module-databases)
@@ -68,6 +70,7 @@ Each module follows the principles of DDD (Domain-Driven Design) and has a clear
 
 ### Directory Structure
 
+#### Backend Structure
 Every module within `src/` must follow this standardized structure:
 
 ```bash
@@ -141,6 +144,8 @@ src/Shared/Domain/
 ```
 
 The translation folder is standardized at `src/<ModuleName>/Presentation/Http/translations/`, except for infrastructure-specific translations (e.g., in `EmailSender`).
+
+#### Frontend Structure
 
 Base `assets` folder structure (TypeScript enabled):
 
@@ -326,21 +331,34 @@ The frontend is built with **Vue 3.5**, **Vite**, and **TypeScript**.
 
 ### Quick Start (Frontend)
 
-1. **Launch dev server**:
+To keep the host system clean, Node.js and npm run exclusively inside Docker.
+
+1. **Installing dependencies**: This happens automatically during `make init`.
+2. **Synchronization for IDEs**: For syntax highlighting and autocompletion to work (PhpStorm/VS Code), you need to have a copy of the dependencies on the host:
+
+    ```bash
+   make node-sync-types
+    ```
+
+3. **Launch dev server**:
 
    Server automaticaly launches with docker container `node`. This starts the Vite dev server with Hot Module Replacement (HMR).
 
-2. **Type-checking**:
+4. **Type-checking**:
 
    ```bash
+   make node-type-check
+   # or
    docker compose exec node npm run type-check
    ```
 
    Runs `vue-tsc` to verify TypeScript types across the project.
 
-3. **Linting**:
+5. **Linting**:
 
    ```bash
+   make node-lint
+   # or
    docker compose exec -T node npm run lint
    ```
 
@@ -350,6 +368,7 @@ The frontend is built with **Vue 3.5**, **Vite**, and **TypeScript**.
 
 We use path aliases to maintain clean imports and module isolation:
 
+- `@` -> `assets/`
 - `@shared` -> `assets/modules/Shared/`
 - `@catalog` -> `assets/modules/Catalog/`
 - `@identity-access` -> `assets/modules/IdentityAccess/`

@@ -1,4 +1,4 @@
-.PHONY: help init up down build app-sh grumphp php-cs-fixer phpstan test markdownlint
+.PHONY: help init up down build app-sh node-sh node-sync-types grumphp php-cs-fixer phpstan node-lint node-type-check markdownlint test
 .DEFAULT_GOAL := help
 SHELL := /usr/bin/env bash
 SCRIPT_DIR := ./scripts
@@ -33,6 +33,14 @@ build:
 app-sh:
 	docker compose exec app sh
 
+node-sh:
+	docker compose exec node sh
+
+node-sync-types:
+	@echo "Syncing node_modules from container to host..."
+	docker cp $$(docker compose ps -q node):/app/node_modules ./
+	@echo "Sync complete. IDE index may take a moment to update."
+
 grumphp:
 	docker compose exec app php vendor/bin/grumphp run -n
 
@@ -42,8 +50,15 @@ php-cs-fixer:
 phpstan:
 	docker compose exec app php vendor/bin/phpstan analyse --configuration=phpstan.dist.neon --memory-limit=-1 --no-ansi --no-interaction
 
-test:
-	docker compose exec app vendor/bin/phpunit
+node-lint:
+	docker compose exec node npm run lint
+
+node-type-check:
+	docker compose exec node npm run type-check
 
 markdownlint:
 	docker compose exec node ./node_modules/.bin/markdownlint --fix --ignore vendor .
+
+test:
+	docker compose exec app vendor/bin/phpunit
+
