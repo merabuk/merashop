@@ -25,4 +25,17 @@ final class StringHelperTest extends TestCase
         yield 'multibyte support' => ['Привіт Світ', 6, '...', 'Привіт...'];
         yield 'emoji support' => ['🚀🚀🚀', 1, '!', '🚀!'];
     }
+
+    #[DataProvider('afterProvider')]
+    public function testItGetsAfterCorrectly(string $string, string $search, string $expected): void
+    {
+        self::assertSame($expected, StringHelper::after(subject: $string, search: $search));
+    }
+
+    public static function afterProvider(): iterable
+    {
+        yield 'when search is empty' => ['Hello World', '', 'Hello World'];
+        yield 'when search is not found' => ['Hello World', 'Foo', 'Hello World'];
+        yield 'when search is found' => ['Hello World', 'Hello', ' World'];
+    }
 }

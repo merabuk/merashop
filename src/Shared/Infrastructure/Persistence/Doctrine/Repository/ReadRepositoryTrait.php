@@ -6,7 +6,10 @@ use App\Shared\Domain\Criteria\Listing\PaginatedResult;
 use App\Shared\Domain\Criteria\Paging\Cursor;
 use App\Shared\Domain\Criteria\Sorting\Sort;
 use App\Shared\Domain\Entity\HasIdInterface;
+use App\Shared\Domain\Entity\HasUlidInterface;
 use App\Shared\Domain\Exception\Database\OneOfEntitiesNotFoundException;
+use App\Shared\Domain\Exception\InvalidArgumentException;
+use App\Shared\Domain\Service\Utility\StringHelper;
 use App\Shared\Domain\ValueObject\Contract\IdInterface;
 use App\Shared\Domain\ValueObject\Identity\Ulid;
 use App\Shared\Infrastructure\Persistence\Doctrine\Criteria\Restrictions\ComparisonOperatorEnum;
@@ -202,43 +205,62 @@ trait ReadRepositoryTrait
         ?Sort $sort,
         callable $mapCallback,
         string $alias = 'e',
+        string $identifierField = 'ulid',
     ): PaginatedResult {
-        $sortField = $sort->field ?? 'id';
+        $isUlid = 'ulid' === $identifierField;
+        $lastSeenIdentifier = $cursor->lastSeenIdentifier;
+        $sortFieldWithAlias = $sort->field ?? $alias.'.'.$identifierField;
         $direction = $sort->direction ?? Sort::ASC;
 
-        if ($cursor->lastSeenIdentifier) {
+        if (!str_contains($sortFieldWithAlias, '.')) {
+            throw new InvalidArgumentException('Sort field must be in format "alias.field"');
+        }
+
+        if ($lastSeenIdentifier) {
             $operator = (Sort::DESC === $direction) ? '<' : '>';
-            $qb->andWhere("{$alias}.{$sortField} {$operator} :lastId")
-                ->setParameter('lastId', $cursor->lastSeenIdentifier);
+            $qb->andWhere("{$alias}.{$identifierField} {$operator} :identifier")
+                ->setParameter(
+                    key: 'identifier',
+                    value: $isUlid
+                        ? UlidPersistenceHelper::toBaseString($lastSeenIdentifier)
+                        : $lastSeenIdentifier
+                );
         }
 
-        $qb->orderBy("{$alias}.{$sortField}", $direction);
-        if ('id' !== $sortField) {
-            $qb->addOrderBy("{$alias}.id", $direction);
+        $qb->orderBy("{$sortFieldWithAlias}", $direction);
+        if ($identifierField !== StringHelper::after(subject: $sortFieldWithAlias, search: '.')) {
+            $qb->addOrderBy("{$alias}.{$identifierField}", $direction);
         }
 
-        $qb->setMaxResults($cursor->perPage);
+        $limit = $cursor->perPage;
+        $qb->setMaxResults($limit + 1);
 
         $paginator = new Paginator($qb, fetchJoinCollection: true);
 
         $totalCount = $paginator->count();
-        $results = [];
-        foreach ($paginator as $ormEntity) {
-            $results[] = $ormEntity;
+        $ormResults = iterator_to_array($paginator);
+
+        $hasMore = count($ormResults) > $limit;
+
+        if ($hasMore) {
+            array_pop($ormResults);
         }
 
-        $items = array_map($mapCallback, $results);
+        $domainItems = array_map($mapCallback, $ormResults);
 
-        $lastItem = end($items);
         $nextCursor = null;
+        if ($hasMore && !empty($domainItems)) {
+            $lastDomainItem = end($domainItems);
 
-        // TODO: solution for admin api, refactor this when pagination will be needed for public api
-        if ($lastItem instanceof HasIdInterface && null !== $lastItem->getId()) {
-            $nextCursor = (string) $lastItem->getId()->value();
+            if ($lastDomainItem instanceof HasUlidInterface) {
+                $nextCursor = $lastDomainItem->getUlid()->value();
+            } elseif ($lastDomainItem instanceof HasIdInterface && null !== $lastDomainItem->getId()) {
+                $nextCursor = (string) $lastDomainItem->getId()->value();
+            }
         }
 
         return new PaginatedResult(
-            items: $items,
+            items: $domainItems,
             totalCount: $totalCount,
             nextCursor: $nextCursor
         );

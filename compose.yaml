@@ -233,6 +233,20 @@ services:
       - ./docker/app/php/conf.d/zzz-settings-override-local.ini:/usr/local/etc/php/conf.d/zzz-settings-override.ini
     working_dir: /var/www
 
+  node:
+    image: merashop/node:latest
+    environment:
+      APP_RUNTIME_ENV: ${APP_RUNTIME_ENV}
+      PLATFORM_ARCHITECTURE: ${PLATFORM_ARCHITECTURE}
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    networks:
+      - merashop-network
+    working_dir: /app
+
   rabbitmq:
     image: rabbitmq:4.2-management-alpine
     environment:

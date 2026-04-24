@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Catalog\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\Catalog\Domain\Entity\Attribute;
+use App\Catalog\Domain\Enum\Attribute\SortFieldEnum;
 use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
 use App\Catalog\Domain\Exception\Attribute\AttributeStateException;
 use App\Catalog\Domain\Exception\Attribute\OneOfAttributesNotFoundException;
@@ -16,7 +17,9 @@ use App\Catalog\Domain\ValueObject\Attribute\Ulid;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttribute;
 use App\Shared\Domain\Criteria\Listing\Criteria;
 use App\Shared\Domain\Criteria\Listing\PaginatedResult;
+use App\Shared\Domain\Criteria\Sorting\Sort;
 use App\Shared\Domain\Exception\Database\OneOfEntitiesNotFoundException;
+use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
@@ -85,6 +88,19 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
     }
 
     /**
+     * @throws AttributeNotFoundException
+     * @throws AttributeStateException
+     * @throws EntityIdMissingException
+     * @throws IncompatibleMappedEntityException
+     * @throws InvalidCatalogValueObjectException
+     * @throws InvalidLocaleException
+     */
+    public function getByUlid(Ulid $ulid): Attribute
+    {
+        return $this->findByUlid($ulid) ?? throw AttributeNotFoundException::withUlid($ulid->value());
+    }
+
+    /**
      * @throws AttributeStateException
      * @throws EntityIdMissingException
      * @throws IncompatibleMappedEntityException
@@ -141,10 +157,22 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
             ))->setParameter('search', $search);
         }
 
+        $sort = $criteria->sort
+            ? new Sort(
+                field: match (SortFieldEnum::tryFrom($criteria->sort->field)) {
+                    SortFieldEnum::Code => self::ALIAS.'.code',
+                    SortFieldEnum::Name => self::ALIAS_TRANSLATIONS.'.name',
+                    SortFieldEnum::Type => self::ALIAS.'.type',
+                    null => throw new InvalidArgumentException("Invalid sort field: {$criteria->sort->field}"),
+                },
+                direction: $criteria->sort->direction,
+            )
+            : null;
+
         return $this->_paginate(
             qb: $qb,
             cursor: $criteria->cursor,
-            sort: $criteria->sort,
+            sort: $sort,
             mapCallback: fn (object $orm) => $this->checkAndMapToDomain($orm),
             alias: self::ALIAS,
         );

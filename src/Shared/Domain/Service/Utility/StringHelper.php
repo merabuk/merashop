@@ -16,4 +16,19 @@ final class StringHelper
 
         return null !== $ending ? $substring.$ending : $substring;
     }
+
+    public static function after(string $subject, string $search): string
+    {
+        if ('' === $search) {
+            return $subject;
+        }
+
+        $pos = mb_strpos($subject, $search);
+
+        if (false === $pos) {
+            return $subject;
+        }
+
+        return mb_substr($subject, $pos + mb_strlen($search));
+    }
 }

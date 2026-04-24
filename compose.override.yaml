@@ -37,6 +37,17 @@ services:
     depends_on:
       - pgsql
       - redis
+      - node
+    restart: on-failure
+
+  node:
+    platform: ${PLATFORM_ARCHITECTURE:-linux/amd64}
+    build:
+      context: .
+      dockerfile: ./docker/node/Dockerfile
+      target: ${APP_RUNTIME_ENV}
+      tags:
+        - merashop/node:latest
     restart: on-failure
 
   rabbitmq:

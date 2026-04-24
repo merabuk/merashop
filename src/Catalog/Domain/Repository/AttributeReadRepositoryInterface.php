@@ -29,6 +29,11 @@ interface AttributeReadRepositoryInterface
      */
     public function findByIds(array $ids): array;
 
+    /**
+     * @throws AttributeNotFoundException
+     */
+    public function getByUlid(Ulid $ulid): Attribute;
+
     public function findByUlid(Ulid $ulid): ?Attribute;
 
     public function existsByCode(Code $code): bool;

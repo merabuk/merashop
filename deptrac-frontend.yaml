@@ -1,0 +1,103 @@
+# Frontend layer dependency rules.
+# Documents the allowed import direction between internal folder layers.
+# Mirrors the backend deptrac.yaml convention.
+# Enforced via dependency-cruiser (.dependency-cruiser.yml).
+
+parameters:
+  paths:
+    - ./assets
+
+  layers:
+    - name: Types
+      collectors:
+        - type: directory
+          value: /assets/modules/.*/types/.*
+    - name: Paths
+      collectors:
+        - type: directory
+          value: /assets/modules/.*/paths/.*
+    - name: Config
+      collectors:
+        - type: directory
+          value: /assets/modules/Shared/config/.*
+    - name: I18n
+      collectors:
+        - type: directory
+          value: /assets/modules/.*/i18n/.*
+    - name: Validators
+      collectors:
+        - type: directory
+          value: /assets/modules/.*/validators/.*
+    - name: Api
+      collectors:
+        - type: directory
+          value: /assets/modules/Shared/api/.*
+    - name: Services
+      collectors:
+        - type: directory
+          value: /assets/modules/Shared/services/.*
+    - name: Stores
+      collectors:
+        - type: directory
+          value: /assets/modules/.*/stores/.*
+    - name: Composables
+      collectors:
+        - type: directory
+          value: /assets/modules/.*/composables/.*
+    - name: Components
+      collectors:
+        - type: directory
+          value: /assets/modules/.*/components/.*
+    - name: Layouts
+      collectors:
+        - type: directory
+          value: /assets/modules/.*/layouts/.*
+    - name: Views
+      collectors:
+        - type: directory
+          value: /assets/modules/.*/views/.*
+
+  ruleset:
+    Types: ~
+    Paths: ~
+    Config: ~
+    I18n: ~
+    Validators:
+      - Types
+    Api:
+      - Config
+      - Types
+    Services:
+      - Config
+      - Types
+      - Api
+    Stores:
+      - Types
+      - Paths
+      - Api
+    Composables:
+      - Stores
+      - Types
+      - Validators
+      - Paths
+    Components:
+      - Composables
+      - Types
+      - Stores
+      - Paths
+    Layouts:
+      - Components
+      - Composables
+      - Stores
+      - Types
+      - Paths
+      - Services
+      - I18n
+    Views:
+      - Components
+      - Composables
+      - Stores
+      - Types
+      - Validators
+      - Paths
+      - I18n

@@ -12,21 +12,34 @@ use Symfony\Component\HttpKernel\KernelEvents;
 #[AsEventListener(event: KernelEvents::REQUEST, priority: 30)]
 final class LocaleListener
 {
+    private const string COOKIE_NAME = '_locale';
+
     public function onKernelRequest(RequestEvent $event): void
     {
+        if (!$event->isMainRequest()) {
+            return;
+        }
+
         $request = $event->getRequest();
 
-        // TODO[locale]: check if this is needed in the future
-        if ($request->attributes->get('_locale')) {
+        if ($request->attributes->has('_locale')) {
+            return;
+        }
+
+        $cookieLocale = $request->cookies->get(self::COOKIE_NAME);
+        if ($cookieLocale && LocaleEnum::tryFrom($cookieLocale)) {
+            $request->setLocale($cookieLocale);
+
             return;
         }
 
         $preferred = $request->getPreferredLanguage(LocaleEnum::getValues());
-
         if ($preferred) {
             $request->setLocale($preferred);
-        } else {
-            $request->setLocale(LocaleEnum::default()->value);
+
+            return;
         }
+
+        $request->setLocale(LocaleEnum::default()->value);
     }
 }

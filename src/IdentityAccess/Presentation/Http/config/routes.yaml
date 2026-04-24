@@ -5,6 +5,12 @@ identity_access.public.api.v1:
   type: attribute
   prefix: /api/v1/identity-access
 
+identity_access.admin.web:
+  resource:
+    path: ../AdminWeb/Controller/
+    namespace: App\IdentityAccess\Presentation\Http\AdminWeb\Controller
+  type: attribute
+
 identity_access.admin.api.v1:
   resource:
     path: ../AdminApiVersion1/Controller/

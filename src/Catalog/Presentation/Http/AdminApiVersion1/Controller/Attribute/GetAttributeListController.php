@@ -6,6 +6,7 @@ namespace App\Catalog\Presentation\Http\AdminApiVersion1\Controller\Attribute;
 
 use App\Catalog\Application\Query\GetAttributeList\GetAttributeListQuery;
 use App\Catalog\Domain\Entity\Attribute;
+use App\Catalog\Domain\Enum\Attribute\SortFieldEnum;
 use App\Catalog\Presentation\Http\AdminApiVersion1\Resource\Attribute\GetAttributeListResource;
 use App\Shared\Application\Query\QueryBusInterface;
 use App\Shared\Application\Security\AuthIdentity;
@@ -39,7 +40,11 @@ class GetAttributeListController extends AbstractController
         format: JsonEncoder::FORMAT
     )]
     public function __invoke(
-        #[MapPagination(allowedSortFields: ['code'])] PaginationRequest $pagination,
+        #[MapPagination(allowedSortFields: [
+            SortFieldEnum::Name->value,
+            SortFieldEnum::Code->value,
+            SortFieldEnum::Type->value,
+        ])] PaginationRequest $pagination,
         #[CurrentAuthEntityIdentity] AuthIdentity $identity,
         QueryBusInterface $queryBus,
     ): JsonResponse {

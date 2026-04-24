@@ -1,0 +1,30 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "useDefineForClassFields": true,
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "strict": true,
+        "jsx": "preserve",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "esModuleInterop": true,
+        "lib": ["ESNext", "DOM"],
+        "skipLibCheck": true,
+        "noEmit": true,
+        "allowImportingTsExtensions": false,
+        "types": ["vite/client"],
+        "paths": {
+            "@/*": ["./assets/*"],
+            "@catalog/*": ["./assets/modules/Catalog/*"],
+            "@identity-access/*": ["./assets/modules/IdentityAccess/*"],
+            "@shared/*": ["./assets/modules/Shared/*"]
+        }
+    },
+    "include": [
+        "assets/**/*.ts",
+        "assets/**/*.d.ts",
+        "assets/**/*.tsx",
+        "assets/**/*.vue"
+    ]
+}

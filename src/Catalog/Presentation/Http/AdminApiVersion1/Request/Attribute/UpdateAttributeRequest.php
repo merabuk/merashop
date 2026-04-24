@@ -13,10 +13,10 @@ class UpdateAttributeRequest extends BaseAttributeRequest
     #[Assert\Positive(groups: [self::BASE_GROUP])]
     public ?int $version;
 
-    public function toCommand(int $id, string $adminUlid): UpdateAttributeCommand
+    public function toCommand(string $ulid, string $adminUlid): UpdateAttributeCommand
     {
         return new UpdateAttributeCommand(
-            id: $id,
+            ulid: $ulid,
             code: $this->code,
             type: $this->type,
             translations: $this->mapAndGetTranslations(),

@@ -42,7 +42,7 @@ final readonly class PaginationRequestResolver implements ValueResolverInterface
         $dto->sortField = $request->query->get('sortField');
         $sortDir = $request->query->get('sortDir');
         $dto->sortDir = is_string($sortDir) ? mb_strtoupper($sortDir) : $dto->sortDir;
-        $dto->filters = $request->query->all('filter');
+        $dto->filters = $request->query->all('filters');
 
         $violations = $this->validator->validate($dto);
 

@@ -44,7 +44,7 @@ final class GetAttributeItemControllerTest extends WebTestCase
         $this->requestJson(
             client: $client,
             method: self::METHOD,
-            uri: $this->getUrl(['id' => 123])
+            uri: $this->getUrl(['ulid' => $this->getAttributeMother()::DEFAULT_ULID])
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
@@ -58,7 +58,7 @@ final class GetAttributeItemControllerTest extends WebTestCase
         $this->requestJson(
             client: $client,
             method: self::METHOD,
-            uri: $this->getUrl(['id' => 123])
+            uri: $this->getUrl(['ulid' => $this->getAttributeMother()::DEFAULT_ULID])
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
@@ -75,7 +75,7 @@ final class GetAttributeItemControllerTest extends WebTestCase
         $this->requestJson(
             client: $client,
             method: self::METHOD,
-            uri: $this->getUrl(['id' => $attribute->getId()->value()])
+            uri: $this->getUrl(['ulid' => $attribute->getUlid()->value()])
         );
 
         $this->assertResponseIsSuccessful();
@@ -88,7 +88,7 @@ final class GetAttributeItemControllerTest extends WebTestCase
         self::assertArrayHasKey('translations', $data);
         self::assertArrayHasKey('version', $data);
         self::assertArrayHasKey('options', $data);
-        self::assertSame($attribute->getId()->value(), $data['id']);
+        self::assertSame($attribute->getUlid()->value(), $data['id']);
         self::assertSame($attribute->getCode()->value(), $data['code']);
         self::assertSame($attribute->getType()->value()->value, $data['type']);
         foreach ($attribute->getTranslations() as $locale => $translation) {
@@ -139,12 +139,12 @@ final class GetAttributeItemControllerTest extends WebTestCase
         $client = self::createClient();
         $this->loginAsAdmin();
 
-        $id = 123;
+        $ulid = $this->getAttributeMother()::DEFAULT_ULID;
 
         $this->requestJson(
             client: $client,
             method: self::METHOD,
-            uri: $this->getUrl(['id' => $id])
+            uri: $this->getUrl(['ulid' => $ulid])
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
@@ -153,7 +153,7 @@ final class GetAttributeItemControllerTest extends WebTestCase
         $this->assertExceptionMessage(
             data: $data,
             expectedCode: ErrorCodeEnum::AttributeNotFound->value,
-            expectedContainMessage: sprintf('Attribute with id "%s" not found', $id)
+            expectedContainMessage: sprintf('Attribute with ulid "%s" not found', $ulid)
         );
     }
 
@@ -165,7 +165,7 @@ final class GetAttributeItemControllerTest extends WebTestCase
         $this->requestJson(
             client: $client,
             method: self::METHOD,
-            uri: '/admin/api/v1/catalog/attributes/invalid-string'
+            uri: '/admin/api/v1/catalog/attributes/invalid-ulid'
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);

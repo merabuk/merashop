@@ -6,9 +6,9 @@ namespace App\Catalog\Application\Query\GetAttributeItem;
 
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
-use App\Catalog\Domain\Exception\Attribute\InvalidAttributeIdException;
+use App\Catalog\Domain\Exception\Attribute\InvalidAttributeUlidException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
-use App\Catalog\Domain\ValueObject\Attribute\Id;
+use App\Catalog\Domain\ValueObject\Attribute\Ulid;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Query\QueryHandlerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -23,10 +23,10 @@ readonly class GetAttributeItemHandler implements QueryHandlerInterface
 
     /**
      * @throws AttributeNotFoundException
-     * @throws InvalidAttributeIdException
+     * @throws InvalidAttributeUlidException
      */
     public function __invoke(GetAttributeItemQuery $query): Attribute
     {
-        return $this->readRepository->getById(Id::fromInt($query->id));
+        return $this->readRepository->getByUlid(Ulid::fromString($query->ulid));
     }
 }

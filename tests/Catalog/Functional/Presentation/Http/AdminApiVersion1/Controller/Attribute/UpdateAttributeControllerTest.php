@@ -42,7 +42,10 @@ final class UpdateAttributeControllerTest extends WebTestCase
     {
         $client = self::createClient();
 
-        $this->requestJson(client: $client, method: self::METHOD, uri: $this->getUrl(['id' => 123]));
+        $this->requestJson(
+            client: $client,
+            method: self::METHOD,
+            uri: $this->getUrl(['ulid' => $this->getAttributeMother()::DEFAULT_ULID]));
 
         $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
@@ -52,7 +55,10 @@ final class UpdateAttributeControllerTest extends WebTestCase
         $client = self::createClient();
         $this->loginAsUser();
 
-        $this->requestJson(client: $client, method: self::METHOD, uri: $this->getUrl(['id' => 123]));
+        $this->requestJson(
+            client: $client,
+            method: self::METHOD,
+            uri: $this->getUrl(['ulid' => $this->getAttributeMother()::DEFAULT_ULID]));
 
         $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
@@ -72,7 +78,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
         $this->requestJson(
             client: $client,
             method: self::METHOD,
-            uri: $this->getUrl(['id' => $attribute->getId()->value()]),
+            uri: $this->getUrl(['ulid' => $attribute->getUlid()->value()]),
             payload: [
                 'version' => $attribute->getVersion()->value(),
                 ...$payload,
@@ -147,10 +153,12 @@ final class UpdateAttributeControllerTest extends WebTestCase
             'version' => 1,
         ];
 
+        $ulid = $this->getAttributeMother()::DEFAULT_ULID;
+
         $this->requestJson(
             client: $client,
             method: self::METHOD,
-            uri: $this->getUrl(['id' => 123]),
+            uri: $this->getUrl(['ulid' => $ulid]),
             payload: $payload,
         );
 
@@ -160,7 +168,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
         $this->assertExceptionMessage(
             data: $data,
             expectedCode: ErrorCodeEnum::AttributeNotFound->value,
-            expectedContainMessage: 'Attribute with id "123" not found',
+            expectedContainMessage: sprintf('Attribute with ulid "%s" not found', $ulid),
         );
     }
 
@@ -181,7 +189,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
         $this->requestJson(
             client: $client,
             method: self::METHOD,
-            uri: $this->getUrl(['id' => $attribute->getId()->value()]),
+            uri: $this->getUrl(['ulid' => $attribute->getUlid()->value()]),
             payload: $payload,
         );
 
@@ -212,7 +220,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
         $this->requestJson(
             client: $client,
             method: self::METHOD,
-            uri: $this->getUrl(['id' => $attribute->getId()->value()]),
+            uri: $this->getUrl(['ulid' => $attribute->getUlid()->value()]),
             payload: $payload
         );
 
@@ -222,7 +230,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
         $this->assertExceptionMessage(
             data: $data,
             expectedCode: SharedErrorCodeEnum::ConcurrencyError->value,
-            expectedContainMessage: 'The Attribute has been already modified. Please refresh the page and try again'
+            expectedContainMessage: 'The "Attribute" has been already modified. Please refresh the page and try again'
         );
     }
 
@@ -244,7 +252,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
         $this->requestJson(
             client: $client,
             method: self::METHOD,
-            uri: $this->getUrl(['id' => $attribute->getId()->value()]),
+            uri: $this->getUrl(['ulid' => $attribute->getUlid()->value()]),
             payload: $payload
         );
 
@@ -284,7 +292,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
         $this->requestJson(
             client: $client,
             method: self::METHOD,
-            uri: $this->getUrl(['id' => $attribute->getId()->value()]),
+            uri: $this->getUrl(['ulid' => $attribute->getUlid()->value()]),
             payload: $payload
         );
 
@@ -307,7 +315,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
         $this->requestJson(
             client: $client,
             method: self::METHOD,
-            uri: $this->getUrl(['id' => 1]),
+            uri: $this->getUrl(['ulid' => $this->getAttributeMother()::DEFAULT_ULID]),
             payload: $payload,
         );
 
@@ -469,7 +477,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
         $this->requestJson(
             client: $client,
             method: self::METHOD,
-            uri: '/admin/api/v1/catalog/attributes/invalid-id'
+            uri: '/admin/api/v1/catalog/attributes/invalid-ulid'
         );
 
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);

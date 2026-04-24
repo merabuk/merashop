@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+@theme {
+    --color-merashop-500: #10b981;
+}

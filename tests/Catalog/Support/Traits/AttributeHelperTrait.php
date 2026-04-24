@@ -43,7 +43,7 @@ trait AttributeHelperTrait
         array $newOptionUlids = [],
     ): UpdateAttributeCommand {
         return new UpdateAttributeCommand(
-            id: $attribute->getId()->value(),
+            ulid: $attribute->getUlid()->value(),
             code: $code ?? $attribute->getCode()->value(),
             type: ($type ?? $attribute->getType()->value())->value,
             translations: self::getValidAttributeTranslations($attribute->getTranslations()),

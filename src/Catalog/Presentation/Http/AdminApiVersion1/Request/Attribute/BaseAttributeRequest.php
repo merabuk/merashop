@@ -22,6 +22,7 @@ abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
 
     #[Assert\NotBlank]
     #[Assert\Length(min: 1, max: Code::MAX_LENGTH)]
+    #[Assert\Regex(pattern: Code::REGEX)]
     public ?string $code;
 
     #[Assert\NotBlank]

@@ -84,6 +84,10 @@ FROM build AS local
 ARG APP_RUNTIME_ENV
 ENV APP_RUNTIME_ENV=${APP_RUNTIME_ENV}
 
+# Install Node.js and npm for local development
+RUN --mount=type=cache,target=/var/cache/apk \
+    apk add --no-cache nodejs npm
+
 # create folder and file for xdebug logs (to avoid access errors)
 RUN mkdir -p /var/log/xdebug && \
     touch /var/log/xdebug/xdebug.log && \

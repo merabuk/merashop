@@ -11,7 +11,7 @@ use App\Shared\Application\Command\CommandInterface;
 final readonly class UpdateAttributeCommand implements CommandInterface
 {
     public function __construct(
-        public int $id,
+        public string $ulid,
         public string $code,
         public string $type,
         /**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Catalog\Functional\Presentation\Http\AdminApiVersion1\Controller\Attribute;
 
+use App\Catalog\Domain\Enum\Attribute\SortFieldEnum;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Presentation\Http\AdminApiVersion1\Controller\Attribute\GetAttributeListController;
 use App\Shared\Domain\Criteria\Sorting\Sort;
@@ -84,7 +85,7 @@ final class GetAttributeListControllerTest extends WebTestCase
 
         $data = $this->getResponseData($client);
         $this->assertCount($perPage, $data);
-        $this->assertResponseHeaderSame('X-Next-Cursor', (string) end($data)['id']);
+        $this->assertResponseHeaderSame('X-Next-Cursor', (string) end($data)['ulid']);
     }
 
     public function testItFiltersBySearchTerm(): void
@@ -100,7 +101,7 @@ final class GetAttributeListControllerTest extends WebTestCase
             method: self::METHOD,
             uri: $this->getUrl(),
             parameters: [
-                'filter' => ['search' => $attribute->getCode()->value()],
+                'filters' => ['search' => $attribute->getCode()->value()],
             ],
         );
 
@@ -150,9 +151,8 @@ final class GetAttributeListControllerTest extends WebTestCase
 
     public static function sortFieldProvider(): iterable
     {
-        yield 'valid field code' => ['code', Response::HTTP_OK];
+        yield 'valid field' => [SortFieldEnum::Code->value, Response::HTTP_OK];
         yield 'invalid field' => ['invalid_field', Response::HTTP_UNPROCESSABLE_ENTITY];
-        yield 'private field id' => ['id', Response::HTTP_UNPROCESSABLE_ENTITY];
     }
 
     #[DataProvider('sortDirectionProvider')]

@@ -14,8 +14,8 @@ use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
 use App\Catalog\Domain\Service\Attribute\AttributeValidatorInterface;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
-use App\Catalog\Domain\ValueObject\Attribute\Id;
 use App\Catalog\Domain\ValueObject\Attribute\Type;
+use App\Catalog\Domain\ValueObject\Attribute\Ulid;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
 use App\Shared\Domain\Exception\Entity\ConcurrencyException;
@@ -44,7 +44,7 @@ readonly class UpdateAttributeHandler implements CommandHandlerInterface
     public function __invoke(UpdateAttributeCommand $command): void
     {
         try {
-            $attribute = $this->readRepository->getById(Id::fromInt($command->id));
+            $attribute = $this->readRepository->getByUlid(Ulid::fromString($command->ulid));
             $newCode = Code::fromString($command->code);
             $newType = Type::fromString($command->type);
             $optionUlids = $this->attributeFactory->mapAttributeOptionUlids($command->options);
