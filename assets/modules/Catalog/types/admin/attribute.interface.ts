@@ -1,5 +1,5 @@
-import { AttributeType } from "@catalog/types/attribute.enum";
-import { AttributeItemOptionItemResponse } from "@catalog/types/admin/option.interface";
+import { AttributeType } from '@catalog/types/attribute.enum';
+import { AttributeItemOptionItemResponse } from '@catalog/types/admin/option.interface';
 
 export interface AttributeListResponse {
     ulid: string;

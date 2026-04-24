@@ -1,4 +1,4 @@
-import { AttributeType } from "@catalog/types/attribute.enum";
+import { AttributeType } from '@catalog/types/attribute.enum';
 
 /**
  * @see src/Catalog/Domain/ValueObject/Attribute

@@ -30,7 +30,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useSessionStore } from '@shared/stores/admin/useSessionStore.ts';
+import { useSessionStore } from '@shared/stores/admin/useSessionStore';
 import LanguageSwitcher from '@shared/components/admin/UI/LanguageSwitcher.vue';
 import AdminSidebar from '@shared/layouts/admin/AdminSidebar.vue';
 import ToastContainer from '@shared/components/admin/UI/ToastContainer.vue';

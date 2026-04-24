@@ -1,4 +1,4 @@
-import type { ComposerTranslation, NamedValue } from "vue-i18n";
+import type { ComposerTranslation, NamedValue } from 'vue-i18n';
 
 export const getPlaceholder = (t: ComposerTranslation, key: string, locale: string): string => {
     const named: NamedValue = {};

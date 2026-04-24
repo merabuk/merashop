@@ -25,28 +25,28 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useI18n } from "vue-i18n";
+import { useI18n } from 'vue-i18n';
 import AdminLayout from '@shared/layouts/admin/AdminLayout.vue';
 import Spinner from '@shared/components/admin/UI/Spinner.vue';
 import AttributeForm from '@catalog/components/admin/Attribute/AttributeForm.vue';
-import BaseBreadcrumbs from "@shared/components/admin/UI/BaseBreadcrumbs.vue";
-import { BreadcrumbItem } from "@shared/types/admin/breadcrumb.interface";
-import { IconEnum } from "@shared/types/admin/icon.enum";
+import BaseBreadcrumbs from '@shared/components/admin/UI/BaseBreadcrumbs.vue';
+import { BreadcrumbItem } from '@shared/types/admin/breadcrumb.interface';
+import { IconEnum } from '@shared/types/admin/icon.enum';
 import { useAttributeForm } from '@catalog/composables/admin/useAttributeForm';
 import { AttributeType } from '@catalog/types/attribute.enum';
 import { SUPPORTED_LOCALES } from '@shared/types/locale';
-import { getTargetUlid } from "@shared/services/domDataProvider";
-import adminApiClient from '@shared/api/adminApiClient.ts';
-import type { AttributeItemResponse, AttributeUpdateResponse } from "@catalog/types/admin/attribute.interface";
+import { getTargetUlid } from '@shared/services/domDataProvider';
+import adminApiClient from '@shared/api/adminApiClient';
+import type { AttributeItemResponse, AttributeUpdateResponse } from '@catalog/types/admin/attribute.interface';
 import type {
     AttributeOption,
     OptionTranslation,
     AttributeItemOptionItemResponse
-} from "@catalog/types/admin/option.interface";
-import type { ApiError } from "@shared/types/error";
-import { CATALOG_API_ENDPOINTS } from '@catalog/paths/admin/api.ts';
-import { ADMIN_WEB_ENDPOINTS } from "@shared/paths/admin/web.ts";
-import { useToastStore } from '@shared/stores/admin/useToastStore.ts';
+} from '@catalog/types/admin/option.interface';
+import type { ApiError } from '@shared/types/error';
+import { CATALOG_API_ENDPOINTS } from '@catalog/paths/admin/api';
+import { ADMIN_WEB_ENDPOINTS } from '@shared/paths/admin/web';
+import { useToastStore } from '@shared/stores/admin/useToastStore';
 
 const targetUlid = getTargetUlid();
 const { t } = useI18n();

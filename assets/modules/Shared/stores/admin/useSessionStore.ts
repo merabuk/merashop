@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { jwtDecode } from 'jwt-decode';
-import type { JwtPayload, SessionUser, AuthResponse } from '@shared/types/admin/auth.ts';
+import type { JwtPayload, SessionUser, AuthResponse } from '@shared/types/admin/auth';
 
 export const useSessionStore = defineStore('session', () => {
     const accessToken = ref<string | null>(localStorage.getItem('access_token'));

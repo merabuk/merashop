@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { useI18n } from "vue-i18n";
+import { useI18n } from 'vue-i18n';
 import axios, { type AxiosResponse } from 'axios';
-import adminApiClient from '@shared/api/adminApiClient.ts';
-import { ERROR_CODES, type ApiError } from '@shared/types/error.ts';
-import type { CategoryInterface } from '@catalog/types/admin/category.interface.ts';
-import { CATALOG_API_ENDPOINTS } from '@catalog/paths/admin/api.ts';
+import adminApiClient from '@shared/api/adminApiClient';
+import { ERROR_CODES, type ApiError } from '@shared/types/error';
+import type { CategoryInterface } from '@catalog/types/admin/category.interface';
+import { CATALOG_API_ENDPOINTS } from '@catalog/paths/admin/api';
 
 export const useCategoryStore = defineStore('catalog-categories', () => {
     const { t } = useI18n();

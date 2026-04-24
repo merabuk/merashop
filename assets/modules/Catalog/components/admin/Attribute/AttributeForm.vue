@@ -118,17 +118,17 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useI18n } from "vue-i18n";
-import { getPlaceholder } from "@shared/services/inputService";
+import { useI18n } from 'vue-i18n';
+import { getPlaceholder } from '@shared/services/inputService';
 import BaseInput from '@shared/components/admin/UI/BaseInput.vue';
-import BaseButton from "@shared/components/admin/UI/BaseButton.vue";
-import BaseNumberInput from "@shared/components/admin/UI/BaseNumberInput.vue";
-import BaseSelect from "@shared/components/admin/UI/BaseSelect.vue";
-import { AttributeForm } from "@catalog/composables/admin/useAttributeForm";
+import BaseButton from '@shared/components/admin/UI/BaseButton.vue';
+import BaseNumberInput from '@shared/components/admin/UI/BaseNumberInput.vue';
+import BaseSelect from '@shared/components/admin/UI/BaseSelect.vue';
+import { AttributeForm } from '@catalog/composables/admin/useAttributeForm';
 import { AttributeType } from '@catalog/types/attribute.enum';
 import { SUPPORTED_LOCALES } from '@shared/types/locale';
-import { OPTION_CONSTRAINTS } from "@catalog/types/admin/option.constants";
-import { ATTRIBUTE_CONSTRAINTS, ATTRIBUTE_TYPES_ALLOWED_TO_CHANGE } from "@catalog/types/admin/attribute.constants";
+import { OPTION_CONSTRAINTS } from '@catalog/types/admin/option.constants';
+import { ATTRIBUTE_CONSTRAINTS, ATTRIBUTE_TYPES_ALLOWED_TO_CHANGE } from '@catalog/types/admin/attribute.constants';
 
 const form = defineModel<AttributeForm>('form', { required: true });
 const props = defineProps<{

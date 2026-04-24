@@ -1,6 +1,14 @@
 /** @type {import('dependency-cruiser').IConfiguration} */
 module.exports = {
     forbidden: [
+        {
+            name: 'no-circular',
+            severity: 'error',
+            comment: 'Warn if there is a circular dependency',
+            from: {},
+            to: { circular: true }
+        },
+
         // ─── Module Boundaries ────────────────────────────────────────────────
         // See: deptrac-frontend-modules.yaml
 

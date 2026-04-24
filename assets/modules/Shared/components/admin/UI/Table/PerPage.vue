@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import { useId } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { PER_PAGE_OPTIONS, DEFAULT_PER_PAGE } from '@shared/types/admin/pagination.constants.ts';
+import { PER_PAGE_OPTIONS, DEFAULT_PER_PAGE } from '@shared/types/admin/pagination.constants';
 
 const { t } = useI18n();
 const uuid = `select-${useId()}`;

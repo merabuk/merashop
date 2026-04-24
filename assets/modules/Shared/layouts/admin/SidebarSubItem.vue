@@ -16,7 +16,7 @@
 
 <script setup lang="ts">
 import Icon from '@shared/components/admin/UI/Icon.vue';
-import { IconEnum } from "@shared/types/admin/icon.enum";
+import { IconEnum } from '@shared/types/admin/icon.enum';
 
 defineProps<{
     href: string,

@@ -1,4 +1,4 @@
-import { UserType } from '@shared/types/user.ts';
+import { UserType } from '@shared/types/user';
 
 export interface JwtPayload {
     iss: string;

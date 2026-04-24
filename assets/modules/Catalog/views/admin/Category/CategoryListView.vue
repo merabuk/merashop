@@ -85,11 +85,11 @@
 import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import AdminLayout from '@shared/layouts/admin/AdminLayout.vue';
-import { ADMIN_WEB_ENDPOINTS } from "@shared/paths/admin/web.ts";
-import { useCategoryStore } from "@catalog/stores/admin/useCategoryStore.ts";
-import { BreadcrumbItem } from "@shared/types/admin/breadcrumb.interface.ts";
-import { IconEnum } from "@shared/types/admin/icon.enum.ts";
-import BaseBreadcrumbs from "@shared/components/admin/UI/BaseBreadcrumbs.vue";
+import { ADMIN_WEB_ENDPOINTS } from '@shared/paths/admin/web';
+import { useCategoryStore } from '@catalog/stores/admin/useCategoryStore';
+import { BreadcrumbItem } from '@shared/types/admin/breadcrumb.interface';
+import { IconEnum } from '@shared/types/admin/icon.enum';
+import BaseBreadcrumbs from '@shared/components/admin/UI/BaseBreadcrumbs.vue';
 
 const { t } = useI18n();
 const categoriesStore = useCategoryStore();

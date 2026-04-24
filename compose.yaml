@@ -242,6 +242,7 @@ services:
       - "5173:5173"
     volumes:
       - ./:/app
+      - /app/node_modules
     networks:
       - merashop-network
     working_dir: /app

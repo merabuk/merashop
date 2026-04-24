@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { AttributeType } from '@catalog/types/attribute.enum.ts';
-import { ATTRIBUTE_CONSTRAINTS, ATTRIBUTE_TYPES_HAS_OPTIONS } from "@catalog/types/admin/attribute.constants.ts";
-import { OPTION_CONSTRAINTS } from "@catalog/types/admin/option.constants.ts";
+import { AttributeType } from '@catalog/types/attribute.enum';
+import { ATTRIBUTE_CONSTRAINTS, ATTRIBUTE_TYPES_HAS_OPTIONS } from '@catalog/types/admin/attribute.constants';
+import { OPTION_CONSTRAINTS } from '@catalog/types/admin/option.constants';
 
 type TranslateFn = (key: string, named?: Record<string, unknown>) => string;
 

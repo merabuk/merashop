@@ -37,9 +37,9 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import Icon from '@shared/components/admin/UI/Icon.vue';
-import { ADMIN_WEB_ENDPOINTS } from '@shared/paths/admin/web.ts';
-import { BreadcrumbItem } from "@shared/types/admin/breadcrumb.interface";
-import { IconEnum } from "@shared/types/admin/icon.enum";
+import { ADMIN_WEB_ENDPOINTS } from '@shared/paths/admin/web';
+import { BreadcrumbItem } from '@shared/types/admin/breadcrumb.interface';
+import { IconEnum } from '@shared/types/admin/icon.enum';
 
 defineProps<{
     items: BreadcrumbItem[]

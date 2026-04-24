@@ -1,10 +1,10 @@
 import { Component, createApp, defineAsyncComponent } from 'vue';
 import { createPinia } from 'pinia';
 import { i18n } from '@shared/i18n';
-import { useSessionStore } from '@shared/stores/admin/useSessionStore.ts';
-import { DOM_DATA_ATTRIBUTES } from '@shared/config/dom.ts';
-import { useToastStore } from '@shared/stores/admin/useToastStore.ts';
-import { APP_NAME } from '@shared/config/app.ts';
+import { useSessionStore } from '@shared/stores/admin/useSessionStore';
+import { DOM_DATA_ATTRIBUTES } from '@shared/config/dom';
+import { useToastStore } from '@shared/stores/admin/useToastStore';
+import { APP_NAME } from '@shared/config/app';
 
 export function createMeraShopApp(views: Record<string, () => Promise<Component>>) {
     const components: Record<string, Component> = {};

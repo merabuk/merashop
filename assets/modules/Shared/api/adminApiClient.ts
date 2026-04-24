@@ -1,13 +1,13 @@
 import axios, { AxiosInstance, AxiosError, AxiosResponse } from 'axios';
-import { HTTP_HEADERS } from '@shared/config/http.ts';
-import { DOM_DATA_ATTRIBUTES } from '@shared/config/dom.ts';
-import { getActiveLocale } from '@shared/services/localeProvider.ts';
-import type { ApiError } from '@shared/types/error.ts';
-import type { AuthResponse } from '@shared/types/admin/auth.ts';
-import { useSessionStore } from '@shared/stores/admin/useSessionStore.ts';
-import { IDENTITY_ACCESS_API_ENDPOINTS } from '@identity-access/paths/admin/api.ts';
-import { GrantType } from '@identity-access/types/grant_type.enum.ts';
-import { useToastStore } from "@shared/stores/admin/useToastStore.ts";
+import { HTTP_HEADERS } from '@shared/config/http';
+import { DOM_DATA_ATTRIBUTES } from '@shared/config/dom';
+import { getActiveLocale } from '@shared/services/localeProvider';
+import type { ApiError } from '@shared/types/error';
+import type { AuthResponse } from '@shared/types/admin/auth';
+import { useSessionStore } from '@shared/stores/admin/useSessionStore';
+import { IDENTITY_ACCESS_API_ENDPOINTS } from '@identity-access/paths/admin/api';
+import { GrantType } from '@identity-access/types/grant_type.enum';
+import { useToastStore } from '@shared/stores/admin/useToastStore';
 import { i18n } from '@shared/i18n';
 
 const rootElement = document.getElementById('app');

@@ -1,22 +1,22 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import { useI18n } from "vue-i18n";
+import { useI18n } from 'vue-i18n';
 import axios, { type AxiosResponse } from 'axios';
-import adminApiClient from '@shared/api/adminApiClient.ts';
-import { getActiveLocale } from '@shared/services/localeProvider.ts';
-import { LOCALE } from '@shared/config/locale.ts';
-import type { AttributeListItem, AttributeListResponse } from '@catalog/types/admin/attribute.interface.ts';
-import type { AttributeSortField } from '@catalog/types/admin/attribute.constants.ts';
-import { ERROR_CODES, type ApiError } from '@shared/types/error.ts';
-import { CATALOG_API_ENDPOINTS } from '@catalog/paths/admin/api.ts';
-import { parsePaginationHeaders } from '@shared/services/paginationHeaderParser.ts';
+import adminApiClient from '@shared/api/adminApiClient';
+import { getActiveLocale } from '@shared/services/localeProvider';
+import { LOCALE } from '@shared/config/locale';
+import type { AttributeListItem, AttributeListResponse } from '@catalog/types/admin/attribute.interface';
+import type { AttributeSortField } from '@catalog/types/admin/attribute.constants';
+import { ERROR_CODES, type ApiError } from '@shared/types/error';
+import { CATALOG_API_ENDPOINTS } from '@catalog/paths/admin/api';
+import { parsePaginationHeaders } from '@shared/services/paginationHeaderParser';
 import {
     PAGINATION_PARAMETERS,
     DEFAULT_PER_PAGE,
     FILTER_PARAMETERS,
     SORT_PARAMETERS,
     type SortDirection
-} from '@shared/types/admin/pagination.constants.ts';
+} from '@shared/types/admin/pagination.constants';
 
 export const useAttributeStore = defineStore('catalog-attributes', () => {
     const { t } = useI18n();

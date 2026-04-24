@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { SORT_PARAMETERS, SortDirection } from "@shared/types/admin/pagination.constants.ts";
+import { SORT_PARAMETERS, SortDirection } from '@shared/types/admin/pagination.constants';
 
 defineProps<{
     name: string,

@@ -1,4 +1,4 @@
-import { IconEnum } from "@shared/types/admin/icon.enum";
+import { IconEnum } from '@shared/types/admin/icon.enum';
 
 export interface BreadcrumbItem {
     label: string;
