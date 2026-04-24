@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+// TODO: Remove this controller when the frontend is ready
 class TestFrontendController extends AbstractController
 {
     #[Route('/test-vue', name: 'shared.web.v1.test-vue')]

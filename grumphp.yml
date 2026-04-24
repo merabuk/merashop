@@ -13,7 +13,7 @@ grumphp:
   process_timeout: 300
   parallel:
     enabled: false
-    max_workers: 2
+    max_workers: 4
   fixer:
     enabled: true
     fix_by_default: true
@@ -21,14 +21,14 @@ grumphp:
   tasks:
     git_blacklist:
       keywords:
-        - " dd\\("
-        - "dump\\("
+        - "\\bdd[(]"
+        - "dump[(]"
         - "die;"
         - "exit;"
         - "ini_set"
         - "error_reporting"
         - "set_time_limit"
-        - "console.log\\("
+        - "console\\.log"
     yamllint:
       parse_custom_tags: true
     composer: ~

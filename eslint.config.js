@@ -12,6 +12,7 @@ export default defineConfigWithVueTs(
             '**/public/build/**',
             'vendor/**',
             'node_modules/**',
+            'src/**',
             'var/**'
         ],
     },
