@@ -17,7 +17,6 @@ use App\Catalog\Domain\ValueObject\Attribute\Ulid;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttribute;
 use App\Shared\Domain\Criteria\Listing\Criteria;
 use App\Shared\Domain\Criteria\Listing\PaginatedResult;
-use App\Shared\Domain\Criteria\Sorting\Sort;
 use App\Shared\Domain\Exception\Database\OneOfEntitiesNotFoundException;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
@@ -153,21 +152,16 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
 
             $qb->andWhere($qb->expr()->orX(
                 self::ALIAS.'.code LIKE :search',
-                self::ALIAS_TRANSLATIONS.'.name LIKE :search'
+                self::ALIAS_TRANSLATIONS.'.name LIKE :search',
             ))->setParameter('search', $search);
         }
 
-        $sort = $criteria->sort
-            ? new Sort(
-                field: match (SortFieldEnum::tryFrom($criteria->sort->field)) {
-                    SortFieldEnum::Code => self::ALIAS.'.code',
-                    SortFieldEnum::Name => self::ALIAS_TRANSLATIONS.'.name',
-                    SortFieldEnum::Type => self::ALIAS.'.type',
-                    null => throw new InvalidArgumentException("Invalid sort field: {$criteria->sort->field}"),
-                },
-                direction: $criteria->sort->direction,
-            )
-            : null;
+        $sort = $criteria->sort?->fromField(match (SortFieldEnum::tryFrom($criteria->sort->field)) {
+            SortFieldEnum::Code => self::ALIAS.'.code',
+            SortFieldEnum::Name => self::ALIAS_TRANSLATIONS.'.name',
+            SortFieldEnum::Type => self::ALIAS.'.type',
+            null => throw new InvalidArgumentException("Invalid sort field: {$criteria->sort->field}"),
+        });
 
         return $this->_paginate(
             qb: $qb,

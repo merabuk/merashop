@@ -17,8 +17,10 @@ use App\Catalog\Domain\ValueObject\Category\Status;
 use App\Catalog\Domain\ValueObject\Category\Translations;
 use App\Catalog\Domain\ValueObject\Category\Ulid;
 use App\Catalog\Domain\ValueObject\Category\Version;
+use App\Shared\Domain\Entity\HasIdInterface;
+use App\Shared\Domain\Entity\HasUlidInterface;
 
-class Category
+class Category implements HasUlidInterface, HasIdInterface
 {
     public function __construct(
         private readonly Ulid $ulid,

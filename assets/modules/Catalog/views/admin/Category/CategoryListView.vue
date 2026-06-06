@@ -31,7 +31,7 @@
                             {{ t('common.slug') }}
                         </th>
                         <th scope="col" class="relative px-6 py-4">
-                            <span class="sr-only">{{ t('catalog.common.actions') }}</span>
+                            <span class="sr-only">{{ t('common.actions') }}</span>
                         </th>
                     </tr>
                     </thead>
@@ -99,6 +99,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 onMounted(() => {
-    // categoriesStore.fetchItems();
+    categoriesStore.fetchCategories();
 });
 </script>

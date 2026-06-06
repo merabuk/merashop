@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Catalog\Presentation\Http\AdminApiVersion1\Controller\Attribute;
+namespace App\Catalog\Presentation\Http\AdminApiVersion1\Controller\Category;
 
-use App\Catalog\Application\Query\GetAttributeList\GetAttributeListQuery;
-use App\Catalog\Domain\Entity\Attribute;
-use App\Catalog\Domain\Enum\Attribute\SortFieldEnum;
-use App\Catalog\Presentation\Http\AdminApiVersion1\Resource\Attribute\GetAttributeListResource;
+use App\Catalog\Application\Query\GetCategoryList\GetCategoryListQuery;
+use App\Catalog\Domain\Entity\Category;
+use App\Catalog\Domain\Enum\Category\SortFieldEnum;
+use App\Catalog\Presentation\Http\AdminApiVersion1\Resource\Category\GetCategoryListResource;
 use App\Shared\Application\Query\QueryBusInterface;
 use App\Shared\Application\Security\AuthIdentity;
 use App\Shared\Domain\Criteria\Listing\PaginatedResult;
@@ -23,18 +23,18 @@ use Symfony\Component\Messenger\Exception\HandlerFailedException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 
-class GetAttributeListController extends AbstractController
+class GetCategoryListController extends AbstractController
 {
     use AuthIdentityAccessTrait;
     use PaginatedResponseTrait;
 
-    public const string ROUTE_NAME = 'catalog.admin.api.v1.attributes.list';
+    public const string ROUTE_NAME = 'catalog.admin.api.v1.category.list';
 
     /**
      * @throws HandlerFailedException
      */
     #[Route(
-        path: '/attributes',
+        path: '/categories',
         name: self::ROUTE_NAME,
         methods: [Request::METHOD_GET],
         format: JsonEncoder::FORMAT
@@ -42,21 +42,20 @@ class GetAttributeListController extends AbstractController
     public function __invoke(
         #[MapPagination(allowedSortFields: [
             SortFieldEnum::Name->value,
-            SortFieldEnum::Code->value,
-            SortFieldEnum::Type->value,
+            SortFieldEnum::Slug->value,
         ])] PaginationRequest $pagination,
         #[CurrentAuthEntityIdentity] AuthIdentity $identity,
         QueryBusInterface $queryBus,
     ): JsonResponse {
-        $query = new GetAttributeListQuery($pagination->toCriteria());
+        $query = new GetCategoryListQuery($pagination->toCriteria());
 
-        /** @var PaginatedResult<Attribute> $result */
+        /** @var PaginatedResult<Category> $result */
         $result = $queryBus->execute($query);
 
         return $this->createPaginatedResponse(
             result: $result,
-            resourceMapper: fn (Attribute $attribute) => GetAttributeListResource::fromAttribute($attribute),
-            unit: 'attributes'
+            resourceMapper: fn (Category $category) => GetCategoryListResource::fromCategory($category),
+            unit: 'categories'
         );
     }
 }

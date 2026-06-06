@@ -10,6 +10,8 @@ use App\Catalog\Domain\Exception\Category\OneOfCategoriesNotFoundException;
 use App\Catalog\Domain\ValueObject\Category\Id;
 use App\Catalog\Domain\ValueObject\Category\Slug;
 use App\Catalog\Domain\ValueObject\Category\Ulid;
+use App\Shared\Domain\Criteria\Listing\Criteria;
+use App\Shared\Domain\Criteria\Listing\PaginatedResult;
 
 interface CategoryReadRepositoryInterface
 {
@@ -32,4 +34,9 @@ interface CategoryReadRepositoryInterface
     public function assertAllExistByIds(array $ids): void;
 
     public function existsBySlug(Slug $slug, ?Id $excludeId = null): bool;
+
+    /**
+     * @return PaginatedResult<Category>
+     */
+    public function paginate(Criteria $criteria): PaginatedResult;
 }

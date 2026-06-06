@@ -10,13 +10,13 @@ use JsonSerializable;
 
 final readonly class GetAttributeListResource implements JsonSerializable
 {
+    /**
+     * @param AttributeTranslationItemResource[] $translations
+     */
     public function __construct(
         public string $ulid,
         public string $code,
         public string $type,
-        /**
-         * @var AttributeTranslationItemResource[] $translations
-         */
         public array $translations,
         public int $version,
     ) {

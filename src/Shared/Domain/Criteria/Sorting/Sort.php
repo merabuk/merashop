@@ -14,4 +14,9 @@ final readonly class Sort
         public string $direction = self::ASC,
     ) {
     }
+
+    public function fromField(string $field): self
+    {
+        return new self(field: $field, direction: $this->direction);
+    }
 }
