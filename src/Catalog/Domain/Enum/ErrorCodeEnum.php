@@ -6,22 +6,22 @@ namespace App\Catalog\Domain\Enum;
 
 enum ErrorCodeEnum: string
 {
-    case CatalogDomainError = 'CATALOG_DOMAIN_ERROR';
-    case AttributeNotFound = 'ATTRIBUTE_NOT_FOUND';
-    case AttributeAlreadyExists = 'ATTRIBUTE_ALREADY_EXISTS';
-    case AttributeTypeCanNotBeChanged = 'ATTRIBUTE_TYPE_CANNOT_BE_CHANGED';
-    case OneOfAttributesNotFound = 'ONE_OF_ATTRIBUTES_NOT_FOUND';
-    case AttributeOptionNotFound = 'ATTRIBUTE_OPTION_NOT_FOUND';
-    case OneOfAttributeOptionsNotFound = 'ONE_OF_ATTRIBUTE_OPTIONS_NOT_FOUND';
-    case CategoryNotFound = 'CATEGORY_NOT_FOUND';
-    case CategoryAlreadyExists = 'CATEGORY_ALREADY_EXISTS';
-    case CategorySortOrderOutOfRange = 'CATEGORY_SORT_ORDER_OUT_OF_RANGE';
-    case OneOfCategoriesNotFound = 'ONE_OF_CATEGORIES_NOT_FOUND';
-    case CategoryParentNotFound = 'CATEGORY_PARENT_NOT_FOUND';
-    case CategoryCannotBeParentOfItselfConflict = 'CATEGORY_CANNOT_BE_PARENT_OF_ITSELF_CONFLICT';
-    case CategoryChildCanNotBeParentConflictException = 'CATEGORY_MOVE_TO_CHILD_CONFLICT';
-    case ProductNotFound = 'PRODUCT_NOT_FOUND';
-    case ProductAlreadyExists = 'PRODUCT_ALREADY_EXISTS';
-    case ProductImagesCanNotBeEmpty = 'PRODUCT_IMAGES_CANNOT_BE_EMPTY';
-    case OneOfTemporaryImagesNotFound = 'ONE_OF_TEMPORARY_IMAGES_NOT_FOUND';
+    case CatalogDomainError = 'catalog_domain_error';
+    case AttributeNotFound = 'attribute_notFound';
+    case AttributeAlreadyExists = 'attribute_alreadyExists';
+    case AttributeTypeCanNotBeChanged = 'attributeType_canNotBeChanged';
+    case OneOfAttributesNotFound = 'oneOfAttributes_notFound';
+    case AttributeOptionNotFound = 'attributeOption_notFound';
+    case OneOfAttributeOptionsNotFound = 'oneOfAttributeOptions_notFound';
+    case CategoryNotFound = 'category_notFound';
+    case CategoryAlreadyExists = 'category_alreadyExists';
+    case CategorySortOrderOutOfRange = 'categorySortOrder_outOfRange';
+    case OneOfCategoriesNotFound = 'oneOfCategories_notFound';
+    case CategoryParentNotFound = 'categoryParent_notFound';
+    case CategoryCannotBeParentOfItselfConflict = 'categoryCanNotBeParentOfItself_conflict';
+    case CategoryChildCanNotBeParentConflictException = 'categoryMoveToChild_conflict';
+    case ProductNotFound = 'product_notFound';
+    case ProductAlreadyExists = 'product_alreadyExists';
+    case ProductImagesCanNotBeEmpty = 'productImages_canNotBeEmpty';
+    case OneOfTemporaryImagesNotFound = 'oneOfTemporaryImages_notFound';
 }

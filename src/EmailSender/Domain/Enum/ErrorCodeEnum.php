@@ -6,5 +6,5 @@ namespace App\EmailSender\Domain\Enum;
 
 enum ErrorCodeEnum: string
 {
-    case EmailSenderDomainError = 'EMAIL_SENDER_DOMAIN_ERROR';
+    case EmailSenderDomainError = 'email_sender_domain_error';
 }

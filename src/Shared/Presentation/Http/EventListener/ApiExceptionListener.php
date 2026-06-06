@@ -23,6 +23,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnsupportedMediaTypeHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -117,6 +118,11 @@ class ApiExceptionListener
                 errorCode: ErrorCodeEnum::NotFound->value,
                 errorMessage: 'Resource or endpoint not found',
                 statusCode: Response::HTTP_NOT_FOUND
+            ),
+            $exception instanceof MethodNotAllowedHttpException => $this->baseResponse(
+                errorCode: ErrorCodeEnum::MethodNotAllowed->value,
+                errorMessage: 'Method not allowed for this endpoint',
+                statusCode: Response::HTTP_METHOD_NOT_ALLOWED,
             ),
             $exception instanceof UnsupportedMediaTypeHttpException => $this->baseResponse(
                 errorCode: ErrorCodeEnum::UnsupportedMediaType->value,

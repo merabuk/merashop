@@ -6,6 +6,6 @@ namespace App\Customer\Domain\Enum;
 
 enum ErrorCodeEnum: string
 {
-    case CustomerDomainError = 'CUSTOMER_DOMAIN_ERROR';
-    case CustomerProfileNotFound = 'CUSTOMER_PROFILE_NOT_FOUND';
+    case CustomerDomainError = 'customer_domain_error';
+    case CustomerProfileNotFound = 'customerProfile_notFound';
 }

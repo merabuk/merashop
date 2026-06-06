@@ -6,8 +6,8 @@ namespace App\IdentityAccess\Domain\Enum;
 
 enum ErrorCodeEnum: string
 {
-    case IdentityAccessDomainError = 'IDENTITY_ACCESS_DOMAIN_ERROR';
-    case UserAccountAlreadyExists = 'USER_ACCOUNT_ALREADY_EXISTS';
-    case AdminAccountAlreadyExists = 'ADMIN_ACCOUNT_ALREADY_EXISTS';
-    case ModuleAccountAlreadyExists = 'MODULE_ACCOUNT_ALREADY_EXISTS';
+    case IdentityAccessDomainError = 'identity_access_domain_error';
+    case UserAccountAlreadyExists = 'userAccount_alreadyExists';
+    case AdminAccountAlreadyExists = 'adminAccount_alreadyExists';
+    case ModuleAccountAlreadyExists = 'moduleAccount_alreadyExists';
 }

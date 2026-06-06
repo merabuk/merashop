@@ -6,14 +6,15 @@ namespace App\Shared\Domain\Enum;
 
 enum ErrorCodeEnum: string
 {
-    case UnexpectedError = 'UNEXPECTED_ERROR';
-    case ValidationFailed = 'VALIDATION_FAILED';
-    case AccessDenied = 'ACCESS_DENIED';
-    case Unauthorized = 'UNAUTHORIZED';
-    case NotFound = 'NOT_FOUND';
-    case BadRequest = 'BAD_REQUEST';
-    case UnsupportedMediaType = 'UNSUPPORTED_MEDIA_TYPE';
-    case Conflict = 'CONFLICT';
-    case ConcurrencyError = 'CONCURRENCY_ERROR';
-    case InvalidRequestHeaderValue = 'INVALID_REQUEST_HEADER_VALUE';
+    case UnexpectedError = 'unexpected_error';
+    case ValidationFailed = 'validation_failed';
+    case AccessDenied = 'access_denied';
+    case Unauthorized = 'unauthorized';
+    case NotFound = 'not_found';
+    case MethodNotAllowed = 'method_not_allowed';
+    case BadRequest = 'bad_request';
+    case UnsupportedMediaType = 'unsupported_media_type';
+    case Conflict = 'conflict';
+    case ConcurrencyError = 'concurrency_error';
+    case InvalidRequestHeaderValue = 'invalid_request_header_value';
 }
