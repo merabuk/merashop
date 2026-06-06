@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Shared\Support\Traits;
 
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
- * @mixin KernelTestCase
+ * @mixin WebTestCase
  */
 trait BaseUriTrait
 {

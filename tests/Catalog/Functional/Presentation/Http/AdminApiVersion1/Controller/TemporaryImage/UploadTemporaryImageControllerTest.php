@@ -49,7 +49,7 @@ final class UploadTemporaryImageControllerTest extends WebTestCase
 
         $this->requestMultipart(client: $client, method: self::METHOD, uri: $this->getUrl());
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
     public function testItForbiddenForRegularUser(): void
@@ -59,7 +59,7 @@ final class UploadTemporaryImageControllerTest extends WebTestCase
 
         $this->requestMultipart(client: $client, method: self::METHOD, uri: $this->getUrl());
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
     public function testItSuccessfullyUploadsTemporaryImage(): void
@@ -83,7 +83,7 @@ final class UploadTemporaryImageControllerTest extends WebTestCase
             parameters: [$contextKey => ContextEnum::ProductMain->value]
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+        self::assertResponseStatusCodeSame(Response::HTTP_CREATED);
         $data = $this->getResponseData($client);
 
         self::assertArrayHasKey('imageId', $data);

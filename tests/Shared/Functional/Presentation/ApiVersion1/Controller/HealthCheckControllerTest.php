@@ -11,7 +11,7 @@ use App\Tests\Shared\Support\Traits\BaseUriTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 
-final class HealthCheckTest extends WebTestCase
+final class HealthCheckControllerTest extends WebTestCase
 {
     use ApiRequestTrait;
     use ApiResponseTrait;
@@ -30,7 +30,7 @@ final class HealthCheckTest extends WebTestCase
             uri: $this->getBaseUrl(self::ROUTE_NAME)
         );
 
-        $this->assertResponseIsSuccessful();
+        self::assertResponseIsSuccessful();
 
         $data = $this->getResponseData($client);
         self::assertEquals(expected: 'OK', actual: $data['status']);

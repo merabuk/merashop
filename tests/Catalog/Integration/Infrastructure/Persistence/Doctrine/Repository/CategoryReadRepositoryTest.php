@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace App\Tests\Catalog\Integration\Infrastructure\Persistence\Doctrine\Repository;
 
+use App\Catalog\Domain\Enum\Category\SortFieldEnum;
 use App\Catalog\Domain\Exception\Category\CategoryNotFoundException;
 use App\Catalog\Domain\Exception\Category\OneOfCategoriesNotFoundException;
 use App\Catalog\Domain\Repository\CategoryReadRepositoryInterface;
 use App\Catalog\Domain\ValueObject\Category\Id;
 use App\Catalog\Domain\ValueObject\Category\Slug;
+use App\Shared\Domain\Criteria\Filtering\Filters;
+use App\Shared\Domain\Criteria\Listing\Criteria;
+use App\Shared\Domain\Criteria\Paging\Cursor;
+use App\Shared\Domain\Criteria\Sorting\Sort;
 use App\Tests\Catalog\Support\Traits\CatalogEntityManagerTrait;
 use App\Tests\Catalog\Support\Traits\CategoryFactoryTrait;
 use App\Tests\Shared\Support\Traits\ValueObjectAssertionTrait;
@@ -111,5 +116,24 @@ final class CategoryReadRepositoryTest extends KernelTestCase
 
         self::assertTrue($this->repository->existsBySlug($slug));
         self::assertFalse($this->repository->existsBySlug($slug, $category->getId()));
+    }
+
+    public function testPaginateWithSearch(): void
+    {
+        $this->getCategoryFixture()->create(slug: 'computers-notebooks');
+        $this->getCategoryFixture()->create(slug: 'notebooks');
+        $this->getCategoryFixture()->create(slug: 'phones');
+
+        $criteria = new Criteria(
+            cursor: new Cursor(lastSeenIdentifier: null, perPage: Cursor::DEFAULT_PER_PAGE),
+            filters: new Filters(['search' => 'notebooks']),
+            sort: new Sort(field: SortFieldEnum::Slug->value, direction: Sort::ASC)
+        );
+
+        $result = $this->repository->paginate($criteria);
+
+        self::assertSame(2, $result->totalCount);
+        self::assertCount(2, $result->items);
+        self::assertSame('computers-notebooks', $result->items[0]->getSlug()->value());
     }
 }

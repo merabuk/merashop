@@ -44,7 +44,7 @@ final class CreateCategoryControllerTest extends WebTestCase
 
         $this->requestJson(client: $client, method: self::METHOD, uri: $this->getUrl());
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
     public function testItForbiddenForRegularUser(): void
@@ -54,7 +54,7 @@ final class CreateCategoryControllerTest extends WebTestCase
 
         $this->requestJson(client: $client, method: self::METHOD, uri: $this->getUrl());
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
     public function testItSuccessfullyCreatesCategory(): void
@@ -78,7 +78,7 @@ final class CreateCategoryControllerTest extends WebTestCase
             payload: $payload
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+        self::assertResponseStatusCodeSame(Response::HTTP_CREATED);
 
         $data = $this->getResponseData($client);
         self::assertArrayHasKey('message', $data);
@@ -103,7 +103,7 @@ final class CreateCategoryControllerTest extends WebTestCase
 
         $this->requestJson(client: $client, method: self::METHOD, uri: $this->getUrl(), payload: $payload);
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
+        self::assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
 
         $data = $this->getResponseData($client);
         $this->assertExceptionMessage(

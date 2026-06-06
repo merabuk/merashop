@@ -7,12 +7,12 @@ namespace App\Tests\Catalog\Functional\Presentation\Http\AdminApiVersion1\Contro
 use App\Catalog\Domain\Enum\Attribute\SortFieldEnum;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Presentation\Http\AdminApiVersion1\Controller\Attribute\GetAttributeListController;
-use App\Shared\Domain\Criteria\Sorting\Sort;
 use App\Tests\Catalog\Support\Traits\AttributeFactoryTrait;
 use App\Tests\Shared\Support\Traits\ApiAuthTrait;
 use App\Tests\Shared\Support\Traits\ApiRequestTrait;
 use App\Tests\Shared\Support\Traits\ApiResponseTrait;
 use App\Tests\Shared\Support\Traits\BaseUriTrait;
+use App\Tests\Shared\Support\Traits\CriteriaPagingTrait;
 use App\Tests\Shared\Support\Traits\DbPerformanceTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -27,6 +27,7 @@ final class GetAttributeListControllerTest extends WebTestCase
     use AttributeFactoryTrait;
     use BaseUriTrait;
     use DbPerformanceTrait;
+    use CriteriaPagingTrait;
 
     private const string ROUTE_NAME = GetAttributeListController::ROUTE_NAME;
     private const string METHOD = Request::METHOD_GET;
@@ -44,7 +45,7 @@ final class GetAttributeListControllerTest extends WebTestCase
 
         $this->requestJson(client: $client, method: self::METHOD, uri: $this->getUrl());
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
     public function testItReturnsForbiddenForRegularUsers(): void
@@ -54,14 +55,14 @@ final class GetAttributeListControllerTest extends WebTestCase
 
         $this->requestJson(client: $client, method: self::METHOD, uri: $this->getUrl());
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
     public function testItReturnsPaginatedListForAdmin(): void
     {
         $client = self::createClient();
         $this->loginAsAdmin();
-        $client->enableProfiler();
+        $this->enableProfiler(client: $client);
 
         $count = 5;
         $perPage = 2;
@@ -75,17 +76,17 @@ final class GetAttributeListControllerTest extends WebTestCase
             client: $client,
             method: self::METHOD,
             uri: $this->getUrl(),
-            parameters: ['perPage' => $perPage]
+            parameters: [self::PER_PAGE_FIELD => $perPage]
         );
 
         $this->assertSelectCountLessThanOrEqual(expectedMax: 3, client: $client, connectionName: 'catalog');
 
-        $this->assertResponseIsSuccessful();
-        $this->assertResponseHeaderSame('Content-Range', sprintf('attributes %d/%d', $perPage, $count));
+        self::assertResponseIsSuccessful();
+        $this->assertResponseHasContentRange(unit: 'attributes', perPage: $perPage, total: $count);
 
         $data = $this->getResponseData($client);
-        $this->assertCount($perPage, $data);
-        $this->assertResponseHeaderSame('X-Next-Cursor', (string) end($data)['ulid']);
+        self::assertCount($perPage, $data);
+        self::assertResponseHeaderSame('X-Next-Cursor', (string) end($data)['ulid']);
     }
 
     public function testItFiltersBySearchTerm(): void
@@ -101,12 +102,14 @@ final class GetAttributeListControllerTest extends WebTestCase
             method: self::METHOD,
             uri: $this->getUrl(),
             parameters: [
-                'filters' => ['search' => $attribute->getCode()->value()],
+                self::FILTERS_FIELD => ['search' => $attribute->getCode()->value()],
             ],
         );
 
+        self::assertResponseIsSuccessful();
+
         $data = $this->getResponseData($client);
-        $this->assertCount(1, $data);
+        self::assertCount(1, $data);
         $this->assertEquals($attribute->getCode()->value(), $data[0]['code']);
     }
 
@@ -120,17 +123,10 @@ final class GetAttributeListControllerTest extends WebTestCase
             client: $client,
             method: self::METHOD,
             uri: $this->getUrl(),
-            parameters: ['perPage' => $perPage]
+            parameters: [self::PER_PAGE_FIELD => $perPage]
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
-    }
-
-    public static function invalidPerPageProvider(): iterable
-    {
-        yield 'negative value' => [-1];
-        yield 'zero value' => [0];
-        yield 'above limit' => [101];
+        self::assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 
     #[DataProvider('sortFieldProvider')]
@@ -143,10 +139,10 @@ final class GetAttributeListControllerTest extends WebTestCase
             client: $client,
             method: self::METHOD,
             uri: $this->getUrl(),
-            parameters: ['sortField' => $field]
+            parameters: [self::SORT_FIELD => $field]
         );
 
-        $this->assertResponseStatusCodeSame($expectedStatus);
+        self::assertResponseStatusCodeSame($expectedStatus);
     }
 
     public static function sortFieldProvider(): iterable
@@ -166,21 +162,11 @@ final class GetAttributeListControllerTest extends WebTestCase
             method: self::METHOD,
             uri: $this->getUrl(),
             parameters: [
-                'sortDir' => $direction,
+                self::SORT_DIRECTION_FIELD => $direction,
             ]
         );
 
-        $this->assertResponseStatusCodeSame($expectedStatus);
-    }
-
-    public static function sortDirectionProvider(): iterable
-    {
-        yield 'invalid direction' => ['invalid_direction', Response::HTTP_UNPROCESSABLE_ENTITY];
-
-        $validCases = ['asc', 'desc', Sort::ASC, Sort::DESC];
-        foreach ($validCases as $validCase) {
-            yield 'direction '.$validCase => [$validCase, Response::HTTP_OK];
-        }
+        self::assertResponseStatusCodeSame($expectedStatus);
     }
 
     private function getUrl(array $params = []): string

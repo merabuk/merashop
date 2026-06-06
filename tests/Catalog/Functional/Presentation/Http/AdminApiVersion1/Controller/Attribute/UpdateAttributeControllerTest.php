@@ -47,7 +47,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
             method: self::METHOD,
             uri: $this->getUrl(['ulid' => $this->getAttributeMother()::DEFAULT_ULID]));
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
     public function testItForbiddenForRegularUser(): void
@@ -60,7 +60,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
             method: self::METHOD,
             uri: $this->getUrl(['ulid' => $this->getAttributeMother()::DEFAULT_ULID]));
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
     #[DataProvider('validAttributeProvider')]
@@ -85,7 +85,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
             ],
         );
 
-        $this->assertResponseIsSuccessful();
+        self::assertResponseIsSuccessful();
 
         $data = $this->getResponseData($client);
         self::assertArrayHasKey('message', $data);
@@ -162,7 +162,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
             payload: $payload,
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+        self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
 
         $data = $this->getResponseData($client);
         $this->assertExceptionMessage(
@@ -193,7 +193,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
             payload: $payload,
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
+        self::assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
 
         $data = $this->getResponseData($client);
         $this->assertExceptionMessage(
@@ -224,7 +224,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
             payload: $payload
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
+        self::assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
 
         $data = $this->getResponseData($client);
         $this->assertExceptionMessage(
@@ -256,7 +256,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
             payload: $payload
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
+        self::assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
 
         $data = $this->getResponseData($client);
         $this->assertExceptionMessage(
@@ -296,7 +296,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
             payload: $payload
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+        self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
 
         $data = $this->getResponseData($client);
         $this->assertExceptionMessage(
@@ -480,7 +480,7 @@ final class UpdateAttributeControllerTest extends WebTestCase
             uri: '/admin/api/v1/catalog/attributes/invalid-ulid'
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+        self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
         $data = $this->getResponseData($client);
         $this->assertExceptionMessage(
             data: $data,

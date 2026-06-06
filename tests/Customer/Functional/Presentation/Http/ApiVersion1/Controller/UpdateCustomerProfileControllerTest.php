@@ -53,7 +53,7 @@ final class UpdateCustomerProfileControllerTest extends WebTestCase
 
         $this->requestJson(client: $client, method: self::METHOD, uri: $this->getUrl(), payload: $payload);
 
-        $this->assertResponseIsSuccessful();
+        self::assertResponseIsSuccessful();
 
         $data = $this->getResponseData($client);
         self::assertArrayHasKey('message', $data);
@@ -77,7 +77,7 @@ final class UpdateCustomerProfileControllerTest extends WebTestCase
 
         $this->requestJson(client: $client, method: self::METHOD, uri: $this->getUrl(), payload: $payload);
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
     public function testItReturns403UnlessUser(): void
@@ -93,7 +93,7 @@ final class UpdateCustomerProfileControllerTest extends WebTestCase
 
         $this->requestJson(client: $client, method: self::METHOD, uri: $this->getUrl(), payload: $payload);
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
     public function testItReturns404WhenCustomerProfileNotFound(): void
@@ -109,7 +109,7 @@ final class UpdateCustomerProfileControllerTest extends WebTestCase
 
         $this->requestJson(client: $client, method: self::METHOD, uri: $this->getUrl(), payload: $payload);
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+        self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
         $data = $this->getResponseData($client);
         $this->assertExceptionMessage(
             data: $data,

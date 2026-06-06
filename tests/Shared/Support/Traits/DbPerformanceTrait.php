@@ -16,6 +16,14 @@ use Symfony\Component\HttpKernel\HttpKernel;
 trait DbPerformanceTrait
 {
     /**
+     * Must be called immediately after creating the client to enable profiling.
+     */
+    protected function enableProfiler(KernelBrowser $client): void
+    {
+        $client->enableProfiler();
+    }
+
+    /**
      * Checks the number of SELECT queries executed for a specific connection.
      */
     protected function assertSelectCountLessThanOrEqual(

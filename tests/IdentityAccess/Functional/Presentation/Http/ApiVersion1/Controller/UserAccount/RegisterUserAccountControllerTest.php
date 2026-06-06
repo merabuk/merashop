@@ -60,7 +60,7 @@ final class RegisterUserAccountControllerTest extends WebTestCase
             payload: $payload,
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_CREATED);
+        self::assertResponseStatusCodeSame(Response::HTTP_CREATED);
         $data = $this->getResponseData($client);
         self::assertArrayHasKey('message', $data);
         self::assertStringContainsString('successfully registered', $data['message']);
@@ -96,7 +96,7 @@ final class RegisterUserAccountControllerTest extends WebTestCase
             payload: $payload,
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
+        self::assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
         $data = $this->getResponseData($client);
 
         $this->assertExceptionMessage(

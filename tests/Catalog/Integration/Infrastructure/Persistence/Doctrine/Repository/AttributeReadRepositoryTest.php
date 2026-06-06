@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Catalog\Integration\Infrastructure\Persistence\Doctrine\Repository;
 
+use App\Catalog\Domain\Enum\Attribute\SortFieldEnum;
 use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
 use App\Catalog\Domain\Exception\Attribute\OneOfAttributesNotFoundException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
@@ -120,7 +121,7 @@ final class AttributeReadRepositoryTest extends KernelTestCase
         $criteria = new Criteria(
             cursor: new Cursor(lastSeenIdentifier: null, perPage: Cursor::DEFAULT_PER_PAGE),
             filters: new Filters(['search' => 'color']),
-            sort: new Sort(field: 'code', direction: Sort::ASC)
+            sort: new Sort(field: SortFieldEnum::Code->value, direction: Sort::ASC)
         );
 
         $result = $this->repository->paginate($criteria);

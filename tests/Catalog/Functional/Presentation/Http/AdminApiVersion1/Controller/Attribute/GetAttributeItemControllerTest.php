@@ -47,7 +47,7 @@ final class GetAttributeItemControllerTest extends WebTestCase
             uri: $this->getUrl(['ulid' => $this->getAttributeMother()::DEFAULT_ULID])
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
     public function testItReturnsForbiddenForRegularUsers(): void
@@ -61,7 +61,7 @@ final class GetAttributeItemControllerTest extends WebTestCase
             uri: $this->getUrl(['ulid' => $this->getAttributeMother()::DEFAULT_ULID])
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
     #[DataProvider('validAttributeProvider')]
@@ -78,7 +78,7 @@ final class GetAttributeItemControllerTest extends WebTestCase
             uri: $this->getUrl(['ulid' => $attribute->getUlid()->value()])
         );
 
-        $this->assertResponseIsSuccessful();
+        self::assertResponseIsSuccessful();
 
         $data = $this->getResponseData($client);
         self::assertIsArray($data);
@@ -147,7 +147,7 @@ final class GetAttributeItemControllerTest extends WebTestCase
             uri: $this->getUrl(['ulid' => $ulid])
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+        self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
 
         $data = $this->getResponseData($client);
         $this->assertExceptionMessage(
@@ -168,7 +168,7 @@ final class GetAttributeItemControllerTest extends WebTestCase
             uri: '/admin/api/v1/catalog/attributes/invalid-ulid'
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+        self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
         $data = $this->getResponseData($client);
         $this->assertExceptionMessage(
             data: $data,

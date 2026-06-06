@@ -45,7 +45,7 @@ final class UpdateCategoryControllerTest extends WebTestCase
 
         $this->requestJson(client: $client, method: self::METHOD, uri: $this->getUrl(['id' => 123]));
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
     public function testItForbiddenForRegularUser(): void
@@ -55,7 +55,7 @@ final class UpdateCategoryControllerTest extends WebTestCase
 
         $this->requestJson(client: $client, method: self::METHOD, uri: $this->getUrl(['id' => 123]));
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+        self::assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
     public function testItSuccessfullyUpdatesCategory(): void
@@ -82,7 +82,7 @@ final class UpdateCategoryControllerTest extends WebTestCase
             payload: $payload
         );
 
-        $this->assertResponseIsSuccessful();
+        self::assertResponseIsSuccessful();
 
         $data = $this->getResponseData($client);
         self::assertArrayHasKey('message', $data);
@@ -119,7 +119,7 @@ final class UpdateCategoryControllerTest extends WebTestCase
             payload: $payload
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
+        self::assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
         $data = $this->getResponseData($client);
         $this->assertExceptionMessage(
             data: $data,
@@ -151,7 +151,7 @@ final class UpdateCategoryControllerTest extends WebTestCase
             payload: $payload
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
+        self::assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
 
         $data = $this->getResponseData($client);
         $this->assertExceptionMessage(
@@ -183,7 +183,7 @@ final class UpdateCategoryControllerTest extends WebTestCase
             payload: $payload
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
+        self::assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
 
         $data = $this->getResponseData($client);
         $this->assertExceptionMessage(
@@ -220,7 +220,7 @@ final class UpdateCategoryControllerTest extends WebTestCase
             payload: $payload
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
+        self::assertResponseStatusCodeSame(Response::HTTP_CONFLICT);
 
         $data = $this->getResponseData($client);
         $this->assertExceptionMessage(
@@ -317,7 +317,7 @@ final class UpdateCategoryControllerTest extends WebTestCase
             uri: '/admin/api/v1/catalog/categories/invalid-id'
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+        self::assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
         $data = $this->getResponseData($client);
         $this->assertExceptionMessage(
             data: $data,

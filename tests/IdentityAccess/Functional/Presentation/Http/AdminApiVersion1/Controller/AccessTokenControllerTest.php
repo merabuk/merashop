@@ -47,7 +47,7 @@ final class AccessTokenControllerTest extends WebTestCase
             ]
         );
 
-        $this->assertResponseIsSuccessful();
+        self::assertResponseIsSuccessful();
 
         $data = $this->getResponseData($client);
         self::assertArrayHasKey('access_token', $data);
@@ -74,7 +74,7 @@ final class AccessTokenControllerTest extends WebTestCase
             ]
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+        self::assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
         $data = $this->getResponseData($client);
         self::assertSame(OAuth2Error::INVALID_GRANT, $data['error']);
     }
@@ -94,7 +94,7 @@ final class AccessTokenControllerTest extends WebTestCase
             ],
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+        self::assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
         $data = $this->getResponseData($client);
         self::assertSame(OAuth2Error::INVALID_REQUEST, $data['error']);
     }
@@ -120,7 +120,7 @@ final class AccessTokenControllerTest extends WebTestCase
             ],
         );
 
-        $this->assertResponseIsSuccessful();
+        self::assertResponseIsSuccessful();
 
         $data = $this->getResponseData($client);
 
@@ -144,7 +144,7 @@ final class AccessTokenControllerTest extends WebTestCase
             ],
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+        self::assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
         $data = $this->getResponseData($client);
         self::assertSame(OAuth2Error::INVALID_GRANT, $data['error']);
     }
@@ -163,7 +163,7 @@ final class AccessTokenControllerTest extends WebTestCase
             ],
         );
 
-        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+        self::assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
         $data = $this->getResponseData($client);
         self::assertSame(OAuth2Error::INVALID_REQUEST, $data['error']);
     }
