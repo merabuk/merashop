@@ -14,6 +14,7 @@ export default {
         catalog: 'Catalog',
         customers: 'Customers',
         slug: 'Slug',
+        status: 'Status',
         errors: {
             session_expired: 'Session expired. Please log in again',
             access_denied: 'Access denied. You do not have permission to perform this action',

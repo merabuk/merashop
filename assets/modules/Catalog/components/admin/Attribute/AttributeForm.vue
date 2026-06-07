@@ -25,7 +25,7 @@
             </div>
 
             <div class="border-t pt-8">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ t('catalog.attributes.translation_title') }}</h3>
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ t('catalog.common.translation_title') }}</h3>
                 <div class="space-y-4">
                     <div v-for="loc in SUPPORTED_LOCALES" :key="loc.code" class="flex items-center gap-4">
                         <span class="text-2xl mt-8">{{ loc.flag }}</span>

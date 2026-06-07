@@ -8,6 +8,12 @@ export default {
             is_active: 'Active',
             value: 'Value',
             color: 'Color',
+            description: 'Description',
+            translation_title: 'Translations',
+            status: {
+                active: 'Active',
+                inactive: 'Inactive',
+            },
         },
         attributes: {
             title: 'Product Attributes',
@@ -16,7 +22,6 @@ export default {
             edit: 'Edit Attribute',
             empty_list: 'Attribute list is empty',
             empty_list_alter: 'Add your first attribute to get started',
-            translation_title: 'Translations',
             search_placeholder: 'Search attributes',
             types: {
                 string: 'String',

@@ -17,4 +17,12 @@ final class AdminCategoryController extends AbstractController
             'vue_component' => 'CategoryListView',
         ]);
     }
+
+    #[Route(path: '/admin/catalog/categories/create', name: 'catalog.admin.web.v1.categories.create')]
+    public function create(): Response
+    {
+        return $this->render('admin_base.html.twig', [
+            'vue_component' => 'CategoryCreateView',
+        ]);
+    }
 }

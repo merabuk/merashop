@@ -14,6 +14,7 @@ export default {
         catalog: 'Каталог',
         customers: 'Клієнти',
         slug: 'Slug',
+        status: 'Статус',
         errors: {
             session_expired: 'Сесія закінчилася. Будь ласка, увійдіть знову',
             access_denied: 'Доступ заборонено. Ви не маєте прав для виконання цієї дії',

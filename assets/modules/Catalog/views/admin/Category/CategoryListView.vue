@@ -11,7 +11,7 @@
                     class="inline-flex items-center px-4 py-2.5 bg-merashop-500 hover:bg-emerald-600 text-white text-sm font-semibold rounded-lg shadow-sm transition-all active:scale-95"
                 >
                     <span class="mr-2 text-lg">+</span>
-                    {{ t('catalog.attributes.add') }}
+                    {{ t('catalog.categories.add') }}
                 </a>
             </div>
 

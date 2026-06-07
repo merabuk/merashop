@@ -8,6 +8,12 @@ export default {
             is_active: 'Активний(а)',
             value: 'Значення',
             color: 'Колір',
+            description: 'Опис',
+            translation_title: 'Переклади',
+            status: {
+                active: 'Активна',
+                inactive: 'Неактивна',
+            },
         },
         attributes: {
             title: 'Атрибути товарів',
@@ -16,7 +22,6 @@ export default {
             edit: 'Редагувати атрибут',
             empty_list: 'Атрибутів ще не створено',
             empty_list_alter: 'Додайте свій перший атрибут, щоб почати роботу',
-            translation_title: 'Переклади',
             search_placeholder: 'Шукати атрибути',
             types: {
                 string: 'Рядок',

@@ -11,18 +11,16 @@ use JsonSerializable;
 
 final readonly class GetAttributeItemResource implements JsonSerializable
 {
+    /**
+     * @param AttributeTranslationItemResource[] $translations
+     * @param AttributeOptionItemResource[]      $options
+     */
     public function __construct(
         public string $id,
         public string $code,
         public string $type,
-        /**
-         * @var AttributeTranslationItemResource[] $translations
-         */
         public array $translations,
         public int $version,
-        /**
-         * @var AttributeOptionItemResource[] $options
-         */
         public array $options,
     ) {
     }
