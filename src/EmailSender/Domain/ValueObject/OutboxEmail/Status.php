@@ -6,11 +6,10 @@ namespace App\EmailSender\Domain\ValueObject\OutboxEmail;
 
 use App\EmailSender\Domain\Enum\OutboxEmail\StatusEnum;
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailStatusException;
-use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
-use Stringable;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectInterface;
 
-final class Status implements EquatableInterface, Stringable
+final class Status implements ValueObjectInterface
 {
     use ValueObjectEqualityTrait;
 

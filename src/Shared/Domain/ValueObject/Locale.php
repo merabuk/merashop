@@ -6,11 +6,10 @@ namespace App\Shared\Domain\ValueObject;
 
 use App\Shared\Domain\Enum\LocaleEnum;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
-use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
-use Stringable;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectInterface;
 
-final class Locale implements EquatableInterface, Stringable
+final class Locale implements ValueObjectInterface
 {
     use ValueObjectEqualityTrait;
 

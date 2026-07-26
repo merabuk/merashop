@@ -7,11 +7,10 @@ namespace App\Shared\Domain\ValueObject\Identity;
 use App\Shared\Domain\Exception\Services\Identity\InvalidUlidException as BaseInvalidUlidException;
 use App\Shared\Domain\Exception\ValueObject\InvalidUlidException;
 use App\Shared\Domain\Service\Validation\UlidValidator;
-use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
-use Stringable;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectInterface;
 
-readonly class Ulid implements EquatableInterface, Stringable
+readonly class Ulid implements ValueObjectInterface
 {
     use ValueObjectEqualityTrait;
 

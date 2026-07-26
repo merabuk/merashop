@@ -7,11 +7,10 @@ namespace App\Shared\Domain\ValueObject\Tracing;
 use App\Shared\Domain\Exception\Services\Identity\InvalidUuidException;
 use App\Shared\Domain\Exception\ValueObject\InvalidTraceIdException;
 use App\Shared\Domain\Service\Validation\UuidValidator;
-use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
-use Stringable;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectInterface;
 
-final readonly class TraceId implements EquatableInterface, Stringable
+final readonly class TraceId implements ValueObjectInterface
 {
     use ValueObjectEqualityTrait;
 

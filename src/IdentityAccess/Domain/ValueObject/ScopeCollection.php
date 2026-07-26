@@ -5,38 +5,38 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Domain\ValueObject;
 
 use App\IdentityAccess\Domain\Exception\ValueObject\InvalidScopeException;
-use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
+use App\IdentityAccess\Domain\Exception\ValueObject\InvalidScopeItemException;
+use App\Shared\Domain\Exception\ValueObject\InvalidAbstractCollectionItemException;
+use App\Shared\Domain\ValueObject\AbstractCollection;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
-use ArrayIterator;
-use Countable;
-use IteratorAggregate;
-use Stringable;
-use Traversable;
 
 /**
- * @implements IteratorAggregate<int, Scope>
+ * @extends AbstractCollection<Scope>
  */
-final readonly class ScopeCollection implements Countable, EquatableInterface, IteratorAggregate, Stringable
+final readonly class ScopeCollection extends AbstractCollection
 {
     use ValueObjectEqualityTrait;
 
     /**
-     * @var Scope[]
-     */
-    private array $scopes;
-
-    /**
      * @param Scope[] $scopes
+     *
+     * @throws InvalidScopeItemException
      */
     public function __construct(array $scopes)
     {
-        $this->scopes = array_values(array_unique($scopes, SORT_REGULAR));
+        try {
+            $this->ensureDataType(items: $scopes);
+            parent::__construct(items: $scopes);
+        } catch (InvalidAbstractCollectionItemException $e) {
+            throw InvalidScopeItemException::fromBase($e);
+        }
     }
 
     /**
      * @param string[] $scopes
      *
      * @throws InvalidScopeException
+     * @throws InvalidScopeItemException
      */
     public static function fromStrings(array $scopes): self
     {
@@ -48,38 +48,14 @@ final readonly class ScopeCollection implements Countable, EquatableInterface, I
      */
     public function toStrings(): array
     {
-        return array_map(fn (Scope $scope) => $scope->value(), $this->scopes);
-    }
-
-    /**
-     * @return Scope[]
-     */
-    public function all(): array
-    {
-        return $this->scopes;
-    }
-
-    public function count(): int
-    {
-        return count($this->scopes);
-    }
-
-    public function getIterator(): Traversable
-    {
-        return new ArrayIterator($this->scopes);
+        return array_map(fn (Scope $scope) => $scope->value(), $this->items);
     }
 
     public function contains(string|Scope $scope): bool
     {
         $searchValue = $scope instanceof Scope ? $scope->value() : $scope;
 
-        foreach ($this->scopes as $existingScope) {
-            if ($existingScope->value() === $searchValue) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($this->items, fn (Scope $existingScope) => $existingScope->value() === $searchValue);
     }
 
     public function __toString(): string
@@ -96,5 +72,10 @@ final readonly class ScopeCollection implements Countable, EquatableInterface, I
         sort($values);
 
         return $values;
+    }
+
+    protected function getExpectedClass(): string
+    {
+        return Scope::class;
     }
 }

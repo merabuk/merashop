@@ -6,11 +6,10 @@ namespace App\IdentityAccess\Domain\ValueObject\RefreshToken;
 
 use App\IdentityAccess\Domain\Exception\RefreshToken\InvalidRefreshTokenAccountTypeException;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
-use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
-use Stringable;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectInterface;
 
-final class AccountType implements EquatableInterface, Stringable
+final class AccountType implements ValueObjectInterface
 {
     use ValueObjectEqualityTrait;
 

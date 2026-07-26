@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\ValueObject;
 
-use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
-use Stringable;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectInterface;
 
-readonly class BaseFlag implements EquatableInterface, Stringable
+readonly class BaseFlag implements ValueObjectInterface
 {
     use ValueObjectEqualityTrait;
 

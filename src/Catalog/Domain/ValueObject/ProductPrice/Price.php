@@ -8,11 +8,10 @@ use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceAmountException
 use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceCurrencyException;
 use App\Shared\Domain\Enum\CurrencyEnum;
 use App\Shared\Domain\Service\Utility\CurrencyHelper;
-use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
-use Stringable;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectInterface;
 
-final readonly class Price implements EquatableInterface, Stringable
+final readonly class Price implements ValueObjectInterface
 {
     use ValueObjectEqualityTrait;
 

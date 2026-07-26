@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace App\Shared\Domain\ValueObject\File;
 
 use App\Shared\Domain\Exception\ValueObject\InvalidRelativePathException;
-use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
-use Stringable;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectInterface;
 
-final readonly class RelativeFilePath implements EquatableInterface, Stringable
+final readonly class RelativeFilePath implements ValueObjectInterface
 {
     use ValueObjectEqualityTrait;
 

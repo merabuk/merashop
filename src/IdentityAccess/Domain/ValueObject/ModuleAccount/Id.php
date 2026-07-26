@@ -6,32 +6,20 @@ namespace App\IdentityAccess\Domain\ValueObject\ModuleAccount;
 
 use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountIdException;
 use App\Shared\Domain\Exception\Services\Validation\IntegerIsNotUnsignedException;
-use App\Shared\Domain\Service\Validation\IntegerValidator;
-use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
-use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
-use Stringable;
+use App\Shared\Domain\ValueObject\Identity\UnsignedIntegerId;
 
-final class Id implements EquatableInterface, Stringable
+final readonly class Id extends UnsignedIntegerId
 {
-    use ValueObjectEqualityTrait;
-
-    private int $id;
-
     /**
      * @throws InvalidModuleAccountIdException
      */
     public function __construct(int $id)
     {
         try {
-            $this->id = IntegerValidator::validateUnsigned($id);
+            parent::__construct(id: $id);
         } catch (IntegerIsNotUnsignedException) {
             throw InvalidModuleAccountIdException::becauseItIsNotAValidId();
         }
-    }
-
-    public function value(): int
-    {
-        return $this->id;
     }
 
     /**
@@ -40,10 +28,5 @@ final class Id implements EquatableInterface, Stringable
     public static function fromInt(int $id): self
     {
         return new self($id);
-    }
-
-    protected function getPrimitiveValue(): int
-    {
-        return $this->value();
     }
 }

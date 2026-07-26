@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Domain\ValueObject\RefreshToken;
 
 use App\IdentityAccess\Domain\Exception\RefreshToken\InvalidRefreshTokenTokenHashException;
-use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
-use Stringable;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectInterface;
 
-final readonly class TokenHash implements EquatableInterface, Stringable
+final readonly class TokenHash implements ValueObjectInterface
 {
     use ValueObjectEqualityTrait;
 

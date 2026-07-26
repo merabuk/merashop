@@ -7,11 +7,10 @@ namespace App\Catalog\Domain\ValueObject\ProductPrice;
 use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceTaxTypeException;
 use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceTaxValueException;
 use App\Shared\Domain\Enum\TaxTypeEnum;
-use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
-use Stringable;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectInterface;
 
-final readonly class Tax implements EquatableInterface, Stringable
+final readonly class Tax implements ValueObjectInterface
 {
     use ValueObjectEqualityTrait;
 

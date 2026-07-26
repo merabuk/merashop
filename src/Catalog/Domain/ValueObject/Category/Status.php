@@ -6,11 +6,10 @@ namespace App\Catalog\Domain\ValueObject\Category;
 
 use App\Catalog\Domain\Enum\Category\StatusEnum;
 use App\Catalog\Domain\Exception\Category\InvalidCategoryStatusException;
-use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
-use Stringable;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectInterface;
 
-final readonly class Status implements EquatableInterface, Stringable
+final readonly class Status implements ValueObjectInterface
 {
     use ValueObjectEqualityTrait;
 

@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Domain\ValueObject\ModuleAccount;
 
 use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountClientIdException;
-use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
-use Stringable;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectInterface;
 
-final readonly class ClientId implements EquatableInterface, Stringable
+final readonly class ClientId implements ValueObjectInterface
 {
     use ValueObjectEqualityTrait;
 

@@ -7,11 +7,10 @@ namespace App\Customer\Domain\ValueObject\CustomerProfile;
 use App\Customer\Domain\Exception\CustomerProfile\InvalidCustomerProfilePhoneNumberException;
 use App\Shared\Domain\Exception\Services\Validation\InvalidPhoneNumberException;
 use App\Shared\Domain\Service\Validation\PhoneNumberValidator;
-use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
-use Stringable;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectInterface;
 
-final readonly class PhoneNumber implements EquatableInterface, Stringable
+final readonly class PhoneNumber implements ValueObjectInterface
 {
     use ValueObjectEqualityTrait;
 

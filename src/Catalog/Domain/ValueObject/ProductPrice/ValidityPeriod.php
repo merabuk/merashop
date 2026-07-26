@@ -7,12 +7,11 @@ namespace App\Catalog\Domain\ValueObject\ProductPrice;
 use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceValidFromException;
 use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceValidityPeriodException;
 use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceValidToException;
-use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectInterface;
 use DateTimeImmutable;
-use Stringable;
 
-final readonly class ValidityPeriod implements EquatableInterface, Stringable
+final readonly class ValidityPeriod implements ValueObjectInterface
 {
     use ValueObjectEqualityTrait;
 

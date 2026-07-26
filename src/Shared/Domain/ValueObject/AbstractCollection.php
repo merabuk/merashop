@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Shared\Domain\ValueObject;
 
 use App\Shared\Domain\Exception\ValueObject\InvalidAbstractCollectionItemException;
-use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectInterface;
 use ArrayIterator;
 use Countable;
 use IteratorAggregate;
-use Stringable;
 use Traversable;
 
 /**
@@ -18,7 +17,7 @@ use Traversable;
  *
  * @implements IteratorAggregate<int, T>
  */
-abstract readonly class AbstractCollection implements EquatableInterface, Countable, IteratorAggregate, Stringable
+abstract readonly class AbstractCollection implements Countable, IteratorAggregate, ValueObjectInterface
 {
     use ValueObjectEqualityTrait;
 

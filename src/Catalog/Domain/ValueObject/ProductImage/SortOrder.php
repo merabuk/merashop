@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\ValueObject\ProductImage;
 
-use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
-use Stringable;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectInterface;
 
-final readonly class SortOrder implements EquatableInterface, Stringable
+final readonly class SortOrder implements ValueObjectInterface
 {
     use ValueObjectEqualityTrait;
 

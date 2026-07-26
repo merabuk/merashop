@@ -8,9 +8,9 @@ trait ValueObjectEqualityTrait
 {
     abstract protected function getPrimitiveValue(): mixed;
 
-    public function equals(object $other): bool
+    public function equals(EquatableInterface $other): bool
     {
-        if (get_class($this) !== get_class($other)) {
+        if (static::class !== get_class($other)) {
             return false;
         }
 

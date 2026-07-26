@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App\EmailSender\Domain\ValueObject\OutboxEmail;
 
-use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectInterface;
 use JsonException;
-use Stringable;
 
-final readonly class Payload implements EquatableInterface, Stringable
+final readonly class Payload implements ValueObjectInterface
 {
     use ValueObjectEqualityTrait;
 

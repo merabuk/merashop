@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\ValueObject\Contract;
 
-interface EquatableInterface
+use Stringable;
+
+interface ValueObjectInterface extends EquatableInterface, Stringable
 {
-    public function equals(self $other): bool;
 }

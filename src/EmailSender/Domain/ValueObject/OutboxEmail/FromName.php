@@ -7,11 +7,10 @@ namespace App\EmailSender\Domain\ValueObject\OutboxEmail;
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailFromNameException;
 use App\Shared\Domain\Exception\Services\Validation\InvalidStringException;
 use App\Shared\Domain\Service\Validation\StringValidator;
-use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
-use Stringable;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectInterface;
 
-final readonly class FromName implements EquatableInterface, Stringable
+final readonly class FromName implements ValueObjectInterface
 {
     use ValueObjectEqualityTrait;
 

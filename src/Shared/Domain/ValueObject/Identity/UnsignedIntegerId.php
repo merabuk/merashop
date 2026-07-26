@@ -1,38 +1,36 @@
 <?php
 
-namespace App\Shared\Domain\ValueObject\Temporal;
+declare(strict_types=1);
+
+namespace App\Shared\Domain\ValueObject\Identity;
 
 use App\Shared\Domain\Exception\Services\Validation\IntegerIsNotUnsignedException;
 use App\Shared\Domain\Service\Validation\IntegerValidator;
+use App\Shared\Domain\ValueObject\Contract\IdInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectInterface;
 
-abstract readonly class BaseVersionValueObject implements ValueObjectInterface
+abstract readonly class UnsignedIntegerId implements ValueObjectInterface, IdInterface
 {
     use ValueObjectEqualityTrait;
 
-    private int $value;
+    protected int $id;
 
     /**
      * @throws IntegerIsNotUnsignedException
      */
-    public function __construct(int $value)
+    protected function __construct(int $id)
     {
-        $this->value = IntegerValidator::validateUnsigned($value);
+        $this->id = IntegerValidator::validateUnsigned($id);
     }
 
     public function value(): int
     {
-        return $this->value;
-    }
-
-    protected static function getInitialValue(): int
-    {
-        return 1;
+        return $this->id;
     }
 
     protected function getPrimitiveValue(): int
     {
-        return $this->value;
+        return $this->value();
     }
 }

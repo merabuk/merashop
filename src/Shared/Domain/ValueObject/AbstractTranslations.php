@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Shared\Domain\ValueObject;
 
-use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\TranslationInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectInterface;
 use ArrayIterator;
 use Countable;
 use IteratorAggregate;
-use Stringable;
 use Traversable;
 
 /**
@@ -18,7 +17,7 @@ use Traversable;
  *
  * @implements IteratorAggregate<string, T>
  */
-abstract readonly class AbstractTranslations implements Countable, EquatableInterface, IteratorAggregate, Stringable
+abstract readonly class AbstractTranslations implements Countable, IteratorAggregate, ValueObjectInterface
 {
     use ValueObjectEqualityTrait;
 

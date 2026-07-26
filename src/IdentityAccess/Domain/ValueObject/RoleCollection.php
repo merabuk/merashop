@@ -5,38 +5,38 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Domain\ValueObject;
 
 use App\IdentityAccess\Domain\Exception\ValueObject\InvalidRoleException;
-use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
+use App\IdentityAccess\Domain\Exception\ValueObject\InvalidRoleItemException;
+use App\Shared\Domain\Exception\ValueObject\InvalidAbstractCollectionItemException;
+use App\Shared\Domain\ValueObject\AbstractCollection;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
-use ArrayIterator;
-use Countable;
-use IteratorAggregate;
-use Stringable;
-use Traversable;
 
 /**
- * @implements IteratorAggregate<int, Role>
+ * @extends AbstractCollection<Role>
  */
-final readonly class RoleCollection implements Countable, EquatableInterface, IteratorAggregate, Stringable
+final readonly class RoleCollection extends AbstractCollection
 {
     use ValueObjectEqualityTrait;
 
     /**
-     * @var Role[]
-     */
-    private array $roles;
-
-    /**
      * @param Role[] $roles
+     *
+     * @throws InvalidRoleItemException
      */
     public function __construct(array $roles)
     {
-        $this->roles = array_values(array_unique($roles, SORT_REGULAR));
+        try {
+            $this->ensureDataType(items: $roles);
+            parent::__construct(items: $roles);
+        } catch (InvalidAbstractCollectionItemException $e) {
+            throw InvalidRoleItemException::fromBase($e);
+        }
     }
 
     /**
      * @param string[] $roles
      *
      * @throws InvalidRoleException
+     * @throws InvalidRoleItemException
      */
     public static function fromStrings(array $roles): self
     {
@@ -48,38 +48,14 @@ final readonly class RoleCollection implements Countable, EquatableInterface, It
      */
     public function toStrings(): array
     {
-        return array_map(fn (Role $role) => $role->value(), $this->roles);
-    }
-
-    /**
-     * @return Role[]
-     */
-    public function all(): array
-    {
-        return $this->roles;
-    }
-
-    public function count(): int
-    {
-        return count($this->roles);
-    }
-
-    public function getIterator(): Traversable
-    {
-        return new ArrayIterator($this->roles);
+        return array_map(fn (Role $role) => $role->value(), $this->items);
     }
 
     public function contains(string|Role $role): bool
     {
         $searchValue = $role instanceof Role ? $role->value() : $role;
 
-        foreach ($this->roles as $existingRole) {
-            if ($existingRole->value() === $searchValue) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any($this->items, fn (Role $existingRole) => $existingRole->value() === $searchValue);
     }
 
     public function __toString(): string
@@ -96,5 +72,10 @@ final readonly class RoleCollection implements Countable, EquatableInterface, It
         sort($values);
 
         return $values;
+    }
+
+    protected function getExpectedClass(): string
+    {
+        return Role::class;
     }
 }

@@ -6,11 +6,10 @@ namespace App\Catalog\Domain\ValueObject\ProductPrice;
 
 use App\Catalog\Domain\Enum\ProductPrice\TypeEnum;
 use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceTypeException;
-use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
-use Stringable;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectInterface;
 
-final readonly class Type implements EquatableInterface, Stringable
+final readonly class Type implements ValueObjectInterface
 {
     use ValueObjectEqualityTrait;
 

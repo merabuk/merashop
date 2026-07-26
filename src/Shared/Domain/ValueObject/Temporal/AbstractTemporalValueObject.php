@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Shared\Domain\ValueObject\Temporal;
 
 use App\Shared\Domain\ValueObject\Contract\EqualsWithDateTimeInterface;
-use App\Shared\Domain\ValueObject\Contract\EquatableInterface;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
+use App\Shared\Domain\ValueObject\Contract\ValueObjectInterface;
 use DateTimeImmutable;
-use Stringable;
 
-abstract readonly class AbstractTemporalValueObject implements EqualsWithDateTimeInterface, EquatableInterface, Stringable
+abstract readonly class AbstractTemporalValueObject implements EqualsWithDateTimeInterface, ValueObjectInterface
 {
     use ValueObjectEqualityTrait;
 
