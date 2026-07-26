@@ -54,7 +54,11 @@ abstract readonly class FlysystemStorage implements FileStorageInterface
     public function upload(string $path, mixed $content): void
     {
         try {
-            $this->filesystem->write($path, $content);
+            match (true) {
+                is_resource($content) => $this->filesystem->writeStream(location: $path, contents: $content),
+                is_string($content) => $this->filesystem->write(location: $path, contents: $content),
+                default => throw new RuntimeException('Giving content is invalid'),
+            };
         } catch (Throwable $e) {
             throw $this->makeException('Fail writing file', $e);
         }

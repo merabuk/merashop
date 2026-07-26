@@ -8,8 +8,10 @@ use Countable;
 
 final readonly class Filters implements Countable
 {
+    /**
+     * @param array<string, mixed> $items
+     */
     public function __construct(
-        /** @var array<string, mixed> $items */
         private array $items = [],
     ) {
     }

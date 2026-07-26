@@ -8,6 +8,8 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @template T of object
+ *
+ * @extends ServiceEntityRepository<T>
  */
 abstract class BaseEntityRepository extends ServiceEntityRepository
 {

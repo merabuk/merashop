@@ -6,8 +6,9 @@ namespace App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\IdentityAccess\Domain\Entity\RefreshToken;
 use App\IdentityAccess\Domain\Repository\RefreshTokenWriteRepositoryInterface;
+use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmRefreshToken;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Type\RefreshToken\AccountType as DbalAccountType;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\Markers\ValueObjectExceptionInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait;
@@ -17,10 +18,13 @@ use Symfony\Bridge\Doctrine\Types\UlidType;
 
 final class RefreshTokenWriteRepository extends BaseRefreshTokenRepository implements RefreshTokenWriteRepositoryInterface
 {
+    /**
+     * @use WriteRepositoryTrait<RefreshToken,  OrmRefreshToken>
+     */
     use WriteRepositoryTrait;
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws ValueObjectExceptionInterface
      * @throws IncompatibleMappedEntityException
      * @throws ORMException

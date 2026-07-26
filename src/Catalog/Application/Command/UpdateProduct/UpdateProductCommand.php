@@ -11,29 +11,21 @@ use App\Shared\Application\Command\CommandInterface;
 
 class UpdateProductCommand implements CommandInterface
 {
+    /**
+     * @param ProductPriceData[]          $prices
+     * @param int[]                       $categoryIds
+     * @param ProductAttributeValueData[] $attributeValues
+     * @param ProductTranslationData[]    $translations
+     * @param string[]                    $images
+     */
     public function __construct(
         public int $id,
         public string $sku,
         public string $status,
-        /**
-         * @var ProductPriceData[]
-         */
         public array $prices,
-        /**
-         * @var int[]
-         */
         public array $categoryIds,
-        /**
-         * @var ProductAttributeValueData[]
-         */
         public array $attributeValues,
-        /**
-         * @var ProductTranslationData[]
-         */
         public array $translations,
-        /**
-         * @var string[]
-         */
         public array $images,
         public int $version,
         public string $adminUlid,

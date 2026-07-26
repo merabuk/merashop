@@ -15,7 +15,7 @@ use App\Catalog\Domain\ValueObject\TemporaryImage\Ulid;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmTemporaryImage;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Type\TemporaryImage\ContextType;
 use App\Shared\Domain\Exception\Database\OneOfEntitiesNotFoundException;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidRelativePathException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\ReadRepositoryTrait;
@@ -25,7 +25,7 @@ final class TemporaryImageReadRepository extends BaseTemporaryImageRepository im
     use ReadRepositoryTrait;
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidRelativePathException
      * @throws InvalidTemporaryImageIdException
@@ -39,7 +39,7 @@ final class TemporaryImageReadRepository extends BaseTemporaryImageRepository im
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidRelativePathException
      * @throws InvalidTemporaryImageIdException
@@ -87,7 +87,7 @@ final class TemporaryImageReadRepository extends BaseTemporaryImageRepository im
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidRelativePathException
      * @throws InvalidTemporaryImageIdException

@@ -11,9 +11,12 @@ use App\IdentityAccess\Domain\Repository\ModuleAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientId;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
+use App\Shared\Domain\Helpers\TypeCastingTrait;
 
 final readonly class ModuleClientCredentialsGrantAccountProvider implements ClientCredentialsGrantAccountProviderInterface
 {
+    use TypeCastingTrait;
+
     public function __construct(
         private ModuleAccountReadRepositoryInterface $readRepository,
         private PasswordHasherInterface $passwordHasher,
@@ -44,7 +47,10 @@ final readonly class ModuleClientCredentialsGrantAccountProvider implements Clie
             }
 
             return new GrantResultData(
-                subjectUlid: $module->getUlid()->value(),
+                subjectUlid: self::castToNonEmptyString(
+                    string: $module->getUlid()->value(),
+                    message: 'Giving module ulid is empty'
+                ),
                 subjectType: self::getAccountType(),
                 roles: [],
                 scopes: $module->getScopes()->toStrings(),

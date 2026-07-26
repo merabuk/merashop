@@ -41,7 +41,7 @@ final class ProductAttributeValueRequest implements GroupSequenceProviderInterfa
         TypeEnum::Select->value,
         TypeEnum::MultiSelect->value,
     ])]
-    public mixed $value;
+    public mixed $value = null;
 
     public function getGroupSequence(): array
     {

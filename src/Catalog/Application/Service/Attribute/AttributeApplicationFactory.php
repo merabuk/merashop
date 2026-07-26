@@ -122,9 +122,12 @@ final readonly class AttributeApplicationFactory implements AttributeApplication
      */
     private function mapAttributeTranslations(array $translations): AttributeTranslations
     {
-        return AttributeTranslations::fromArray(array_map(fn (AttributeTranslationData $t) => [
+        /** @var array<string, array{name?: string}> $mapped */
+        $mapped = array_map(fn (AttributeTranslationData $t) => [
             'name' => $t->name,
-        ], $translations));
+        ], $translations);
+
+        return AttributeTranslations::fromArray(data: $mapped);
     }
 
     /**
@@ -154,9 +157,12 @@ final readonly class AttributeApplicationFactory implements AttributeApplication
      */
     private function mapAttributeOptionTranslations(array $translations): AttributeOptionTranslations
     {
-        return AttributeOptionTranslations::fromArray(array_map(fn (AttributeOptionTranslationData $t) => [
+        /** @var array<string, array{value?: string}> $mapped */
+        $mapped = array_map(fn (AttributeOptionTranslationData $t) => [
             'value' => $t->value,
-        ], $translations));
+        ], $translations);
+
+        return AttributeOptionTranslations::fromArray(data: $mapped);
     }
 
     /**

@@ -19,6 +19,7 @@ use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use RuntimeException;
 
 trait ReadRepositoryTrait
 {
@@ -35,7 +36,7 @@ trait ReadRepositoryTrait
             $paramName = $field.$index;
 
             $qb->andWhere("{$alias}.{$field} {$operator} :{$paramName}")
-                ->setParameter(key: $paramName, value: $criteriaItem->value, type: $criteriaItem->type);
+                ->setParameter(key: $paramName, value: $criteriaItem->value, type: $criteriaItem->getType());
         }
 
         $result = $qb->setMaxResults(1)->getQuery()->getScalarResult();
@@ -92,7 +93,7 @@ trait ReadRepositoryTrait
             $paramName = $criterion->field.$index;
 
             $qb->andWhere("{$alias}.{$field} {$operator} :{$paramName}")
-                ->setParameter(key: $paramName, value: $criterion->value, type: $criterion->type);
+                ->setParameter(key: $paramName, value: $criterion->value, type: $criterion->getType());
         }
 
         $count = $qb->getQuery()
@@ -110,19 +111,21 @@ trait ReadRepositoryTrait
     ): ?object {
         $qb ??= $this->createQueryBuilder($alias);
 
-        return $qb->where("{$alias}.id = :id")
+        $result = $qb->where("{$alias}.id = :id")
             ->setParameter('id', $id->value())
             ->getQuery()
             ->getOneOrNullResult();
+
+        return is_object($result) ? $result : null;
     }
 
     /**
      * @template T
      *
-     * @param IdInterface[]       $ids
-     * @param callable(object): T $mapCallback
+     * @param IdInterface[]        $ids
+     * @param callable(object): ?T $mapCallback
      *
-     * @return array<T>
+     * @return list<T>
      */
     protected function _findByIds(
         array $ids,
@@ -142,7 +145,17 @@ trait ReadRepositoryTrait
             ->getQuery()
             ->getResult();
 
-        return array_map($mapCallback, $result);
+        if (!is_array($result)) {
+            throw new RuntimeException(sprintf("Method _findByIds doesn't return array: %s", get_debug_type($result)));
+        }
+
+        /** @var array<int, object> $result */
+        $mapped = array_map($mapCallback, $result);
+
+        /** @var list<T> $filtered */
+        $filtered = array_values(array_filter($mapped));
+
+        return $filtered;
     }
 
     protected function _findByUlid(
@@ -152,19 +165,21 @@ trait ReadRepositoryTrait
     ): ?object {
         $qb ??= $this->createQueryBuilder($alias);
 
-        return $qb->where("{$alias}.ulid = :ulid")
+        $result = $qb->where("{$alias}.ulid = :ulid")
             ->setParameter('ulid', UlidPersistenceHelper::toBaseString($ulid))
             ->getQuery()
             ->getOneOrNullResult();
+
+        return is_object($result) ? $result : null;
     }
 
     /**
      * @template T
      *
-     * @param Ulid[]              $ulids
-     * @param callable(object): T $mapCallback
+     * @param Ulid[]               $ulids
+     * @param callable(object): ?T $mapCallback
      *
-     * @return array<T>
+     * @return list<T>
      */
     protected function _findManyByUlids(
         array $ulids,
@@ -186,19 +201,38 @@ trait ReadRepositoryTrait
             ->getQuery()
             ->getResult();
 
-        return array_map($mapCallback, $result);
+        if (!is_array($result)) {
+            throw new RuntimeException(sprintf("Method _findManyByUlids doesn't return array: %s", get_debug_type($result)));
+        }
+
+        /** @var array<int, object> $result */
+        $mapped = array_map($mapCallback, $result);
+
+        /** @var list<T> $filtered */
+        $filtered = array_values(array_filter($mapped));
+
+        return $filtered;
     }
 
     protected function _findByIdForUpdate(int $id): ?object
     {
-        return $this->createQueryBuilder('e')
+        $result = $this->createQueryBuilder('e')
             ->where('e.id = :id')
             ->setParameter('id', $id)
             ->getQuery()
             ->setLockMode(LockMode::PESSIMISTIC_WRITE)
             ->getOneOrNullResult();
+
+        return is_object($result) ? $result : null;
     }
 
+    /**
+     * @template T
+     *
+     * @param callable(object): ?T $mapCallback
+     *
+     * @return PaginatedResult<T>
+     */
     protected function _paginate(
         QueryBuilder $qb,
         Cursor $cursor,
@@ -238,6 +272,7 @@ trait ReadRepositoryTrait
         $paginator = new Paginator($qb, fetchJoinCollection: true);
 
         $totalCount = $paginator->count();
+        /** @var array<int, object> $ormResults */
         $ormResults = iterator_to_array($paginator);
 
         $hasMore = count($ormResults) > $limit;
@@ -246,7 +281,10 @@ trait ReadRepositoryTrait
             array_pop($ormResults);
         }
 
-        $domainItems = array_map($mapCallback, $ormResults);
+        $mapped = array_map($mapCallback, $ormResults);
+
+        /** @var list<T> $domainItems */
+        $domainItems = array_values(array_filter($mapped));
 
         $nextCursor = null;
         if ($hasMore && !empty($domainItems)) {

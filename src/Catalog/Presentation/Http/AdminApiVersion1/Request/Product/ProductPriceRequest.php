@@ -65,12 +65,12 @@ final class ProductPriceRequest
     public function toData(): ProductPriceData
     {
         return new ProductPriceData(
-            amount: $this->amount,
-            currency: $this->currency,
-            type: $this->type,
-            taxValue: $this->taxValue,
-            taxType: $this->taxType,
-            taxIncluded: $this->taxIncluded,
+            amount: (int) $this->amount,
+            currency: (string) $this->currency,
+            type: (string) $this->type,
+            taxValue: (float) $this->taxValue,
+            taxType: (string) $this->taxType,
+            taxIncluded: (bool) $this->taxIncluded,
             validFrom: $this->validFrom,
             validTo: $this->validTo,
         );

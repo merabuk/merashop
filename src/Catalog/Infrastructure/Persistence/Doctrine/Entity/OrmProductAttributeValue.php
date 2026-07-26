@@ -29,7 +29,7 @@ class OrmProductAttributeValue
         onDelete: ReferentialAction::CASCADE->value,
         options: ['foreignKey' => ['name' => 'fk_product_attribute_values_product_id']]
     )]
-    public OrmProduct $product;
+    public ?OrmProduct $product = null;
 
     #[ORM\ManyToOne(targetEntity: OrmAttribute::class)]
     #[ORM\JoinColumn(
@@ -39,7 +39,7 @@ class OrmProductAttributeValue
         onDelete: ReferentialAction::CASCADE->value,
         options: ['foreignKey' => ['name' => 'fk_product_attribute_values_attribute_id']]
     )]
-    public OrmAttribute $attribute;
+    public ?OrmAttribute $attribute = null;
 
     #[ORM\ManyToOne(targetEntity: OrmAttributeOption::class)]
     #[ORM\JoinColumn(

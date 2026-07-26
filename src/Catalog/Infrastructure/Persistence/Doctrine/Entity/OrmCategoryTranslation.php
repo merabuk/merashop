@@ -27,13 +27,13 @@ class OrmCategoryTranslation
         nullable: false,
         onDelete: ReferentialAction::CASCADE->value
     )]
-    public OrmCategory $category;
+    public ?OrmCategory $category = null;
 
     #[ORM\Column(type: Types::STRING, length: Locale::MAX_LENGTH)]
-    public string $locale;
+    public ?string $locale = null;
 
     #[ORM\Column(type: Types::STRING, length: Translation::NAME_MAX_LENGTH)]
-    public string $name;
+    public ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     public ?string $description = null;

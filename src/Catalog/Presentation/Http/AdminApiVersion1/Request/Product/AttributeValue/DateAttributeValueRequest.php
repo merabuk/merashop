@@ -11,10 +11,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 final class DateAttributeValueRequest extends BaseAttributeValueRequest
 {
     #[Assert\DateTime(format: DateValueObject::INPUT_FORMAT, groups: [self::BASE_GROUP])]
-    public ?string $date;
+    public ?string $date = null;
 
     public function toValueData(): DateAttributeValueData
     {
-        return new DateAttributeValueData(value: $this->date);
+        return new DateAttributeValueData(value: (string) $this->date);
     }
 }

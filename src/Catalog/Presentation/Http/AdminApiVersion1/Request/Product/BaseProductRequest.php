@@ -26,14 +26,14 @@ abstract class BaseProductRequest implements GroupSequenceProviderInterface
     #[Assert\NotBlank]
     #[Assert\Length(min: Sku::MIN_LENGTH, max: Sku::MAX_LENGTH)]
     #[Assert\Regex(pattern: Sku::REGEX)]
-    public ?string $sku;
+    public ?string $sku = null;
 
     #[Assert\NotBlank]
     #[Assert\Choice(
         callback: 'getProductStatuses',
         message: 'catalog.product.status_invalid'
     )]
-    public ?string $status;
+    public ?string $status = null;
 
     /**
      * @var ProductPriceRequest[] $prices
@@ -41,7 +41,7 @@ abstract class BaseProductRequest implements GroupSequenceProviderInterface
     #[Assert\NotBlank(groups: [ProductPriceRequest::BASE_GROUP])]
     #[Assert\Count(min: 1, minMessage: 'catalog.product.prices_empty', groups: [ProductPriceRequest::BASE_GROUP])]
     #[Assert\Valid(groups: [ProductPriceRequest::BASE_GROUP])]
-    public ?array $prices;
+    public ?array $prices = null;
 
     /**
      * @var ?ProductTranslationRequest[] $translations
@@ -49,7 +49,7 @@ abstract class BaseProductRequest implements GroupSequenceProviderInterface
     #[Assert\NotBlank(groups: [ProductTranslationRequest::BASE_GROUP])]
     #[Assert\Count(min: 1, minMessage: 'shared.common.translations_empty', groups: [ProductTranslationRequest::BASE_GROUP])]
     #[Assert\Valid(groups: [ProductTranslationRequest::BASE_GROUP])]
-    public ?array $translations;
+    public ?array $translations = null;
 
     /**
      * @var ?int[]
@@ -60,14 +60,14 @@ abstract class BaseProductRequest implements GroupSequenceProviderInterface
         new Assert\NotBlank(),
         new Assert\Positive(),
     ], groups: [self::FULL_GROUP])]
-    public ?array $categoryIds;
+    public ?array $categoryIds = null;
 
     /**
      * @var BaseAttributeValueRequest[]
      */
     #[Assert\NotBlank(groups: [BaseAttributeValueRequest::BASE_GROUP])]
     #[Assert\Valid(groups: [BaseAttributeValueRequest::BASE_GROUP])]
-    public ?array $attributeValues;
+    public ?array $attributeValues = null;
 
     /**
      * @var ?string[]
@@ -78,7 +78,7 @@ abstract class BaseProductRequest implements GroupSequenceProviderInterface
         new Assert\NotBlank(),
         new Assert\Ulid(),
     ], groups: [self::FULL_GROUP])]
-    public ?array $images;
+    public ?array $images = null;
 
     #[Assert\Callback(groups: [ProductPriceRequest::BASE_GROUP])]
     public function validateUniquePrices(ExecutionContextInterface $context): void
@@ -154,9 +154,13 @@ abstract class BaseProductRequest implements GroupSequenceProviderInterface
      */
     protected function getTranslations(): array
     {
-        return isset($this->translations)
-            ? array_map(fn (ProductTranslationRequest $translation) => true, $this->translations)
-            : [];
+        $translations = [];
+
+        foreach ($this->translations ?? [] as $key => $translation) {
+            $translations[(string) $key] = true;
+        }
+
+        return $translations;
     }
 
     protected function getRequestTranslationKey(): string
@@ -169,7 +173,7 @@ abstract class BaseProductRequest implements GroupSequenceProviderInterface
      */
     protected function mapAndGetPrices(): array
     {
-        return array_map(fn (ProductPriceRequest $p) => $p->toData(), $this->prices);
+        return array_map(fn (ProductPriceRequest $p) => $p->toData(), $this->prices ?? []);
     }
 
     /**
@@ -177,7 +181,7 @@ abstract class BaseProductRequest implements GroupSequenceProviderInterface
      */
     protected function mapAndGetAttributeValues(): array
     {
-        return array_map(fn (BaseAttributeValueRequest $v) => $v->toData(), $this->attributeValues);
+        return array_map(fn (BaseAttributeValueRequest $v) => $v->toData(), $this->attributeValues ?? []);
     }
 
     /**
@@ -185,6 +189,6 @@ abstract class BaseProductRequest implements GroupSequenceProviderInterface
      */
     protected function mapAndGetTranslations(): array
     {
-        return array_map(fn (ProductTranslationRequest $t) => $t->toData(), $this->translations);
+        return array_map(fn (ProductTranslationRequest $t) => $t->toData(), $this->translations ?? []);
     }
 }

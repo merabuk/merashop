@@ -34,7 +34,7 @@ class OrmProductImage
         nullable: false,
         onDelete: ReferentialAction::CASCADE->value
     )]
-    public OrmProduct $product;
+    public ?OrmProduct $product = null;
 
     #[ORM\Column(type: Types::STRING, length: 511)]
     public ?string $path = null;

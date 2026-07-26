@@ -12,7 +12,7 @@ final readonly class UlidPersistenceHelper
     /**
      * Converts an array of domain-based ULIDs to an array of RFC4122 strings (UUID format).
      *
-     * @param array<int, DomainUlid|string> $ulids
+     * @param DomainUlid[]|string[] $ulids
      *
      * @return string[]
      */

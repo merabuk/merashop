@@ -6,7 +6,7 @@ namespace App\Tests\Catalog\Unit\Infrastructure\Persistence\Doctrine\Mapper;
 
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductImage;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Mapper\ProductImageMapper;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Tests\Catalog\Support\ProductImageMother;
 use App\Tests\Shared\BaseUnitTest;
 
@@ -41,7 +41,7 @@ final class ProductImageMapperTest extends BaseUnitTest
     {
         $orm = new OrmProductImage();
 
-        $this->expectException(EntityIdMissingException::class);
+        $this->expectException(EntityFieldMissingException::class);
 
         $this->mapper->toDomain($orm);
     }

@@ -20,7 +20,7 @@ use App\EmailSender\Domain\ValueObject\OutboxEmail\Status;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Subject;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\To;
 use App\EmailSender\Infrastructure\Persistence\Doctrine\Entity\OrmOutboxEmail;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidTraceIdException;
 use App\Shared\Domain\ValueObject\Tracing\TraceId;
@@ -61,7 +61,7 @@ final readonly class OutboxEmailMapper implements MapperInterface
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidEmailSenderValueObjectException
      * @throws InvalidTraceIdException
@@ -73,14 +73,14 @@ final readonly class OutboxEmailMapper implements MapperInterface
         /* @var OrmOutboxEmail $orm */
 
         return new OutboxEmail(
-            id: Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class)),
+            id: Id::fromInt($orm->id ?? throw EntityFieldMissingException::forEntityId(className: $orm::class)),
             status: Status::fromEnum($orm->status),
             driver: Driver::fromEnum($orm->driver),
-            from: From::fromString($orm->from),
-            fromName: FromName::fromString($orm->fromName),
-            to: To::fromString($orm->to),
-            subject: Subject::fromString($orm->subject),
-            body: Body::fromString($orm->body),
+            from: From::fromString($orm->from ?? throw EntityFieldMissingException::forField(field: 'from', className: $orm::class)),
+            fromName: FromName::fromString($orm->fromName ?? throw EntityFieldMissingException::forField(field: 'fromName', className: $orm::class)),
+            to: To::fromString($orm->to ?? throw EntityFieldMissingException::forField(field: 'to', className: $orm::class)),
+            subject: Subject::fromString($orm->subject ?? throw EntityFieldMissingException::forField(field: 'subject', className: $orm::class)),
+            body: Body::fromString($orm->body ?? throw EntityFieldMissingException::forField(field: 'body', className: $orm::class)),
             payload: null !== $orm->payload ? Payload::fromArray($orm->payload) : null,
             attempts: Attempts::fromInt($orm->attempts),
             traceId: null !== $orm->traceId ? TraceId::fromString($orm->traceId) : null,

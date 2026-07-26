@@ -34,7 +34,13 @@ readonly class OutboxEmailRelayService implements OutboxEmailRelayServiceInterfa
         $emails = $this->readRepository->findReadyToProcess($this->limit, $now, $staleTime);
 
         foreach ($emails as $email) {
-            $this->commandBus->dispatch(new SendOutboxEmailCommand($email->getId()->value()));
+            // TODO: refactor getId() return type without null and with throw error. Add hasId method
+            $id = $email->getId()?->value();
+            if (null === $id) {
+                continue;
+            }
+
+            $this->commandBus->dispatch(new SendOutboxEmailCommand($id));
         }
 
         return count($emails);

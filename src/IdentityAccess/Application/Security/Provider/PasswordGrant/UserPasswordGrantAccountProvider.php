@@ -11,9 +11,12 @@ use App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
+use App\Shared\Domain\Helpers\TypeCastingTrait;
 
 final readonly class UserPasswordGrantAccountProvider implements PasswordGrantAccountProviderInterface
 {
+    use TypeCastingTrait;
+
     public function __construct(
         private UserAccountReadRepositoryInterface $readRepository,
         private PasswordHasherInterface $passwordHasher,
@@ -44,7 +47,10 @@ final readonly class UserPasswordGrantAccountProvider implements PasswordGrantAc
             }
 
             return new GrantResultData(
-                subjectUlid: $user->getUlid()->value(),
+                subjectUlid: self::castToNonEmptyString(
+                    string: $user->getUlid()->value(),
+                    message: 'Giving user ulid is empty'
+                ),
                 subjectType: self::getAccountType(),
                 roles: $user->getRoles()->toStrings()
             );

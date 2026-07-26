@@ -14,10 +14,10 @@ final class MultiSelectAttributeValueRequest extends BaseAttributeValueRequest
     #[Assert\All(constraints: [
         new Assert\Positive(),
     ], groups: [self::BASE_GROUP])]
-    public ?array $values;
+    public ?array $values = null;
 
     public function toValueData(): MultiSelectAttributeValueData
     {
-        return new MultiSelectAttributeValueData(optionIds: $this->values);
+        return new MultiSelectAttributeValueData(optionIds: $this->values ?? []);
     }
 }

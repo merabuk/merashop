@@ -23,7 +23,7 @@ final class ProductTranslationRequest
     public function toData(): ProductTranslationData
     {
         return new ProductTranslationData(
-            name: $this->name,
+            name: (string) $this->name,
             description: $this->description,
         );
     }

@@ -36,7 +36,7 @@ class OrmUserAccount
     public ?string $passwordHash = null;
 
     /**
-     * @var array<int, string>
+     * @var string[]
      */
     #[ORM\Column(type: Types::JSONB)]
     public array $roles = [];

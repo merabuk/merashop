@@ -118,6 +118,7 @@ class Product
      */
     public function reorderImages(array $orderedUlids): void
     {
+        /** @var int[] $map */
         $map = array_flip($orderedUlids);
 
         foreach ($this->images as $image) {

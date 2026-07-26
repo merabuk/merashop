@@ -29,11 +29,11 @@ final readonly class ImageValidator implements ImageValidatorInterface
 
         $validatorContext->atPath($propertyPath)->validate($file->getLocalPath(), [
             new Assert\Image(
-                maxSize: $constraints->maxSize,
+                maxSize: $constraints->getMaxSize(),
                 mimeTypes: $constraints->allowedMimeTypes,
                 minWidth: $constraints->minWidth,
-                maxWidth: $constraints->maxWidth,
-                maxHeight: $constraints->maxHeight,
+                maxWidth: $constraints->getMaxWidth(),
+                maxHeight: $constraints->getMaxHeight(),
                 minHeight: $constraints->minHeight,
                 detectCorrupted: $constraints->detectCorrupted
             ),

@@ -16,7 +16,7 @@ use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttributeOption;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductAttributeValue;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Normalizer\ProductAttributeValueNormalizer;
 use App\Shared\Domain\Exception\InvalidArgumentException;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Interface\ProxyReferenceProviderInterface;
 
 final readonly class ProductAttributeValueMapper
@@ -28,15 +28,21 @@ final readonly class ProductAttributeValueMapper
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws InvalidCatalogValueObjectException
      * @throws ProductAttributeValueStateException
      */
     public function toDomain(OrmProductAttributeValue $orm): ProductAttributeValue
     {
-        $id = $orm->id ?? throw EntityIdMissingException::forEntity($orm::class);
+        $id = $orm->id ?? throw EntityFieldMissingException::forEntityId($orm::class);
 
-        $type = $orm->attribute->type;
+        $attribute = $orm->attribute;
+
+        if (null === $attribute) {
+            throw $this->makeError(sprintf('%s Attribute is null', $this->getLogPrefix($id)));
+        }
+
+        $type = $attribute->type;
         $optionId = $orm->option?->id;
 
         if (null === $type) {
@@ -49,9 +55,9 @@ final readonly class ProductAttributeValueMapper
         $attributeOptionId = $optionId ? AttributeOptionId::fromInt($optionId) : null;
 
         return new ProductAttributeValue(
-            attributeId: AttributeId::fromInt($orm->attribute->id),
-            version: Version::fromInt($orm->version),
-            createdBy: AdminUlid::fromString($orm->createdBy),
+            attributeId: AttributeId::fromInt($attribute->id ?? throw EntityFieldMissingException::forEntityId(className: $attribute::class)),
+            version: Version::fromInt($orm->version ?? throw EntityFieldMissingException::forField(field: 'version', className: $orm::class)),
+            createdBy: AdminUlid::fromString($orm->createdBy ?? throw EntityFieldMissingException::forField(field: 'createdBy', className: $orm::class)),
             attributeOptionId: $attributeOptionId,
             value: $this->normalizer->denormalize(type: $type, data: $orm->valueJson, optionId: $attributeOptionId),
             updatedBy: $orm->updatedBy ? AdminUlid::fromString($orm->updatedBy) : null,

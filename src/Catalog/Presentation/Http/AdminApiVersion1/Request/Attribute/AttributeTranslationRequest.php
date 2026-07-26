@@ -18,6 +18,6 @@ final class AttributeTranslationRequest
 
     public function toData(): AttributeTranslationData
     {
-        return new AttributeTranslationData(name: $this->name);
+        return new AttributeTranslationData(name: (string) $this->name);
     }
 }

@@ -47,7 +47,7 @@ class OutboxEmail
     public static function create(
         Driver $driver,
         From $from,
-        ?FromName $fromName,
+        FromName $fromName,
         To $to,
         Subject $subject,
         Body $body,

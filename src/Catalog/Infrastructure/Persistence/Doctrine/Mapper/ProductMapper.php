@@ -31,7 +31,7 @@ use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductImage;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductPrice;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductTranslation;
 use App\Shared\Domain\Enum\CurrencyEnum;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Domain\Exception\ValueObject\InvalidRelativePathException;
@@ -73,7 +73,7 @@ final readonly class ProductMapper implements MapperInterface
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
@@ -85,7 +85,7 @@ final readonly class ProductMapper implements MapperInterface
     {
         $this->assertIsType(OrmProduct::class, $orm);
         /** @var OrmProduct $orm */
-        $productId = ProductId::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class));
+        $productId = ProductId::fromInt($orm->id ?? throw EntityFieldMissingException::forEntityId($orm::class));
 
         $prices = $this->mapPricesFromOrmToDomain($orm);
         $categoryIds = $this->mapCategoriesFromOrmToDomain($orm);
@@ -94,12 +94,12 @@ final readonly class ProductMapper implements MapperInterface
         $images = $this->mapImagesFromOrmToDomain($orm);
 
         return new Product(
-            ulid: ProductUlid::fromString($orm->ulid),
-            sku: Sku::fromString($orm->sku),
-            status: Status::fromEnum($orm->status),
+            ulid: ProductUlid::fromString($orm->ulid ?? throw EntityFieldMissingException::forField(field: 'ulid', className: $orm::class)),
+            sku: Sku::fromString($orm->sku ?? throw EntityFieldMissingException::forField(field: 'sku', className: $orm::class)),
+            status: Status::fromEnum($orm->status ?? throw EntityFieldMissingException::forField(field: 'status', className: $orm::class)),
             translations: $translations,
-            version: Version::fromInt($orm->version),
-            createdBy: AdminUlid::fromString($orm->createdBy),
+            version: Version::fromInt($orm->version ?? throw EntityFieldMissingException::forField(field: 'version', className: $orm::class)),
+            createdBy: AdminUlid::fromString($orm->createdBy ?? throw EntityFieldMissingException::forField(field: 'createdBy', className: $orm::class)),
             prices: $prices,
             categoryIds: $categoryIds,
             attributeValues: $attributeValues,
@@ -131,7 +131,7 @@ final readonly class ProductMapper implements MapperInterface
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws InvalidCatalogValueObjectException
      * @throws ProductPriceStateException
      */
@@ -190,6 +190,7 @@ final readonly class ProductMapper implements MapperInterface
     }
 
     /**
+     * @throws EntityFieldMissingException
      * @throws InvalidCategoryIdException
      * @throws InvalidProductCategoryIdItemException
      */
@@ -197,7 +198,7 @@ final readonly class ProductMapper implements MapperInterface
     {
         $categoryIds = [];
         foreach ($orm->categories as $ormCategory) {
-            $categoryIds[] = CategoryId::fromInt($ormCategory->id);
+            $categoryIds[] = CategoryId::fromInt($ormCategory->id ?? throw EntityFieldMissingException::forEntityId(className: $ormCategory::class));
         }
 
         return CategoryIdCollection::fromArray($categoryIds);
@@ -229,6 +230,7 @@ final readonly class ProductMapper implements MapperInterface
     }
 
     /**
+     * @throws EntityFieldMissingException
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
      */
@@ -237,7 +239,7 @@ final readonly class ProductMapper implements MapperInterface
         $translations = [];
         foreach ($orm->translations as $ormTranslation) {
             $translations[$ormTranslation->locale] = [
-                'name' => $ormTranslation->name,
+                'name' => $ormTranslation->name ?? throw EntityFieldMissingException::forField(field: 'name', className: $ormTranslation::class),
                 'description' => $ormTranslation->description,
             ];
         }
@@ -278,7 +280,7 @@ final readonly class ProductMapper implements MapperInterface
 
     /**
      * @throws InvalidCatalogValueObjectException
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws ProductAttributeValueStateException
      */
     private function mapAttributesFromOrmToDomain(OrmProduct $orm): AttributeValueCollection
@@ -297,11 +299,16 @@ final readonly class ProductMapper implements MapperInterface
 
         $existingOrmValues = [];
         foreach ($orm->attributeValues as $ormValue) {
-            $existingOrmValues[$ormValue->attribute->id] = $ormValue;
+            if (null === $ormValue->attribute) {
+                // TODO: add handler for this case
+
+                continue;
+            }
+            $existingOrmValues[(int) $ormValue->attribute->id] = $ormValue;
         }
 
         foreach ($existingOrmValues as $attributeId => $ormValue) {
-            if (!$domainValues->getByAttributeId($attributeId)) {
+            if (!$domainValues->getByAttributeId((int) $attributeId)) {
                 $orm->attributeValues->removeElement($ormValue);
             }
         }
@@ -328,7 +335,7 @@ final readonly class ProductMapper implements MapperInterface
     /**
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidRelativePathException
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      */
     private function mapImagesFromOrmToDomain(OrmProduct $orm): ImageCollection
     {

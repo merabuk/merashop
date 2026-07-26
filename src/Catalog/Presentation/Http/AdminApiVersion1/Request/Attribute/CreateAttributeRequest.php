@@ -11,8 +11,8 @@ class CreateAttributeRequest extends BaseAttributeRequest
     public function toCommand(string $adminUlid): CreateAttributeCommand
     {
         return new CreateAttributeCommand(
-            code: $this->code,
-            type: $this->type,
+            code: (string) $this->code,
+            type: (string) $this->type,
             translations: $this->mapAndGetTranslations(),
             options: $this->mapAndGetOptions(),
             adminUlid: $adminUlid,

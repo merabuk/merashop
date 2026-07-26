@@ -9,7 +9,7 @@ use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductPrice;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Mapper\ProductPriceMapper;
 use App\Shared\Domain\Enum\CurrencyEnum;
 use App\Shared\Domain\Enum\TaxTypeEnum;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Tests\Catalog\Support\ProductPriceMother;
 use App\Tests\Shared\BaseUnitTest;
 use Symfony\Component\Clock\MockClock;
@@ -61,7 +61,7 @@ final class ProductPriceMapperTest extends BaseUnitTest
     {
         $orm = new OrmProductPrice();
 
-        $this->expectException(EntityIdMissingException::class);
+        $this->expectException(EntityFieldMissingException::class);
 
         $this->mapper->toDomain($orm);
     }

@@ -27,11 +27,11 @@ class OrmAttributeTranslation
         nullable: false,
         onDelete: ReferentialAction::CASCADE->value
     )]
-    public OrmAttribute $attribute;
+    public ?OrmAttribute $attribute = null;
 
     #[ORM\Column(type: Types::STRING, length: Locale::MAX_LENGTH)]
-    public string $locale;
+    public ?string $locale = null;
 
     #[ORM\Column(type: Types::STRING, length: Translation::NAME_MAX_LENGTH)]
-    public string $name;
+    public ?string $name = null;
 }

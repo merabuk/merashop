@@ -15,7 +15,7 @@ use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductAttributeVa
 use App\Catalog\Infrastructure\Persistence\Doctrine\Mapper\ProductAttributeValueMapper;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Normalizer\ProductAttributeValueNormalizer;
 use App\Shared\Domain\Exception\InvalidArgumentException;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Interface\ProxyReferenceProviderInterface;
 use App\Tests\Catalog\Support\ProductAttributeValueMother;
 use App\Tests\Shared\BaseUnitTest;
@@ -123,7 +123,7 @@ final class ProductAttributeValueMapperTest extends BaseUnitTest
     {
         $orm = new OrmProductAttributeValue();
 
-        $this->expectException(EntityIdMissingException::class);
+        $this->expectException(EntityFieldMissingException::class);
 
         $this->mapper->toDomain($orm);
     }

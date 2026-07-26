@@ -11,7 +11,7 @@ use App\Catalog\Domain\ValueObject\TemporaryImage\Context;
 use App\Catalog\Domain\ValueObject\TemporaryImage\Id;
 use App\Catalog\Domain\ValueObject\TemporaryImage\Ulid;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmTemporaryImage;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidRelativePathException;
 use App\Shared\Domain\ValueObject\File\RelativeFilePath;
@@ -42,7 +42,7 @@ final readonly class TemporaryImageMapper implements MapperInterface
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidRelativePathException
      * @throws InvalidTemporaryImageIdException
@@ -52,12 +52,12 @@ final readonly class TemporaryImageMapper implements MapperInterface
     {
         $this->assertIsType(OrmTemporaryImage::class, $orm);
         /** @var OrmTemporaryImage $orm */
-        $id = Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class));
+        $id = Id::fromInt($orm->id ?? throw EntityFieldMissingException::forEntityId($orm::class));
 
         return new TemporaryImage(
-            ulid: Ulid::fromString($orm->ulid),
-            path: RelativeFilePath::fromString($orm->path),
-            context: Context::fromEnum($orm->context),
+            ulid: Ulid::fromString($orm->ulid ?? throw EntityFieldMissingException::forField(field: 'ulid', className: $orm::class)),
+            path: RelativeFilePath::fromString($orm->path ?? throw EntityFieldMissingException::forField(field: 'path', className: $orm::class)),
+            context: Context::fromEnum($orm->context ?? throw EntityFieldMissingException::forField(field: 'context', className: $orm::class)),
             id: $id,
         );
     }

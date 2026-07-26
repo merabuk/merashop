@@ -49,6 +49,8 @@ final class NativeRandomStringGenerator implements PasswordGeneratorInterface, R
      */
     private function generateBytes(int $length): string
     {
+        $length = max($length, 1);
+
         return bin2hex(random_bytes($length));
     }
 }

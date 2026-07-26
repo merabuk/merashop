@@ -31,8 +31,8 @@ final class RegisterUserAccountController extends AbstractController
         CommandBusInterface $commandBus,
     ): JsonResponse {
         $command = new CreateUserAccountCommand(
-            email: $request->email,
-            password: $request->password,
+            email: $request->getEmail(),
+            password: $request->getPassword(),
         );
 
         $commandBus->execute($command);

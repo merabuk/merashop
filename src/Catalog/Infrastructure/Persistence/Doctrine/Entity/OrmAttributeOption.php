@@ -36,7 +36,7 @@ class OrmAttributeOption
         nullable: false,
         onDelete: ReferentialAction::CASCADE->value
     )]
-    public OrmAttribute $attribute;
+    public ?OrmAttribute $attribute = null;
 
     #[ORM\Column(type: Types::STRING, length: Code::MAX_LENGTH)]
     public ?string $code = null;

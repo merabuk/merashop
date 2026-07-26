@@ -11,6 +11,7 @@ use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
 use App\Catalog\Domain\Service\Attribute\AttributeValidatorInterface;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
+use RuntimeException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Throwable;
 
@@ -37,7 +38,7 @@ readonly class CreateAttributeHandler implements CommandHandlerInterface
 
             $attribute = $this->writeRepository->save($attribute);
 
-            return $attribute->getId()->value();
+            return $attribute->getId()?->value() ?? throw new RuntimeException('Attribute id is null');
         } catch (AttributeAlreadyExistsException $e) {
             throw $e;
         } catch (Throwable $e) {

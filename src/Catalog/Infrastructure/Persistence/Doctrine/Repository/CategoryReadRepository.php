@@ -14,7 +14,7 @@ use App\Catalog\Domain\ValueObject\Category\Slug;
 use App\Catalog\Domain\ValueObject\Category\Ulid;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmCategory;
 use App\Shared\Domain\Exception\Database\OneOfEntitiesNotFoundException;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Criteria\Restrictions\ComparisonOperatorEnum;
@@ -26,7 +26,7 @@ final class CategoryReadRepository extends BaseCategoryRepository implements Cat
     use ReadRepositoryTrait;
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws CategoryNotFoundException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCatalogValueObjectException
@@ -38,7 +38,7 @@ final class CategoryReadRepository extends BaseCategoryRepository implements Cat
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
@@ -62,11 +62,11 @@ final class CategoryReadRepository extends BaseCategoryRepository implements Cat
             ->getQuery()
             ->getOneOrNullResult();
 
-        return $this->checkAndMapToDomain($orm);
+        return $this->checkAndMapToDomain(is_object($orm) ? $orm : null);
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
@@ -90,7 +90,7 @@ final class CategoryReadRepository extends BaseCategoryRepository implements Cat
             ->getQuery()
             ->getOneOrNullResult();
 
-        return $this->checkAndMapToDomain($orm);
+        return $this->checkAndMapToDomain(is_object($orm) ? $orm : null);
     }
 
     public function getMaxSortOrder(?Id $parentId): int
@@ -140,7 +140,7 @@ final class CategoryReadRepository extends BaseCategoryRepository implements Cat
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException

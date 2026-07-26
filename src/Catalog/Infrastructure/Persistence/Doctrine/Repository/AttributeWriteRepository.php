@@ -7,7 +7,8 @@ namespace App\Catalog\Infrastructure\Persistence\Doctrine\Repository;
 use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Exception\Attribute\AttributeStateException;
 use App\Catalog\Domain\Repository\AttributeWriteRepositoryInterface;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttribute;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\Markers\ValueObjectExceptionInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait;
@@ -16,11 +17,14 @@ use Doctrine\ORM\OptimisticLockException;
 
 final class AttributeWriteRepository extends BaseAttributeRepository implements AttributeWriteRepositoryInterface
 {
+    /**
+     * @use WriteRepositoryTrait<Attribute, OrmAttribute>
+     */
     use WriteRepositoryTrait;
 
     /**
      * @throws AttributeStateException
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws ORMException
      * @throws ValueObjectExceptionInterface

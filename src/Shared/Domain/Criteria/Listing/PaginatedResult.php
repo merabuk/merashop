@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Shared\Domain\Criteria\Listing;
 
 /**
- * @template T
+ * @template-covariant T
  */
 final readonly class PaginatedResult
 {

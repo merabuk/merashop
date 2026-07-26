@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Customer\Presentation\Http\ApiVersion1\Controller;
 
-use App\Customer\Application\Command\UpdateCustomerProfile\UpdateCustomerProfileCommand;
 use App\Customer\Presentation\Http\ApiVersion1\Request\UpdateCustomerProfileRequest;
 use App\Customer\Presentation\Http\ApiVersion1\Resource\UpdateCustomerProfileResponse;
 use App\Shared\Application\Command\CommandBusInterface;
@@ -37,12 +36,7 @@ class UpdateCustomerProfileController extends AbstractController
     ): JsonResponse {
         $this->denyAccessUnlessUser($identity);
 
-        $command = new UpdateCustomerProfileCommand(
-            userUlid: $identity->id,
-            firstName: $request->firstName,
-            lastName: $request->lastName,
-            phoneNumber: $request->phoneNumber
-        );
+        $command = $request->toCommand(userUlid: $identity->id);
 
         $commandBus->execute($command);
 

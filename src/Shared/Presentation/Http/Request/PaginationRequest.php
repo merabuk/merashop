@@ -64,7 +64,7 @@ final class PaginationRequest
 
     public function toFilters(): Filters
     {
-        return new Filters($this->filters);
+        return new Filters(items: $this->filters);
     }
 
     /**

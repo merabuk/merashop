@@ -49,7 +49,7 @@ final class StringValidator
             $value = mb_trim($value);
         }
 
-        return preg_replace([
+        return (string) preg_replace([
             '/ +/',
             '/ *(\r?\n) */',
             '/(?:\r?\n){2,}/',

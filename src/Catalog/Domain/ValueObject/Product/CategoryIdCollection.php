@@ -21,9 +21,10 @@ final readonly class CategoryIdCollection extends AbstractCollection
      */
     public function __construct(array $items)
     {
+        /* @var array<int, CategoryId> $items */
         try {
-            $this->ensureDataType($items);
-            parent::__construct($items);
+            $this->ensureDataType(items: $items);
+            parent::__construct(items: $items);
         } catch (InvalidAbstractCollectionItemException $e) {
             throw InvalidProductCategoryIdItemException::fromBase($e);
         }
@@ -36,7 +37,8 @@ final readonly class CategoryIdCollection extends AbstractCollection
      */
     public static function fromArray(array $items): self
     {
-        return new self($items);
+        /* @var array<int, CategoryId> $items */
+        return new self(items: $items);
     }
 
     public function getByCategoryId(int|CategoryId $categoryId): ?CategoryId

@@ -11,10 +11,10 @@ class CreateCategoryRequest extends BaseCategoryRequest
     public function toCommand(string $adminUlid): CreateCategoryCommand
     {
         return new CreateCategoryCommand(
-            slug: $this->slug,
+            slug: (string) $this->slug,
             parentId: $this->parentId,
-            status: $this->status,
-            translations: $this->translations,
+            status: (string) $this->status,
+            translations: $this->mapAndGetTranslations(),
             adminUlid: $adminUlid,
         );
     }

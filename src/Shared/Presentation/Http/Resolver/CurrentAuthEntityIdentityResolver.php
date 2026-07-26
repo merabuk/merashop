@@ -20,7 +20,7 @@ final readonly class CurrentAuthEntityIdentityResolver implements ValueResolverI
     }
 
     /**
-     * @return iterable<AuthIdentity>
+     * @return iterable<?AuthIdentity>
      */
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {

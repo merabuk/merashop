@@ -14,6 +14,7 @@ use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeVa
 use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStateException;
 use App\Catalog\Domain\ValueObject\AdminUlid;
 use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
+use RuntimeException;
 
 class MultiSelectAttributeValueProvider implements ProductAttributeValueProviderInterface
 {
@@ -64,6 +65,6 @@ class MultiSelectAttributeValueProvider implements ProductAttributeValueProvider
     {
         $option = $attribute->getOptions()->getById($optionId) ?? throw AttributeOptionNotFoundException::withId($optionId);
 
-        return $option->getId();
+        return $option->getId() ?? throw new RuntimeException('Attribute id cannot be null');
     }
 }

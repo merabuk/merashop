@@ -11,7 +11,7 @@ use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttributeOption;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttributeOptionTranslation;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Mapper\AttributeOptionMapper;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Normalizer\AttributeOptionMetadataNormalizer;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Tests\Catalog\Support\AttributeOptionMother;
 use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -82,7 +82,7 @@ final class AttributeOptionMapperTest extends BaseUnitTest
     {
         $orm = new OrmAttributeOption();
 
-        $this->expectException(EntityIdMissingException::class);
+        $this->expectException(EntityFieldMissingException::class);
 
         $this->mapper->toDomain($orm, Type::fromEnum(TypeEnum::String));
     }

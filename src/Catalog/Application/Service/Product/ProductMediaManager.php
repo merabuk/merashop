@@ -92,8 +92,8 @@ final readonly class ProductMediaManager implements ProductMediaManagerInterface
         foreach ($temporaryImages as $index => $temporaryImage) {
             $productImage = $this->moveTemporaryImageToProduct(
                 temporaryImage: $temporaryImage,
-                sortOrder: $index,
-                isMain: 0 === $index
+                sortOrder: (int) $index,
+                isMain: 0 === (int) $index
             );
 
             $product->addImage($productImage);

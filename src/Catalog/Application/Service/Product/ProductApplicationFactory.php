@@ -140,10 +140,13 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
      */
     private function mapTranslations(array $translations): Translations
     {
-        return Translations::fromArray(array_map(fn (ProductTranslationData $t) => [
+        /** @var array<string, array{name?: string, description: ?string}> $mapped */
+        $mapped = array_map(fn (ProductTranslationData $t) => [
             'name' => $t->name,
             'description' => $t->description,
-        ], $translations));
+        ], $translations);
+
+        return Translations::fromArray(data: $mapped);
     }
 
     /**
@@ -230,7 +233,7 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
         $attributeValues = [];
 
         foreach ($attributeValuesData as $i => $data) {
-            $attribute = array_find($attributes, fn (Attribute $a) => $a->getId()->value() === $data->attributeId);
+            $attribute = array_find($attributes, fn (Attribute $a) => $a->getId()?->value() === $data->attributeId);
 
             if (!$attribute) {
                 throw AttributeNotFoundException::withId($data->attributeId, (int) $i);
@@ -265,7 +268,7 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
         $syncedAttributeValues = [];
 
         foreach ($attributeValuesData as $i => $data) {
-            $attribute = array_find($attributes, fn (Attribute $a) => $a->getId()->value() === $data->attributeId);
+            $attribute = array_find($attributes, fn (Attribute $a) => $a->getId()?->value() === $data->attributeId);
 
             if (!$attribute) {
                 throw AttributeNotFoundException::withId($data->attributeId, (int) $i);

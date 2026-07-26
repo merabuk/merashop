@@ -18,7 +18,7 @@ use App\Catalog\Domain\ValueObject\AttributeOption\Version;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttributeOption;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttributeOptionTranslation;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Normalizer\AttributeOptionMetadataNormalizer;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 
 final readonly class AttributeOptionMapper
@@ -29,23 +29,23 @@ final readonly class AttributeOptionMapper
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
      */
     public function toDomain(OrmAttributeOption $orm, Type $type): AttributeOption
     {
-        $id = $orm->id ?? throw EntityIdMissingException::forEntity($orm::class);
+        $id = $orm->id ?? throw EntityFieldMissingException::forEntityId($orm::class);
 
         $translations = $this->mapTranslationsFromOrmToDomain($orm);
 
         return new AttributeOption(
-            ulid: Ulid::fromString($orm->ulid),
-            code: Code::fromString($orm->code),
+            ulid: Ulid::fromString($orm->ulid ?? throw EntityFieldMissingException::forField(field: 'ulid', className: $orm::class)),
+            code: Code::fromString($orm->code ?? throw EntityFieldMissingException::forField(field: 'code', className: $orm::class)),
             translations: $translations,
-            isActive: ActiveFlag::fromBool($orm->isActive),
-            version: Version::fromInt($orm->version),
-            createdBy: AdminUlid::fromString($orm->createdBy),
+            isActive: ActiveFlag::fromBool($orm->isActive ?? throw EntityFieldMissingException::forField(field: 'isActive', className: $orm::class)),
+            version: Version::fromInt($orm->version ?? throw EntityFieldMissingException::forField(field: 'version', className: $orm::class)),
+            createdBy: AdminUlid::fromString($orm->createdBy ?? throw EntityFieldMissingException::forField(field: 'createdBy', className: $orm::class)),
             metadata: $this->normalizer->denormalize($type, $orm->valueJson),
             updatedBy: $orm->updatedBy ? AdminUlid::fromString($orm->updatedBy) : null,
             id: Id::fromInt($id),
@@ -63,6 +63,7 @@ final readonly class AttributeOptionMapper
     }
 
     /**
+     * @throws EntityFieldMissingException
      * @throws InvalidAttributeOptionValueException
      * @throws InvalidLocaleException
      */
@@ -71,7 +72,7 @@ final readonly class AttributeOptionMapper
         $translations = [];
         foreach ($orm->translations as $ormTranslation) {
             $translations[$ormTranslation->locale] = [
-                'value' => $ormTranslation->value,
+                'value' => $ormTranslation->value ?? throw EntityFieldMissingException::forField(field: 'value', className: $ormTranslation::class),
             ];
         }
 

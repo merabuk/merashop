@@ -8,6 +8,7 @@ use App\Catalog\Presentation\Http\AdminApiVersion1\Request\TemporaryImage\Upload
 use App\Catalog\Presentation\Http\AdminApiVersion1\Resource\TemporaryImage\UploadedTemporaryImageResponse;
 use App\Shared\Application\Command\CommandBusInterface;
 use App\Shared\Application\Security\AuthIdentity;
+use App\Shared\Domain\Helpers\TypeCastingTrait;
 use App\Shared\Domain\Service\TranslationDomainResolverInterface;
 use App\Shared\Presentation\Http\Attribute\CurrentAuthEntityIdentity;
 use App\Shared\Presentation\Http\Helper\Traits\ResponseMessageTrait;
@@ -22,6 +23,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class UploadTemporaryImageController extends AbstractController
 {
     use AuthIdentityAccessTrait;
+    use TypeCastingTrait;
     use ResponseMessageTrait;
 
     public const string ROUTE_NAME = 'catalog.admin.api.v1.temporary-images.upload';
@@ -54,7 +56,7 @@ class UploadTemporaryImageController extends AbstractController
                     entityTranslationKey: 'common.temporary_image.entityName',
                     moduleTranslationDomain: 'catalog',
                 ),
-                imageId: $imageId,
+                imageId: self::castToString(value: $imageId),
             ),
             status: Response::HTTP_CREATED
         );

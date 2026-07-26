@@ -12,7 +12,7 @@ use App\IdentityAccess\Domain\ValueObject\UserAccount\Id;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\PasswordHash;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\Ulid;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmUserAccount;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\MapperInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
@@ -43,7 +43,7 @@ final readonly class UserAccountMapper implements MapperInterface
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidIdentityAccessValueObjectException
      */
@@ -52,12 +52,12 @@ final readonly class UserAccountMapper implements MapperInterface
         $this->assertIsType(OrmUserAccount::class, $orm);
         /* @var OrmUserAccount $orm */
 
-        $id = Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class));
+        $id = Id::fromInt($orm->id ?? throw EntityFieldMissingException::forEntityId(className: $orm::class));
 
         return new UserAccount(
-            ulid: Ulid::fromString($orm->ulid),
-            email: EmailAddress::fromString($orm->email),
-            passwordHash: PasswordHash::fromString($orm->passwordHash),
+            ulid: Ulid::fromString($orm->ulid ?? throw EntityFieldMissingException::forField(field: 'ulid', className: $orm::class)),
+            email: EmailAddress::fromString($orm->email ?? throw EntityFieldMissingException::forField(field: 'email', className: $orm::class)),
+            passwordHash: PasswordHash::fromString($orm->passwordHash ?? throw EntityFieldMissingException::forField(field: 'passwordHash', className: $orm::class)),
             roles: RoleCollection::fromStrings($orm->roles),
             id: $id,
         );

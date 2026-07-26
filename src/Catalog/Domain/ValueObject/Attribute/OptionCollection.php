@@ -27,18 +27,19 @@ final readonly class OptionCollection extends AbstractCollection
      */
     public function __construct(array $items, bool $initialized = true)
     {
+        /* @var array<int, AttributeOption> $items */
         $this->initialized = $initialized;
 
         if ($this->initialized) {
             try {
-                $this->ensureDataType($items);
-                $this->ensureUnique($items);
+                $this->ensureDataType(items: $items);
+                $this->ensureUnique(items: $items);
             } catch (InvalidAbstractCollectionItemException $e) {
                 throw InvalidAttributeOptionItemException::fromBase($e);
             }
         }
 
-        parent::__construct($items);
+        parent::__construct(items: $items);
     }
 
     /**
@@ -95,7 +96,7 @@ final readonly class OptionCollection extends AbstractCollection
     }
 
     /**
-     * @param AttributeOption[] $items
+     * @param array<int, AttributeOption> $items
      *
      * @throws AttributeOptionUniqueException
      */

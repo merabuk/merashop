@@ -11,7 +11,7 @@ use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientId;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Id;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Ulid;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmModuleAccount;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\ReadRepositoryTrait;
 
@@ -20,7 +20,7 @@ class ModuleAccountReadRepository extends BaseModuleAccountRepository implements
     use ReadRepositoryTrait;
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws InvalidIdentityAccessValueObjectException
      * @throws IncompatibleMappedEntityException
      */
@@ -32,7 +32,7 @@ class ModuleAccountReadRepository extends BaseModuleAccountRepository implements
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws InvalidIdentityAccessValueObjectException
      * @throws IncompatibleMappedEntityException
      */
@@ -44,7 +44,7 @@ class ModuleAccountReadRepository extends BaseModuleAccountRepository implements
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws InvalidIdentityAccessValueObjectException
      * @throws IncompatibleMappedEntityException
      */
@@ -63,7 +63,7 @@ class ModuleAccountReadRepository extends BaseModuleAccountRepository implements
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws InvalidIdentityAccessValueObjectException
      * @throws IncompatibleMappedEntityException
      */

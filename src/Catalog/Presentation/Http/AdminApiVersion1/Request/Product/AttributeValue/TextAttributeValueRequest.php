@@ -23,11 +23,11 @@ final class TextAttributeValueRequest extends BaseAttributeValueRequest
         new Assert\NotBlank(),
         new Assert\Length(max: LocalizedTextValue::MAX_LENGTH),
     ], groups: [self::BASE_GROUP])]
-    public ?array $translations;
+    public ?array $translations = null;
 
     public function toValueData(): TextAttributeValueData
     {
-        return new TextAttributeValueData(translations: $this->translations);
+        return new TextAttributeValueData(translations: $this->translations ?? []);
     }
 
     #[Assert\Callback(groups: [self::BASE_GROUP])]
@@ -41,9 +41,7 @@ final class TextAttributeValueRequest extends BaseAttributeValueRequest
      */
     protected function getTranslations(): array
     {
-        return isset($this->translations)
-            ? array_map(fn (string $translation) => true, $this->translations)
-            : [];
+        return array_map(fn (string $translation) => true, $this->translations ?? []);
     }
 
     protected function getRequestTranslationKey(): string

@@ -8,11 +8,11 @@ use App\Shared\Application\Command\CommandInterface;
 
 final readonly class CreateModuleAccountCommand implements CommandInterface
 {
+    /**
+     * @param string[] $scopes
+     */
     public function __construct(
         public string $clientId,
-        /**
-         * @var array<int, string>
-         */
         public array $scopes = [],
     ) {
     }

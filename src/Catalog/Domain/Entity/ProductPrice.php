@@ -97,7 +97,7 @@ class ProductPrice
             return true;
         }
 
-        return $this->validityPeriod->contains($now);
+        return $this->validityPeriod?->contains(now: $now) ?? false;
     }
 
     public function getPrice(): Price

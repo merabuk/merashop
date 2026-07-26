@@ -26,11 +26,12 @@ final readonly class ImageCollection extends AbstractCollection
      */
     public function __construct(array $items)
     {
+        /* @var array<int, ProductImage> $items */
         try {
-            $this->ensureDataType($items);
-            $this->ensureUnique($items);
-            $this->ensureHasMainImage($items);
-            parent::__construct($items);
+            $this->ensureDataType(items: $items);
+            $this->ensureUnique(items: $items);
+            $this->ensureHasMainImage(items: $items);
+            parent::__construct(items: $items);
         } catch (InvalidAbstractCollectionItemException $e) {
             throw InvalidProductImageItemException::fromBase($e);
         }
@@ -45,7 +46,8 @@ final readonly class ImageCollection extends AbstractCollection
      */
     public static function fromArray(array $items): self
     {
-        return new self($items);
+        /* @var array<int, ProductImage> $items */
+        return new self(items: $items);
     }
 
     public function getByUlid(string|ProductImageUlid $ulid): ?ProductImage
@@ -109,9 +111,9 @@ final readonly class ImageCollection extends AbstractCollection
             fn (ProductImage $item) => !$item->getUlid()->equals($imageUlid)
         ));
 
-        if ($removedIsMain && !empty($newItems)) {
+        if ($removedIsMain && [] !== $newItems) {
             $newItems = $this->resetMainInArray($newItems);
-            $newItems[0]->setAsMain();
+            ($newItems[0] ?? null)?->setAsMain();
         }
 
         return new self($newItems);

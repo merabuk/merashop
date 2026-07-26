@@ -11,13 +11,13 @@ class CreateProductRequest extends BaseProductRequest
     public function toCommand(string $adminUlid): CreateProductCommand
     {
         return new CreateProductCommand(
-            sku: $this->sku,
-            status: $this->status,
+            sku: (string) $this->sku,
+            status: (string) $this->status,
             prices: $this->mapAndGetPrices(),
-            categoryIds: $this->categoryIds,
+            categoryIds: $this->categoryIds ?? [],
             attributeValues: $this->mapAndGetAttributeValues(),
             translations: $this->mapAndGetTranslations(),
-            images: $this->images,
+            images: $this->images ?? [],
             adminUlid: $adminUlid,
         );
     }

@@ -15,7 +15,7 @@ use App\Shared\Domain\ValueObject\AbstractTranslations;
 final readonly class Translations extends AbstractTranslations
 {
     /**
-     * @param array<string, array{name?: string, description?: string}> $data
+     * @param array<string, array{name?: string, description: ?string}> $data
      *
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException

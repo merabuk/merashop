@@ -18,7 +18,7 @@ final readonly class ScopeCollection extends AbstractCollection
     use ValueObjectEqualityTrait;
 
     /**
-     * @param Scope[] $scopes
+     * @param array<int, Scope> $scopes
      *
      * @throws InvalidScopeItemException
      */
@@ -40,7 +40,10 @@ final readonly class ScopeCollection extends AbstractCollection
      */
     public static function fromStrings(array $scopes): self
     {
-        return new self(array_map(fn (string $scope) => new Scope($scope), $scopes));
+        /** @var array<int, Scope> $array */
+        $array = array_map(fn (string $scope) => new Scope($scope), $scopes);
+
+        return new self($array);
     }
 
     /**

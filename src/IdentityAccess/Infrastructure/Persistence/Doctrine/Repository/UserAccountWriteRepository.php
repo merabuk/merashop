@@ -6,7 +6,8 @@ namespace App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\IdentityAccess\Domain\Entity\UserAccount;
 use App\IdentityAccess\Domain\Repository\UserAccountWriteRepositoryInterface;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmUserAccount;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\Markers\ValueObjectExceptionInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait;
@@ -15,10 +16,13 @@ use Doctrine\ORM\OptimisticLockException;
 
 final class UserAccountWriteRepository extends BaseUserAccountRepository implements UserAccountWriteRepositoryInterface
 {
+    /**
+     * @use WriteRepositoryTrait<UserAccount, OrmUserAccount>
+     */
     use WriteRepositoryTrait;
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws ORMException
      * @throws ValueObjectExceptionInterface

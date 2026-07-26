@@ -29,7 +29,7 @@ abstract class BaseAttributeValueRequest
 
     #[Assert\NotBlank(groups: [self::BASE_GROUP])]
     #[Assert\Positive(groups: [self::BASE_GROUP])]
-    public int $attributeId;
+    public ?int $attributeId = null;
 
     #[Assert\NotBlank(groups: [self::BASE_GROUP])]
     #[Assert\Choice(
@@ -37,12 +37,12 @@ abstract class BaseAttributeValueRequest
         message: 'catalog.product_attribute_value.type_invalid',
         groups: [self::BASE_GROUP],
     )]
-    public ?string $type;
+    public ?string $type = null;
 
     public function toData(): ProductAttributeValueData
     {
         return new ProductAttributeValueData(
-            attributeId: $this->attributeId,
+            attributeId: (int) $this->attributeId,
             value: $this->toValueData(),
         );
     }

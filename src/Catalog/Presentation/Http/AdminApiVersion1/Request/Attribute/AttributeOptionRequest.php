@@ -24,7 +24,7 @@ final class AttributeOptionRequest
     #[Assert\NotBlank(groups: [self::BASE_GROUP])]
     #[Assert\Length(min: 1, max: Code::MAX_LENGTH, groups: [self::BASE_GROUP])]
     #[Assert\Regex(pattern: Code::REGEX, groups: [self::BASE_GROUP])]
-    public ?string $code;
+    public ?string $code = null;
 
     /**
      * @var ?AttributeOptionTranslationRequest[] $translations
@@ -36,11 +36,11 @@ final class AttributeOptionRequest
         groups: [AttributeOptionTranslationRequest::BASE_GROUP],
     )]
     #[Assert\Valid(groups: [AttributeOptionTranslationRequest::BASE_GROUP])]
-    public ?array $translations;
+    public ?array $translations = null;
 
     #[Assert\NotNull(groups: [self::BASE_GROUP])]
     #[Assert\Type(type: 'bool', groups: [self::BASE_GROUP])]
-    public ?bool $isActive;
+    public ?bool $isActive = null;
 
     #[Assert\NotNull(groups: [TypeEnum::Dimension->value])]
     #[Assert\Type(type: 'float', groups: [TypeEnum::Dimension->value])]
@@ -50,10 +50,10 @@ final class AttributeOptionRequest
     public function toData(): AttributeOptionData
     {
         return new AttributeOptionData(
-            ulid: $this->ulid,
-            code: $this->code,
-            translations: array_map(fn (AttributeOptionTranslationRequest $t) => $t->toData(), $this->translations),
-            isActive: $this->isActive,
+            ulid: (string) $this->ulid,
+            code: (string) $this->code,
+            translations: array_map(fn (AttributeOptionTranslationRequest $t) => $t->toData(), $this->translations ?? []),
+            isActive: (bool) $this->isActive,
             baseRatio: $this->baseRatio,
         );
     }
@@ -69,9 +69,13 @@ final class AttributeOptionRequest
      */
     protected function getTranslations(): array
     {
-        return isset($this->translations)
-            ? array_map(fn (AttributeOptionTranslationRequest $translation) => true, $this->translations)
-            : [];
+        $translations = [];
+
+        foreach ($this->translations ?? [] as $key => $translation) {
+            $translations[(string) $key] = true;
+        }
+
+        return $translations;
     }
 
     protected function getRequestTranslationKey(): string

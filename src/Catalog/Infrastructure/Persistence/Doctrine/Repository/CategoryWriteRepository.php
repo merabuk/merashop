@@ -8,7 +8,7 @@ use App\Catalog\Domain\Entity\Category;
 use App\Catalog\Domain\Repository\CategoryWriteRepositoryInterface;
 use App\Catalog\Domain\ValueObject\Category\Path;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmCategory;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\Markers\ValueObjectExceptionInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait;
@@ -17,10 +17,13 @@ use Doctrine\ORM\OptimisticLockException;
 
 final class CategoryWriteRepository extends BaseCategoryRepository implements CategoryWriteRepositoryInterface
 {
+    /**
+     * @use WriteRepositoryTrait<Category, OrmCategory>
+     */
     use WriteRepositoryTrait;
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws ORMException
      * @throws ValueObjectExceptionInterface

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Catalog\Application\Command\CreateCategory;
 
+use App\Catalog\Application\DTO\Category\CategoryTranslationData;
 use App\Catalog\Application\Exception\Category\CreateCategoryException;
 use App\Catalog\Domain\Entity\Category;
 use App\Catalog\Domain\Exception\Category\CategoryAlreadyExistsException;
+use App\Catalog\Domain\Exception\InvalidCatalogValueObjectException;
 use App\Catalog\Domain\Repository\CategoryWriteRepositoryInterface;
 use App\Catalog\Domain\Service\Category\CategoryStructureServiceInterface;
 use App\Catalog\Domain\Service\Category\CategoryValidatorInterface;
@@ -18,7 +20,9 @@ use App\Catalog\Domain\ValueObject\Category\Translations;
 use App\Catalog\Domain\ValueObject\Category\Ulid;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
+use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
+use RuntimeException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Throwable;
 
@@ -55,17 +59,35 @@ readonly class CreateCategoryHandler implements CommandHandlerInterface
                 slug: $slug,
                 sortOrder: $structure->sortOrder,
                 status: Status::fromString($command->status),
-                translations: Translations::fromArray($command->translations),
+                translations: $this->mapTranslations($command->translations),
                 createdBy: AdminUlid::fromString($command->adminUlid),
             );
 
             $category = $this->writeRepository->save($category);
 
-            return $category->getId()->value();
+            return $category->getId()?->value() ?? throw new RuntimeException('Category id is null');
         } catch (CategoryAlreadyExistsException $e) {
             throw $e;
         } catch (Throwable $e) {
             throw new CreateCategoryException(message: 'Error during creating category', previous: $e);
         }
+    }
+
+    // TODO: refactor this
+    /**
+     * @param CategoryTranslationData[] $translations
+     *
+     * @throws InvalidCatalogValueObjectException
+     * @throws InvalidLocaleException
+     */
+    private function mapTranslations(array $translations): Translations
+    {
+        /** @var array<string, array{name?: string, description: ?string}> $mapped */
+        $mapped = array_map(fn (CategoryTranslationData $t) => [
+            'name' => $t->name,
+            'description' => $t->description,
+        ], $translations);
+
+        return Translations::fromArray(data: $mapped);
     }
 }

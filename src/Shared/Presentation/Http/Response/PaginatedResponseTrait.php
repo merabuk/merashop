@@ -9,6 +9,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 trait PaginatedResponseTrait
 {
+    /**
+     * @template T
+     *
+     * @param PaginatedResult<T> $result
+     */
     protected function createPaginatedResponse(
         PaginatedResult $result,
         callable $resourceMapper,

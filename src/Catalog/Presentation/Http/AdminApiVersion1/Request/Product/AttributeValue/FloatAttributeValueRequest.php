@@ -11,10 +11,10 @@ final class FloatAttributeValueRequest extends BaseAttributeValueRequest
 {
     #[Assert\NotNull(groups: [self::BASE_GROUP])]
     #[Assert\Type(type: 'float', groups: [self::BASE_GROUP])]
-    public ?float $value;
+    public ?float $value = null;
 
     public function toValueData(): FloatAttributeValueData
     {
-        return new FloatAttributeValueData(value: $this->value);
+        return new FloatAttributeValueData(value: (float) $this->value);
     }
 }

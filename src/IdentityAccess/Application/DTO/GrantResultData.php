@@ -9,8 +9,9 @@ use App\Shared\Domain\Enum\IdentityTypeEnum;
 final readonly class GrantResultData
 {
     /**
-     * @param array<string> $roles
-     * @param array<string> $scopes
+     * @param non-empty-string $subjectUlid
+     * @param array<string>    $roles
+     * @param array<string>    $scopes
      */
     public function __construct(
         public string $subjectUlid,

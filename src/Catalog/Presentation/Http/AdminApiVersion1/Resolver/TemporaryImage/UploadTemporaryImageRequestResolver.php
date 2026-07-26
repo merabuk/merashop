@@ -11,6 +11,7 @@ use App\Shared\Domain\Exception\ValueObject\InvalidRawFileException;
 use App\Shared\Domain\Service\Validation\ImageValidatorInterface;
 use App\Shared\Domain\ValueObject\File\RawFile;
 use App\Shared\Infrastructure\Exception\Traits\UnprocessableEntityErrorTrait;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
@@ -42,6 +43,7 @@ final readonly class UploadTemporaryImageRequestResolver implements ValueResolve
         $fileKey = UploadTemporaryImageRequest::getFileKey();
         $contextKey = UploadTemporaryImageRequest::getContextKey();
 
+        /** @var UploadedFile $imageFile */
         $imageFile = $request->files->get($fileKey);
         $collection = $request->request->get($contextKey);
 
@@ -64,7 +66,7 @@ final readonly class UploadTemporaryImageRequestResolver implements ValueResolve
         }
 
         $rawFile = RawFile::fromPath(
-            localPath: $imageFile->getRealPath(),
+            localPath: (string) $imageFile->getRealPath(),
             originalName: $imageFile->getClientOriginalName(),
             extension: $imageFile->guessExtension(),
             mimeType: $imageFile->getMimeType()

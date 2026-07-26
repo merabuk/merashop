@@ -14,10 +14,10 @@ final class AttributeOptionTranslationRequest
 
     #[Assert\NotBlank(groups: [self::BASE_GROUP])]
     #[Assert\Length(min: 1, max: Translation::NAME_MAX_LENGTH, groups: [self::BASE_GROUP])]
-    public ?string $value;
+    public ?string $value = null;
 
     public function toData(): AttributeOptionTranslationData
     {
-        return new AttributeOptionTranslationData(value: $this->value);
+        return new AttributeOptionTranslationData(value: (string) $this->value);
     }
 }

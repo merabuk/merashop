@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\Service\Category;
 
+use App\Catalog\Application\DTO\Category\CategoryTranslationData;
 use App\Catalog\Domain\DTO\CategoryUpdateData;
 use App\Catalog\Domain\Entity\Category;
 use App\Catalog\Domain\Exception\Category\CategoryCannotBeParentOfItselfException;
@@ -36,7 +37,7 @@ final readonly class CategoryManager implements CategoryManagerInterface
         $newParentId = $data->parentId ? Id::fromInt($data->parentId) : null;
 
         $status = Status::fromString($data->status);
-        $translations = Translations::fromArray($data->translations);
+        $translations = $this->mapTranslations($data->translations);
         $adminUlid = AdminUlid::fromString($data->adminUlid);
 
         $isSlugChanged = $category->isSlugDifferent($newSlug);
@@ -57,5 +58,22 @@ final readonly class CategoryManager implements CategoryManagerInterface
         );
 
         return $isMoved;
+    }
+
+    /**
+     * @param CategoryTranslationData[] $translations
+     *
+     * @throws InvalidCatalogValueObjectException
+     * @throws InvalidLocaleException
+     */
+    private function mapTranslations(array $translations): Translations
+    {
+        /** @var array<string, array{name?: string, description: ?string}> $mapped */
+        $mapped = array_map(fn (CategoryTranslationData $t) => [
+            'name' => $t->name,
+            'description' => $t->description,
+        ], $translations);
+
+        return Translations::fromArray(data: $mapped);
     }
 }

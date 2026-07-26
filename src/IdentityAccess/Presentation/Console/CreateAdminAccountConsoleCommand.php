@@ -62,7 +62,7 @@ final class CreateAdminAccountConsoleCommand extends BaseConsoleCommand
 
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
-        $this->io->title('Admin Account Creation');
+        $this->output()->title('Admin Account Creation');
 
         if (null === $input->getArgument('email')) {
             $email = $this->askValid(
@@ -88,7 +88,7 @@ final class CreateAdminAccountConsoleCommand extends BaseConsoleCommand
             $input->setArgument('email', $email);
         }
         if (null === $input->getArgument('status')) {
-            $status = $this->io->choice(
+            $status = $this->output()->choice(
                 question: 'Select admin status',
                 choices: $this->getAvailableStatuses(),
                 default: StatusEnum::Active->value
@@ -96,7 +96,7 @@ final class CreateAdminAccountConsoleCommand extends BaseConsoleCommand
             $input->setArgument('status', $status);
         }
         if (empty($input->getOption('role'))) {
-            $selectedRoles = $this->io->choice(
+            $selectedRoles = $this->output()->choice(
                 question: 'Select Roles for the admin account',
                 choices: $this->getAvailableRoles(),
                 default: RoleEnum::Admin->value,
@@ -108,9 +108,9 @@ final class CreateAdminAccountConsoleCommand extends BaseConsoleCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $email = (string) $input->getArgument('email');
-        $status = (string) $input->getArgument('status');
-        $roles = (array) $input->getOption('role');
+        $email = self::castToString(value: $input->getArgument('email'));
+        $status = self::castToString(value: $input->getArgument('status'));
+        $roles = self::castToArrayOfStrings(value: $input->getOption('role'));
 
         try {
             $this->validateInputs($email, $status, $roles);
@@ -118,12 +118,12 @@ final class CreateAdminAccountConsoleCommand extends BaseConsoleCommand
             $command = new CreateAdminAccountCommand(email: $email, status: $status, roles: $roles);
             $plainSecret = ($this->handler)($command);
 
-            $this->io->success('Admin account created!');
-            $this->io->writeln("Temporary password: <fg=yellow;options=bold>{$plainSecret}</fg>");
+            $this->output()->success('Admin account created!');
+            $this->output()->writeln("Temporary password: <fg=yellow;options=bold>{$plainSecret}</fg>");
 
             return self::SUCCESS;
         } catch (Throwable $e) {
-            $this->io->error($e->getMessage());
+            $this->output()->error($e->getMessage());
 
             return self::FAILURE;
         }

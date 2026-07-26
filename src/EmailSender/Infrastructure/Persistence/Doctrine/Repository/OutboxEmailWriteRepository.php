@@ -6,7 +6,8 @@ namespace App\EmailSender\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\EmailSender\Domain\Entity\OutboxEmail;
 use App\EmailSender\Domain\Repository\OutboxEmailWriteRepositoryInterface;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\EmailSender\Infrastructure\Persistence\Doctrine\Entity\OrmOutboxEmail;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\Markers\ValueObjectExceptionInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait;
@@ -15,10 +16,13 @@ use Doctrine\ORM\OptimisticLockException;
 
 class OutboxEmailWriteRepository extends BaseOutgoingEmailRepository implements OutboxEmailWriteRepositoryInterface
 {
+    /**
+     * @use WriteRepositoryTrait<OutboxEmail, OrmOutboxEmail>
+     */
     use WriteRepositoryTrait;
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws ORMException
      * @throws ValueObjectExceptionInterface

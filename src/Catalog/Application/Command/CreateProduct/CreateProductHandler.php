@@ -17,6 +17,7 @@ use App\Catalog\Domain\ValueObject\Product\Sku;
 use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
 use App\Shared\Domain\Service\Identity\UlidGeneratorInterface;
+use RuntimeException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Throwable;
 
@@ -64,7 +65,7 @@ readonly class CreateProductHandler implements CommandHandlerInterface
 
             $this->productMediaManager->deleteTemporaryImages($temporaryImagesUlids);
 
-            return $product->getId()->value();
+            return $product->getId()?->value() ?? throw new RuntimeException('Product id is null');
         } catch (
             OneOfAttributesNotFoundException
             |OneOfCategoriesNotFoundException

@@ -50,7 +50,7 @@ class GetAttributeListController extends AbstractController
     ): JsonResponse {
         $query = new GetAttributeListQuery($pagination->toCriteria());
 
-        /** @var PaginatedResult $result */
+        /** @var PaginatedResult<Attribute> $result */
         $result = $queryBus->execute($query);
 
         return $this->createPaginatedResponse(

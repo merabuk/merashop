@@ -14,7 +14,7 @@ use App\Catalog\Domain\ValueObject\Product\Id;
 use App\Catalog\Domain\ValueObject\Product\Sku;
 use App\Catalog\Domain\ValueObject\Product\Ulid;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProduct;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Domain\Exception\ValueObject\InvalidRelativePathException;
@@ -35,7 +35,7 @@ final class ProductReadRepository extends BaseProductRepository implements Produ
     private const string ALIAS_IMAGES = 'pi';
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
@@ -50,7 +50,7 @@ final class ProductReadRepository extends BaseProductRepository implements Produ
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
@@ -70,7 +70,7 @@ final class ProductReadRepository extends BaseProductRepository implements Produ
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
@@ -144,7 +144,7 @@ final class ProductReadRepository extends BaseProductRepository implements Produ
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException

@@ -56,7 +56,7 @@ final class CreateModuleAccountConsoleCommand extends BaseConsoleCommand
 
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
-        $this->io->title('Module Account Creation');
+        $this->output()->title('Module Account Creation');
 
         if (null === $input->getArgument('clientId')) {
             $clientId = $this->askValid(
@@ -81,7 +81,7 @@ final class CreateModuleAccountConsoleCommand extends BaseConsoleCommand
             $input->setArgument('clientId', $clientId);
         }
         if (empty($input->getOption('scope'))) {
-            $selectedScopes = $this->io->choice(
+            $selectedScopes = $this->output()->choice(
                 question: 'Select Scopes for the module account',
                 choices: $this->getAvailableScopes(),
                 multiSelect: true
@@ -92,8 +92,8 @@ final class CreateModuleAccountConsoleCommand extends BaseConsoleCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $clientId = (string) $input->getArgument('clientId');
-        $scopes = (array) $input->getOption('scope');
+        $clientId = self::castToString(value: $input->getArgument('clientId'));
+        $scopes = self::castToArrayOfStrings(value: $input->getOption('scope'));
 
         try {
             $this->validateInputs($clientId, $scopes);
@@ -101,12 +101,12 @@ final class CreateModuleAccountConsoleCommand extends BaseConsoleCommand
             $command = new CreateModuleAccountCommand(clientId: $clientId, scopes: $scopes);
             $plainSecret = ($this->handler)($command);
 
-            $this->io->success('Module account created!');
-            $this->io->writeln("Secret: <fg=yellow;options=bold>{$plainSecret}</fg>");
+            $this->output()->success('Module account created!');
+            $this->output()->writeln("Secret: <fg=yellow;options=bold>{$plainSecret}</fg>");
 
             return self::SUCCESS;
         } catch (Throwable $e) {
-            $this->io->error($e->getMessage());
+            $this->output()->error($e->getMessage());
 
             return self::FAILURE;
         }

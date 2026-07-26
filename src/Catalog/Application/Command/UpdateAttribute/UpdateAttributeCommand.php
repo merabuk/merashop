@@ -10,17 +10,15 @@ use App\Shared\Application\Command\CommandInterface;
 
 final readonly class UpdateAttributeCommand implements CommandInterface
 {
+    /**
+     * @param AttributeTranslationData[] $translations
+     * @param AttributeOptionData[]      $options
+     */
     public function __construct(
         public string $ulid,
         public string $code,
         public string $type,
-        /**
-         * @var AttributeTranslationData[]
-         */
         public array $translations,
-        /**
-         * @var AttributeOptionData[]
-         */
         public array $options,
         public int $version,
         public string $adminUlid,

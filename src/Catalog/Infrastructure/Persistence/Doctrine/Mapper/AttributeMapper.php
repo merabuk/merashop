@@ -19,7 +19,7 @@ use App\Catalog\Domain\ValueObject\Attribute\Version;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttribute;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttributeOption;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmAttributeTranslation;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\MapperInterface;
@@ -62,7 +62,7 @@ final readonly class AttributeMapper implements MapperInterface
 
     /**
      * @throws AttributeStateException
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws InvalidCatalogValueObjectException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidLocaleException
@@ -71,20 +71,20 @@ final readonly class AttributeMapper implements MapperInterface
     {
         $this->assertIsType(OrmAttribute::class, $orm);
         /** @var OrmAttribute $orm */
-        $id = Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class));
+        $id = Id::fromInt($orm->id ?? throw EntityFieldMissingException::forEntityId($orm::class));
 
-        $type = Type::fromEnum($orm->type);
+        $type = Type::fromEnum($orm->type ?? throw EntityFieldMissingException::forField(field: 'type', className: $orm::class));
 
         $translations = $this->mapTranslationsFromOrmToDomain($orm);
         $options = $this->mapOptionsFromOrmToDomain($orm, $type);
 
         return new Attribute(
-            ulid: Ulid::fromString($orm->ulid),
-            code: Code::fromString($orm->code),
-            type: Type::fromEnum($orm->type),
+            ulid: Ulid::fromString($orm->ulid ?? throw EntityFieldMissingException::forField(field: 'ulid', className: $orm::class)),
+            code: Code::fromString($orm->code ?? throw EntityFieldMissingException::forField(field: 'code', className: $orm::class)),
+            type: $type,
             translations: $translations,
-            version: Version::fromInt($orm->version),
-            createdBy: AdminUlid::fromString($orm->createdBy),
+            version: Version::fromInt($orm->version ?? throw EntityFieldMissingException::forField(field: 'version', className: $orm::class)),
+            createdBy: AdminUlid::fromString($orm->createdBy ?? throw EntityFieldMissingException::forField(field: 'createdBy', className: $orm::class)),
             options: $options,
             updatedBy: $orm->updatedBy ? AdminUlid::fromString($orm->updatedBy) : null,
             id: $id,
@@ -111,7 +111,7 @@ final readonly class AttributeMapper implements MapperInterface
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
      */
@@ -165,6 +165,7 @@ final readonly class AttributeMapper implements MapperInterface
     }
 
     /**
+     * @throws EntityFieldMissingException
      * @throws InvalidAttributeNameException
      * @throws InvalidLocaleException
      */
@@ -172,7 +173,9 @@ final readonly class AttributeMapper implements MapperInterface
     {
         $translations = [];
         foreach ($orm->translations as $ormTranslation) {
-            $translations[$ormTranslation->locale] = ['name' => $ormTranslation->name];
+            $translations[$ormTranslation->locale] = [
+                'name' => $ormTranslation->name ?? throw EntityFieldMissingException::forField(field: 'version', className: $ormTranslation::class),
+            ];
         }
 
         return Translations::fromArray($translations);

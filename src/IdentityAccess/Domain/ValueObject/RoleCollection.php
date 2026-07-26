@@ -18,7 +18,7 @@ final readonly class RoleCollection extends AbstractCollection
     use ValueObjectEqualityTrait;
 
     /**
-     * @param Role[] $roles
+     * @param array<int, Role> $roles
      *
      * @throws InvalidRoleItemException
      */
@@ -40,7 +40,10 @@ final readonly class RoleCollection extends AbstractCollection
      */
     public static function fromStrings(array $roles): self
     {
-        return new self(array_map(fn (string $role) => new Role($role), $roles));
+        /** @var array<int, Role> $array */
+        $array = array_map(fn (string $role) => new Role($role), $roles);
+
+        return new self($array);
     }
 
     /**

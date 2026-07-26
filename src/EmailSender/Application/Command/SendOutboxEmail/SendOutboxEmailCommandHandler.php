@@ -65,7 +65,7 @@ readonly class SendOutboxEmailCommandHandler implements CommandHandlerInterface
                 $email->markAsFailed(error: $e->getMessage(), nextAttemptAt: $nextAttemptAt);
             } else {
                 $this->logger->critical('Email sending failed permanently', [
-                    'id' => $email->getId()->value(),
+                    'id' => $email->getId()?->value(),
                     'trace_id' => $email->getTraceId()?->value(),
                     'error' => $e->getMessage(),
                 ]);

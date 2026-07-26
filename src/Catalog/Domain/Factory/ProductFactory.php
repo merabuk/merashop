@@ -33,10 +33,10 @@ use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 final readonly class ProductFactory implements ProductFactoryInterface
 {
     /**
-     * @param array<string, array{name: string, description?: string}> $translations
-     * @param ProductPrice[]                                           $prices
-     * @param CategoryId[]                                             $categoryIds
-     * @param ProductAttributeValue[]                                  $attributeValues
+     * @param array<string, array{name?: string, description: ?string}> $translations
+     * @param ProductPrice[]                                            $prices
+     * @param CategoryId[]                                              $categoryIds
+     * @param ProductAttributeValue[]                                   $attributeValues
      *
      * @throws InvalidAdminUlidException
      * @throws InvalidCatalogValueObjectException

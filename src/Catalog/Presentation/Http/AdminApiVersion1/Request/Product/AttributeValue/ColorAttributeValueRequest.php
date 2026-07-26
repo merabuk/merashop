@@ -12,10 +12,10 @@ final class ColorAttributeValueRequest extends BaseAttributeValueRequest
 {
     #[Assert\NotBlank(groups: [self::BASE_GROUP])]
     #[Assert\Regex(pattern: ColorValue::HEX_REGEX, groups: [self::BASE_GROUP])]
-    public ?string $value;
+    public ?string $value = null;
 
     public function toValueData(): ColorAttributeValueData
     {
-        return new ColorAttributeValueData(value: $this->value);
+        return new ColorAttributeValueData(value: (string) $this->value);
     }
 }

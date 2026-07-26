@@ -23,9 +23,10 @@ final readonly class AttributeValueCollection extends AbstractCollection
      */
     public function __construct(array $items)
     {
+        /* @var array<int, ProductAttributeValue> $items */
         try {
-            $this->ensureDataType($items);
-            parent::__construct($items);
+            $this->ensureDataType(items: $items);
+            parent::__construct(items: $items);
         } catch (InvalidAbstractCollectionItemException $e) {
             throw InvalidProductAttributeValueItemException::fromBase($e);
         }
@@ -38,7 +39,8 @@ final readonly class AttributeValueCollection extends AbstractCollection
      */
     public static function fromArray(array $items): self
     {
-        return new self($items);
+        /* @var array<int, ProductAttributeValue> $items */
+        return new self(items: $items);
     }
 
     public function getByAttributeId(int|AttributeId $attributeId): ?ProductAttributeValue

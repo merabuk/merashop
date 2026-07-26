@@ -11,17 +11,17 @@ final class DimensionAttributeValueRequest extends BaseAttributeValueRequest
 {
     #[Assert\NotBlank(groups: [self::BASE_GROUP])]
     #[Assert\Type(type: 'numeric', groups: [self::BASE_GROUP])]
-    public ?float $magnitude;
+    public ?float $magnitude = null;
 
     #[Assert\NotBlank(groups: [self::BASE_GROUP])]
     #[Assert\Positive(groups: [self::BASE_GROUP])]
-    public ?int $unitOptionId;
+    public ?int $unitOptionId = null;
 
     public function toValueData(): DimensionAttributeValueData
     {
         return new DimensionAttributeValueData(
-            magnitude: $this->magnitude,
-            unitOptionId: $this->unitOptionId
+            magnitude: (float) $this->magnitude,
+            unitOptionId: (int) $this->unitOptionId
         );
     }
 }

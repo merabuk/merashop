@@ -17,7 +17,7 @@ use App\Catalog\Domain\ValueObject\Category\Ulid;
 use App\Catalog\Domain\ValueObject\Category\Version;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmCategory;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmCategoryTranslation;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Interface\ProxyReferenceProviderInterface;
@@ -55,7 +55,7 @@ final readonly class CategoryMapper implements MapperInterface
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException
@@ -67,23 +67,23 @@ final readonly class CategoryMapper implements MapperInterface
         $translations = [];
         foreach ($orm->translations as $ormTranslation) {
             $translations[$ormTranslation->locale] = [
-                'name' => $ormTranslation->name,
+                'name' => $ormTranslation->name ?? throw EntityFieldMissingException::forField(field: 'name', className: $ormTranslation::class),
                 'description' => $ormTranslation->description,
             ];
         }
 
         return new Category(
-            ulid: Ulid::fromString($orm->ulid),
-            parentId: null !== $orm->parent ? Id::fromInt($orm->parent->id) : null,
-            path: Path::fromString($orm->path),
-            slug: Slug::fromString($orm->slug),
-            sortOrder: SortOrder::fromInt($orm->sortOrder),
-            status: Status::fromEnum($orm->status),
+            ulid: Ulid::fromString($orm->ulid ?? throw EntityFieldMissingException::forField(field: 'ulid', className: $orm::class)),
+            parentId: null !== $orm->parent ? Id::fromInt($orm->parent->id ?? throw EntityFieldMissingException::forEntityId(className: $orm->parent::class)) : null,
+            path: Path::fromString($orm->path ?? throw EntityFieldMissingException::forField(field: 'path', className: $orm::class)),
+            slug: Slug::fromString($orm->slug ?? throw EntityFieldMissingException::forField(field: 'slug', className: $orm::class)),
+            sortOrder: SortOrder::fromInt($orm->sortOrder ?? throw EntityFieldMissingException::forField(field: 'sortOrder', className: $orm::class)),
+            status: Status::fromEnum($orm->status ?? throw EntityFieldMissingException::forField(field: 'status', className: $orm::class)),
             translations: Translations::fromArray($translations),
-            version: Version::fromInt($orm->version),
-            createdBy: AdminUlid::fromString($orm->createdBy),
+            version: Version::fromInt($orm->version ?? throw EntityFieldMissingException::forField(field: 'version', className: $orm::class)),
+            createdBy: AdminUlid::fromString($orm->createdBy ?? throw EntityFieldMissingException::forField(field: 'createdBy', className: $orm::class)),
             updatedBy: $orm->updatedBy ? AdminUlid::fromString($orm->updatedBy) : null,
-            id: Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class)),
+            id: Id::fromInt($orm->id ?? throw EntityFieldMissingException::forEntityId($orm::class)),
         );
     }
 

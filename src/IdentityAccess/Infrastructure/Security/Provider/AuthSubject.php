@@ -9,13 +9,17 @@ use App\IdentityAccess\Domain\Entity\ModuleAccount;
 use App\IdentityAccess\Domain\Entity\UserAccount;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 use App\Shared\Domain\Enum\RoleEnum;
+use App\Shared\Domain\Helpers\TypeCastingTrait;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 final readonly class AuthSubject implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    use TypeCastingTrait;
+
     /**
-     * @param string[] $roles
+     * @param non-empty-string $identifier
+     * @param string[]         $roles
      */
     private function __construct(
         private IdentityTypeEnum $type,
@@ -31,7 +35,10 @@ final readonly class AuthSubject implements UserInterface, PasswordAuthenticated
         return new self(
             type: IdentityTypeEnum::User,
             ulid: $userAccount->getUlid()->value(),
-            identifier: $userAccount->getEmail()->value(),
+            identifier: self::castToNonEmptyString(
+                string: $userAccount->getEmail()->value(),
+                message: 'Giving user email is empty'
+            ),
             passwordHash: $userAccount->getPasswordHash()->value(),
             roles: $userAccount->getRoles()->toStrings(),
         );
@@ -42,7 +49,10 @@ final readonly class AuthSubject implements UserInterface, PasswordAuthenticated
         return new self(
             type: IdentityTypeEnum::Module,
             ulid: $moduleAccount->getUlid()->value(),
-            identifier: $moduleAccount->getClientId()->value(),
+            identifier: self::castToNonEmptyString(
+                string: $moduleAccount->getClientId()->value(),
+                message: 'Giving module client id is empty'
+            ),
             passwordHash: $moduleAccount->getClientSecret()->value(),
             roles: array_unique([...$moduleAccount->getScopes()->toStrings(), RoleEnum::Module->value]),
         );
@@ -53,7 +63,10 @@ final readonly class AuthSubject implements UserInterface, PasswordAuthenticated
         return new self(
             type: IdentityTypeEnum::Admin,
             ulid: $adminAccount->getUlid()->value(),
-            identifier: $adminAccount->getEmail()->value(),
+            identifier: self::castToNonEmptyString(
+                string: $adminAccount->getEmail()->value(),
+                message: 'Giving admin email is empty'
+            ),
             passwordHash: $adminAccount->getPasswordHash()->value(),
             roles: $adminAccount->getRoles()->toStrings(),
         );
@@ -84,6 +97,9 @@ final readonly class AuthSubject implements UserInterface, PasswordAuthenticated
         // Not required for this type of authentication
     }
 
+    /**
+     * @return non-empty-string
+     */
     public function getUserIdentifier(): string
     {
         return $this->identifier;

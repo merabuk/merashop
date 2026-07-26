@@ -10,6 +10,7 @@ use App\Shared\Domain\ValueObject\Contract\ValueObjectInterface;
 use ArrayIterator;
 use Countable;
 use IteratorAggregate;
+use JsonException;
 use Traversable;
 
 /**
@@ -65,6 +66,9 @@ abstract readonly class AbstractTranslations implements Countable, IteratorAggre
         return new ArrayIterator($this->items);
     }
 
+    /**
+     * @throws JsonException
+     */
     public function __toString(): string
     {
         return json_encode($this->toArray(), JSON_THROW_ON_ERROR);
@@ -82,7 +86,7 @@ abstract readonly class AbstractTranslations implements Countable, IteratorAggre
     }
 
     /**
-     * @return array<string, array<string, string>>
+     * @return array<string, array<string, ?string>>
      */
     public function toArray(): array
     {

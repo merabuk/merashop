@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Persistence\Doctrine\Type;
 
+use App\Shared\Domain\Helpers\TypeCastingTrait;
 use BackedEnum;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 
 abstract class AbstractPostgresEnumType extends Type
 {
+    use TypeCastingTrait;
+
     /**
      * @return class-string<BackedEnum>
      */
@@ -32,7 +35,7 @@ abstract class AbstractPostgresEnumType extends Type
             return (string) $value->value;
         }
 
-        return (string) $value;
+        return self::castToString(value: $value);
     }
 
     public function convertToPHPValue(mixed $value, AbstractPlatform $platform): ?BackedEnum
@@ -43,7 +46,7 @@ abstract class AbstractPostgresEnumType extends Type
 
         $enumClass = $this->getEnumClass();
 
-        return $enumClass::from($value);
+        return $enumClass::from(self::castToString(value: $value));
     }
 
     public function getName(): string

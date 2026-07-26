@@ -37,7 +37,7 @@ class OrmProductPrice
         nullable: false,
         onDelete: ReferentialAction::CASCADE->value
     )]
-    public OrmProduct $product;
+    public ?OrmProduct $product = null;
 
     #[ORM\Column(type: Types::BIGINT)]
     public ?int $amount = null;

@@ -11,10 +11,10 @@ class BooleanAttributeValueRequest extends BaseAttributeValueRequest
 {
     #[Assert\NotBlank(groups: [self::BASE_GROUP])]
     #[Assert\Type(type: 'boolean', groups: [self::BASE_GROUP])]
-    public ?bool $value;
+    public ?bool $value = null;
 
     public function toValueData(): BooleanAttributeValueData
     {
-        return new BooleanAttributeValueData(value: $this->value);
+        return new BooleanAttributeValueData(value: (bool) $this->value);
     }
 }

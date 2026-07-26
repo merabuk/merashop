@@ -12,7 +12,7 @@ use App\IdentityAccess\Domain\ValueObject\RefreshToken\ExpiresAt;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\Id;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\TokenHash;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmRefreshToken;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\MapperInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
@@ -43,7 +43,7 @@ final readonly class RefreshTokenMapper implements MapperInterface
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidIdentityAccessValueObjectException
      */
@@ -51,14 +51,14 @@ final readonly class RefreshTokenMapper implements MapperInterface
     {
         $this->assertIsType(OrmRefreshToken::class, $orm);
 
-        $id = Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class));
+        $id = Id::fromInt($orm->id ?? throw EntityFieldMissingException::forEntityId(className: $orm::class));
         /* @var OrmRefreshToken $orm */
 
         return new RefreshToken(
-            tokenHash: TokenHash::fromString($orm->token),
-            accountUlid: AccountUlid::fromString($orm->accountUlid),
-            accountType: AccountType::fromEnum($orm->accountType),
-            expiresAt: ExpiresAt::fromDateTime($orm->expiresAt),
+            tokenHash: TokenHash::fromString($orm->token ?? throw EntityFieldMissingException::forField(field: 'token', className: $orm::class)),
+            accountUlid: AccountUlid::fromString($orm->accountUlid ?? throw EntityFieldMissingException::forField(field: 'accountUlid', className: $orm::class)),
+            accountType: AccountType::fromEnum($orm->accountType ?? throw EntityFieldMissingException::forField(field: 'accountType', className: $orm::class)),
+            expiresAt: ExpiresAt::fromDateTime($orm->expiresAt ?? throw EntityFieldMissingException::forField(field: 'expiresAt', className: $orm::class)),
             id: $id,
         );
     }

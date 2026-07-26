@@ -26,7 +26,7 @@ abstract readonly class BaseVersionValueObject implements ValueObjectInterface
         return $this->value;
     }
 
-    protected static function getInitialValue(): int
+    public static function getInitialValue(): int
     {
         return 1;
     }

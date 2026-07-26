@@ -28,11 +28,12 @@ final readonly class PriceCollection extends AbstractCollection
      */
     public function __construct(array $items)
     {
+        /* @var array<int, ProductPrice> $items */
         try {
-            $this->ensureNotEmpty($items);
-            $this->ensureDataType($items);
-            $this->ensureUnique($items);
-            parent::__construct($items);
+            $this->ensureNotEmpty(items: $items);
+            $this->ensureDataType(items: $items);
+            $this->ensureUnique(items: $items);
+            parent::__construct(items: $items);
         } catch (InvalidAbstractCollectionItemException $e) {
             throw InvalidProductPriceItemException::fromBase($e);
         }
@@ -47,7 +48,8 @@ final readonly class PriceCollection extends AbstractCollection
      */
     public static function fromArray(array $items): self
     {
-        return new self($items);
+        /* @var array<int, ProductPrice> $items */
+        return new self(items: $items);
     }
 
     public function getByCurrencyAndType(CurrencyEnum $currency, TypeEnum $type): ?ProductPrice

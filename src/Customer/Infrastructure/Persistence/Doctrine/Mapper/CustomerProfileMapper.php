@@ -12,7 +12,7 @@ use App\Customer\Domain\ValueObject\CustomerProfile\LastName;
 use App\Customer\Domain\ValueObject\CustomerProfile\PhoneNumber;
 use App\Customer\Domain\ValueObject\CustomerProfile\Ulid;
 use App\Customer\Infrastructure\Persistence\Doctrine\Entity\OrmCustomerProfile;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\MapperInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
@@ -44,7 +44,7 @@ final readonly class CustomerProfileMapper implements MapperInterface
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCustomerValueObjectException
      */
@@ -53,10 +53,10 @@ final readonly class CustomerProfileMapper implements MapperInterface
         $this->assertIsType(OrmCustomerProfile::class, $orm);
 
         /* @var OrmCustomerProfile $orm */
-        $id = Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class));
+        $id = Id::fromInt($orm->id ?? throw EntityFieldMissingException::forEntityId($orm::class));
 
         return new CustomerProfile(
-            userUlid: Ulid::fromString($orm->userUlid),
+            userUlid: Ulid::fromString($orm->userUlid ?? throw EntityFieldMissingException::forField(field: 'userUlid', className: $orm::class)),
             firstName: $orm->firstName ? FirstName::fromString($orm->firstName) : null,
             lastName: $orm->lastName ? LastName::fromString($orm->lastName) : null,
             phoneNumber: $orm->phoneNumber ? PhoneNumber::fromString($orm->phoneNumber) : null,

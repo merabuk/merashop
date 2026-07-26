@@ -10,7 +10,7 @@ use App\Catalog\Domain\Exception\ProductAttributeValue\ProductAttributeValueStat
 use App\Catalog\Domain\Exception\ProductPrice\ProductPriceStateException;
 use App\Catalog\Domain\Repository\ProductWriteRepositoryInterface;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProduct;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Domain\Exception\ValueObject\InvalidRelativePathException;
@@ -20,10 +20,13 @@ use Doctrine\ORM\OptimisticLockException;
 
 final class ProductWriteRepository extends BaseProductRepository implements ProductWriteRepositoryInterface
 {
+    /**
+     * @use WriteRepositoryTrait<Product, OrmProduct>
+     */
     use WriteRepositoryTrait;
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException

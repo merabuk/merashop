@@ -24,4 +24,14 @@ final readonly class RegisterUserAccountRequest
         public ?bool $termsAccepted = false,
     ) {
     }
+
+    public function getEmail(): string
+    {
+        return (string) $this->email;
+    }
+
+    public function getPassword(): string
+    {
+        return (string) $this->password;
+    }
 }

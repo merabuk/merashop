@@ -11,7 +11,7 @@ use App\IdentityAccess\Domain\ValueObject\UserAccount\EmailAddress;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\Id;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\Ulid;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmUserAccount;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\ReadRepositoryTrait;
 
@@ -20,7 +20,7 @@ class UserAccountReadRepository extends BaseUserAccountRepository implements Use
     use ReadRepositoryTrait;
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws InvalidIdentityAccessValueObjectException
      * @throws IncompatibleMappedEntityException
      */
@@ -32,7 +32,7 @@ class UserAccountReadRepository extends BaseUserAccountRepository implements Use
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws InvalidIdentityAccessValueObjectException
      * @throws IncompatibleMappedEntityException
      */
@@ -44,7 +44,7 @@ class UserAccountReadRepository extends BaseUserAccountRepository implements Use
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws InvalidIdentityAccessValueObjectException
      * @throws IncompatibleMappedEntityException
      */
@@ -63,7 +63,7 @@ class UserAccountReadRepository extends BaseUserAccountRepository implements Use
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws InvalidIdentityAccessValueObjectException
      * @throws IncompatibleMappedEntityException
      */

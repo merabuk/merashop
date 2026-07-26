@@ -10,7 +10,7 @@ use App\EmailSender\Domain\Exception\InvalidEmailSenderValueObjectException;
 use App\EmailSender\Domain\Repository\OutboxEmailReadRepositoryInterface;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Id;
 use App\EmailSender\Infrastructure\Persistence\Doctrine\Entity\OrmOutboxEmail;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidTraceIdException;
 use App\Shared\Domain\ValueObject\Tracing\TraceId;
@@ -23,7 +23,7 @@ class OutboxEmailReadRepository extends BaseOutgoingEmailRepository implements O
 
     /**
      * @throws InvalidEmailSenderValueObjectException
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidTraceIdException
      */
@@ -35,7 +35,7 @@ class OutboxEmailReadRepository extends BaseOutgoingEmailRepository implements O
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws InvalidEmailSenderValueObjectException
      * @throws InvalidTraceIdException
      * @throws IncompatibleMappedEntityException
@@ -50,7 +50,7 @@ class OutboxEmailReadRepository extends BaseOutgoingEmailRepository implements O
     /**
      * @return array<int, OutboxEmail>
      *
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidEmailSenderValueObjectException
      * @throws InvalidTraceIdException
@@ -84,7 +84,7 @@ class OutboxEmailReadRepository extends BaseOutgoingEmailRepository implements O
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidEmailSenderValueObjectException
      * @throws InvalidTraceIdException

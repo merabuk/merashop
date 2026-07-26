@@ -14,7 +14,7 @@ use App\IdentityAccess\Domain\ValueObject\AdminAccount\Status;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\Ulid;
 use App\IdentityAccess\Domain\ValueObject\RoleCollection;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmAdminAccount;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\MapperInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
@@ -47,7 +47,7 @@ final readonly class AdminAccountMapper implements MapperInterface
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidIdentityAccessValueObjectException
      */
@@ -56,14 +56,14 @@ final readonly class AdminAccountMapper implements MapperInterface
         $this->assertIsType(OrmAdminAccount::class, $orm);
         /* @var OrmAdminAccount $orm */
 
-        $id = Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class));
+        $id = Id::fromInt($orm->id ?? throw EntityFieldMissingException::forEntityId(className: $orm::class));
 
         return new AdminAccount(
-            ulid: Ulid::fromString($orm->ulid),
-            email: EmailAddress::fromString($orm->email),
-            passwordHash: PasswordHash::fromString($orm->passwordHash),
+            ulid: Ulid::fromString($orm->ulid ?? throw EntityFieldMissingException::forField(field: 'ulid', className: $orm::class)),
+            email: EmailAddress::fromString($orm->email ?? throw EntityFieldMissingException::forField(field: 'email', className: $orm::class)),
+            passwordHash: PasswordHash::fromString($orm->passwordHash ?? throw EntityFieldMissingException::forField(field: 'passwordHash', className: $orm::class)),
             roles: RoleCollection::fromStrings($orm->roles),
-            status: Status::fromEnum($orm->status),
+            status: Status::fromEnum($orm->status ?? throw EntityFieldMissingException::forField(field: 'status', className: $orm::class)),
             passwordChangedAt: $orm->passwordChangedAt ? PasswordChangedAt::fromDateTime($orm->passwordChangedAt) : null,
             id: $id,
         );

@@ -41,7 +41,13 @@ final readonly class AuthEntityProvider implements UserProviderInterface
             return $this->fallbackLoad($identifier);
         }
 
-        [$type, $ulidString] = explode(self::SEPARATOR, $identifier, 2);
+        $strings = explode(separator: self::SEPARATOR, string: $identifier, limit: 2);
+
+        if (2 !== count($strings)) {
+            return $this->fallbackLoad($identifier);
+        }
+
+        [$type, $ulidString] = $strings;
 
         if (!$this->loaders->has($type)) {
             throw new InvalidAuthEntityException(sprintf("Container does not have auth entity loader for '%s' type", $type));
@@ -50,10 +56,10 @@ final readonly class AuthEntityProvider implements UserProviderInterface
         $loader = $this->loaders->get($type);
 
         if ($loader instanceof AuthSubjectLoaderInterface) {
-            return $loader->load($ulidString);
+            return $loader->load($ulidString) ?? throw $this->makeNotFoundException(type: $type, ulidString: $ulidString);
         }
 
-        throw new InvalidAuthEntityException(message: sprintf('Entity with type "%s" and ID "%s" not found.', $type, $ulidString));
+        throw $this->makeNotFoundException(type: $type, ulidString: $ulidString);
     }
 
     /**
@@ -78,5 +84,10 @@ final readonly class AuthEntityProvider implements UserProviderInterface
     private function fallbackLoad(string $identifier): AuthSubject
     {
         throw new RuntimeException(sprintf("Given identifier '%s' does not contain a type prefix", $identifier));
+    }
+
+    private function makeNotFoundException(string $type, string $ulidString): InvalidAuthEntityException
+    {
+        return new InvalidAuthEntityException(message: sprintf('Entity with type "%s" and ID "%s" not found.', $type, $ulidString));
     }
 }

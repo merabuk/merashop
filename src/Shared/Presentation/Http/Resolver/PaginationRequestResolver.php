@@ -42,7 +42,7 @@ final readonly class PaginationRequestResolver implements ValueResolverInterface
         $dto->sortField = $request->query->get('sortField');
         $sortDir = $request->query->get('sortDir');
         $dto->sortDir = is_string($sortDir) ? mb_strtoupper($sortDir) : $dto->sortDir;
-        $dto->filters = $request->query->all('filters');
+        $dto->filters = $this->getFilters(request: $request);
 
         $violations = $this->validator->validate($dto);
 
@@ -51,5 +51,16 @@ final readonly class PaginationRequestResolver implements ValueResolverInterface
         }
 
         yield $dto;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function getFilters(Request $request): array
+    {
+        /** @var array<string, mixed> $filters */
+        $filters = $request->query->all('filters');
+
+        return $filters;
     }
 }

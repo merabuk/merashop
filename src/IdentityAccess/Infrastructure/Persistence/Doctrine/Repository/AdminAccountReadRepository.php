@@ -11,7 +11,7 @@ use App\IdentityAccess\Domain\ValueObject\AdminAccount\EmailAddress;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\Id;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\Ulid;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmAdminAccount;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\ReadRepositoryTrait;
 
@@ -20,7 +20,7 @@ class AdminAccountReadRepository extends BaseAdminAccountRepository implements A
     use ReadRepositoryTrait;
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws InvalidIdentityAccessValueObjectException
      * @throws IncompatibleMappedEntityException
      */
@@ -32,7 +32,7 @@ class AdminAccountReadRepository extends BaseAdminAccountRepository implements A
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws InvalidIdentityAccessValueObjectException
      * @throws IncompatibleMappedEntityException
      */
@@ -44,7 +44,7 @@ class AdminAccountReadRepository extends BaseAdminAccountRepository implements A
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws InvalidIdentityAccessValueObjectException
      * @throws IncompatibleMappedEntityException
      */
@@ -63,7 +63,7 @@ class AdminAccountReadRepository extends BaseAdminAccountRepository implements A
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws InvalidIdentityAccessValueObjectException
      * @throws IncompatibleMappedEntityException
      */

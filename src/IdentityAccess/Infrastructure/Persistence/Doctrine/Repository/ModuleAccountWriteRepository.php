@@ -6,7 +6,8 @@ namespace App\IdentityAccess\Infrastructure\Persistence\Doctrine\Repository;
 
 use App\IdentityAccess\Domain\Entity\ModuleAccount;
 use App\IdentityAccess\Domain\Repository\ModuleAccountWriteRepositoryInterface;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmModuleAccount;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\Markers\ValueObjectExceptionInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\WriteRepositoryTrait;
@@ -15,10 +16,13 @@ use Doctrine\ORM\OptimisticLockException;
 
 final class ModuleAccountWriteRepository extends BaseModuleAccountRepository implements ModuleAccountWriteRepositoryInterface
 {
+    /**
+     * @use WriteRepositoryTrait<ModuleAccount, OrmModuleAccount>
+     */
     use WriteRepositoryTrait;
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws ValueObjectExceptionInterface
      * @throws IncompatibleMappedEntityException
      * @throws ORMException

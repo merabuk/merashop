@@ -10,6 +10,7 @@ use App\IdentityAccess\Infrastructure\Exception\InvalidCredentialsException;
 use App\IdentityAccess\Infrastructure\Security\Jwt\JwtConfigFactory;
 use App\IdentityAccess\Infrastructure\Security\Provider\AuthEntityProvider;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
+use App\Shared\Domain\Helpers\TypeCastingTrait;
 use DateTimeInterface;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Token\RegisteredClaims;
@@ -20,6 +21,8 @@ use Throwable;
 
 final readonly class JwtAccessTokenHandler implements AccessTokenHandlerInterface
 {
+    use TypeCastingTrait;
+
     public function __construct(
         private Configuration $jwtConfiguration,
         private AccessTokenBlacklistInterface $blacklist,
@@ -33,6 +36,8 @@ final readonly class JwtAccessTokenHandler implements AccessTokenHandlerInterfac
     public function getUserBadgeFrom(string $accessToken): UserBadge
     {
         try {
+            $accessToken = self::castToNonEmptyString(string: $accessToken, message: 'Giving access token is empty');
+
             $token = $this->jwtConfiguration->parser()->parse($accessToken);
         } catch (Throwable) {
             throw new InvalidCredentialsException('Invalid JWT token');
@@ -48,13 +53,15 @@ final readonly class JwtAccessTokenHandler implements AccessTokenHandlerInterfac
 
         $claims = $token->claims();
 
-        $jti = $claims->get(RegisteredClaims::ID);
-        if ($jti && $this->blacklist->isRevoked((string) $jti)) {
+        $jti = self::castToString(value: $claims->get(RegisteredClaims::ID));
+        if ($jti && $this->blacklist->isRevoked($jti)) {
             throw new InvalidCredentialsException('Token has been revoked');
         }
 
-        $ulid = $claims->get(RegisteredClaims::SUBJECT);
-        $type = IdentityTypeEnum::tryFrom((string) $claims->get(JwtConfigFactory::CLAIM_SUBJECT_TYPE));
+        $ulid = self::castToNullableString(value: $claims->get(RegisteredClaims::SUBJECT));
+        $type = IdentityTypeEnum::tryFrom(value: self::castToString(
+            value: $claims->get(JwtConfigFactory::CLAIM_SUBJECT_TYPE)
+        ));
 
         if (null === $ulid) {
             throw new InvalidCredentialsException('JWT token does not contain a subject (ULID)');
@@ -67,7 +74,7 @@ final readonly class JwtAccessTokenHandler implements AccessTokenHandlerInterfac
         $expiresAt = $claims->get(RegisteredClaims::EXPIRATION_TIME);
 
         if ($jti && $expiresAt instanceof DateTimeInterface) {
-            $this->accessTokenContext->set((string) $jti, $expiresAt->getTimestamp());
+            $this->accessTokenContext->set($jti, $expiresAt->getTimestamp());
         } else {
             throw new InvalidCredentialsException(sprintf('Token missing required claims (%s, %s)', RegisteredClaims::ID, RegisteredClaims::EXPIRATION_TIME));
         }

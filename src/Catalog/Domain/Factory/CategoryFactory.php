@@ -27,7 +27,7 @@ use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 final readonly class CategoryFactory implements CategoryFactoryInterface
 {
     /**
-     * @param array<string, array{name: string, description?: string}> $translations
+     * @param array<string, array{name?: string, description: ?string}> $translations
      *
      * @throws InvalidAdminUlidException
      * @throws InvalidCatalogValueObjectException

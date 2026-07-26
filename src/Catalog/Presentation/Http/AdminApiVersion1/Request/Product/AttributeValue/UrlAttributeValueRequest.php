@@ -12,10 +12,10 @@ final class UrlAttributeValueRequest extends BaseAttributeValueRequest
 {
     #[Assert\NotBlank(groups: [self::BASE_GROUP])]
     #[Assert\Url(groups: [self::BASE_GROUP])]
-    public ?string $value;
+    public ?string $value = null;
 
     public function toValueData(): AttributeValueDataInterface
     {
-        return new UrlAttributeValueData(value: $this->value);
+        return new UrlAttributeValueData(value: (string) $this->value);
     }
 }

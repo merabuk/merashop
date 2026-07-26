@@ -10,14 +10,14 @@ use App\IdentityAccess\Domain\Repository\RefreshTokenReadRepositoryInterface;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\Id;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\TokenHash;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmRefreshToken;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 
 final class RefreshTokenReadRepository extends BaseRefreshTokenRepository implements RefreshTokenReadRepositoryInterface
 {
     /**
      * @throws InvalidIdentityAccessValueObjectException
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      */
     public function findById(Id $id): ?RefreshToken
@@ -29,7 +29,7 @@ final class RefreshTokenReadRepository extends BaseRefreshTokenRepository implem
 
     /**
      * @throws InvalidIdentityAccessValueObjectException
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      */
     public function findByToken(TokenHash $token): ?RefreshToken
@@ -40,7 +40,7 @@ final class RefreshTokenReadRepository extends BaseRefreshTokenRepository implem
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws InvalidIdentityAccessValueObjectException
      * @throws IncompatibleMappedEntityException
      */

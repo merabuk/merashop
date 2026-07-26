@@ -11,10 +11,10 @@ final class IntegerAttributeValueRequest extends BaseAttributeValueRequest
 {
     #[Assert\NotNull(groups: [self::BASE_GROUP])]
     #[Assert\Type(type: 'int', groups: [self::BASE_GROUP])]
-    public int $value;
+    public ?int $value = null;
 
     public function toValueData(): IntegerAttributeValueData
     {
-        return new IntegerAttributeValueData(value: $this->value);
+        return new IntegerAttributeValueData(value: (int) $this->value);
     }
 }

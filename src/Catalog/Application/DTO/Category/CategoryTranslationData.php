@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Catalog\Application\DTO\Product;
+namespace App\Catalog\Application\DTO\Category;
 
-final readonly class ProductTranslationData
+final readonly class CategoryTranslationData
 {
     public function __construct(
         public string $name,

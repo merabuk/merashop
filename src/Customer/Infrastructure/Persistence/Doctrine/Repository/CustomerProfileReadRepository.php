@@ -10,7 +10,7 @@ use App\Customer\Domain\Exception\InvalidCustomerValueObjectException;
 use App\Customer\Domain\Repository\CustomerProfileReadRepositoryInterface;
 use App\Customer\Domain\ValueObject\CustomerProfile\Id;
 use App\Customer\Infrastructure\Persistence\Doctrine\Entity\OrmCustomerProfile;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\ValueObject\Identity\Ulid;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\ReadRepositoryTrait;
@@ -22,7 +22,7 @@ class CustomerProfileReadRepository extends BaseCustomerProfileRepository implem
     use ReadRepositoryTrait;
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCustomerValueObjectException
      */
@@ -35,7 +35,7 @@ class CustomerProfileReadRepository extends BaseCustomerProfileRepository implem
 
     /**
      * @throws CustomerProfileNotFoundException
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCustomerValueObjectException
      */
@@ -45,7 +45,7 @@ class CustomerProfileReadRepository extends BaseCustomerProfileRepository implem
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCustomerValueObjectException
      */
@@ -64,7 +64,7 @@ class CustomerProfileReadRepository extends BaseCustomerProfileRepository implem
     }
 
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws IncompatibleMappedEntityException
      * @throws InvalidCustomerValueObjectException
      */

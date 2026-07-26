@@ -11,9 +11,17 @@ parameters:
     - docker/*
     - node_modules/*
     - tests/*
-  level: 6 # (0-8)
+  level: max
   parallel:
   	maximumNumberOfProcesses: 4
-  ignoreErrors:
-    -
-       identifier: missingType.generics
+
+  treatPhpDocTypesAsCertain: true
+  checkUninitializedProperties: true
+  checkBenevolentUnionTypes: true
+  reportAlwaysTrueInLastCondition: true
+  reportPossiblyNonexistentGeneralArrayOffset: true
+  reportPossiblyNonexistentConstantArrayOffset: true
+  reportAnyTypeWideningInVarTag: true
+  reportUnmatchedIgnoredErrors: true
+
+  tempDir: var/cache/phpstan

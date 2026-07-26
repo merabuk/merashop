@@ -12,7 +12,7 @@ use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Id;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\Ulid;
 use App\IdentityAccess\Domain\ValueObject\ScopeCollection;
 use App\IdentityAccess\Infrastructure\Persistence\Doctrine\Entity\OrmModuleAccount;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\MapperInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapper\TypeCheckTrait;
@@ -45,19 +45,19 @@ final readonly class ModuleAccountMapper implements MapperInterface
     /**
      * @throws IncompatibleMappedEntityException
      * @throws InvalidIdentityAccessValueObjectException
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      */
     public function fromDoctrineOrm(object $orm): ModuleAccount
     {
         $this->assertIsType(OrmModuleAccount::class, $orm);
         /* @var OrmModuleAccount $orm */
 
-        $id = Id::fromInt($orm->id ?? throw EntityIdMissingException::forEntity($orm::class));
+        $id = Id::fromInt($orm->id ?? throw EntityFieldMissingException::forEntityId(className: $orm::class));
 
         return new ModuleAccount(
-            ulid: Ulid::fromString($orm->ulid),
-            clientId: ClientId::fromString($orm->clientId),
-            clientSecret: ClientSecretHash::fromString($orm->clientSecret),
+            ulid: Ulid::fromString($orm->ulid ?? throw EntityFieldMissingException::forField(field: 'ulid', className: $orm::class)),
+            clientId: ClientId::fromString($orm->clientId ?? throw EntityFieldMissingException::forField(field: 'clientId', className: $orm::class)),
+            clientSecret: ClientSecretHash::fromString($orm->clientSecret ?? throw EntityFieldMissingException::forField(field: 'clientSecret', className: $orm::class)),
             scopes: ScopeCollection::fromStrings($orm->scopes),
             id: $id,
         );

@@ -23,6 +23,7 @@ use App\Shared\Application\Bus\BusNameEnum;
 use App\Shared\Application\Command\CommandHandlerInterface;
 use App\Shared\Domain\Exception\Entity\ConcurrencyException;
 use App\Shared\Domain\ValueObject\File\RelativeFilePath;
+use RuntimeException;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
@@ -93,7 +94,7 @@ readonly class UpdateProductHandler implements CommandHandlerInterface
                 ));
             }
 
-            return $product->getId()->value();
+            return $product->getId()?->value() ?? throw new RuntimeException('Product id is null');
         } catch (
             ConcurrencyException
             |OneOfAttributesNotFoundException

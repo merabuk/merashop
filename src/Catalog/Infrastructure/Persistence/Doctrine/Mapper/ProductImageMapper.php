@@ -12,27 +12,27 @@ use App\Catalog\Domain\ValueObject\ProductImage\MainImageFlag;
 use App\Catalog\Domain\ValueObject\ProductImage\SortOrder;
 use App\Catalog\Domain\ValueObject\ProductImage\Ulid;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductImage;
-use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
+use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\ValueObject\InvalidRelativePathException;
 use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 
 final readonly class ProductImageMapper
 {
     /**
-     * @throws EntityIdMissingException
+     * @throws EntityFieldMissingException
      * @throws InvalidProductImageIdException
      * @throws InvalidProductImageUlidException
      * @throws InvalidRelativePathException
      */
     public function toDomain(OrmProductImage $orm): ProductImage
     {
-        $id = $orm->id ?? throw EntityIdMissingException::forEntity($orm::class);
+        $id = $orm->id ?? throw EntityFieldMissingException::forEntityId($orm::class);
 
         return new ProductImage(
-            ulid: Ulid::fromString($orm->ulid),
-            path: RelativeFilePath::fromString($orm->path),
-            sortOrder: SortOrder::fromInt($orm->sortOrder),
-            isMain: MainImageFlag::fromBool($orm->isMain),
+            ulid: Ulid::fromString($orm->ulid ?? throw EntityFieldMissingException::forField(field: 'ulid', className: $orm::class)),
+            path: RelativeFilePath::fromString($orm->path ?? throw EntityFieldMissingException::forField(field: 'path', className: $orm::class)),
+            sortOrder: SortOrder::fromInt($orm->sortOrder ?? throw EntityFieldMissingException::forField(field: 'sortOrder', className: $orm::class)),
+            isMain: MainImageFlag::fromBool($orm->isMain ?? throw EntityFieldMissingException::forField(field: 'isMain', className: $orm::class)),
             id: Id::fromInt($id),
         );
     }

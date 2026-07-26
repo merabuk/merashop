@@ -13,6 +13,7 @@ use App\Catalog\Domain\ValueObject\ProductAttributeValue\Id;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\AttributeValueInterface;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\DimensionValue;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Version;
+use RuntimeException;
 
 class ProductAttributeValue
 {
@@ -36,10 +37,14 @@ class ProductAttributeValue
      * @throws ProductAttributeValueStateException
      */
     public static function createWithOption(
-        AttributeId $attributeId,
-        AttributeOptionId $attributeOptionId,
+        ?AttributeId $attributeId,
+        ?AttributeOptionId $attributeOptionId,
         AdminUlid $createdBy,
     ): self {
+        // TODO: handle this case
+        $attributeId ?? throw new RuntimeException('Attribute id cannot be null');
+        $attributeOptionId ?? throw new RuntimeException('Attribute option id cannot be null');
+
         return self::create(
             attributeId: $attributeId,
             createdBy: $createdBy,
@@ -52,10 +57,13 @@ class ProductAttributeValue
      * @throws ProductAttributeValueStateException
      */
     public static function createWithValue(
-        AttributeId $attributeId,
+        ?AttributeId $attributeId,
         AttributeValueInterface $value,
         AdminUlid $createdBy,
     ): self {
+        // TODO: handle this case
+        $attributeId ?? throw new RuntimeException('Attribute id cannot be null');
+
         return self::create(attributeId: $attributeId, createdBy: $createdBy, value: $value);
     }
 
@@ -64,11 +72,14 @@ class ProductAttributeValue
      * @throws ProductAttributeValueStateException
      */
     public static function create(
-        AttributeId $attributeId,
+        ?AttributeId $attributeId,
         AdminUlid $createdBy,
         ?AttributeOptionId $attributeOptionId = null,
         ?AttributeValueInterface $value = null,
     ): self {
+        // TODO: handle this case
+        $attributeId ?? throw new RuntimeException('Attribute id cannot be null');
+
         return new self(
             attributeId: $attributeId,
             version: Version::initial(),

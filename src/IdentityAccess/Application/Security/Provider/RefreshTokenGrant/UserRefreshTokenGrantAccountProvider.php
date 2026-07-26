@@ -10,9 +10,12 @@ use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectExceptio
 use App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\Ulid;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
+use App\Shared\Domain\Helpers\TypeCastingTrait;
 
 final readonly class UserRefreshTokenGrantAccountProvider implements RefreshTokenGrantAccountProviderInterface
 {
+    use TypeCastingTrait;
+
     public function __construct(
         private UserAccountReadRepositoryInterface $readRepository,
     ) {
@@ -36,7 +39,10 @@ final readonly class UserRefreshTokenGrantAccountProvider implements RefreshToke
             }
 
             return new GrantResultData(
-                subjectUlid: $user->getUlid()->value(),
+                subjectUlid: self::castToNonEmptyString(
+                    string: $user->getUlid()->value(),
+                    message: 'Giving user ulid is empty'
+                ),
                 subjectType: self::getAccountType(),
                 roles: $user->getRoles()->toStrings(),
                 scopes: [],

@@ -8,9 +8,17 @@ use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\OptimisticLockException;
 use RuntimeException;
 
+/**
+ * @template TDomain of object
+ * @template TOrm of object
+ */
 trait WriteRepositoryTrait
 {
     /**
+     * @param TDomain $domain
+     *
+     * @return TOrm
+     *
      * @throws IncompatibleMappedEntityException
      * @throws OptimisticLockException
      * @throws ORMException
@@ -30,6 +38,10 @@ trait WriteRepositoryTrait
             if (!$orm) {
                 throw $this->makeRuntimeException($stringId);
             }
+
+            /*
+             * @var TOrm $orm
+             */
 
             $mapper->mapToExistingOrm($domain, $orm);
         } else {
@@ -56,7 +68,7 @@ trait WriteRepositoryTrait
         $em = $this->getEntityManager();
 
         $orm = $em->getUnitOfWork()->tryGetById($stringId, self::getEntityClass()) ?: null;
-        $orm ??= $this->findOrmForDeleteFallback($id);
+        $orm ??= $this->findOrmForDeleteFallback((string) $id);
 
         if ($orm) {
             $em->remove($orm);
@@ -96,6 +108,9 @@ trait WriteRepositoryTrait
         return new RuntimeException(sprintf('Entity %s with ID %s not found', self::getEntityClass(), $stringId));
     }
 
+    /**
+     * @return MapperInterface<TDomain, TOrm>
+     */
     private function requireMapper(string $method): MapperInterface
     {
         $mapper = $this->mapper;

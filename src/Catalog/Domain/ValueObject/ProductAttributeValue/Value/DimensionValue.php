@@ -17,9 +17,13 @@ final readonly class DimensionValue implements AttributeValueInterface
      */
     public function __construct(
         private float $magnitude,
-        private AttributeOptionId $unit,
+        private ?AttributeOptionId $unit,
     ) {
         if ($this->magnitude < 0) {
+            throw InvalidProductAttributeMagnitudeDimensionValueException::becauseItIsNotAValidMagnitude();
+        }
+        if (null === $this->unit) {
+            // TODO: handle this case
             throw InvalidProductAttributeMagnitudeDimensionValueException::becauseItIsNotAValidMagnitude();
         }
     }

@@ -9,10 +9,10 @@ class SelectAttributeValueRequest extends BaseAttributeValueRequest
 {
     #[Assert\NotBlank(groups: [self::BASE_GROUP])]
     #[Assert\Positive(groups: [self::BASE_GROUP])]
-    public ?int $value;
+    public ?int $value = null;
 
     public function toValueData(): SelectAttributeValueData
     {
-        return new SelectAttributeValueData(optionId: $this->value);
+        return new SelectAttributeValueData(optionId: (int) $this->value);
     }
 }

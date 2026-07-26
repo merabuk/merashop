@@ -23,7 +23,7 @@ abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
     #[Assert\NotBlank]
     #[Assert\Length(min: 1, max: Code::MAX_LENGTH)]
     #[Assert\Regex(pattern: Code::REGEX)]
-    public ?string $code;
+    public ?string $code = null;
 
     #[Assert\NotBlank]
     #[Assert\Choice(
@@ -42,7 +42,7 @@ abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
         groups: [AttributeTranslationRequest::BASE_GROUP],
     )]
     #[Assert\Valid(groups: [AttributeTranslationRequest::BASE_GROUP])]
-    public ?array $translations;
+    public ?array $translations = null;
 
     /**
      * @var ?AttributeOptionRequest[] $options
@@ -64,7 +64,7 @@ abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
         TypeEnum::MultiSelect->value,
         TypeEnum::Dimension->value,
     ])]
-    public ?array $options;
+    public ?array $options = null;
 
     #[Assert\Callback(groups: [AttributeOptionRequest::BASE_GROUP])]
     public function validateUniqueOptions(ExecutionContextInterface $context): void
@@ -136,9 +136,13 @@ abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
      */
     protected function getTranslations(): array
     {
-        return isset($this->translations)
-            ? array_map(fn (AttributeTranslationRequest $translation) => true, $this->translations)
-            : [];
+        $translations = [];
+
+        foreach ($this->translations ?? [] as $key => $translation) {
+            $translations[(string) $key] = true;
+        }
+
+        return $translations;
     }
 
     protected function getRequestTranslationKey(): string
@@ -151,7 +155,7 @@ abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
      */
     protected function mapAndGetTranslations(): array
     {
-        return array_map(fn (AttributeTranslationRequest $t) => $t->toData(), $this->translations);
+        return array_map(fn (AttributeTranslationRequest $t) => $t->toData(), $this->translations ?? []);
     }
 
     /**

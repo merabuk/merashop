@@ -35,8 +35,8 @@ final class OutboxRelayCommand extends BaseConsoleCommand
         $processedCount = $this->relayService->execute();
 
         match ($processedCount) {
-            0 => $this->io->success('No pending emails found'),
-            default => $this->io->success(sprintf('Dispatched %d emails for processing', $processedCount)),
+            0 => $this->output()->success('No pending emails found'),
+            default => $this->output()->success(sprintf('Dispatched %d emails for processing', $processedCount)),
         };
 
         return Command::SUCCESS;
