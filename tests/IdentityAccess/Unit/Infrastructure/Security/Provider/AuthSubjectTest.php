@@ -10,9 +10,9 @@ use App\Shared\Domain\Enum\RoleEnum;
 use App\Tests\IdentityAccess\Support\AdminAccountMother;
 use App\Tests\IdentityAccess\Support\ModuleAccountMother;
 use App\Tests\IdentityAccess\Support\UserAccountMother;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\BaseUnitTest;
 
-final class AuthSubjectTest extends TestCase
+final class AuthSubjectTest extends BaseUnitTest
 {
     public function testFromUserAccount(): void
     {

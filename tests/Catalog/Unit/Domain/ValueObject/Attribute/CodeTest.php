@@ -6,11 +6,11 @@ namespace App\Tests\Catalog\Unit\Domain\ValueObject\Attribute;
 
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeCodeException;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class CodeTest extends TestCase
+final class CodeTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

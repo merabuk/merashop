@@ -6,11 +6,11 @@ namespace App\Tests\Catalog\Unit\Domain\ValueObject\Category;
 
 use App\Catalog\Domain\Exception\Category\InvalidCategoryIdException;
 use App\Catalog\Domain\ValueObject\Category\Id;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\IntegerIdTestTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class IdTest extends TestCase
+final class IdTest extends BaseUnitTest
 {
     use IntegerIdTestTrait;
 

@@ -6,11 +6,11 @@ namespace App\Tests\Catalog\Unit\Domain\ValueObject\Category;
 
 use App\Catalog\Domain\Exception\Category\InvalidCategorySlugException;
 use App\Catalog\Domain\ValueObject\Category\Slug;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class SlugTest extends TestCase
+final class SlugTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

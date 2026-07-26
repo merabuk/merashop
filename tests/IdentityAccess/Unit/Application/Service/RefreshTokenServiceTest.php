@@ -12,11 +12,11 @@ use App\IdentityAccess\Domain\Service\TokenHasherInterface;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 use App\Tests\IdentityAccess\Support\RefreshTokenMother;
 use App\Tests\IdentityAccess\Support\UserAccountMother;
+use App\Tests\Shared\BaseUnitTest;
 use DateTimeImmutable;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;
 
-final class RefreshTokenServiceTest extends TestCase
+final class RefreshTokenServiceTest extends BaseUnitTest
 {
     public function testItCreatesRefreshTokenCorrectly(): void
     {

@@ -6,9 +6,9 @@ namespace App\Tests\IdentityAccess\Unit\Domain\Entity;
 
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\PasswordHash;
 use App\Tests\IdentityAccess\Support\AdminAccountMother;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\BaseUnitTest;
 
-final class AdminAccountTest extends TestCase
+final class AdminAccountTest extends BaseUnitTest
 {
     public function testItChangesPasswordCorrectly(): void
     {

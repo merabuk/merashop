@@ -7,14 +7,14 @@ namespace App\Tests\Shared\Unit\Presentation\Console\EventListener;
 use App\Shared\Domain\Service\Tracing\TraceIdContextInterface;
 use App\Shared\Domain\Service\Tracing\TraceIdFactoryInterface;
 use App\Shared\Presentation\Console\EventListener\ConsoleTraceIdListener;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\TraceIdHelperTrait;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-final class ConsoleTraceIdListenerTest extends TestCase
+final class ConsoleTraceIdListenerTest extends BaseUnitTest
 {
     use TraceIdHelperTrait;
 

@@ -9,12 +9,12 @@ use App\Catalog\Domain\ValueObject\ProductPrice\ValidFrom;
 use App\Catalog\Domain\ValueObject\ProductPrice\ValidityPeriod;
 use App\Catalog\Domain\ValueObject\ProductPrice\ValidTo;
 use App\Shared\Domain\ValueObject\Temporal\DateTimeValueObject;
+use App\Tests\Shared\BaseUnitTest;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;
 
-final class ValidityPeriodTest extends TestCase
+final class ValidityPeriodTest extends BaseUnitTest
 {
     #[DataProvider('validValidityPeriodProvider')]
     public function testItCreatesValidValidityPeriod(

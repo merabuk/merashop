@@ -9,13 +9,13 @@ use App\Catalog\Domain\Enum\Attribute\TypeEnum as AttributeTypeEnum;
 use App\Catalog\Domain\Exception\Product\InvalidProductAttributeValueItemException;
 use App\Catalog\Domain\ValueObject\Product\AttributeValueCollection;
 use App\Tests\Catalog\Support\ProductAttributeValueMother;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 use Traversable;
 
-final class AttributeValueCollectionTest extends TestCase
+final class AttributeValueCollectionTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

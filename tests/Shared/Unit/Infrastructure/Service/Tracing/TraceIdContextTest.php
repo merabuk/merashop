@@ -6,11 +6,11 @@ namespace App\Tests\Shared\Unit\Infrastructure\Service\Tracing;
 
 use App\Shared\Domain\Service\Tracing\TraceIdFactoryInterface;
 use App\Shared\Infrastructure\Service\Tracing\TraceIdContext;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\TraceIdHelperTrait;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
-final class TraceIdContextTest extends TestCase
+final class TraceIdContextTest extends BaseUnitTest
 {
     use TraceIdHelperTrait;
 

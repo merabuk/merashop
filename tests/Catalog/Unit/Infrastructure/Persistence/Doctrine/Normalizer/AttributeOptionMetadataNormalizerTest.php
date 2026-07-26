@@ -10,10 +10,10 @@ use App\Catalog\Domain\ValueObject\AttributeOption\Metadata\AttributeOptionMetad
 use App\Catalog\Domain\ValueObject\AttributeOption\Metadata\DimensionMetadata;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Normalizer\AttributeOptionMetadataNormalizer;
 use App\Shared\Domain\Exception\InvalidArgumentException;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class AttributeOptionMetadataNormalizerTest extends TestCase
+final class AttributeOptionMetadataNormalizerTest extends BaseUnitTest
 {
     #[DataProvider('denormalizationDataProvider')]
     public function testItDenormalizes(

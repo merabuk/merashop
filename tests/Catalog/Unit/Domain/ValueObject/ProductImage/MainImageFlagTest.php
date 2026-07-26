@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\Catalog\Unit\Domain\ValueObject\ProductImage;
 
 use App\Catalog\Domain\ValueObject\ProductImage\MainImageFlag;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\BooleanFlagValueObjectTrait;
-use PHPUnit\Framework\TestCase;
 
-final class MainImageFlagTest extends TestCase
+final class MainImageFlagTest extends BaseUnitTest
 {
     use BooleanFlagValueObjectTrait;
 

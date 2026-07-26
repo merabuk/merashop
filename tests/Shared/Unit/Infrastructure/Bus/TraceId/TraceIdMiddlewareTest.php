@@ -7,14 +7,14 @@ namespace App\Tests\Shared\Unit\Infrastructure\Bus\TraceId;
 use App\Shared\Domain\Service\Tracing\TraceIdContextInterface;
 use App\Shared\Infrastructure\Bus\TraceId\TraceIdMiddleware;
 use App\Shared\Infrastructure\Bus\TraceId\TraceIdStamp;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\TraceIdHelperTrait;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Middleware\MiddlewareInterface;
 use Symfony\Component\Messenger\Middleware\StackInterface;
 
-final class TraceIdMiddlewareTest extends TestCase
+final class TraceIdMiddlewareTest extends BaseUnitTest
 {
     use TraceIdHelperTrait;
 

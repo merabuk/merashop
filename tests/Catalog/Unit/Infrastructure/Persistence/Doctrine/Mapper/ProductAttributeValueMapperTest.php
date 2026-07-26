@@ -18,10 +18,10 @@ use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
 use App\Shared\Infrastructure\Persistence\Doctrine\Interface\ProxyReferenceProviderInterface;
 use App\Tests\Catalog\Support\ProductAttributeValueMother;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class ProductAttributeValueMapperTest extends TestCase
+final class ProductAttributeValueMapperTest extends BaseUnitTest
 {
     private ProxyReferenceProviderInterface $referenceProvider;
     private ProductAttributeValueNormalizer $normalizer;

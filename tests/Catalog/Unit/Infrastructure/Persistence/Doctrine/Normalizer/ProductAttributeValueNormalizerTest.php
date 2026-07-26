@@ -19,11 +19,11 @@ use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\LocalizedTextValu
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\UrlValue;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Normalizer\ProductAttributeValueNormalizer;
 use App\Shared\Domain\Exception\InvalidArgumentException;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\ValueObjectAssertionTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class ProductAttributeValueNormalizerTest extends TestCase
+final class ProductAttributeValueNormalizerTest extends BaseUnitTest
 {
     use ValueObjectAssertionTrait;
 

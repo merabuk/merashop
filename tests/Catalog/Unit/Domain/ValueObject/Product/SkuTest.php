@@ -6,11 +6,11 @@ namespace App\Tests\Catalog\Unit\Domain\ValueObject\Product;
 
 use App\Catalog\Domain\Exception\Product\InvalidProductSkuException;
 use App\Catalog\Domain\ValueObject\Product\Sku;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class SkuTest extends TestCase
+final class SkuTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

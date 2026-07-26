@@ -20,11 +20,11 @@ use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\LocalizedTextValu
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\UrlValue;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Normalizer\ProductAttributeValueNormalizer;
 use App\Tests\Catalog\Support\ProductAttributeValueMother;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\ValueObjectAssertionTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class ProductAttributeValueTest extends TestCase
+final class ProductAttributeValueTest extends BaseUnitTest
 {
     use ValueObjectAssertionTrait;
 

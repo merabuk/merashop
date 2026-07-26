@@ -11,6 +11,7 @@ use App\IdentityAccess\Infrastructure\Security\Authenticator\JwtAccessTokenHandl
 use App\IdentityAccess\Infrastructure\Security\Jwt\JwtConfigFactory;
 use App\IdentityAccess\Infrastructure\Security\Provider\AuthEntityProvider;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
+use App\Tests\Shared\BaseUnitTest;
 use DateTimeImmutable;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Parser;
@@ -22,10 +23,9 @@ use Lcobucci\JWT\UnencryptedToken;
 use Lcobucci\JWT\Validator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
-final class JwtAccessTokenHandlerTest extends TestCase
+final class JwtAccessTokenHandlerTest extends BaseUnitTest
 {
     private Parser&MockObject $parser;
     private Validator&MockObject $validator;

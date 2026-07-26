@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Tests\EmailSender\Unit\Domain\ValueObject\OutboxEmail;
 
 use App\EmailSender\Domain\ValueObject\OutboxEmail\LockedAt;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\DateTimeValueObjectTrait;
 use DateTimeImmutable;
-use PHPUnit\Framework\TestCase;
 
-final class LockedAtTest extends TestCase
+final class LockedAtTest extends BaseUnitTest
 {
     use DateTimeValueObjectTrait;
 

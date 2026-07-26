@@ -8,9 +8,9 @@ use App\Catalog\Infrastructure\Persistence\Doctrine\Entity\OrmProductImage;
 use App\Catalog\Infrastructure\Persistence\Doctrine\Mapper\ProductImageMapper;
 use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
 use App\Tests\Catalog\Support\ProductImageMother;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\BaseUnitTest;
 
-final class ProductImageMapperTest extends TestCase
+final class ProductImageMapperTest extends BaseUnitTest
 {
     private ProductImageMapper $mapper;
 

@@ -10,10 +10,10 @@ use App\Customer\Domain\Exception\CustomerProfile\CustomerProfileNotFoundExcepti
 use App\Customer\Domain\Repository\CustomerProfileReadRepositoryInterface;
 use App\Customer\Domain\Repository\CustomerProfileWriteRepositoryInterface;
 use App\Tests\Customer\Support\CustomerProfileMother;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
-final class UpdateCustomerProfileHandlerTest extends TestCase
+final class UpdateCustomerProfileHandlerTest extends BaseUnitTest
 {
     private CustomerProfileReadRepositoryInterface&MockObject $readRepository;
     private CustomerProfileWriteRepositoryInterface&MockObject $writeRepository;

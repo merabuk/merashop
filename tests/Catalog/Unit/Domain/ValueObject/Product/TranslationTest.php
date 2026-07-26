@@ -9,10 +9,10 @@ use App\Catalog\Domain\Exception\Product\InvalidProductNameException;
 use App\Catalog\Domain\ValueObject\Product\Translation;
 use App\Shared\Domain\Enum\LocaleEnum;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class TranslationTest extends TestCase
+final class TranslationTest extends BaseUnitTest
 {
     #[DataProvider('validTranslationProvider')]
     public function testItCreatesValidTranslation(string $locale, string $name, ?string $description): void

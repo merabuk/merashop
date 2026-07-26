@@ -6,12 +6,12 @@ namespace App\Tests\EmailSender\Unit\Infrastructure\Scheduler;
 
 use App\EmailSender\Application\Scheduler\OutboxEmailRelayMessage;
 use App\EmailSender\Infrastructure\Scheduler\EmailSenderScheduleProvider;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\BaseUnitTest;
 use Symfony\Component\Clock\MockClock;
 use Symfony\Component\Scheduler\Generator\MessageContext;
 use Symfony\Component\Scheduler\Trigger\TriggerInterface;
 
-final class EmailSenderScheduleProviderTest extends TestCase
+final class EmailSenderScheduleProviderTest extends BaseUnitTest
 {
     public function testScheduleDefinition(): void
     {

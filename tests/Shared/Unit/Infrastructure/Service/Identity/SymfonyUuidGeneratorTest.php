@@ -6,9 +6,9 @@ namespace App\Tests\Shared\Unit\Infrastructure\Service\Identity;
 
 use App\Shared\Domain\Service\Validation\UuidValidator;
 use App\Shared\Infrastructure\Service\Identity\SymfonyUuidGenerator;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\BaseUnitTest;
 
-final class SymfonyUuidGeneratorTest extends TestCase
+final class SymfonyUuidGeneratorTest extends BaseUnitTest
 {
     public function testUuidGeneratorProducesValidV7(): void
     {

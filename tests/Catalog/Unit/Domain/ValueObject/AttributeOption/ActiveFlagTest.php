@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\Catalog\Unit\Domain\ValueObject\AttributeOption;
 
 use App\Catalog\Domain\ValueObject\AttributeOption\ActiveFlag;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\BooleanFlagValueObjectTrait;
-use PHPUnit\Framework\TestCase;
 
-final class ActiveFlagTest extends TestCase
+final class ActiveFlagTest extends BaseUnitTest
 {
     use BooleanFlagValueObjectTrait;
 

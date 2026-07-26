@@ -13,10 +13,10 @@ use App\Catalog\Infrastructure\Persistence\Doctrine\Mapper\AttributeOptionMapper
 use App\Catalog\Infrastructure\Persistence\Doctrine\Normalizer\AttributeOptionMetadataNormalizer;
 use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
 use App\Tests\Catalog\Support\AttributeOptionMother;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class AttributeOptionMapperTest extends TestCase
+final class AttributeOptionMapperTest extends BaseUnitTest
 {
     private AttributeOptionMapper $mapper;
 

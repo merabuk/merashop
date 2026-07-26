@@ -6,12 +6,12 @@ namespace App\Tests\Shared\Unit\Presentation\Http\Request;
 
 use App\Shared\Domain\Enum\LocaleEnum;
 use App\Shared\Presentation\Http\Request\ValidateLocalesTrait;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Violation\ConstraintViolationBuilderInterface;
 
-final class ValidateLocalesTraitTest extends TestCase
+final class ValidateLocalesTraitTest extends BaseUnitTest
 {
     private ExecutionContextInterface&MockObject $context;
     private ConstraintViolationBuilderInterface&MockObject $violationBuilder;

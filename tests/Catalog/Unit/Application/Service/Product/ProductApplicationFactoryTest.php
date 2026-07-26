@@ -21,12 +21,12 @@ use App\Tests\Catalog\Support\ProductAttributeValueMother;
 use App\Tests\Catalog\Support\ProductMother;
 use App\Tests\Catalog\Support\ProductPriceMother;
 use App\Tests\Catalog\Support\Traits\ProductHelperTrait;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\ValueObjectAssertionTrait;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 
-final class ProductApplicationFactoryTest extends TestCase
+final class ProductApplicationFactoryTest extends BaseUnitTest
 {
     use ProductHelperTrait;
     use ValueObjectAssertionTrait;

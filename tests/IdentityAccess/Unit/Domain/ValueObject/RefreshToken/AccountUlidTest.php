@@ -7,11 +7,11 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\RefreshToken;
 use App\IdentityAccess\Domain\Exception\RefreshToken\InvalidRefreshTokenAccountUlidException;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\AccountUlid;
 use App\Shared\Domain\ValueObject\Identity\Ulid as SharedUlid;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Identity\UlidTest as SharedUlidTest;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
-use PHPUnit\Framework\TestCase;
 
-final class AccountUlidTest extends TestCase
+final class AccountUlidTest extends BaseUnitTest
 {
     public function testItCreatesValidUlid(): void
     {

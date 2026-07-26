@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Tests\IdentityAccess\Unit\Infrastructure\Security\Hasher;
 
 use App\IdentityAccess\Infrastructure\Security\Hasher\TokenHasherService;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\BaseUnitTest;
 
-final class TokenHasherServiceTest extends TestCase
+final class TokenHasherServiceTest extends BaseUnitTest
 {
     public function testItHashesTokenCorrectly(): void
     {

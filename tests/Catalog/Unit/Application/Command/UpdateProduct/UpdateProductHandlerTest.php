@@ -38,14 +38,14 @@ use App\Tests\Catalog\Support\ProductImageMother;
 use App\Tests\Catalog\Support\ProductMother;
 use App\Tests\Catalog\Support\ProductPriceMother;
 use App\Tests\Catalog\Support\Traits\ProductHelperTrait;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final class UpdateProductHandlerTest extends TestCase
+final class UpdateProductHandlerTest extends BaseUnitTest
 {
     use ProductHelperTrait;
 

@@ -6,11 +6,11 @@ namespace App\Tests\Shared\Unit\Domain\ValueObject\File;
 
 use App\Shared\Domain\Exception\ValueObject\InvalidRawFileException;
 use App\Shared\Domain\ValueObject\File\RawFile;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\VfsStreamTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class RawFileTest extends TestCase
+final class RawFileTest extends BaseUnitTest
 {
     use VfsStreamTrait;
 

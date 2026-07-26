@@ -7,10 +7,10 @@ namespace App\Tests\Shared\Unit\Domain\Service\Validation;
 use App\Shared\Domain\Exception\Services\Validation\EmailAddressFormatException;
 use App\Shared\Domain\Exception\Services\Validation\EmailAddressMaxLengthException;
 use App\Shared\Domain\Service\Validation\EmailValidator;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class EmailValidatorTest extends TestCase
+final class EmailValidatorTest extends BaseUnitTest
 {
     #[DataProvider('validEmailProvider')]
     public function testItValidatesCorrectEmails(string $email, int $max, string $expected): void

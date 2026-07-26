@@ -7,12 +7,12 @@ namespace App\Tests\Shared\Unit\Infrastructure\Service\Storage;
 use App\Shared\Domain\Exception\Services\Storage\FileStorageException;
 use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 use App\Shared\Infrastructure\Service\Storage\FlysystemStorage;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\VfsStreamTrait;
 use League\Flysystem\FilesystemOperator;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
-final class FlysystemStorageTest extends TestCase
+final class FlysystemStorageTest extends BaseUnitTest
 {
     use VfsStreamTrait;
 

@@ -15,10 +15,10 @@ use App\Catalog\Domain\Exception\AttributeOption\AttributeOptionNotFoundExceptio
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Tests\Catalog\Support\AttributeMother;
 use App\Tests\Catalog\Support\AttributeOptionMother;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class SelectAttributeValueProviderTest extends TestCase
+final class SelectAttributeValueProviderTest extends BaseUnitTest
 {
     private const TypeEnum TYPE = TypeEnum::Select;
 

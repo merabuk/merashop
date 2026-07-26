@@ -9,10 +9,10 @@ use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceCurrencyExcepti
 use App\Catalog\Domain\ValueObject\ProductPrice\Price;
 use App\Shared\Domain\Enum\CurrencyEnum;
 use App\Shared\Domain\Service\Utility\CurrencyHelper;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class PriceTest extends TestCase
+final class PriceTest extends BaseUnitTest
 {
     #[DataProvider('validPriceProvider')]
     public function testItCreatesValidPrice(

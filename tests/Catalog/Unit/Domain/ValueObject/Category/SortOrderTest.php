@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\Catalog\Unit\Domain\ValueObject\Category;
 
 use App\Catalog\Domain\ValueObject\Category\SortOrder;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
-use PHPUnit\Framework\TestCase;
 
-final class SortOrderTest extends TestCase
+final class SortOrderTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

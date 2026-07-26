@@ -7,11 +7,11 @@ namespace App\Tests\Catalog\Unit\Domain\ValueObject\Attribute;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeTypeException;
 use App\Catalog\Domain\ValueObject\Attribute\Type;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class TypeTest extends TestCase
+final class TypeTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

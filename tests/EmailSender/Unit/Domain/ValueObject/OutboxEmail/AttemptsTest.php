@@ -6,9 +6,9 @@ namespace App\Tests\EmailSender\Unit\Domain\ValueObject\OutboxEmail;
 
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailAttemptsException;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Attempts;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\BaseUnitTest;
 
-final class AttemptsTest extends TestCase
+final class AttemptsTest extends BaseUnitTest
 {
     public function testItCreatesValidAttempts(): void
     {

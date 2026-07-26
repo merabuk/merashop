@@ -6,11 +6,11 @@ namespace App\Tests\EmailSender\Unit\Domain\Service;
 
 use App\EmailSender\Domain\Service\OutboxRetryPolicy;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Attempts;
+use App\Tests\Shared\BaseUnitTest;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class OutboxRetryPolicyTest extends TestCase
+final class OutboxRetryPolicyTest extends BaseUnitTest
 {
     public function testItShouldRetryWorksCorrectly(): void
     {

@@ -17,12 +17,12 @@ use App\IdentityAccess\Domain\Enum\GrantTypeEnum;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 use App\Shared\Domain\Enum\RoleEnum;
 use App\Tests\IdentityAccess\Support\UserAccountMother;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use stdClass;
 
-final class PasswordGrantHandlerTest extends TestCase
+final class PasswordGrantHandlerTest extends BaseUnitTest
 {
     private ContainerInterface&MockObject $providers;
     private JwtGenerator&MockObject $tokenGenerator;

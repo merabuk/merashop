@@ -7,10 +7,10 @@ namespace App\Tests\Shared\Unit\Application\Security;
 use App\Shared\Application\Security\AuthIdentity;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 use App\Shared\Domain\Enum\RoleEnum;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class AuthIdentityTest extends TestCase
+final class AuthIdentityTest extends BaseUnitTest
 {
     /**
      * @param string[] $roles

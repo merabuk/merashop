@@ -7,11 +7,11 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\RefreshToken;
 use App\IdentityAccess\Domain\Exception\RefreshToken\InvalidRefreshTokenAccountTypeException;
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\AccountType;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class AccountTypeTest extends TestCase
+final class AccountTypeTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

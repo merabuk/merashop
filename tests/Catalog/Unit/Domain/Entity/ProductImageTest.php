@@ -10,9 +10,9 @@ use App\Catalog\Domain\ValueObject\ProductImage\SortOrder;
 use App\Catalog\Domain\ValueObject\ProductImage\Ulid;
 use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 use App\Tests\Catalog\Support\ProductImageMother;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\BaseUnitTest;
 
-final class ProductImageTest extends TestCase
+final class ProductImageTest extends BaseUnitTest
 {
     public function testItCreatesProductImage(): void
     {

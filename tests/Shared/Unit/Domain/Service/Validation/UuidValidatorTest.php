@@ -6,10 +6,10 @@ namespace App\Tests\Shared\Unit\Domain\Service\Validation;
 
 use App\Shared\Domain\Exception\Services\Identity\InvalidUuidException;
 use App\Shared\Domain\Service\Validation\UuidValidator;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class UuidValidatorTest extends TestCase
+final class UuidValidatorTest extends BaseUnitTest
 {
     #[DataProvider('validUuidV7Provider')]
     public function testUuidV7Validator(string $uuid): void

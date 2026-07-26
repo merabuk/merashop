@@ -8,10 +8,10 @@ use App\IdentityAccess\Application\Security\Provider\RefreshTokenGrant\UserRefre
 use App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 use App\Tests\IdentityAccess\Support\UserAccountMother;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
-final class UserRefreshTokenGrantAccountProviderTest extends TestCase
+final class UserRefreshTokenGrantAccountProviderTest extends BaseUnitTest
 {
     private UserAccountReadRepositoryInterface&MockObject $readRepository;
     private UserRefreshTokenGrantAccountProvider $provider;

@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\Catalog\Unit\Domain\ValueObject\ProductPrice;
 
 use App\Catalog\Domain\ValueObject\ProductPrice\ValidTo;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\DateTimeValueObjectTrait;
-use PHPUnit\Framework\TestCase;
 
-final class ValidToTest extends TestCase
+final class ValidToTest extends BaseUnitTest
 {
     use DateTimeValueObjectTrait;
 

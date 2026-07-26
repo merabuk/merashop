@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Tests\IdentityAccess\Unit\Infrastructure\Security\Blacklist;
 
 use App\IdentityAccess\Infrastructure\Security\Blacklist\RedisAccessTokenBlacklist;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Clock\MockClock;
 
-final class RedisAccessTokenBlacklistTest extends TestCase
+final class RedisAccessTokenBlacklistTest extends BaseUnitTest
 {
     private CacheItemPoolInterface&MockObject $cachePool;
     private MockClock $clock;

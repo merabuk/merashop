@@ -24,12 +24,12 @@ use App\Catalog\Domain\ValueObject\Product\Sku;
 use App\Catalog\Domain\ValueObject\TemporaryImage\Ulid as TemporaryImageUlid;
 use App\Tests\Catalog\Support\ProductMother;
 use App\Tests\Catalog\Support\Traits\ProductHelperTrait;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\UlidGenerationTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
-final class CreateProductHandlerTest extends TestCase
+final class CreateProductHandlerTest extends BaseUnitTest
 {
     use ProductHelperTrait;
     use UlidGenerationTrait;

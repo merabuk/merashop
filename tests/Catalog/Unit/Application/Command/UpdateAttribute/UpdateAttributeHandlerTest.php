@@ -26,12 +26,12 @@ use App\Shared\Domain\Exception\Entity\ConcurrencyException;
 use App\Tests\Catalog\Support\AttributeMother;
 use App\Tests\Catalog\Support\AttributeOptionMother;
 use App\Tests\Catalog\Support\Traits\AttributeHelperTrait;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Throwable;
 
-final class UpdateAttributeHandlerTest extends TestCase
+final class UpdateAttributeHandlerTest extends BaseUnitTest
 {
     use AttributeHelperTrait;
 

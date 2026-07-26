@@ -6,11 +6,11 @@ namespace App\Tests\Catalog\Unit\Domain\ValueObject\ProductAttributeValue;
 
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeValueIdException;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Id;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\IntegerIdTestTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class IdTest extends TestCase
+final class IdTest extends BaseUnitTest
 {
     use IntegerIdTestTrait;
 

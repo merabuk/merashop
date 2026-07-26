@@ -6,14 +6,14 @@ namespace App\Tests\Shared\Unit\Infrastructure\Bus\Middleware;
 
 use App\Shared\Domain\Bus\AsyncMessageInterface;
 use App\Shared\Infrastructure\Bus\Middleware\EventRoutingKeyMiddleware;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\BaseUnitTest;
 use stdClass;
 use Symfony\Component\Messenger\Bridge\Amqp\Transport\AmqpStamp;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Middleware\MiddlewareInterface;
 use Symfony\Component\Messenger\Middleware\StackInterface;
 
-final class EventRoutingKeyMiddlewareTest extends TestCase
+final class EventRoutingKeyMiddlewareTest extends BaseUnitTest
 {
     public function testItAddsAmqpStampForAsyncMessages(): void
     {

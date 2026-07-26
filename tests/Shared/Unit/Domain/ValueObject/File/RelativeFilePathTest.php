@@ -6,11 +6,11 @@ namespace App\Tests\Shared\Unit\Domain\ValueObject\File;
 
 use App\Shared\Domain\Exception\ValueObject\InvalidRelativePathException;
 use App\Shared\Domain\ValueObject\File\RelativeFilePath;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class RelativeFilePathTest extends TestCase
+final class RelativeFilePathTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

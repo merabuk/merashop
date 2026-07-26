@@ -17,13 +17,13 @@ use App\Catalog\Domain\ValueObject\ProductPrice\Version;
 use App\Shared\Domain\Enum\CurrencyEnum;
 use App\Shared\Domain\Enum\TaxTypeEnum;
 use App\Tests\Catalog\Support\ProductPriceMother;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\ValueObjectAssertionTrait;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;
 
-final class ProductPriceTest extends TestCase
+final class ProductPriceTest extends BaseUnitTest
 {
     use ValueObjectAssertionTrait;
 

@@ -6,10 +6,10 @@ namespace App\Tests\Shared\Unit\Domain\Service\Validation;
 
 use App\Shared\Domain\Exception\Services\Validation\InvalidUrlFormatException;
 use App\Shared\Domain\Service\Validation\UrlValidator;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class UrlValidatorTest extends TestCase
+final class UrlValidatorTest extends BaseUnitTest
 {
     #[DataProvider('validUrlProvider')]
     public function testItValidatesCorrectUrl(string $url, string $expected): void

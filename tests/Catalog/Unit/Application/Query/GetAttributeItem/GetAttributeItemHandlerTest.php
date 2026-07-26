@@ -10,10 +10,10 @@ use App\Catalog\Domain\Exception\Attribute\AttributeNotFoundException;
 use App\Catalog\Domain\Repository\AttributeReadRepositoryInterface;
 use App\Catalog\Domain\ValueObject\Attribute\Ulid;
 use App\Tests\Catalog\Support\AttributeMother;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
-final class GetAttributeItemHandlerTest extends TestCase
+final class GetAttributeItemHandlerTest extends BaseUnitTest
 {
     private AttributeReadRepositoryInterface&MockObject $readRepository;
 

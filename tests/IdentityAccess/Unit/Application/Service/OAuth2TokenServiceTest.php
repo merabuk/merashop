@@ -12,12 +12,12 @@ use App\IdentityAccess\Application\Exception\UnsupportedGrantTypeException;
 use App\IdentityAccess\Application\Security\Grant\GrantHandlerInterface;
 use App\IdentityAccess\Application\Service\OAuth2TokenService;
 use App\IdentityAccess\Domain\Enum\GrantTypeEnum;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use stdClass;
 
-final class OAuth2TokenServiceTest extends TestCase
+final class OAuth2TokenServiceTest extends BaseUnitTest
 {
     private ContainerInterface&MockObject $container;
     private OAuth2TokenService $service;

@@ -6,11 +6,11 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\AdminAccount;
 
 use App\IdentityAccess\Domain\Exception\AdminAccount\InvalidAdminAccountEmailException;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\EmailAddress;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\EmailAddressTestTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class EmailAddressTest extends TestCase
+final class EmailAddressTest extends BaseUnitTest
 {
     use EmailAddressTestTrait;
 

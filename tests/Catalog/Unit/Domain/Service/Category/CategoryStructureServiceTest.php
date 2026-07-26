@@ -14,10 +14,10 @@ use App\Catalog\Domain\Service\Category\CategoryStructureService;
 use App\Catalog\Domain\ValueObject\Category\Id;
 use App\Catalog\Domain\ValueObject\Category\Slug;
 use App\Tests\Catalog\Support\CategoryMother;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
-final class CategoryStructureServiceTest extends TestCase
+final class CategoryStructureServiceTest extends BaseUnitTest
 {
     private CategoryReadRepositoryInterface&MockObject $readRepository;
 

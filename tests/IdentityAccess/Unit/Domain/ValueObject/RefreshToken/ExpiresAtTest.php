@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\RefreshToken;
 
 use App\IdentityAccess\Domain\ValueObject\RefreshToken\ExpiresAt;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\DateTimeValueObjectTrait;
 use DateTimeImmutable;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;
 
-final class ExpiresAtTest extends TestCase
+final class ExpiresAtTest extends BaseUnitTest
 {
     use DateTimeValueObjectTrait;
 

@@ -11,10 +11,10 @@ use App\Catalog\Domain\ValueObject\Category\Id;
 use App\Catalog\Domain\ValueObject\Category\Slug;
 use App\Shared\Domain\Exception\Entity\ConcurrencyException;
 use App\Tests\Catalog\Support\CategoryMother;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
-final class CategoryValidatorTest extends TestCase
+final class CategoryValidatorTest extends BaseUnitTest
 {
     private CategoryReadRepositoryInterface&MockObject $readRepository;
 

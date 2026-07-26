@@ -8,11 +8,11 @@ use App\IdentityAccess\Domain\Exception\UserAccount\InvalidUserAccountUlidExcept
 use App\IdentityAccess\Domain\ValueObject\UserAccount\Ulid;
 use App\Shared\Domain\ValueObject\Identity\Ulid as SharedUlid;
 use App\Tests\IdentityAccess\Support\UserAccountMother;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Identity\UlidTest as SharedUlidTest;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
-use PHPUnit\Framework\TestCase;
 
-final class UlidTest extends TestCase
+final class UlidTest extends BaseUnitTest
 {
     public function testItCreatesValidUlid(): void
     {

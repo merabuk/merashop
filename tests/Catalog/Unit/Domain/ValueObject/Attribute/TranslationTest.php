@@ -8,10 +8,10 @@ use App\Catalog\Domain\Exception\Attribute\InvalidAttributeNameException;
 use App\Catalog\Domain\ValueObject\Attribute\Translation;
 use App\Shared\Domain\Enum\LocaleEnum;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class TranslationTest extends TestCase
+final class TranslationTest extends BaseUnitTest
 {
     public function testItCreatesValidTranslation(): void
     {

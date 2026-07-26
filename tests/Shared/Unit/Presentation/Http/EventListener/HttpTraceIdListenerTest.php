@@ -9,13 +9,13 @@ use App\Shared\Domain\Exception\Services\Tracing\TraceIdFactoryException;
 use App\Shared\Domain\Service\Tracing\TraceIdContextInterface;
 use App\Shared\Domain\Service\Tracing\TraceIdFactoryInterface;
 use App\Shared\Presentation\Http\EventListener\HttpTraceIdListener;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\AppListenerTrait;
 use App\Tests\Shared\Support\Traits\TraceIdHelperTrait;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-final class HttpTraceIdListenerTest extends TestCase
+final class HttpTraceIdListenerTest extends BaseUnitTest
 {
     use AppListenerTrait;
     use TraceIdHelperTrait;

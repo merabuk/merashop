@@ -5,12 +5,12 @@ namespace App\Tests\EmailSender\Unit\Domain\Entity;
 use App\EmailSender\Domain\Entity\OutboxEmail;
 use App\EmailSender\Domain\Exception\OutboxEmailAlreadyInProcessException;
 use App\Tests\EmailSender\Support\OutboxEmailMother;
+use App\Tests\Shared\BaseUnitTest;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;
 
-final class OutboxEmailTest extends TestCase
+final class OutboxEmailTest extends BaseUnitTest
 {
     private MockClock $clock;
 

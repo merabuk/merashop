@@ -12,14 +12,14 @@ use App\IdentityAccess\Domain\Repository\UserAccountWriteRepositoryInterface;
 use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
 use App\Shared\Domain\Event\UserRegisteredSharedEvent;
 use App\Tests\IdentityAccess\Support\UserAccountMother;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\UlidGenerationTrait;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final class CreateUserAccountHandlerTest extends TestCase
+final class CreateUserAccountHandlerTest extends BaseUnitTest
 {
     use UlidGenerationTrait;
 

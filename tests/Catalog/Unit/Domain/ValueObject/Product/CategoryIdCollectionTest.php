@@ -7,13 +7,13 @@ namespace App\Tests\Catalog\Unit\Domain\ValueObject\Product;
 use App\Catalog\Domain\Exception\Product\InvalidProductCategoryIdItemException;
 use App\Catalog\Domain\ValueObject\Category\Id as CategoryId;
 use App\Catalog\Domain\ValueObject\Product\CategoryIdCollection;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 use Traversable;
 
-final class CategoryIdCollectionTest extends TestCase
+final class CategoryIdCollectionTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

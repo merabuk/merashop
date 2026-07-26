@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Tests\Catalog\Unit\Domain\ValueObject\ProductAttributeValue\Value;
 
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\FloatValue;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class FloatValueTest extends TestCase
+final class FloatValueTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

@@ -8,12 +8,12 @@ use App\IdentityAccess\Infrastructure\Security\Bridge\SymfonyAuthEntityContext;
 use App\IdentityAccess\Infrastructure\Security\Provider\AuthSubject;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 use App\Tests\IdentityAccess\Support\UserAccountMother;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-final class SymfonyAuthEntityContextTest extends TestCase
+final class SymfonyAuthEntityContextTest extends BaseUnitTest
 {
     private Security&MockObject $security;
 

@@ -8,14 +8,14 @@ use App\IdentityAccess\Application\DTO\GrantResultData;
 use App\IdentityAccess\Infrastructure\Security\Jwt\JwtConfigFactory;
 use App\IdentityAccess\Infrastructure\Security\Jwt\JwtGenerator;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
+use App\Tests\Shared\BaseUnitTest;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Token\RegisteredClaims;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\MockClock;
 
-final class JwtGeneratorTest extends TestCase
+final class JwtGeneratorTest extends BaseUnitTest
 {
     private Configuration $config;
     private MockClock $clock;

@@ -9,10 +9,10 @@ use App\Catalog\Application\Service\Attribute\AttributeOption\DimensionMetadataP
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Exception\AttributeOption\InvalidAttributeOptionDimensionMetadataException;
 use App\Catalog\Domain\ValueObject\AttributeOption\Metadata\DimensionMetadata;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class DimensionMetadataProviderTest extends TestCase
+final class DimensionMetadataProviderTest extends BaseUnitTest
 {
     public function testGetDefaultIndexName(): void
     {

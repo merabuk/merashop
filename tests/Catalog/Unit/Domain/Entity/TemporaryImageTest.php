@@ -10,9 +10,9 @@ use App\Catalog\Domain\ValueObject\TemporaryImage\Context;
 use App\Catalog\Domain\ValueObject\TemporaryImage\Ulid;
 use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 use App\Tests\Catalog\Support\TemporaryImageMother;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\BaseUnitTest;
 
-final class TemporaryImageTest extends TestCase
+final class TemporaryImageTest extends BaseUnitTest
 {
     public function testItCreatesTemporaryImage(): void
     {

@@ -22,15 +22,15 @@ use App\Catalog\Domain\ValueObject\Category\Id;
 use App\Catalog\Domain\ValueObject\Category\Slug;
 use App\Shared\Domain\Exception\Entity\ConcurrencyException;
 use App\Tests\Catalog\Support\CategoryMother;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Throwable;
 
-final class UpdateCategoryHandlerTest extends TestCase
+final class UpdateCategoryHandlerTest extends BaseUnitTest
 {
     private CategoryReadRepositoryInterface&MockObject $readRepository;
     private CategoryWriteRepositoryInterface&MockObject $writeRepository;

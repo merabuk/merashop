@@ -8,11 +8,11 @@ use App\Catalog\Domain\Exception\Product\InvalidProductDescriptionException;
 use App\Catalog\Domain\Exception\Product\InvalidProductNameException;
 use App\Catalog\Domain\ValueObject\Product\Translation;
 use App\Catalog\Domain\ValueObject\Product\Translations;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\TranslationsValueObjectTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class TranslationsTest extends TestCase
+final class TranslationsTest extends BaseUnitTest
 {
     use TranslationsValueObjectTrait;
 

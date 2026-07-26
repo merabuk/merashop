@@ -7,11 +7,11 @@ namespace App\Tests\Shared\Unit\Domain\ValueObject;
 use App\Shared\Domain\Enum\LocaleEnum;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
 use App\Shared\Domain\ValueObject\Locale;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class LocaleTest extends TestCase
+final class LocaleTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

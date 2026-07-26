@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\AdminAccount;
 
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\PasswordChangedAt;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\DateTimeValueObjectTrait;
 use DateTimeImmutable;
-use PHPUnit\Framework\TestCase;
 
-final class PasswordChangedAtTest extends TestCase
+final class PasswordChangedAtTest extends BaseUnitTest
 {
     use DateTimeValueObjectTrait;
 

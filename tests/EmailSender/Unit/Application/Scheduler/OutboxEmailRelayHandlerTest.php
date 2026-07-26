@@ -7,10 +7,10 @@ namespace App\Tests\EmailSender\Unit\Application\Scheduler;
 use App\EmailSender\Application\Scheduler\OutboxEmailRelayHandler;
 use App\EmailSender\Application\Scheduler\OutboxEmailRelayMessage;
 use App\EmailSender\Application\Service\OutboxEmailRelayServiceInterface;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
-final class OutboxEmailRelayHandlerTest extends TestCase
+final class OutboxEmailRelayHandlerTest extends BaseUnitTest
 {
     private OutboxEmailRelayServiceInterface&MockObject $relayService;
 

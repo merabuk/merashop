@@ -7,8 +7,8 @@ namespace App\Tests\Shared\Unit\Presentation\Http\Resolver;
 use App\Shared\Presentation\Http\Attribute\MapPagination;
 use App\Shared\Presentation\Http\Request\PaginationRequest;
 use App\Shared\Presentation\Http\Resolver\PaginationRequestResolver;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\ResolverTrait;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -16,7 +16,7 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-final class PaginationRequestResolverTest extends TestCase
+final class PaginationRequestResolverTest extends BaseUnitTest
 {
     use ResolverTrait;
 

@@ -6,11 +6,11 @@ namespace App\Tests\Catalog\Unit\Domain\ValueObject\ProductPrice;
 
 use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceVersionException;
 use App\Catalog\Domain\ValueObject\ProductPrice\Version;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\VersionTestTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class VersionTest extends TestCase
+final class VersionTest extends BaseUnitTest
 {
     use VersionTestTrait;
 

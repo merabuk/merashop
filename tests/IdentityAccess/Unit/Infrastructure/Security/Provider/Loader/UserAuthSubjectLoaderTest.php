@@ -9,10 +9,10 @@ use App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface;
 use App\IdentityAccess\Infrastructure\Security\Provider\Loader\UserAuthSubjectLoader;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 use App\Tests\IdentityAccess\Support\UserAccountMother;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
-final class UserAuthSubjectLoaderTest extends TestCase
+final class UserAuthSubjectLoaderTest extends BaseUnitTest
 {
     private UserAccountReadRepositoryInterface&MockObject $repository;
     private UserAuthSubjectLoader $loader;

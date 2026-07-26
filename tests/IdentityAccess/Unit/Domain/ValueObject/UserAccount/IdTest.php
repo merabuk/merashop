@@ -6,11 +6,11 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\UserAccount;
 
 use App\IdentityAccess\Domain\Exception\UserAccount\InvalidUserAccountIdException;
 use App\IdentityAccess\Domain\ValueObject\UserAccount\Id;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\IntegerIdTestTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class IdTest extends TestCase
+final class IdTest extends BaseUnitTest
 {
     use IntegerIdTestTrait;
 

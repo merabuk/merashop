@@ -7,9 +7,9 @@ namespace App\Tests\IdentityAccess\Unit\Application\Command\RevokeAccessToken;
 use App\IdentityAccess\Application\Command\RevokeAccessToken\RevokeAccessTokenCommand;
 use App\IdentityAccess\Application\Command\RevokeAccessToken\RevokeAccessTokenHandler;
 use App\IdentityAccess\Domain\Security\AccessTokenBlacklistInterface;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\BaseUnitTest;
 
-final class RevokeAccessTokenHandlerTest extends TestCase
+final class RevokeAccessTokenHandlerTest extends BaseUnitTest
 {
     public function testItDelegatesWorkToAccessTokenBlackListService(): void
     {

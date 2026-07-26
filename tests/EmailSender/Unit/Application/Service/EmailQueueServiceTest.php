@@ -13,10 +13,10 @@ use App\EmailSender\Domain\Repository\OutboxEmailReadRepositoryInterface;
 use App\EmailSender\Domain\Repository\OutboxEmailWriteRepositoryInterface;
 use App\Shared\Domain\Service\Tracing\TraceIdContextInterface;
 use App\Tests\EmailSender\Support\OutboxEmailMother;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\TraceIdHelperTrait;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use stdClass;
@@ -24,7 +24,7 @@ use Symfony\Component\Messenger\Exception\RuntimeException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\DispatchAfterCurrentBusStamp;
 
-final class EmailQueueServiceTest extends TestCase
+final class EmailQueueServiceTest extends BaseUnitTest
 {
     use TraceIdHelperTrait;
 

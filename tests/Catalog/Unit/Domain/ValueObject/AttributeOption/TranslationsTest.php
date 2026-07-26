@@ -7,11 +7,11 @@ namespace App\Tests\Catalog\Unit\Domain\ValueObject\AttributeOption;
 use App\Catalog\Domain\Exception\AttributeOption\InvalidAttributeOptionValueException;
 use App\Catalog\Domain\ValueObject\AttributeOption\Translation;
 use App\Catalog\Domain\ValueObject\AttributeOption\Translations;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\TranslationsValueObjectTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class TranslationsTest extends TestCase
+final class TranslationsTest extends BaseUnitTest
 {
     use TranslationsValueObjectTrait;
 

@@ -12,14 +12,14 @@ use App\Catalog\Domain\Exception\Product\ProductPriceUniqueException;
 use App\Catalog\Domain\ValueObject\Product\PriceCollection;
 use App\Shared\Domain\Enum\CurrencyEnum;
 use App\Tests\Catalog\Support\ProductPriceMother;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 use Symfony\Component\Clock\MockClock;
 use Traversable;
 
-final class PriceCollectionTest extends TestCase
+final class PriceCollectionTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

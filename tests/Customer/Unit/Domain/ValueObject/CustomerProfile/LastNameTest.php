@@ -6,11 +6,11 @@ namespace App\Tests\Customer\Unit\Domain\ValueObject\CustomerProfile;
 
 use App\Customer\Domain\Exception\CustomerProfile\InvalidCustomerProfileLastNameException;
 use App\Customer\Domain\ValueObject\CustomerProfile\LastName;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class LastNameTest extends TestCase
+final class LastNameTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

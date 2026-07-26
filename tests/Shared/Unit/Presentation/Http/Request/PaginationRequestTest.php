@@ -7,10 +7,10 @@ namespace App\Tests\Shared\Unit\Presentation\Http\Request;
 use App\Shared\Domain\Criteria\Paging\Cursor;
 use App\Shared\Domain\Criteria\Sorting\Sort;
 use App\Shared\Presentation\Http\Request\PaginationRequest;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class PaginationRequestTest extends TestCase
+final class PaginationRequestTest extends BaseUnitTest
 {
     public function testToCursor(): void
     {

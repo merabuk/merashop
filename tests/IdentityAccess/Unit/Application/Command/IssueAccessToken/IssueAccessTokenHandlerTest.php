@@ -11,9 +11,9 @@ use App\IdentityAccess\Application\DTO\OAuth2Data;
 use App\IdentityAccess\Application\DTO\RefreshTokenData;
 use App\IdentityAccess\Application\DTO\TokenResponseData;
 use App\IdentityAccess\Application\Service\OAuth2TokenServiceInterface;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\BaseUnitTest;
 
-final class IssueAccessTokenHandlerTest extends TestCase
+final class IssueAccessTokenHandlerTest extends BaseUnitTest
 {
     public function testItDelegatesWorkToTokenService(): void
     {

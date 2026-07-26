@@ -22,10 +22,10 @@ use App\Catalog\Domain\ValueObject\Product\Sku;
 use App\Catalog\Domain\ValueObject\TemporaryImage\Ulid as TemporaryImageUlid;
 use App\Shared\Domain\Exception\Entity\ConcurrencyException;
 use App\Tests\Catalog\Support\ProductMother;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
-final class ProductValidatorTest extends TestCase
+final class ProductValidatorTest extends BaseUnitTest
 {
     private ProductReadRepositoryInterface&MockObject $productReadRepository;
     private CategoryReadRepositoryInterface&MockObject $categoryReadRepository;

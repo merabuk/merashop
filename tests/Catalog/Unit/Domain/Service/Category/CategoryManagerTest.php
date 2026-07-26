@@ -18,12 +18,12 @@ use App\Catalog\Domain\ValueObject\Category\Path;
 use App\Catalog\Domain\ValueObject\Category\Slug;
 use App\Catalog\Domain\ValueObject\Category\SortOrder;
 use App\Tests\Catalog\Support\CategoryMother;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\ValueObjectAssertionTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
-final class CategoryManagerTest extends TestCase
+final class CategoryManagerTest extends BaseUnitTest
 {
     use ValueObjectAssertionTrait;
 

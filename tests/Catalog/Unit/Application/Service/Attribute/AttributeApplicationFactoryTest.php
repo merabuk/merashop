@@ -15,15 +15,15 @@ use App\Catalog\Domain\ValueObject\AttributeOption\Ulid as AttributeOptionUlid;
 use App\Tests\Catalog\Support\AttributeMother;
 use App\Tests\Catalog\Support\AttributeOptionMother;
 use App\Tests\Catalog\Support\Traits\AttributeHelperTrait;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\UlidGenerationTrait;
 use App\Tests\Shared\Support\Traits\ValueObjectAssertionTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use stdClass;
 
-final class AttributeApplicationFactoryTest extends TestCase
+final class AttributeApplicationFactoryTest extends BaseUnitTest
 {
     use AttributeHelperTrait;
     use UlidGenerationTrait;

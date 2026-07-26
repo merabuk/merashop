@@ -15,11 +15,11 @@ use App\Catalog\Domain\Service\Attribute\AttributeValidatorInterface;
 use App\Catalog\Domain\ValueObject\Attribute\Code;
 use App\Tests\Catalog\Support\AttributeMother;
 use App\Tests\Catalog\Support\Traits\AttributeHelperTrait;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
-final class CreateAttributeHandlerTest extends TestCase
+final class CreateAttributeHandlerTest extends BaseUnitTest
 {
     use AttributeHelperTrait;
 

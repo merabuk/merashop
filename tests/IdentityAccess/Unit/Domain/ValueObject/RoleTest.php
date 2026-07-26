@@ -6,11 +6,11 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject;
 
 use App\IdentityAccess\Domain\Exception\ValueObject\InvalidRoleException;
 use App\IdentityAccess\Domain\ValueObject\Role;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class RoleTest extends TestCase
+final class RoleTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

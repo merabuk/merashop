@@ -138,7 +138,7 @@ trait ValueObjectEqualityCheckTrait
         );
     }
 
-    private function baseEqualityCheckAssertion(
+    protected function baseEqualityCheckAssertion(
         EquatableInterface $same1,
         EquatableInterface $same2,
         EquatableInterface $other,

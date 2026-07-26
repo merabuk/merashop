@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Tests\IdentityAccess\Unit\Infrastructure\Security\Jwt;
 
 use App\IdentityAccess\Infrastructure\Security\Jwt\JwtConfigFactory;
+use App\Tests\Shared\BaseUnitTest;
 use Lcobucci\JWT\Validation\Constraint\HasClaim;
 use Lcobucci\JWT\Validation\Constraint\LooseValidAt;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
-use PHPUnit\Framework\TestCase;
 
-final class JwtConfigFactoryTest extends TestCase
+final class JwtConfigFactoryTest extends BaseUnitTest
 {
     public function testItCreatesConfigurationWithCorrectConstraints(): void
     {

@@ -8,9 +8,9 @@ use App\Customer\Domain\ValueObject\CustomerProfile\FirstName;
 use App\Customer\Domain\ValueObject\CustomerProfile\LastName;
 use App\Customer\Domain\ValueObject\CustomerProfile\PhoneNumber;
 use App\Tests\Customer\Support\CustomerProfileMother;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\BaseUnitTest;
 
-final class CustomerProfileTest extends TestCase
+final class CustomerProfileTest extends BaseUnitTest
 {
     public function testItUpdatesPersonalDataCorrectly(): void
     {

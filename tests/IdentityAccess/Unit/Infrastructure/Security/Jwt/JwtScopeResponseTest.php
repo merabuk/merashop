@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Tests\IdentityAccess\Unit\Infrastructure\Security\Jwt;
 
 use App\IdentityAccess\Infrastructure\Security\Jwt\JwtScopeResponse;
+use App\Tests\Shared\BaseUnitTest;
 use League\OAuth2\Server\Entities\AccessTokenEntityInterface;
 use League\OAuth2\Server\Entities\ScopeEntityInterface;
-use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
-final class JwtScopeResponseTest extends TestCase
+final class JwtScopeResponseTest extends BaseUnitTest
 {
     public function testItAddsScopesToExtraParams(): void
     {

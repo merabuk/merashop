@@ -8,10 +8,10 @@ use App\Shared\Domain\Exception\Services\Validation\StringEmptyException;
 use App\Shared\Domain\Exception\Services\Validation\StringMaxLengthException;
 use App\Shared\Domain\Exception\Services\Validation\StringMinLengthException;
 use App\Shared\Domain\Service\Validation\StringValidator;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class StringValidatorTest extends TestCase
+final class StringValidatorTest extends BaseUnitTest
 {
     #[DataProvider('validStringsProvider')]
     public function testItValidatesCorrectStrings(string $value, int $max, int $min, string $expected): void

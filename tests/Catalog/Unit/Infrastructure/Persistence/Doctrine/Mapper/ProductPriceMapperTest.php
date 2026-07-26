@@ -11,10 +11,10 @@ use App\Shared\Domain\Enum\CurrencyEnum;
 use App\Shared\Domain\Enum\TaxTypeEnum;
 use App\Shared\Domain\Exception\Mappers\EntityIdMissingException;
 use App\Tests\Catalog\Support\ProductPriceMother;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\BaseUnitTest;
 use Symfony\Component\Clock\MockClock;
 
-final class ProductPriceMapperTest extends TestCase
+final class ProductPriceMapperTest extends BaseUnitTest
 {
     private ProductPriceMapper $mapper;
 

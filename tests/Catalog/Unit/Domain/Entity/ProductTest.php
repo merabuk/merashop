@@ -25,10 +25,10 @@ use App\Tests\Catalog\Support\ProductAttributeValueMother;
 use App\Tests\Catalog\Support\ProductImageMother;
 use App\Tests\Catalog\Support\ProductMother;
 use App\Tests\Catalog\Support\ProductPriceMother;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\ValueObjectAssertionTrait;
-use PHPUnit\Framework\TestCase;
 
-final class ProductTest extends TestCase
+final class ProductTest extends BaseUnitTest
 {
     use ValueObjectAssertionTrait;
 

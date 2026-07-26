@@ -8,14 +8,14 @@ use App\IdentityAccess\Application\Exception\InvalidClientException;
 use App\IdentityAccess\Infrastructure\Security\OAuth2\OAuth2Error;
 use App\IdentityAccess\Presentation\Http\EventListener\ApiIdentityAccessExceptionListener;
 use App\Shared\Domain\Service\TranslationDomainResolverInterface;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\AppListenerTrait;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-final class ApiIdentityAccessExceptionListenerTest extends TestCase
+final class ApiIdentityAccessExceptionListenerTest extends BaseUnitTest
 {
     use AppListenerTrait;
 

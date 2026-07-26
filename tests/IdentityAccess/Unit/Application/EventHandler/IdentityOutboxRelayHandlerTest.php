@@ -7,13 +7,13 @@ namespace App\Tests\IdentityAccess\Unit\Application\EventHandler;
 use App\IdentityAccess\Application\EventHandler\IdentityOutboxRelayHandler;
 use App\Shared\Application\Bus\TransportNameEnum;
 use App\Shared\Domain\Bus\ExternalIntegrationEvent;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Constraint\Callback;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\TransportNamesStamp;
 
-final class IdentityOutboxRelayHandlerTest extends TestCase
+final class IdentityOutboxRelayHandlerTest extends BaseUnitTest
 {
     public function testItShouldRelayEvents(): void
     {

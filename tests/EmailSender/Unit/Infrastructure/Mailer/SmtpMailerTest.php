@@ -7,12 +7,12 @@ namespace App\Tests\EmailSender\Unit\Infrastructure\Mailer;
 use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;
 use App\EmailSender\Infrastructure\Mailer\SmtpMailer;
 use App\Tests\EmailSender\Support\OutboxEmailMother;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Mailer\MailerInterface as SymfonyMailerInterface;
 use Symfony\Component\Mime\Email;
 
-final class SmtpMailerTest extends TestCase
+final class SmtpMailerTest extends BaseUnitTest
 {
     private SymfonyMailerInterface&MockObject $symfonyMailer;
 

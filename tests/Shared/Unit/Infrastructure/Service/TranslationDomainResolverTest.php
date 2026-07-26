@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\Shared\Unit\Infrastructure\Service;
 
 use App\Shared\Infrastructure\Service\TranslationDomainResolver;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\BaseUnitTest;
 use Symfony\Component\Translation\MessageCatalogueInterface;
 
-final class TranslationDomainResolverTest extends TestCase
+final class TranslationDomainResolverTest extends BaseUnitTest
 {
     public function testItResolvesIcuDomain(): void
     {

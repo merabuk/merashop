@@ -6,9 +6,9 @@ namespace App\Tests\Shared\Unit\Infrastructure\Service\Identity;
 
 use App\Shared\Domain\Service\Validation\UlidValidator;
 use App\Shared\Infrastructure\Service\Identity\SymfonyUlidGenerator;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\BaseUnitTest;
 
-final class SymfonyUlidGeneratorTest extends TestCase
+final class SymfonyUlidGeneratorTest extends BaseUnitTest
 {
     public function testUlidGeneratorProducesValidOutput(): void
     {

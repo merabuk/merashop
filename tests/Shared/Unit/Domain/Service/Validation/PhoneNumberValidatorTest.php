@@ -7,10 +7,10 @@ namespace App\Tests\Shared\Unit\Domain\Service\Validation;
 use App\Shared\Domain\Exception\Services\Validation\PhoneNumberFormatException;
 use App\Shared\Domain\Exception\Services\Validation\PhoneNumberMaxLengthException;
 use App\Shared\Domain\Service\Validation\PhoneNumberValidator;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class PhoneNumberValidatorTest extends TestCase
+final class PhoneNumberValidatorTest extends BaseUnitTest
 {
     #[DataProvider('validPhoneProvider')]
     public function testItValidatesAndFormatsPhone(string $input, string $expected): void

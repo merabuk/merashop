@@ -6,9 +6,9 @@ namespace App\Tests\Shared\Unit\Domain\Service\Validation;
 
 use App\Shared\Domain\Exception\Services\Validation\IntegerIsNotUnsignedException;
 use App\Shared\Domain\Service\Validation\IntegerValidator;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\BaseUnitTest;
 
-final class IntegerValidatorTest extends TestCase
+final class IntegerValidatorTest extends BaseUnitTest
 {
     public function testItValidatesPositiveInteger(): void
     {

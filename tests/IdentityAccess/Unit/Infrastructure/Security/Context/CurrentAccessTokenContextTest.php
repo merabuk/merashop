@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\IdentityAccess\Unit\Infrastructure\Security\Context;
 
 use App\IdentityAccess\Infrastructure\Security\Context\CurrentAccessTokenContext;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\BaseUnitTest;
 use RuntimeException;
 
-final class CurrentAccessTokenContextTest extends TestCase
+final class CurrentAccessTokenContextTest extends BaseUnitTest
 {
     public function testItSetsAndGetsTokenContext(): void
     {

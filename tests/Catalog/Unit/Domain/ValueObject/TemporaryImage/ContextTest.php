@@ -7,11 +7,11 @@ namespace App\Tests\Catalog\Unit\Domain\ValueObject\TemporaryImage;
 use App\Catalog\Domain\Enum\TemporaryImage\ContextEnum;
 use App\Catalog\Domain\Exception\TemporaryImage\InvalidTemporaryImageContextException;
 use App\Catalog\Domain\ValueObject\TemporaryImage\Context;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class ContextTest extends TestCase
+final class ContextTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

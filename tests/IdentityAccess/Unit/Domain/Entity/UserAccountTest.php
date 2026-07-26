@@ -6,9 +6,9 @@ namespace App\Tests\IdentityAccess\Unit\Domain\Entity;
 
 use App\IdentityAccess\Domain\ValueObject\RoleCollection;
 use App\Tests\IdentityAccess\Support\UserAccountMother;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\BaseUnitTest;
 
-final class UserAccountTest extends TestCase
+final class UserAccountTest extends BaseUnitTest
 {
     public function testItUpdatesScopesCorrectly(): void
     {

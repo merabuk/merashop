@@ -6,11 +6,11 @@ namespace App\Tests\Shared\Unit\Domain\ValueObject\Tracing;
 
 use App\Shared\Domain\Exception\ValueObject\InvalidTraceIdException;
 use App\Shared\Domain\ValueObject\Tracing\TraceId;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class TraceIdTest extends TestCase
+final class TraceIdTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

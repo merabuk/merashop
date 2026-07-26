@@ -17,11 +17,11 @@ use App\Catalog\Domain\ValueObject\Category\Status;
 use App\Catalog\Domain\ValueObject\Category\Translations;
 use App\Catalog\Domain\ValueObject\Category\Ulid;
 use App\Tests\Catalog\Support\CategoryMother;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\ValueObjectAssertionTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class CategoryTest extends TestCase
+final class CategoryTest extends BaseUnitTest
 {
     use ValueObjectAssertionTrait;
 

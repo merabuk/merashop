@@ -9,14 +9,14 @@ use App\Customer\Application\EventHandler\UserRegisteredHandler;
 use App\Customer\Domain\Repository\CustomerProfileReadRepositoryInterface;
 use App\Shared\Domain\Event\UserRegisteredSharedEvent;
 use App\Tests\Customer\Support\CustomerProfileMother;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use stdClass;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final class UserRegisteredHandlerTest extends TestCase
+final class UserRegisteredHandlerTest extends BaseUnitTest
 {
     private CustomerProfileReadRepositoryInterface&MockObject $readRepository;
     private LoggerInterface&MockObject $logger;

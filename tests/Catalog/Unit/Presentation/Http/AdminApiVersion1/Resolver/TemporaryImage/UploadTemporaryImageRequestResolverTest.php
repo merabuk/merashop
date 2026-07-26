@@ -9,10 +9,10 @@ use App\Catalog\Presentation\Http\AdminApiVersion1\Request\TemporaryImage\Upload
 use App\Catalog\Presentation\Http\AdminApiVersion1\Resolver\TemporaryImage\UploadTemporaryImageRequestResolver;
 use App\Shared\Domain\Service\Validation\ImageValidatorInterface;
 use App\Shared\Domain\ValueObject\File\RawFile;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\ValidatorHelperTrait;
 use App\Tests\Shared\Support\Traits\VfsStreamTrait;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
@@ -20,7 +20,7 @@ use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-final class UploadTemporaryImageRequestResolverTest extends TestCase
+final class UploadTemporaryImageRequestResolverTest extends BaseUnitTest
 {
     use ValidatorHelperTrait;
     use VfsStreamTrait;

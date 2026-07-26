@@ -6,11 +6,11 @@ namespace App\Tests\Catalog\Unit\Domain\ValueObject\ProductAttributeValue\Value;
 
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeColorValueException;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\ColorValue;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class ColorValueTest extends TestCase
+final class ColorValueTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

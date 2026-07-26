@@ -13,9 +13,9 @@ use App\Catalog\Domain\ValueObject\AttributeOption\Metadata\DimensionMetadata;
 use App\Catalog\Domain\ValueObject\AttributeOption\Translations;
 use App\Catalog\Domain\ValueObject\AttributeOption\Ulid;
 use App\Tests\Catalog\Support\AttributeOptionMother;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\BaseUnitTest;
 
-final class AttributeOptionTest extends TestCase
+final class AttributeOptionTest extends BaseUnitTest
 {
     public function testItCreatesValidAttributeOptionWithoutMetadata(): void
     {

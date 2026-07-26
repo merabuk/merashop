@@ -6,11 +6,11 @@ namespace App\Tests\Catalog\Unit\Domain\ValueObject\AttributeOption\Metadata;
 
 use App\Catalog\Domain\Exception\AttributeOption\InvalidAttributeOptionDimensionMetadataException;
 use App\Catalog\Domain\ValueObject\AttributeOption\Metadata\DimensionMetadata;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class DimensionMetadataTest extends TestCase
+final class DimensionMetadataTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

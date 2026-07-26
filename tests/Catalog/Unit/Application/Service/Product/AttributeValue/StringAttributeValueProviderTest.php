@@ -14,10 +14,10 @@ use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\LocalizedStringValue;
 use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Tests\Catalog\Support\AttributeMother;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class StringAttributeValueProviderTest extends TestCase
+final class StringAttributeValueProviderTest extends BaseUnitTest
 {
     private const TypeEnum TYPE = TypeEnum::String;
 

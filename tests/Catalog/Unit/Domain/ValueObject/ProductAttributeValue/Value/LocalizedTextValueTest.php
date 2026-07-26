@@ -6,10 +6,10 @@ namespace App\Tests\Catalog\Unit\Domain\ValueObject\ProductAttributeValue\Value;
 
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeLocalizedTextValueException;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\LocalizedTextValue;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class LocalizedTextValueTest extends TestCase
+final class LocalizedTextValueTest extends BaseUnitTest
 {
     #[DataProvider('validValuesProvider')]
     public function testItCreatesValidLocalizedStringValue(

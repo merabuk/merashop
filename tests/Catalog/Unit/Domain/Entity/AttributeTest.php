@@ -15,10 +15,10 @@ use App\Catalog\Domain\ValueObject\Attribute\Type;
 use App\Catalog\Domain\ValueObject\Attribute\Ulid;
 use App\Tests\Catalog\Support\AttributeMother;
 use App\Tests\Catalog\Support\AttributeOptionMother;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class AttributeTest extends TestCase
+final class AttributeTest extends BaseUnitTest
 {
     public function testItCreatesValidAttributeWithoutOptions(): void
     {

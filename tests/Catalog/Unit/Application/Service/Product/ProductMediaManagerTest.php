@@ -17,11 +17,11 @@ use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 use App\Tests\Catalog\Support\ProductImageMother;
 use App\Tests\Catalog\Support\ProductMother;
 use App\Tests\Catalog\Support\TemporaryImageMother;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
-final class ProductMediaManagerTest extends TestCase
+final class ProductMediaManagerTest extends BaseUnitTest
 {
     private TemporaryImageReadRepositoryInterface&MockObject $temporaryImageReadRepository;
     private TemporaryImageWriteRepositoryInterface&MockObject $temporaryImageWriteRepository;

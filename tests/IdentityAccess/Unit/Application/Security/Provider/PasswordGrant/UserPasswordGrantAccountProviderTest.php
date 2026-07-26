@@ -10,10 +10,10 @@ use App\IdentityAccess\Domain\Repository\UserAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 use App\Tests\IdentityAccess\Support\UserAccountMother;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
-final class UserPasswordGrantAccountProviderTest extends TestCase
+final class UserPasswordGrantAccountProviderTest extends BaseUnitTest
 {
     private UserAccountReadRepositoryInterface&MockObject $readRepository;
     private PasswordHasherInterface&MockObject $passwordHasher;

@@ -12,11 +12,11 @@ use App\IdentityAccess\Domain\Repository\ModuleAccountWriteRepositoryInterface;
 use App\IdentityAccess\Domain\Service\PasswordGeneratorInterface;
 use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
 use App\Tests\IdentityAccess\Support\ModuleAccountMother;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\UlidGenerationTrait;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
-final class CreateModuleAccountHandlerTest extends TestCase
+final class CreateModuleAccountHandlerTest extends BaseUnitTest
 {
     use UlidGenerationTrait;
 

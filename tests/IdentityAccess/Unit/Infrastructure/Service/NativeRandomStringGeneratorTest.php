@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Tests\IdentityAccess\Unit\Infrastructure\Service;
 
 use App\IdentityAccess\Infrastructure\Service\NativeRandomStringGenerator;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\BaseUnitTest;
 
-final class NativeRandomStringGeneratorTest extends TestCase
+final class NativeRandomStringGeneratorTest extends BaseUnitTest
 {
     public function testItGeneratesTokensOfCorrectLength(): void
     {

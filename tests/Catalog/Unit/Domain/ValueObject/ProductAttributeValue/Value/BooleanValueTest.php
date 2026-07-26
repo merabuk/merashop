@@ -6,10 +6,10 @@ namespace App\Tests\Catalog\Unit\Domain\ValueObject\ProductAttributeValue\Value;
 
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\BooleanValue;
 use App\Shared\Domain\ValueObject\BaseFlag;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\BooleanFlagValueObjectTrait;
-use PHPUnit\Framework\TestCase;
 
-final class BooleanValueTest extends TestCase
+final class BooleanValueTest extends BaseUnitTest
 {
     use BooleanFlagValueObjectTrait;
 

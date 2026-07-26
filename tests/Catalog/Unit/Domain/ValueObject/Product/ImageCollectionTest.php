@@ -10,13 +10,13 @@ use App\Catalog\Domain\Exception\Product\ProductImagesMainImageException;
 use App\Catalog\Domain\Exception\Product\ProductImageUniqueException;
 use App\Catalog\Domain\ValueObject\Product\ImageCollection;
 use App\Tests\Catalog\Support\ProductImageMother;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 use Traversable;
 
-final class ImageCollectionTest extends TestCase
+final class ImageCollectionTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

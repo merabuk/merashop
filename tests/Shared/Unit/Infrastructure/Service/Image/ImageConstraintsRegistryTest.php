@@ -8,12 +8,12 @@ use App\Shared\Domain\Enum\MimeTypeEnum;
 use App\Shared\Domain\Service\Image\ImageConstraintsProviderInterface;
 use App\Shared\Domain\ValueObject\File\ImageConstraints;
 use App\Shared\Infrastructure\Service\Image\ImageConstraintsRegistry;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use stdClass;
 
-final class ImageConstraintsRegistryTest extends TestCase
+final class ImageConstraintsRegistryTest extends BaseUnitTest
 {
     private ContainerInterface&MockObject $container;
 

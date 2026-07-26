@@ -10,10 +10,10 @@ use App\Catalog\Domain\Event\ProductImagesRemovedDomainEvent;
 use App\Shared\Domain\Exception\Services\Storage\FileStorageException;
 use App\Shared\Domain\Exception\ValueObject\InvalidRelativePathException;
 use App\Shared\Domain\ValueObject\File\RelativeFilePath;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
-final class ProductImagesRemovedHandlerTest extends TestCase
+final class ProductImagesRemovedHandlerTest extends BaseUnitTest
 {
     private ProductMediaManagerInterface&MockObject $productMediaManager;
 

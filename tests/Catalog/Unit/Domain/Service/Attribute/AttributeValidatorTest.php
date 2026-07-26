@@ -17,11 +17,11 @@ use App\Catalog\Domain\ValueObject\Attribute\Type;
 use App\Catalog\Domain\ValueObject\AttributeOption\Ulid as AttributeOptionUlid;
 use App\Shared\Domain\Exception\Entity\ConcurrencyException;
 use App\Tests\Catalog\Support\AttributeMother;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
-final class AttributeValidatorTest extends TestCase
+final class AttributeValidatorTest extends BaseUnitTest
 {
     private AttributeReadRepositoryInterface&MockObject $readRepository;
 

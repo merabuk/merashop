@@ -10,13 +10,13 @@ use App\Shared\Domain\Enum\IdentityTypeEnum;
 use App\Shared\Domain\Enum\RoleEnum;
 use App\Shared\Presentation\Http\Attribute\CurrentAuthEntityIdentity;
 use App\Shared\Presentation\Http\Resolver\CurrentAuthEntityIdentityResolver;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\ResolverTrait;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
-final class CurrentAuthEntityIdentityResolverTest extends TestCase
+final class CurrentAuthEntityIdentityResolverTest extends BaseUnitTest
 {
     use ResolverTrait;
 

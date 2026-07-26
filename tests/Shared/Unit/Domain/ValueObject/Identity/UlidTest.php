@@ -6,11 +6,11 @@ namespace App\Tests\Shared\Unit\Domain\ValueObject\Identity;
 
 use App\Shared\Domain\Exception\ValueObject\InvalidUlidException;
 use App\Shared\Domain\ValueObject\Identity\Ulid;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class UlidTest extends TestCase
+final class UlidTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

@@ -9,12 +9,12 @@ use App\IdentityAccess\Infrastructure\Security\Provider\AuthEntityProvider;
 use App\IdentityAccess\Infrastructure\Security\Provider\AuthSubject;
 use App\IdentityAccess\Infrastructure\Security\Provider\Loader\AuthSubjectLoaderInterface;
 use App\Tests\IdentityAccess\Support\UserAccountMother;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
 
-final class AuthEntityProviderTest extends TestCase
+final class AuthEntityProviderTest extends BaseUnitTest
 {
     private ContainerInterface&MockObject $loaders;
     private AuthEntityProvider $provider;

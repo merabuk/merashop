@@ -7,9 +7,9 @@ namespace App\Tests\Catalog\Unit\Domain\ValueObject\ProductAttributeValue\Value;
 use App\Catalog\Domain\Exception\ProductAttributeValue\InvalidProductAttributeMagnitudeDimensionValueException;
 use App\Catalog\Domain\ValueObject\AttributeOption\Id as AttributeOptionId;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\DimensionValue;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\BaseUnitTest;
 
-final class DimensionValueTest extends TestCase
+final class DimensionValueTest extends BaseUnitTest
 {
     public function testItCreatesValidDimensionValue(): void
     {

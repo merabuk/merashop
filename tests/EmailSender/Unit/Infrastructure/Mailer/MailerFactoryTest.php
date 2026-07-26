@@ -8,12 +8,12 @@ use App\EmailSender\Domain\Enum\OutboxEmail\DriverEnum;
 use App\EmailSender\Infrastructure\Exception\MailerFactoryException;
 use App\EmailSender\Infrastructure\Mailer\MailerFactory;
 use App\EmailSender\Infrastructure\Mailer\MailerInterface;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
 use stdClass;
 
-final class MailerFactoryTest extends TestCase
+final class MailerFactoryTest extends BaseUnitTest
 {
     private ContainerInterface&MockObject $container;
 

@@ -6,11 +6,11 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject;
 
 use App\IdentityAccess\Domain\ValueObject\Scope;
 use App\IdentityAccess\Domain\ValueObject\ScopeCollection;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
-use PHPUnit\Framework\TestCase;
 use Traversable;
 
-final class ScopeCollectionTest extends TestCase
+final class ScopeCollectionTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

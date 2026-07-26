@@ -12,16 +12,16 @@ use App\EmailSender\Domain\Repository\OutboxEmailWriteRepositoryInterface;
 use App\EmailSender\Domain\Service\MailerServiceInterface;
 use App\EmailSender\Domain\Service\OutboxRetryPolicy;
 use App\Tests\EmailSender\Support\OutboxEmailMother;
+use App\Tests\Shared\BaseUnitTest;
 use DateTimeImmutable;
 use Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\Clock\MockClock;
 
-final class SendOutboxEmailCommandHandlerTest extends TestCase
+final class SendOutboxEmailCommandHandlerTest extends BaseUnitTest
 {
     private OutboxEmailReadRepositoryInterface&MockObject $readRepository;
     private OutboxEmailWriteRepositoryInterface&MockObject $writeRepository;

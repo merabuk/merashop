@@ -6,11 +6,11 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject;
 
 use App\IdentityAccess\Domain\ValueObject\Role;
 use App\IdentityAccess\Domain\ValueObject\RoleCollection;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
-use PHPUnit\Framework\TestCase;
 use Traversable;
 
-final class RoleCollectionTest extends TestCase
+final class RoleCollectionTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

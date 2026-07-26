@@ -6,12 +6,12 @@ namespace App\Tests\Shared\Unit\Presentation\Http\EventListener;
 
 use App\Shared\Domain\Enum\LocaleEnum;
 use App\Shared\Presentation\Http\EventListener\LocaleListener;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\AppListenerTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 
-final class LocaleListenerTest extends TestCase
+final class LocaleListenerTest extends BaseUnitTest
 {
     use AppListenerTrait;
 

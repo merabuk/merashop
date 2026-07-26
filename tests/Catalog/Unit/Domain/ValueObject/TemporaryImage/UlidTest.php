@@ -8,11 +8,11 @@ use App\Catalog\Domain\Exception\TemporaryImage\InvalidTemporaryImageUlidExcepti
 use App\Catalog\Domain\ValueObject\TemporaryImage\Ulid;
 use App\Shared\Domain\ValueObject\Identity\Ulid as SharedUlid;
 use App\Tests\Catalog\Support\TemporaryImageMother;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Identity\UlidTest as SharedUlidTest;
 use PHPUnit\Framework\Attributes\DataProviderExternal;
-use PHPUnit\Framework\TestCase;
 
-final class UlidTest extends TestCase
+final class UlidTest extends BaseUnitTest
 {
     public function testItCreatesValidUlid(): void
     {

@@ -14,12 +14,12 @@ use App\Catalog\Domain\ValueObject\TemporaryImage\Ulid;
 use App\Shared\Domain\ValueObject\File\RawFile;
 use App\Shared\Domain\ValueObject\File\RelativeFilePath;
 use App\Tests\Catalog\Support\TemporaryImageMother;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\UlidGenerationTrait;
 use App\Tests\Shared\Support\Traits\VfsStreamTrait;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 
-final class UploadTemporaryImageHandlerTest extends TestCase
+final class UploadTemporaryImageHandlerTest extends BaseUnitTest
 {
     use VfsStreamTrait;
     use UlidGenerationTrait;

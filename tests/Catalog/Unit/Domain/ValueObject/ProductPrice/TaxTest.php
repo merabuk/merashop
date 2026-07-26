@@ -8,10 +8,10 @@ use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceTaxTypeExceptio
 use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceTaxValueException;
 use App\Catalog\Domain\ValueObject\ProductPrice\Tax;
 use App\Shared\Domain\Enum\TaxTypeEnum;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class TaxTest extends TestCase
+final class TaxTest extends BaseUnitTest
 {
     #[DataProvider('validTaxData')]
     public function testItCreatesValidTax(

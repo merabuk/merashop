@@ -6,11 +6,11 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject;
 
 use App\IdentityAccess\Domain\Exception\ValueObject\InvalidScopeException;
 use App\IdentityAccess\Domain\ValueObject\Scope;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class ScopeTest extends TestCase
+final class ScopeTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

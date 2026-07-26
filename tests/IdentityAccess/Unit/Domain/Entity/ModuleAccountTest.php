@@ -6,9 +6,9 @@ namespace App\Tests\IdentityAccess\Unit\Domain\Entity;
 
 use App\IdentityAccess\Domain\ValueObject\ScopeCollection;
 use App\Tests\IdentityAccess\Support\ModuleAccountMother;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\BaseUnitTest;
 
-final class ModuleAccountTest extends TestCase
+final class ModuleAccountTest extends BaseUnitTest
 {
     public function testItUpdatesScopesCorrectly(): void
     {

@@ -9,14 +9,14 @@ use App\Shared\Domain\Service\Image\ImageConstraintsRegistryInterface;
 use App\Shared\Domain\ValueObject\File\ImageConstraints;
 use App\Shared\Domain\ValueObject\File\RawFile;
 use App\Shared\Infrastructure\Service\Validation\ImageValidator;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\ValidatorHelperTrait;
 use App\Tests\Shared\Support\Traits\VfsStreamTrait;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Validator\Constraints\Image;
 
-final class ImageValidatorTest extends TestCase
+final class ImageValidatorTest extends BaseUnitTest
 {
     use ValidatorHelperTrait;
     use VfsStreamTrait;

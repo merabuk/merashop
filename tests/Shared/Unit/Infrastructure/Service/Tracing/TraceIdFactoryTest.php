@@ -6,9 +6,9 @@ namespace App\Tests\Shared\Unit\Infrastructure\Service\Tracing;
 
 use App\Shared\Domain\Service\Identity\UuidGeneratorInterface;
 use App\Shared\Infrastructure\Service\Tracing\TraceIdFactory;
-use PHPUnit\Framework\TestCase;
+use App\Tests\Shared\BaseUnitTest;
 
-final class TraceIdFactoryTest extends TestCase
+final class TraceIdFactoryTest extends BaseUnitTest
 {
     public function testItCreatesNewTraceId(): void
     {

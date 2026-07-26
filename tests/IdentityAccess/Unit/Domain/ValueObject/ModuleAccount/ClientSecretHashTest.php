@@ -6,11 +6,11 @@ namespace App\Tests\IdentityAccess\Unit\Domain\ValueObject\ModuleAccount;
 
 use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountPasswordHashException;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientSecretHash;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class ClientSecretHashTest extends TestCase
+final class ClientSecretHashTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

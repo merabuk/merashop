@@ -6,11 +6,11 @@ namespace App\Tests\EmailSender\Unit\Domain\ValueObject\OutboxEmail;
 
 use App\EmailSender\Domain\Exception\OutboxEmail\InvalidOutboxEmailBodyException;
 use App\EmailSender\Domain\ValueObject\OutboxEmail\Body;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class BodyTest extends TestCase
+final class BodyTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

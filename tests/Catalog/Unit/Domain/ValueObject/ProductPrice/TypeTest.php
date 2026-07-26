@@ -7,11 +7,11 @@ namespace App\Tests\Catalog\Unit\Domain\ValueObject\ProductPrice;
 use App\Catalog\Domain\Enum\ProductPrice\TypeEnum;
 use App\Catalog\Domain\Exception\ProductPrice\InvalidProductPriceTypeException;
 use App\Catalog\Domain\ValueObject\ProductPrice\Type;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class TypeTest extends TestCase
+final class TypeTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 

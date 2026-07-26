@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\Catalog\Unit\Domain\ValueObject\ProductPrice;
 
 use App\Catalog\Domain\ValueObject\ProductPrice\TaxIncludedFlag;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\BooleanFlagValueObjectTrait;
-use PHPUnit\Framework\TestCase;
 
-final class TaxIncludedFlagTest extends TestCase
+final class TaxIncludedFlagTest extends BaseUnitTest
 {
     use BooleanFlagValueObjectTrait;
 

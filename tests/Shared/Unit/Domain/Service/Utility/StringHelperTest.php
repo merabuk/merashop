@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\Shared\Unit\Domain\Service\Utility;
 
 use App\Shared\Domain\Service\Utility\StringHelper;
+use App\Tests\Shared\BaseUnitTest;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class StringHelperTest extends TestCase
+final class StringHelperTest extends BaseUnitTest
 {
     #[DataProvider('limitProvider')]
     public function testItLimitsStringsCorrectly(string $string, int $limit, ?string $ending, string $expected): void

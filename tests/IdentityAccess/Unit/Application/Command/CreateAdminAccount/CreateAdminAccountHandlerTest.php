@@ -15,14 +15,14 @@ use App\IdentityAccess\Domain\Service\PasswordHasherInterface;
 use App\Shared\Domain\Enum\RoleEnum;
 use App\Shared\Domain\Event\AdminCreatedSharedEvent;
 use App\Tests\IdentityAccess\Support\AdminAccountMother;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Support\Traits\UlidGenerationTrait;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use stdClass;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final class CreateAdminAccountHandlerTest extends TestCase
+final class CreateAdminAccountHandlerTest extends BaseUnitTest
 {
     use UlidGenerationTrait;
 

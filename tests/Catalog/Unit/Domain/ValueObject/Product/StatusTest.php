@@ -7,11 +7,11 @@ namespace App\Tests\Catalog\Unit\Domain\ValueObject\Product;
 use App\Catalog\Domain\Enum\Product\StatusEnum;
 use App\Catalog\Domain\Exception\Product\InvalidProductStatusException;
 use App\Catalog\Domain\ValueObject\Product\Status;
+use App\Tests\Shared\BaseUnitTest;
 use App\Tests\Shared\Unit\Domain\ValueObject\Traits\ValueObjectEqualityCheckTrait;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 
-final class StatusTest extends TestCase
+final class StatusTest extends BaseUnitTest
 {
     use ValueObjectEqualityCheckTrait;
 
