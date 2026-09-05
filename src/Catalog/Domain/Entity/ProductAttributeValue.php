@@ -144,7 +144,7 @@ class ProductAttributeValue
      */
     private function ensureIsValidState(): void
     {
-        $allowBoth = $this->value instanceof DimensionValue;
+        $allowBoth = $this->allowBothValueFilled();
 
         if ($allowBoth && (null === $this->attributeOptionId || null === $this->value)) {
             throw ProductAttributeValueStateException::becauseOneFieldIsNull(['attributeOptionId', 'value']);
@@ -157,5 +157,10 @@ class ProductAttributeValue
         if (false === $allowBoth && $this->attributeOptionId && $this->value) {
             throw ProductAttributeValueStateException::becauseAllFieldsAreNotNull(['attributeOptionId', 'value']);
         }
+    }
+
+    private function allowBothValueFilled(): bool
+    {
+        return $this->value instanceof DimensionValue;
     }
 }

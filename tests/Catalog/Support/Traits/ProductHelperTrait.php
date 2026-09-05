@@ -82,7 +82,7 @@ trait ProductHelperTrait
     }
 
     /**
-     * @return ProductPriceData[]
+     * @return array<int, ProductPriceData>
      */
     protected static function getValidPrices(PriceCollection $prices): array
     {

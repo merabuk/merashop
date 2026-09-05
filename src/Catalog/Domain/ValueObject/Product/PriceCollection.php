@@ -20,7 +20,7 @@ use DateTimeImmutable;
 final readonly class PriceCollection extends AbstractCollection
 {
     /**
-     * @param ProductPrice[] $items
+     * @param array<int, ProductPrice> $items
      *
      * @throws InvalidProductPriceItemException
      * @throws ProductPricesEmptyException
@@ -28,7 +28,6 @@ final readonly class PriceCollection extends AbstractCollection
      */
     public function __construct(array $items)
     {
-        /* @var array<int, ProductPrice> $items */
         try {
             $this->ensureNotEmpty(items: $items);
             $this->ensureDataType(items: $items);
@@ -40,7 +39,7 @@ final readonly class PriceCollection extends AbstractCollection
     }
 
     /**
-     * @param ProductPrice[] $items
+     * @param array<int, ProductPrice> $items
      *
      * @throws InvalidProductPriceItemException
      * @throws ProductPricesEmptyException
@@ -48,7 +47,6 @@ final readonly class PriceCollection extends AbstractCollection
      */
     public static function fromArray(array $items): self
     {
-        /* @var array<int, ProductPrice> $items */
         return new self(items: $items);
     }
 

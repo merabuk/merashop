@@ -39,10 +39,7 @@ trait WriteRepositoryTrait
                 throw $this->makeRuntimeException($stringId);
             }
 
-            /*
-             * @var TOrm $orm
-             */
-
+            /** @var TOrm $orm */
             $mapper->mapToExistingOrm($domain, $orm);
         } else {
             $orm = $mapper->toDoctrineOrm($domain);

@@ -131,7 +131,7 @@ final readonly class AttributeApplicationFactory implements AttributeApplication
     }
 
     /**
-     * @param AttributeOptionData[] $optionsData
+     * @param array<int, AttributeOptionData> $optionsData
      *
      * @throws InvalidCatalogValueObjectException
      * @throws InvalidLocaleException

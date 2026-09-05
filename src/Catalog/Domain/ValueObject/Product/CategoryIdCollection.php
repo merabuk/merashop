@@ -15,13 +15,12 @@ use App\Shared\Domain\ValueObject\AbstractCollection;
 final readonly class CategoryIdCollection extends AbstractCollection
 {
     /**
-     * @param CategoryId[] $items
+     * @param array<int, CategoryId> $items
      *
      * @throws InvalidProductCategoryIdItemException
      */
     public function __construct(array $items)
     {
-        /* @var array<int, CategoryId> $items */
         try {
             $this->ensureDataType(items: $items);
             parent::__construct(items: $items);
@@ -31,13 +30,12 @@ final readonly class CategoryIdCollection extends AbstractCollection
     }
 
     /**
-     * @param CategoryId[] $items
+     * @param array<int, CategoryId> $items
      *
      * @throws InvalidProductCategoryIdItemException
      */
     public static function fromArray(array $items): self
     {
-        /* @var array<int, CategoryId> $items */
         return new self(items: $items);
     }
 

@@ -169,11 +169,14 @@ abstract class BaseProductRequest implements GroupSequenceProviderInterface
     }
 
     /**
-     * @return ProductPriceData[]
+     * @return array<int, ProductPriceData>
      */
     protected function mapAndGetPrices(): array
     {
-        return array_map(fn (ProductPriceRequest $p) => $p->toData(), $this->prices ?? []);
+        /** @var array<int, ProductPriceData> $prices */
+        $prices = array_map(fn (ProductPriceRequest $p) => $p->toData(), $this->prices ?? []);
+
+        return $prices;
     }
 
     /**

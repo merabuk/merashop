@@ -34,9 +34,9 @@ final readonly class ProductFactory implements ProductFactoryInterface
 {
     /**
      * @param array<string, array{name?: string, description: ?string}> $translations
-     * @param ProductPrice[]                                            $prices
-     * @param CategoryId[]                                              $categoryIds
-     * @param ProductAttributeValue[]                                   $attributeValues
+     * @param array<int, ProductPrice>                                  $prices
+     * @param array<int, CategoryId>                                    $categoryIds
+     * @param array<int, ProductAttributeValue>                         $attributeValues
      *
      * @throws InvalidAdminUlidException
      * @throws InvalidCatalogValueObjectException

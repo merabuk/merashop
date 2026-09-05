@@ -18,7 +18,7 @@ use App\Shared\Domain\ValueObject\AbstractCollection;
 final readonly class ImageCollection extends AbstractCollection
 {
     /**
-     * @param ProductImage[] $items
+     * @param array<int, ProductImage> $items
      *
      * @throws InvalidProductImageItemException
      * @throws ProductImagesMainImageException
@@ -26,7 +26,6 @@ final readonly class ImageCollection extends AbstractCollection
      */
     public function __construct(array $items)
     {
-        /* @var array<int, ProductImage> $items */
         try {
             $this->ensureDataType(items: $items);
             $this->ensureUnique(items: $items);
@@ -38,7 +37,7 @@ final readonly class ImageCollection extends AbstractCollection
     }
 
     /**
-     * @param ProductImage[] $items
+     * @param array<int, ProductImage> $items
      *
      * @throws InvalidProductImageItemException
      * @throws ProductImagesMainImageException
@@ -46,7 +45,6 @@ final readonly class ImageCollection extends AbstractCollection
      */
     public static function fromArray(array $items): self
     {
-        /* @var array<int, ProductImage> $items */
         return new self(items: $items);
     }
 
@@ -88,6 +86,7 @@ final readonly class ImageCollection extends AbstractCollection
             $image->setAsMain();
         }
 
+        /** @var array<int, ProductImage> $newItems */
         $newItems[] = $image;
 
         return new self($newItems);
@@ -115,6 +114,7 @@ final readonly class ImageCollection extends AbstractCollection
             $newItems = $this->resetMainInArray($newItems);
             ($newItems[0] ?? null)?->setAsMain();
         }
+        /** @var array<int, ProductImage> $newItems */
 
         return new self($newItems);
     }

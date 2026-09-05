@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Catalog\Presentation\Http\AdminApiVersion1\Request\Category;
 
-use App\Catalog\Application\DTO\Category\CategoryTranslationData;
+use App\Catalog\Domain\DTO\CategoryTranslationData;
 use App\Catalog\Domain\Enum\Category\StatusEnum;
 use App\Catalog\Domain\ValueObject\Category\Slug;
 use App\Shared\Presentation\Http\Request\ValidateLocalesTrait;

@@ -57,13 +57,16 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
     /**
      * @param int[] $categoryIds
      *
-     * @return CategoryId[]
+     * @return array<int, CategoryId>
      *
      * @throws InvalidCategoryIdException
      */
     public function mapCategoryIds(array $categoryIds): array
     {
-        return array_map(fn (int $id) => CategoryId::fromInt($id), $categoryIds);
+        /** @var array<int, CategoryId> $ids */
+        $ids = array_map(fn (int $id) => CategoryId::fromInt($id), $categoryIds);
+
+        return $ids;
     }
 
     /**
@@ -150,7 +153,7 @@ final readonly class ProductApplicationFactory implements ProductApplicationFact
     }
 
     /**
-     * @param ProductPriceData[] $prices
+     * @param array<int, ProductPriceData> $prices
      *
      * @throws InvalidCatalogValueObjectException
      * @throws ProductPriceStateException

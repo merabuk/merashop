@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\DTO;
 
-// TODO:fix this dependency
-use App\Catalog\Application\DTO\Category\CategoryTranslationData;
 use App\Catalog\Domain\ValueObject\Category\Slug;
 
 final readonly class CategoryUpdateData

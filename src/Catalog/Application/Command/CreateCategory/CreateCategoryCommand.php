@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Catalog\Application\Command\CreateCategory;
 
-use App\Catalog\Application\DTO\Category\CategoryTranslationData;
+use App\Catalog\Domain\DTO\CategoryTranslationData;
 use App\Shared\Application\Command\CommandInterface;
 
 final readonly class CreateCategoryCommand implements CommandInterface

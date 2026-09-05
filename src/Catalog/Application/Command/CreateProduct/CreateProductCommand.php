@@ -12,11 +12,11 @@ use App\Shared\Application\Command\CommandInterface;
 final readonly class CreateProductCommand implements CommandInterface
 {
     /**
-     * @param ProductPriceData[]          $prices
-     * @param int[]                       $categoryIds
-     * @param ProductAttributeValueData[] $attributeValues
-     * @param ProductTranslationData[]    $translations
-     * @param string[]                    $images
+     * @param array<int, ProductPriceData> $prices
+     * @param int[]                        $categoryIds
+     * @param ProductAttributeValueData[]  $attributeValues
+     * @param ProductTranslationData[]     $translations
+     * @param string[]                     $images
      */
     public function __construct(
         public string $sku,

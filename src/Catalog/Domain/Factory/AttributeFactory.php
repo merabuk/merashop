@@ -8,6 +8,7 @@ use App\Catalog\Domain\Entity\Attribute;
 use App\Catalog\Domain\Entity\AttributeOption;
 use App\Catalog\Domain\Enum\Attribute\TypeEnum;
 use App\Catalog\Domain\Exception\Attribute\AttributeOptionUniqueException;
+use App\Catalog\Domain\Exception\Attribute\AttributeStateException;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeCodeException;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeNameException;
 use App\Catalog\Domain\Exception\Attribute\InvalidAttributeOptionItemException;
@@ -27,9 +28,10 @@ final readonly class AttributeFactory implements AttributeFactoryInterface
 {
     /**
      * @param array<string, array{name: string}> $translations
-     * @param AttributeOption[]                  $options
+     * @param array<int, AttributeOption>        $options
      *
      * @throws AttributeOptionUniqueException
+     * @throws AttributeStateException
      * @throws InvalidAdminUlidException
      * @throws InvalidAttributeCodeException
      * @throws InvalidAttributeNameException

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Catalog\Domain\Service\Category;
 
-use App\Catalog\Application\DTO\Category\CategoryTranslationData;
+use App\Catalog\Domain\DTO\CategoryTranslationData;
 use App\Catalog\Domain\DTO\CategoryUpdateData;
 use App\Catalog\Domain\Entity\Category;
 use App\Catalog\Domain\Exception\Category\CategoryCannotBeParentOfItselfException;

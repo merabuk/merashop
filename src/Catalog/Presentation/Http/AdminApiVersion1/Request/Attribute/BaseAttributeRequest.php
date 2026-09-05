@@ -159,10 +159,13 @@ abstract class BaseAttributeRequest implements GroupSequenceProviderInterface
     }
 
     /**
-     * @return AttributeOptionData[]
+     * @return array<int, AttributeOptionData>
      */
     protected function mapAndGetOptions(): array
     {
-        return array_map(fn (AttributeOptionRequest $o) => $o->toData(), $this->options ?? []);
+        /** @var array<int, AttributeOptionData> $options */
+        $options = array_map(fn (AttributeOptionRequest $o) => $o->toData(), $this->options ?? []);
+
+        return $options;
     }
 }

@@ -17,13 +17,12 @@ use App\Shared\Domain\ValueObject\AbstractCollection;
 final readonly class AttributeValueCollection extends AbstractCollection
 {
     /**
-     * @param ProductAttributeValue[] $items
+     * @param array<int, ProductAttributeValue> $items
      *
      * @throws InvalidProductAttributeValueItemException
      */
     public function __construct(array $items)
     {
-        /* @var array<int, ProductAttributeValue> $items */
         try {
             $this->ensureDataType(items: $items);
             parent::__construct(items: $items);
@@ -33,13 +32,12 @@ final readonly class AttributeValueCollection extends AbstractCollection
     }
 
     /**
-     * @param ProductAttributeValue[] $items
+     * @param array<int, ProductAttributeValue> $items
      *
      * @throws InvalidProductAttributeValueItemException
      */
     public static function fromArray(array $items): self
     {
-        /* @var array<int, ProductAttributeValue> $items */
         return new self(items: $items);
     }
 

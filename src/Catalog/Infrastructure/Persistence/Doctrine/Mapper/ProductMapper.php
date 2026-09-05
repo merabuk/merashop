@@ -96,7 +96,7 @@ final readonly class ProductMapper implements MapperInterface
         return new Product(
             ulid: ProductUlid::fromString($orm->ulid ?? throw EntityFieldMissingException::forField(field: 'ulid', className: $orm::class)),
             sku: Sku::fromString($orm->sku ?? throw EntityFieldMissingException::forField(field: 'sku', className: $orm::class)),
-            status: Status::fromEnum($orm->status ?? throw EntityFieldMissingException::forField(field: 'status', className: $orm::class)),
+            status: Status::fromEnum($orm->status),
             translations: $translations,
             version: Version::fromInt($orm->version ?? throw EntityFieldMissingException::forField(field: 'version', className: $orm::class)),
             createdBy: AdminUlid::fromString($orm->createdBy ?? throw EntityFieldMissingException::forField(field: 'createdBy', className: $orm::class)),

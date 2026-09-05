@@ -80,8 +80,7 @@ trait TypeCastingTrait
         return match (true) {
             is_string($value) => $value,
             is_integer($value),
-            is_float($value),
-            is_numeric($value) => (string) $value,
+            is_float($value) => (string) $value,
             is_array($value) => self::jsonEncode(array: $value, default: $default),
             is_object($value) => serialize($value),
             default => throw self::makeException(sprintf('Cast to string is not supported for %s', get_debug_type($value))),

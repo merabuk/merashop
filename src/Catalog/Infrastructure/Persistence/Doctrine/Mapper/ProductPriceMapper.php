@@ -32,13 +32,13 @@ final readonly class ProductPriceMapper
         return new ProductPrice(
             price: new Price(
                 amount: $orm->amount ?? throw EntityFieldMissingException::forField(field: 'amount', className: $orm::class),
-                currency: $orm->currency ?? throw EntityFieldMissingException::forField(field: 'currency', className: $orm::class)
+                currency: $orm->currency
             ),
-            type: Type::fromEnum($orm->type ?? throw EntityFieldMissingException::forField(field: 'type', className: $orm::class)),
+            type: Type::fromEnum($orm->type),
             tax: new Tax(
                 value: (float) ($orm->taxValue ?? throw EntityFieldMissingException::forField(field: 'taxValue', className: $orm::class)),
                 type: $orm->taxType ?? throw EntityFieldMissingException::forField(field: 'taxType', className: $orm::class)),
-            taxIncluded: TaxIncludedFlag::fromBool($orm->taxIncluded ?? throw EntityFieldMissingException::forField(field: 'taxIncluded', className: $orm::class)),
+            taxIncluded: TaxIncludedFlag::fromBool($orm->taxIncluded),
             version: Version::fromInt($orm->version ?? throw EntityFieldMissingException::forField(field: 'version', className: $orm::class)),
             createdBy: AdminUlid::fromString($orm->createdBy ?? throw EntityFieldMissingException::forField(field: 'createdBy', className: $orm::class)),
             validityPeriod: $orm->validFrom && $orm->validTo

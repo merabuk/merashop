@@ -8,6 +8,7 @@ parameters:
     - config
   excludePaths:
     - assets/*
+    - config/reference.php
     - docker/*
     - node_modules/*
     - tests/*

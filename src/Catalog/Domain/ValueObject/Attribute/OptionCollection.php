@@ -20,14 +20,13 @@ final readonly class OptionCollection extends AbstractCollection
     private bool $initialized;
 
     /**
-     * @param AttributeOption[] $items
+     * @param array<int, AttributeOption> $items
      *
      * @throws InvalidAttributeOptionItemException
      * @throws AttributeOptionUniqueException
      */
     public function __construct(array $items, bool $initialized = true)
     {
-        /* @var array<int, AttributeOption> $items */
         $this->initialized = $initialized;
 
         if ($this->initialized) {
@@ -61,7 +60,7 @@ final readonly class OptionCollection extends AbstractCollection
     }
 
     /**
-     * @param AttributeOption[] $items
+     * @param array<int, AttributeOption> $items
      *
      * @throws InvalidAttributeOptionItemException
      * @throws AttributeOptionUniqueException
