@@ -5,43 +5,10 @@ declare(strict_types=1);
 namespace App\Shared\Domain\Helpers;
 
 use App\Shared\Domain\Exception\InvalidArgumentException;
-use JsonException;
 
-trait TypeCastingTrait
+class TypeCaster
 {
-    /**
-     * Retrieve a value from an array using a key (can use dot notation for nested keys).
-     *
-     * @param array<string, mixed> $data
-     */
-    protected static function getByKey(array $data, string $key, mixed $default = null, bool $useDot = true): mixed
-    {
-        if ($useDot && str_contains($key, '.')) {
-            return self::getByDotKey(data: $data, key: $key, default: $default);
-        }
-
-        return $data[$key] ?? $default;
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     */
-    protected static function getByDotKey(array $data, string $key, mixed $default = null): mixed
-    {
-        $keys = explode('.', $key);
-        $current = $data;
-
-        foreach ($keys as $k) {
-            if (!is_array($current) || !isset($current[$k])) {
-                return $default;
-            }
-            $current = $current[$k];
-        }
-
-        return $current;
-    }
-
-    protected static function castToInt(mixed $value, int $default = 0): int
+    public static function castToInt(mixed $value, int $default = 0): int
     {
         if (null === $value) {
             return $default;
@@ -56,7 +23,7 @@ trait TypeCastingTrait
         };
     }
 
-    protected static function castToFloat(mixed $value, float $default = 0.0): float
+    public static function castToFloat(mixed $value, float $default = 0.0): float
     {
         if (null === $value || 0 === $value || '' === $value) {
             return $default;
@@ -71,7 +38,7 @@ trait TypeCastingTrait
         };
     }
 
-    protected static function castToString(mixed $value, string $default = ''): string
+    public static function castToString(mixed $value, string $default = ''): string
     {
         if (null === $value || '' === $value) {
             return $default;
@@ -81,13 +48,13 @@ trait TypeCastingTrait
             is_string($value) => $value,
             is_integer($value),
             is_float($value) => (string) $value,
-            is_array($value) => self::jsonEncode(array: $value, default: $default),
+            is_array($value) => JsonCodec::jsonEncode(array: $value, default: $default),
             is_object($value) => serialize($value),
             default => throw self::makeException(sprintf('Cast to string is not supported for %s', get_debug_type($value))),
         };
     }
 
-    protected static function castToNullableString(mixed $value): ?string
+    public static function castToNullableString(mixed $value): ?string
     {
         if (null === $value) {
             return null;
@@ -99,7 +66,7 @@ trait TypeCastingTrait
     /**
      * @return non-empty-string
      */
-    protected static function castToNonEmptyString(
+    public static function castToNonEmptyString(
         string $string,
         string $message = 'Given string must be non empty',
     ): string {
@@ -115,7 +82,7 @@ trait TypeCastingTrait
      *
      * @return string[]
      */
-    protected static function castToArrayOfStrings(mixed $value, array $default = []): array
+    public static function castToArrayOfStrings(mixed $value, array $default = []): array
     {
         if (null === $value || [] === $value || '' === $value) {
             return $default;
@@ -132,7 +99,7 @@ trait TypeCastingTrait
      *
      * @return array<string, string>
      */
-    protected static function castToStringMap(mixed $value, array $default = []): array
+    public static function castToStringMap(mixed $value, array $default = []): array
     {
         if (null === $value || [] === $value || '' === $value) {
             return $default;
@@ -149,18 +116,6 @@ trait TypeCastingTrait
         }
 
         throw self::makeException(sprintf('Cast to string map is not supported for %s', get_debug_type($value)));
-    }
-
-    /**
-     * @param array<int|string, mixed> $array
-     */
-    protected static function jsonEncode(array $array, string $default = ''): string
-    {
-        try {
-            return json_encode(value: $array, flags: JSON_THROW_ON_ERROR);
-        } catch (JsonException) {
-            return $default;
-        }
     }
 
     private static function makeException(string $message): InvalidArgumentException

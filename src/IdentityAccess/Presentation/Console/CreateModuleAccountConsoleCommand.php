@@ -10,6 +10,7 @@ use App\IdentityAccess\Domain\Exception\ModuleAccount\InvalidModuleAccountClient
 use App\IdentityAccess\Domain\Repository\ModuleAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\ValueObject\ModuleAccount\ClientId;
 use App\Shared\Domain\Enum\ScopeEnum;
+use App\Shared\Domain\Helpers\TypeCaster;
 use App\Shared\Presentation\Console\BaseConsoleCommand;
 use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -92,8 +93,8 @@ final class CreateModuleAccountConsoleCommand extends BaseConsoleCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $clientId = self::castToString(value: $input->getArgument('clientId'));
-        $scopes = self::castToArrayOfStrings(value: $input->getOption('scope'));
+        $clientId = TypeCaster::castToString(value: $input->getArgument('clientId'));
+        $scopes = TypeCaster::castToArrayOfStrings(value: $input->getOption('scope'));
 
         try {
             $this->validateInputs($clientId, $scopes);

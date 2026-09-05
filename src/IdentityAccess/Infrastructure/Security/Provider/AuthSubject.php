@@ -9,14 +9,12 @@ use App\IdentityAccess\Domain\Entity\ModuleAccount;
 use App\IdentityAccess\Domain\Entity\UserAccount;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
 use App\Shared\Domain\Enum\RoleEnum;
-use App\Shared\Domain\Helpers\TypeCastingTrait;
+use App\Shared\Domain\Helpers\TypeCaster;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 final readonly class AuthSubject implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    use TypeCastingTrait;
-
     /**
      * @param non-empty-string $identifier
      * @param string[]         $roles
@@ -35,7 +33,7 @@ final readonly class AuthSubject implements UserInterface, PasswordAuthenticated
         return new self(
             type: IdentityTypeEnum::User,
             ulid: $userAccount->getUlid()->value(),
-            identifier: self::castToNonEmptyString(
+            identifier: TypeCaster::castToNonEmptyString(
                 string: $userAccount->getEmail()->value(),
                 message: 'Giving user email is empty'
             ),
@@ -49,7 +47,7 @@ final readonly class AuthSubject implements UserInterface, PasswordAuthenticated
         return new self(
             type: IdentityTypeEnum::Module,
             ulid: $moduleAccount->getUlid()->value(),
-            identifier: self::castToNonEmptyString(
+            identifier: TypeCaster::castToNonEmptyString(
                 string: $moduleAccount->getClientId()->value(),
                 message: 'Giving module client id is empty'
             ),
@@ -63,7 +61,7 @@ final readonly class AuthSubject implements UserInterface, PasswordAuthenticated
         return new self(
             type: IdentityTypeEnum::Admin,
             ulid: $adminAccount->getUlid()->value(),
-            identifier: self::castToNonEmptyString(
+            identifier: TypeCaster::castToNonEmptyString(
                 string: $adminAccount->getEmail()->value(),
                 message: 'Giving admin email is empty'
             ),

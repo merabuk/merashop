@@ -10,7 +10,7 @@ use App\IdentityAccess\Infrastructure\Exception\InvalidCredentialsException;
 use App\IdentityAccess\Infrastructure\Security\Jwt\JwtConfigFactory;
 use App\IdentityAccess\Infrastructure\Security\Provider\AuthEntityProvider;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
-use App\Shared\Domain\Helpers\TypeCastingTrait;
+use App\Shared\Domain\Helpers\TypeCaster;
 use DateTimeInterface;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Token\RegisteredClaims;
@@ -21,8 +21,6 @@ use Throwable;
 
 final readonly class JwtAccessTokenHandler implements AccessTokenHandlerInterface
 {
-    use TypeCastingTrait;
-
     public function __construct(
         private Configuration $jwtConfiguration,
         private AccessTokenBlacklistInterface $blacklist,
@@ -36,7 +34,7 @@ final readonly class JwtAccessTokenHandler implements AccessTokenHandlerInterfac
     public function getUserBadgeFrom(string $accessToken): UserBadge
     {
         try {
-            $accessToken = self::castToNonEmptyString(string: $accessToken, message: 'Giving access token is empty');
+            $accessToken = TypeCaster::castToNonEmptyString(string: $accessToken, message: 'Giving access token is empty');
 
             $token = $this->jwtConfiguration->parser()->parse($accessToken);
         } catch (Throwable) {
@@ -53,13 +51,13 @@ final readonly class JwtAccessTokenHandler implements AccessTokenHandlerInterfac
 
         $claims = $token->claims();
 
-        $jti = self::castToString(value: $claims->get(RegisteredClaims::ID));
+        $jti = TypeCaster::castToString(value: $claims->get(RegisteredClaims::ID));
         if ($jti && $this->blacklist->isRevoked($jti)) {
             throw new InvalidCredentialsException('Token has been revoked');
         }
 
-        $ulid = self::castToNullableString(value: $claims->get(RegisteredClaims::SUBJECT));
-        $type = IdentityTypeEnum::tryFrom(value: self::castToString(
+        $ulid = TypeCaster::castToNullableString(value: $claims->get(RegisteredClaims::SUBJECT));
+        $type = IdentityTypeEnum::tryFrom(value: TypeCaster::castToString(
             value: $claims->get(JwtConfigFactory::CLAIM_SUBJECT_TYPE)
         ));
 

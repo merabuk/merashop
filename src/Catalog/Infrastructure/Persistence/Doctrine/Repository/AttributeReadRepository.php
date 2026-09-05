@@ -23,14 +23,13 @@ use App\Shared\Domain\Exception\InvalidArgumentException;
 use App\Shared\Domain\Exception\Mappers\EntityFieldMissingException;
 use App\Shared\Domain\Exception\Mappers\IncompatibleMappedEntityException;
 use App\Shared\Domain\Exception\ValueObject\InvalidLocaleException;
-use App\Shared\Domain\Helpers\TypeCastingTrait;
+use App\Shared\Domain\Helpers\TypeCaster;
 use App\Shared\Infrastructure\Persistence\Doctrine\Repository\ReadRepositoryTrait;
 use Doctrine\ORM\QueryBuilder;
 
 final class AttributeReadRepository extends BaseAttributeRepository implements AttributeReadRepositoryInterface
 {
     use ReadRepositoryTrait;
-    use TypeCastingTrait;
 
     private const string ALIAS = 'a';
     private const string ALIAS_TRANSLATIONS = 't';
@@ -151,7 +150,7 @@ final class AttributeReadRepository extends BaseAttributeRepository implements A
         $this->joinRelations(qb: $qb, withOptions: false);
 
         if ($criteria->filters->has('search')) {
-            $search = $this->_prepareSearchValue(value: self::castToString(value: $criteria->filters->get(key: 'search')));
+            $search = $this->_prepareSearchValue(value: TypeCaster::castToString(value: $criteria->filters->get(key: 'search')));
 
             $qb->andWhere($qb->expr()->orX(
                 self::ALIAS.'.code LIKE :search',

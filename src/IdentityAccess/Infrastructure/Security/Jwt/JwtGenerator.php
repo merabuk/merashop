@@ -8,7 +8,7 @@ use App\IdentityAccess\Application\DTO\AccessTokenData;
 use App\IdentityAccess\Application\DTO\GrantResultData;
 use App\IdentityAccess\Application\Exception\TokenGenerateException;
 use App\IdentityAccess\Application\Security\TokenGeneratorInterface;
-use App\Shared\Domain\Helpers\TypeCastingTrait;
+use App\Shared\Domain\Helpers\TypeCaster;
 use Lcobucci\JWT\Configuration;
 use Random\RandomException;
 use Symfony\Component\Clock\ClockInterface;
@@ -16,8 +16,6 @@ use Throwable;
 
 readonly class JwtGenerator implements TokenGeneratorInterface
 {
-    use TypeCastingTrait;
-
     public function __construct(
         private Configuration $jwtConfiguration,
         private ClockInterface $clock,
@@ -36,7 +34,7 @@ readonly class JwtGenerator implements TokenGeneratorInterface
             $accessTokenExpiresAt = $now->modify(sprintf('+%d seconds', $this->ttl));
 
             $builder = $this->jwtConfiguration->builder()
-                ->issuedBy(self::castToNonEmptyString(string: $this->appName, message: 'Giving AppName is empty'))
+                ->issuedBy(TypeCaster::castToNonEmptyString(string: $this->appName, message: 'Giving AppName is empty'))
                 ->identifiedBy($this->generateIdentifier())
                 ->issuedAt($now)
                 ->canOnlyBeUsedAfter($now)

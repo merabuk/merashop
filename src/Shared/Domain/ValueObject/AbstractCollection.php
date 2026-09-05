@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Shared\Domain\ValueObject;
 
 use App\Shared\Domain\Exception\ValueObject\InvalidAbstractCollectionItemException;
-use App\Shared\Domain\Helpers\TypeCastingTrait;
+use App\Shared\Domain\Helpers\TypeCaster;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectEqualityTrait;
 use App\Shared\Domain\ValueObject\Contract\ValueObjectInterface;
 use ArrayIterator;
@@ -20,7 +20,6 @@ use Traversable;
  */
 abstract readonly class AbstractCollection implements Countable, IteratorAggregate, ValueObjectInterface
 {
-    use TypeCastingTrait;
     use ValueObjectEqualityTrait;
 
     /**
@@ -70,7 +69,7 @@ abstract readonly class AbstractCollection implements Countable, IteratorAggrega
     protected function getPrimitiveValue(): array
     {
         $values = array_map(static function (mixed $item): string {
-            return self::castToString(value: $item);
+            return TypeCaster::castToString(value: $item);
         }, $this->items);
 
         sort($values);

@@ -10,12 +10,10 @@ use App\IdentityAccess\Domain\Exception\InvalidIdentityAccessValueObjectExceptio
 use App\IdentityAccess\Domain\Repository\AdminAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\Ulid;
 use App\Shared\Domain\Enum\IdentityTypeEnum;
-use App\Shared\Domain\Helpers\TypeCastingTrait;
+use App\Shared\Domain\Helpers\TypeCaster;
 
 final readonly class AdminRefreshTokenGrantAccountProvider implements RefreshTokenGrantAccountProviderInterface
 {
-    use TypeCastingTrait;
-
     public function __construct(
         private AdminAccountReadRepositoryInterface $readRepository,
     ) {
@@ -39,7 +37,7 @@ final readonly class AdminRefreshTokenGrantAccountProvider implements RefreshTok
             }
 
             return new GrantResultData(
-                subjectUlid: self::castToNonEmptyString(
+                subjectUlid: TypeCaster::castToNonEmptyString(
                     string: $admin->getUlid()->value(),
                     message: 'Giving admin ulid is empty'
                 ),

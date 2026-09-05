@@ -13,7 +13,7 @@ use App\Shared\Domain\Exception\Markers\ConflictExceptionInterface;
 use App\Shared\Domain\Exception\Markers\ForbiddenExceptionInterface;
 use App\Shared\Domain\Exception\Markers\NotFoundExceptionInterface;
 use App\Shared\Domain\Exception\Markers\UnauthorizedExceptionInterface;
-use App\Shared\Domain\Helpers\TypeCastingTrait;
+use App\Shared\Domain\Helpers\TypeCaster;
 use App\Shared\Domain\Service\TranslationDomainResolverInterface;
 use App\Shared\Presentation\Http\ApiRouteParams;
 use Psr\Log\LoggerInterface;
@@ -37,8 +37,6 @@ use Throwable;
 
 class ApiExceptionListener
 {
-    use TypeCastingTrait;
-
     private const string DEFAULT_TRANSLATION_DOMAIN = 'exceptions';
     private const string PUBLIC_API_PREFIX = '/api/';
     private const string ADMIN_API_PREFIX = '/admin/api/';
@@ -182,11 +180,11 @@ class ApiExceptionListener
             $exception instanceof EntityContextAwareExceptionInterface
             && $request->attributes->has(key: ApiRouteParams::ENTITY_LABEL)
         ) {
-            $labelKey = self::castToString(
+            $labelKey = TypeCaster::castToString(
                 value: $request->attributes->get(key: ApiRouteParams::ENTITY_LABEL),
                 default: 'entity'
             );
-            $translationDomain = self::castToString(
+            $translationDomain = TypeCaster::castToString(
                 value: $request->attributes->get(key: ApiRouteParams::ENTITY_DOMAIN),
                 default: self::DEFAULT_TRANSLATION_DOMAIN
             );

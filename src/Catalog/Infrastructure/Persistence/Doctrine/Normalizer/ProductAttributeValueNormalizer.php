@@ -21,12 +21,10 @@ use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\LocalizedStringVa
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\LocalizedTextValue;
 use App\Catalog\Domain\ValueObject\ProductAttributeValue\Value\UrlValue;
 use App\Shared\Domain\Exception\InvalidArgumentException;
-use App\Shared\Domain\Helpers\TypeCastingTrait;
+use App\Shared\Domain\Helpers\TypeCaster;
 
 final readonly class ProductAttributeValueNormalizer
 {
-    use TypeCastingTrait;
-
     /**
      * @param ?array<string, mixed> $data
      *
@@ -45,10 +43,10 @@ final readonly class ProductAttributeValueNormalizer
             TypeEnum::Select,
             TypeEnum::MultiSelect => null,
             TypeEnum::String => isset($data['translations']) && is_array($data['translations'])
-                ? new LocalizedStringValue(self::castToStringMap(value: $data['translations']))
+                ? new LocalizedStringValue(TypeCaster::castToStringMap(value: $data['translations']))
                 : throw $this->makeTypeError('array', $data['translations'] ?? null),
             TypeEnum::Text => isset($data['translations']) && is_array($data['translations'])
-                ? new LocalizedTextValue(self::castToStringMap(value: $data['translations']))
+                ? new LocalizedTextValue(TypeCaster::castToStringMap(value: $data['translations']))
                 : throw $this->makeTypeError('array', $data['translations'] ?? null),
             TypeEnum::Integer => isset($data['value']) && is_int($data['value'])
                 ? IntegerValue::fromInt($data['value'])

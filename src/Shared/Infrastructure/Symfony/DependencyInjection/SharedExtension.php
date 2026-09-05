@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Symfony\DependencyInjection;
 
-use App\Shared\Domain\Helpers\TypeCastingTrait;
+use App\Shared\Domain\Helpers\TypeCaster;
 use Exception;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -15,8 +15,6 @@ use Symfony\Component\Finder\Finder;
 
 final class SharedExtension extends Extension implements PrependExtensionInterface
 {
-    use TypeCastingTrait;
-
     /**
      * @throws Exception
      */
@@ -40,7 +38,7 @@ final class SharedExtension extends Extension implements PrependExtensionInterfa
      */
     private function registerModuleTranslations(ContainerBuilder $container): void
     {
-        $projectDir = self::castToString(value: $container->getParameter('kernel.project_dir'));
+        $projectDir = TypeCaster::castToString(value: $container->getParameter('kernel.project_dir'));
         $srcDir = $projectDir.'/src';
 
         if (!is_dir($srcDir)) {

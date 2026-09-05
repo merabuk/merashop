@@ -10,12 +10,11 @@ use App\Catalog\Domain\ValueObject\Attribute\Type;
 use App\Catalog\Domain\ValueObject\AttributeOption\Metadata\AttributeOptionMetadataInterface;
 use App\Catalog\Domain\ValueObject\AttributeOption\Metadata\DimensionMetadata;
 use App\Shared\Domain\Exception\InvalidArgumentException;
-use App\Shared\Domain\Helpers\TypeCastingTrait;
+use App\Shared\Domain\Helpers\ArrayAccess;
+use App\Shared\Domain\Helpers\TypeCaster;
 
 final readonly class AttributeOptionMetadataNormalizer
 {
-    use TypeCastingTrait;
-
     /**
      * @param ?array<string, mixed> $data
      *
@@ -32,8 +31,8 @@ final readonly class AttributeOptionMetadataNormalizer
         $safeData = $data ?? [];
 
         return match ($type->value()) {
-            TypeEnum::Dimension => DimensionMetadata::fromFloat(self::castToFloat(
-                value: self::getByKey(data: $safeData, key: 'base_ratio'),
+            TypeEnum::Dimension => DimensionMetadata::fromFloat(TypeCaster::castToFloat(
+                value: ArrayAccess::getByKey(data: $safeData, key: 'base_ratio'),
                 default: DimensionMetadata::BASE_RATIO
             )),
             default => throw new InvalidArgumentException(sprintf('Denormalization logic for type "%s" is missing in normalizer', $type)),

@@ -11,6 +11,7 @@ use App\IdentityAccess\Domain\Exception\AdminAccount\InvalidAdminAccountEmailExc
 use App\IdentityAccess\Domain\Repository\AdminAccountReadRepositoryInterface;
 use App\IdentityAccess\Domain\ValueObject\AdminAccount\EmailAddress;
 use App\Shared\Domain\Enum\RoleEnum;
+use App\Shared\Domain\Helpers\TypeCaster;
 use App\Shared\Presentation\Console\BaseConsoleCommand;
 use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -108,9 +109,9 @@ final class CreateAdminAccountConsoleCommand extends BaseConsoleCommand
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $email = self::castToString(value: $input->getArgument('email'));
-        $status = self::castToString(value: $input->getArgument('status'));
-        $roles = self::castToArrayOfStrings(value: $input->getOption('role'));
+        $email = TypeCaster::castToString(value: $input->getArgument('email'));
+        $status = TypeCaster::castToString(value: $input->getArgument('status'));
+        $roles = TypeCaster::castToArrayOfStrings(value: $input->getOption('role'));
 
         try {
             $this->validateInputs($email, $status, $roles);

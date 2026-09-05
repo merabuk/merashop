@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Shared\Presentation\Console;
 
-use App\Shared\Domain\Helpers\TypeCastingTrait;
 use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,8 +14,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 abstract class BaseConsoleCommand extends Command
 {
-    use TypeCastingTrait;
-
     private ?SymfonyStyle $io = null;
 
     public function __construct(
