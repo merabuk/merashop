@@ -9,9 +9,8 @@ parameters:
   excludePaths:
     - assets/*
     - config/reference.php
-    - docker/*
     - node_modules/*
-    - tests/*
+    - vendor/*
   level: max
   parallel:
   	maximumNumberOfProcesses: 4
